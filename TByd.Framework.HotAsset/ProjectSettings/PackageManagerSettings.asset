@@ -29,7 +29,7 @@ MonoBehaviour:
     m_Name: npmjs
     m_Url: http://120.26.201.54:1998
     m_Scopes:
-    - com.tianyu
+    - com.x
     m_IsDefault: 0
     m_Capabilities: 0
   - m_Id: scoped:package.openupm.com
@@ -44,6 +44,6 @@ MonoBehaviour:
   m_RegistryInfoDraft:
     m_Modified: 0
     m_ErrorMessage: 
-    m_UserModificationsInstanceId: -850
-    m_OriginalInstanceId: -854
+    m_UserModificationsInstanceId: -830
+    m_OriginalInstanceId: -834
   m_LoadAssets: 0
