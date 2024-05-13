@@ -8,7 +8,7 @@
 <a href="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-brightgreen.svg?style=for-the-badge&colorA=363a4f&colorB=b7bdf8" alt="License: MIT"></a>
 <a href="https://ci.appveyor.com/project/Tianyuyuyuyuyuyu/tbyd"><img src="https://img.shields.io/appveyor/ci/vis2k73562/hlapi-community-edition/Mirror.svg?style=for-the-badge&colorA=363a4f&colorB=b7bdf8" alt="Build"></a>
 <a href="https://github.com/Tianyuyuyuyuyuyu/TByd/releases/latest"><img src="https://img.shields.io/github/v/release/Tianyuyuyuyuyuyu/TByd.svg?style=for-the-badge&colorA=363a4f&colorB=b7bdf8" alt="release"></a>
-<a href="https://discordapp.com/invite/xVW4nU4C34"><img src="https://img.shields.io/discord/343440455738064897.svg?style=for-the-badge&colorA=363a4f&colorB=b7bdf8" alt="Discord"></a>
+<a href="https://discord.gg/FycUkb8y"><img src="https://img.shields.io/discord/1239481865316859934.svg?style=for-the-badge&colorA=363a4f&colorB=b7bdf8" alt="Discord"></a>
 </p>
 
 # TByd
