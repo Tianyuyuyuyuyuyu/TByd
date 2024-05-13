@@ -1,0 +1,34 @@
+{
+  "name": "com.x.tbyd-framework-hybridclr",
+  "displayName": "TByd Framework HybridCLR",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "HybridCLR.",  
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "Framework",
+	"HybridCLR"
+  ],
+  "author": {
+    "name": "Tian Yu",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.HybridCLR",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+  },
+  "samples": [
+    {
+      "displayName": "Tutorials",
+      "description": "Tutorials",
+      "path": "Samples~/Tutorials"
+    }
+  ]
+}
