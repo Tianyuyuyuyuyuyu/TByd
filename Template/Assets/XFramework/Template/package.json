@@ -1,0 +1,35 @@
+{
+  "name": "com.tianyu.xframework-data",
+  "displayName": "X Framework Data",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "AppData stuff.",  
+  "license": "MIT",
+  "keywords": [
+    "X",
+    "Framework",
+	"Data"
+  ],
+  "author": {
+    "name": "Tian Yu",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/XFramework/tree/main/X.Framework.Addressable",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/XFramework/tree/main"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+	"com.tianyu.xframework": "0.0.9"
+  },
+  "samples": [
+    {
+      "displayName": "Tutorials",
+      "description": "Tutorials",
+      "path": "Samples~/Tutorials"
+    }
+  ]
+}
