@@ -1,0 +1,39 @@
+{
+  "name": "com.x.tbyd-framework-HotAsset",
+  "displayName": "TByd Framework HotAsset",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "HotAsset.",  
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "Framework",
+	"HotAsset"
+  ],
+  "author": {
+    "name": "Tian Yu",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Tianyu",
+      "twitter": "@TianYuFromChina"
+    }
+  ],
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.HotAsset",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
+  },
+  "relatedPackages": {},
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "Tutorials",
+      "description": "Tutorials",
+      "path": "Samples~/Tutorials"
+    }
+  ]
+}
