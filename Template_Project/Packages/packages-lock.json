@@ -1,21 +1,5 @@
 {
   "dependencies": {
-    "com.cysharp.unitask": {
-      "version": "2.5.0",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
-    },
-    "com.tianyu.xframework": {
-      "version": "0.0.9",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.cysharp.unitask": "2.5.0"
-      },
-      "url": "http://120.26.201.54:1998"
-    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
