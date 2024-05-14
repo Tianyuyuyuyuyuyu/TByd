@@ -29,7 +29,7 @@ MonoBehaviour:
     m_Name: npmjs
     m_Url: http://120.26.201.54:1998
     m_Scopes:
-    - com.x
+    - com.r1ch
     m_IsDefault: 0
     m_Capabilities: 0
   - m_Id: scoped:package.openupm.com
