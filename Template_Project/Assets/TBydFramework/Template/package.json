@@ -21,13 +21,13 @@
     }
   ],
   "category": "GUI",
-  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.HotAsset",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework",
   "repository": {
     "type": "git",
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
   },
   "bugs": {
-    "url": "https://github.com/Tianyuyuyuyuyuyu/XFramework/issues"
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
   },
   "relatedPackages": {},
   "dependencies": {},
