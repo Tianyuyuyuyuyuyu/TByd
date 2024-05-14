@@ -9,7 +9,15 @@
   "keywords": [
     "TByd",
     "Framework",
-	"Addressable"
+	"Addressable",
+	"Databinding",
+    "Localization",
+    "MVVM",
+    "UI",
+    "UGUI",
+    "UIElements",
+    "XLua",
+    "Lua"
   ],
   "author": {
     "name": "R1ch, Inc.",
