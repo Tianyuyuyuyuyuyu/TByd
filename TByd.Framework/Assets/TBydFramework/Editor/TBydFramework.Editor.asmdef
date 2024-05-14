@@ -1,0 +1,18 @@
+{
+    "name": "TBydFramework.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1838b6d26971aab48860099406590e04"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
