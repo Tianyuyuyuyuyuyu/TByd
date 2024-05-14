@@ -1,5 +1,5 @@
 {
-  "name": "com.x.tbyd-framework",
+  "name": "com.r1ch.tbyd-framework",
   "displayName": "TByd Framework",
   "version": "0.0.1",
   "unity": "2021.3",
@@ -30,7 +30,9 @@
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
   },
   "relatedPackages": {},
-  "dependencies": {},
+  "dependencies": {
+	"com.cysharp.unitask": "2.5.0"
+  },
   "samples": [
     {
       "displayName": "Tutorials",
