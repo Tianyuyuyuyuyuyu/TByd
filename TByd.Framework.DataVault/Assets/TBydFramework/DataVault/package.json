@@ -1,0 +1,44 @@
+{
+  "name": "com.r1ch.tbyd-framework-datavault",
+  "displayName": "TByd Framework DataVault",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "DataVault.",  
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "Framework",
+	"DataVault"
+  ],
+  "author": {
+    "name": "R1ch, Inc.",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Tianyu",
+      "twitter": "@TianYuFromChina"
+    }
+  ],
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.DataVault",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+	"com.cysharp.unitask": "2.5.0"
+  },
+  "samples": [
+    {
+      "displayName": "Tutorials",
+      "description": "Tutorials",
+      "path": "Samples~/Tutorials"
+    }
+  ]
+}
