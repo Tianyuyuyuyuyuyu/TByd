@@ -1,5 +1,5 @@
 {
-  "name": "com.x.tbyd-framework",
+  "name": "com.r1ch.tbyd-framework",
   "displayName": "TByd Framework",
   "version": "0.0.1",
   "unity": "2021.3",
@@ -11,7 +11,7 @@
     "Framework"
   ],
   "author": {
-    "name": "Tian Yu",
+    "name": "R1ch, Inc.",
     "email": "tianyulovecars@gmail.com"
   },
   "contributors": [
@@ -21,16 +21,18 @@
     }
   ],
   "category": "GUI",
-  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.HotAsset",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework",
   "repository": {
     "type": "git",
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
   },
   "bugs": {
-    "url": "https://github.com/Tianyuyuyuyuyuyu/XFramework/issues"
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
   },
   "relatedPackages": {},
-  "dependencies": {},
+  "dependencies": {
+	"com.cysharp.unitask": "2.5.0"
+  },
   "samples": [
     {
       "displayName": "Tutorials",
