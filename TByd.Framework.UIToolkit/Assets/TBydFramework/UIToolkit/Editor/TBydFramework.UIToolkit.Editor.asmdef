@@ -1,0 +1,19 @@
+{
+    "name": "TBydFramework.UIToolkit.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1838b6d26971aab48860099406590e04",
+        "GUID:efdbdd122f416fe41915b909975ec068"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
