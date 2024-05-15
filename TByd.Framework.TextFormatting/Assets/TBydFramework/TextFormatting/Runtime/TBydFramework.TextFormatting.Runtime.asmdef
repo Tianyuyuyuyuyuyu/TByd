@@ -1,0 +1,16 @@
+{
+    "name": "TBydFramework.TextFormatting.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:1838b6d26971aab48860099406590e04"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
