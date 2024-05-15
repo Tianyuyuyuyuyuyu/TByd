@@ -1,0 +1,44 @@
+{
+  "name": "com.r1ch.tbyd-framework-fody",
+  "displayName": "TByd Framework Fody",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "Fody stuff.",  
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "Framework",
+	"Fody"
+  ],
+  "author": {
+    "name": "R1ch, Inc.",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Tianyu",
+      "twitter": "@TianYuFromChina"
+    }
+  ],
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.Fody",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+	"com.cysharp.unitask": "2.5.0"
+  },
+  "samples": [
+    {
+      "displayName": "Tutorials",
+      "description": "Tutorials",
+      "path": "Samples~/Tutorials"
+    }
+  ]
+}
