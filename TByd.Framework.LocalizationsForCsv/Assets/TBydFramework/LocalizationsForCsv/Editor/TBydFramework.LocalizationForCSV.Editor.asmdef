@@ -1,0 +1,20 @@
+{
+    "name": "TBydFramework.LocalizationForCSV.Editor",
+    "rootNamespace": "",
+    "references": [
+        "TBydFramework.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "CsvHelper.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

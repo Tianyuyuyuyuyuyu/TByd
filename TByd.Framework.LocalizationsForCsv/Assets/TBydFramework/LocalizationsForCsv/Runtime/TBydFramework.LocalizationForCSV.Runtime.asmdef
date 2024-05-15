@@ -1,0 +1,18 @@
+{
+    "name": "TBydFramework.LocalizationForCSV.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "TBydFramework.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "CsvHelper.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
