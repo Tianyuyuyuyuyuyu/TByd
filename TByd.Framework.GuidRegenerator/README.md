@@ -1,0 +1,2 @@
+# TByd Framework GuidRegenerator
+
