@@ -36,7 +36,7 @@
   "relatedPackages": {},
   "dependencies": {
 	"com.cysharp.unitask": "2.5.0",
-	"com.r1ch.tbydframework": "0.0.1"
+	"com.r1ch.tbyd-framework": "0.0.1"
   },
   "samples": [
     {
