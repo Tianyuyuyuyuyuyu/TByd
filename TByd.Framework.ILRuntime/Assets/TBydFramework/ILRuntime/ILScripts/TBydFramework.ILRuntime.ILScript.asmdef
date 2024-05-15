@@ -1,0 +1,17 @@
+{
+    "name": "TBydFramework.ILRuntime.ILScript",
+    "rootNamespace": "",
+    "references": [
+        "TBydFramework.Runtime",
+        "ILRuntime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

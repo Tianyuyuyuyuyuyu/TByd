@@ -1,0 +1,3 @@
+﻿<linker>
+	<assembly fullname="TBydFramework" preserve="all"/>
+</linker>
