@@ -1,0 +1,47 @@
+{
+  "name": "com.r1ch.tbyd-framework-textmeshpro",
+  "displayName": "TByd Framework TextMeshPro",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "This is a plugin for the TextMeshPro.",  
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "Framework",
+    "TextMeshPro"
+  ],
+  "author": {
+    "name": "R1ch, Inc.",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Tianyu",
+      "twitter": "@TianYuFromChina"
+    }
+  ],
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.TextMeshPro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+	"com.cysharp.unitask": "2.5.0",
+	"com.r1ch.tbyd-framework": "0.0.1",
+    "com.r1ch.tbyd-framework-textformatting": "0.0.1",
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "Tutorials",
+      "description": "Tutorials",
+      "path": "Samples~/Tutorials"
+    }
+  ]
+}
