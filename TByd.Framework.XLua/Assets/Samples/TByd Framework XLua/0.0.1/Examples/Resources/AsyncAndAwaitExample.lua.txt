@@ -1,0 +1,43 @@
+namespace TBydFramework.Editorsrequire("framework.System")
+
+local AsyncTask = require("framework.AsyncTask")
+local Resources = CS.UnityEngine.Resources
+local GameObject = CS.UnityEngine.GameObject
+
+---
+-- 在Lua中使用async和await
+--@module AsyncAndAwaitExample
+local M=class("AsyncAndAwaitExample",target)
+---
+-- 异步start函数
+--
+M.start = async(function(self)
+		
+		await(AsyncTask.Delay(1000)) --Delay 1000 milliseconds
+		
+		local x,y,z = await(M.toPosition(1200,500,240))
+		printf("x=%s y=%s z=%s",x,y,z)
+		
+		local goTemplate = await(self:load("Prefabs/Cube",typeof(CS.UnityEngine.GameObject)))
+		
+		local go = GameObject.Instantiate(goTemplate)
+		go.transform.localPosition = CS.UnityEngine.Vector3.zero;
+	end)
+
+---
+--异步加载一个Cube
+--
+M.load= async(function(self,path,typename)
+		print("Load a Cube from the Resources folder.")
+		
+		local goTemplate = await(Resources.LoadAsync(path,typename))
+		
+		print("Loading a Cube is complete.")
+		return goTemplate
+	end)
+
+M.toPosition = async(function(x,y,z)
+		return x/1000.0,y/1000.0,z/1000.0
+	end)
+
+return M
