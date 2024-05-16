@@ -1,0 +1,75 @@
+namespace TBydFramework.Editorsrequire("framework.System")
+
+local AsyncTask = require("framework.AsyncTask")
+local Resources = CS.UnityEngine.Resources
+local GameObject = CS.UnityEngine.GameObject
+
+---
+-- 在Lua中使用try和catch
+--@module TryAndCatchExample
+local M=class("TryAndCatchExample",target)
+---
+-- 异步start函数
+--
+M.start = async(function(self)
+		
+		await(AsyncTask.Delay(1000)) --Delay 1000 milliseconds
+		
+		print("--------execute toPosition function----------")		
+		local x,y,z = await(M.toPosition(1200,500,240))
+		printf("toPosition result:x=%s y=%s z=%s",x,y,z)
+		
+		print("--------execute test function----------")	
+		self:test()
+	end)
+
+---
+--try/catch/finally 配置async使用
+--下列函数是一个有返回值的函数
+--
+M.toPosition = async(function(x,y,z)
+		--try 实际是一个函数，如果需要返回值则在try之前加return，否则不需要加return
+		return try{
+			function()	
+				--这是主函数
+				error("This a test,throw an exception")				
+				return x/1000.0,y/1000.0,z/1000.0
+			end,
+			catch=function(e)
+				--这是catch函数
+				printf("Catch exception:%s",e)
+				return 0,0,0 --发生异常，返回默认值
+			end,
+			finally =function()
+				--这是finally函数
+				print("Execute the finally block")
+			end			
+		}		
+	end)
+
+---
+--try/catch/finally 独立使用
+--下列是一个没有返回值的函数，当然也可以有函数值
+--
+function M:test()
+	try{
+		function()	
+			--这是主函数	
+			
+			print("this is a test.")
+			
+			error("This a test,throw an exception")	
+		end,
+		catch = function(e)
+			--这是catch函数
+			printf("Catch exception:%s",e)
+			return 0,0,0 --发生异常，返回默认值
+		end,
+		finally = function()
+			--这是finally函数
+			print("Execute the finally block")
+		end			
+	}
+end
+
+return M
