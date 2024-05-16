@@ -1,5 +1,5 @@
 {
-  "name": "com.r1ch.tbyd-framework-HotAsset",
+  "name": "com.r1ch.tbyd-framework-hotasset",
   "displayName": "TByd Framework HotAsset",
   "version": "0.0.1",
   "unity": "2021.3",
@@ -12,7 +12,7 @@
 	"HotAsset"
   ],
   "author": {
-    "name": "Tian Yu",
+    "name": "R1ch, Inc.",
     "email": "tianyulovecars@gmail.com"
   },
   "contributors": [
