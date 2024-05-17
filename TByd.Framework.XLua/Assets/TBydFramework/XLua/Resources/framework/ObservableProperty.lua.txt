@@ -1,0 +1,1 @@
+namespace TBydFramework.Editorsreturn CS.TBydFramework.Observables["ObservableProperty`1[System.Object]"]
