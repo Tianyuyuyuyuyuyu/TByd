@@ -1,18 +1,15 @@
 {
-  "name": "com.r1ch.tbyd-framework-connection",
-  "displayName": "TByd Framework Connection",
+  "name": "com.r1ch.tbyd-framework-template",
+  "displayName": "TByd Framework Template",
   "version": "0.0.1",
   "unity": "2021.3",
   "unityRelease": "8f1",
-  "description": "This is a network component, using TCP protocol to connect to the server by default.",  
+  "description": "Template.",  
   "license": "MIT",
   "keywords": [
     "TByd",
     "Framework",
-	"MVVM",
-    "TCP",
-    "Socket",
-	"Connection"
+	"Template"
   ],
   "author": {
     "name": "R1ch, Inc.",
@@ -25,7 +22,7 @@
     }
   ],
   "category": "GUI",
-  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.Connection",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.Template",
   "repository": {
     "type": "git",
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
