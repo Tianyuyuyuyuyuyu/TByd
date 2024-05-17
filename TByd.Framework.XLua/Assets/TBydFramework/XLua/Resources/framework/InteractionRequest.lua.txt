@@ -1,0 +1,12 @@
+namespace TBydFramework.Editorsrequire("framework.System")
+
+---
+--模块
+--@module InteractionRequest
+local M = class("InteractionRequest",CS.TBydFramework.Interactivity["InteractionRequest`1[System.Object]"])
+
+function M:Raise(context,callback)
+	M.super.Raise(self,context,callback)
+end
+
+return M
