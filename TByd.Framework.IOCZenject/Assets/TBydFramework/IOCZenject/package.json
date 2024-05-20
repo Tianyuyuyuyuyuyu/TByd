@@ -1,7 +1,7 @@
 {
   "name": "com.r1ch.tbyd-framework-ioczenject",
   "displayName": "TByd Framework IOC Zenject",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "unity": "2021.3",
   "unityRelease": "8f1",
   "description": "Zenject 是一个用于 Unity 的依赖注入框架，它简化了复杂对象的创建过程，管理依赖关系，并提供了一种更清晰、更模块化的代码结构。Zenject 使得开发者可以轻松地进行单元测试，因为依赖项可以在测试期间轻松替换.",  
