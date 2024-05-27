@@ -10,30 +10,29 @@ namespace uPools
     {
         public AddressableGameObjectPool(object key)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            this.key = key;
+            this._key = key ?? throw new ArgumentNullException(nameof(key));
         }
 
         public AddressableGameObjectPool(AssetReferenceGameObject reference)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            this.key = reference.RuntimeKey;
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
+            _key = reference.RuntimeKey;
         }
 
-        readonly object key;
-        readonly Stack<GameObject> stack = new(32);
-        bool isDisposed;
+        private readonly object _key;
+        readonly Stack<GameObject> _stack = new(32);
+        private bool _isDisposed;
 
-        public int Count => stack.Count;
-        public bool IsDisposed => isDisposed;
+        public int Count => _stack.Count;
+        public bool IsDisposed => _isDisposed;
 
         public GameObject Rent()
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key).WaitForCompletion();
+                obj = Addressables.InstantiateAsync(_key).WaitForCompletion();
             }
             else
             {
@@ -48,9 +47,9 @@ namespace uPools
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key, parent).WaitForCompletion();
+                obj = Addressables.InstantiateAsync(_key, parent).WaitForCompletion();
             }
             else
             {
@@ -66,9 +65,9 @@ namespace uPools
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key, position, rotation).WaitForCompletion();
+                obj = Addressables.InstantiateAsync(_key, position, rotation).WaitForCompletion();
             }
             else
             {
@@ -84,9 +83,9 @@ namespace uPools
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key, position, rotation, parent).WaitForCompletion();
+                obj = Addressables.InstantiateAsync(_key, position, rotation, parent).WaitForCompletion();
             }
             else
             {
@@ -103,7 +102,7 @@ namespace uPools
         {
             ThrowIfDisposed();
 
-            stack.Push(obj);
+            _stack.Push(obj);
             obj.SetActive(false);
 
             PoolCallbackHelper.InvokeOnReturn(obj);
@@ -113,7 +112,7 @@ namespace uPools
         {
             ThrowIfDisposed();
             
-            while (stack.TryPop(out var obj))
+            while (_stack.TryPop(out var obj))
             {
                 Addressables.ReleaseInstance(obj);
             }
@@ -125,9 +124,9 @@ namespace uPools
 
             for (int i = 0; i < count; i++)
             {
-                var obj = Addressables.InstantiateAsync(key).WaitForCompletion();
+                var obj = Addressables.InstantiateAsync(_key).WaitForCompletion();
 
-                stack.Push(obj);
+                _stack.Push(obj);
                 obj.SetActive(false);
 
                 PoolCallbackHelper.InvokeOnReturn(obj);
@@ -138,12 +137,12 @@ namespace uPools
         {
             ThrowIfDisposed();
             Clear();
-            isDisposed = true;
+            _isDisposed = true;
         }
 
         void ThrowIfDisposed()
         {
-            if (isDisposed) throw new ObjectDisposedException(GetType().Name);
+            if (_isDisposed) throw new ObjectDisposedException(GetType().Name);
         }
     }
 }
