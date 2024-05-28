@@ -1,6 +1,6 @@
 using System;
 
-namespace uPools
+namespace TBydFramework.Module.Pool.Runtime
 {
     public sealed class ObjectPool<T> : ObjectPoolBase<T>
         where T : class
