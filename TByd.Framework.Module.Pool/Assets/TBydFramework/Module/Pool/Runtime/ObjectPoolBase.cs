@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace uPools
+namespace TBydFramework.Module.Pool.Runtime
 {
     public abstract class ObjectPoolBase<T> : IObjectPool<T>
         where T : class
