@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace uPools
+namespace TBydFramework.Module.Pool.Runtime
 {
     public sealed class GameObjectPool : IObjectPool<GameObject>
     {
