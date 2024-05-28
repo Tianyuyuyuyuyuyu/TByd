@@ -18,12 +18,12 @@
         {
             "name": "com.cysharp.unitask",
             "expression": "",
-            "define": "UPOOLS_UNITASK_SUPPORT"
+            "define": "TBYD_UNITASK_SUPPORT"
         },
         {
             "name": "com.unity.addressables",
             "expression": "",
-            "define": "UPOOLS_ADDRESSABLES_SUPPORT"
+            "define": "TBYD_ADDRESSABLES_SUPPORT"
         }
     ],
     "noEngineReferences": false
