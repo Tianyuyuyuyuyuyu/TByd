@@ -3,7 +3,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace uPools
+namespace TBydFramework.Module.Pool.Runtime
 {
     public sealed class AsyncObjectPool<T> : AsyncObjectPoolBase<T>
         where T : class
