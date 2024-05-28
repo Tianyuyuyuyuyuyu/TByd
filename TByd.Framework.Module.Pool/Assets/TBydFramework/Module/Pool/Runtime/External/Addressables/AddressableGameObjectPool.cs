@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace uPools
+namespace TBydFramework.Module.Pool.Runtime
 {
     public sealed class AddressableGameObjectPool : IObjectPool<GameObject>
     {
@@ -32,7 +32,7 @@ namespace uPools
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(_key).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key).WaitForCompletion();
             }
             else
             {
@@ -49,7 +49,7 @@ namespace uPools
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(_key, parent).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, parent).WaitForCompletion();
             }
             else
             {
@@ -67,7 +67,7 @@ namespace uPools
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(_key, position, rotation).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, position, rotation).WaitForCompletion();
             }
             else
             {
@@ -85,7 +85,7 @@ namespace uPools
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(_key, position, rotation, parent).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, position, rotation, parent).WaitForCompletion();
             }
             else
             {
@@ -114,7 +114,7 @@ namespace uPools
             
             while (_stack.TryPop(out var obj))
             {
-                Addressables.ReleaseInstance(obj);
+                UnityEngine.AddressableAssets.Addressables.ReleaseInstance(obj);
             }
         }
 
@@ -124,7 +124,7 @@ namespace uPools
 
             for (int i = 0; i < count; i++)
             {
-                var obj = Addressables.InstantiateAsync(_key).WaitForCompletion();
+                var obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key).WaitForCompletion();
 
                 _stack.Push(obj);
                 obj.SetActive(false);
