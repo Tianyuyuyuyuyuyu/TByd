@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace uPools
+namespace TBydFramework.Module.Pool.Runtime
 {
     public abstract class AsyncObjectPoolBase<T> : IAsyncObjectPool<T>
         where T : class
@@ -49,7 +49,7 @@ namespace uPools
             }
         }
 
-        public async UniTask PrewarmAsync(int count, CancellationToken cancellationToken = default)
+        public async Cysharp.Threading.Tasks.UniTask PrewarmAsync(int count, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
             for (int i = 0; i < count; i++)
