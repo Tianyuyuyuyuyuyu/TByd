@@ -1,14 +1,10 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using GameFramework.ObjectPool;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.Base.DataStruct;
 
-namespace GameFramework.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     internal sealed partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
     {
@@ -16,10 +12,10 @@ namespace GameFramework.ObjectPool
         /// 对象池。
         /// </summary>
         /// <typeparam name="T">对象类型。</typeparam>
-        private sealed class ObjectPool<T> : ObjectPoolBase, IObjectPool<T> where T : ObjectBase
+        private sealed class ObjectPool<T> : ObjectPoolBase, GameFramework.ObjectPool.IObjectPool<T> where T : ObjectBase
         {
             private readonly GameFrameworkMultiDictionary<string, Object<T>> m_Objects;
-            private readonly Dictionary<object, Object<T>> m_ObjectMap;
+            private readonly Dictionary<object, object> m_ObjectMap;
             private readonly ReleaseObjectFilterCallback<T> m_DefaultReleaseObjectFilterCallback;
             private readonly List<T> m_CachedCanReleaseObjects;
             private readonly List<T> m_CachedToReleaseObjects;
@@ -43,7 +39,7 @@ namespace GameFramework.ObjectPool
                 : base(name)
             {
                 m_Objects = new GameFrameworkMultiDictionary<string, Object<T>>();
-                m_ObjectMap = new Dictionary<object, Object<T>>();
+                m_ObjectMap = new Dictionary<object, object>();
                 m_DefaultReleaseObjectFilterCallback = DefaultReleaseObjectFilterCallback;
                 m_CachedCanReleaseObjects = new List<T>();
                 m_CachedToReleaseObjects = new List<T>();
@@ -313,7 +309,7 @@ namespace GameFramework.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new GameFrameworkException(string.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -351,7 +347,7 @@ namespace GameFramework.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new GameFrameworkException(string.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -389,7 +385,7 @@ namespace GameFramework.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new GameFrameworkException(string.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -546,7 +542,7 @@ namespace GameFramework.ObjectPool
 
             internal override void Shutdown()
             {
-                foreach (KeyValuePair<object, Object<T>> objectInMap in m_ObjectMap)
+                foreach (KeyValuePair<object, object> objectInMap in m_ObjectMap)
                 {
                     objectInMap.Value.Release(true);
                     ReferencePool.Release(objectInMap.Value);
@@ -582,7 +578,7 @@ namespace GameFramework.ObjectPool
                 }
 
                 results.Clear();
-                foreach (KeyValuePair<object, Object<T>> objectInMap in m_ObjectMap)
+                foreach (KeyValuePair<object, object> objectInMap in m_ObjectMap)
                 {
                     Object<T> internalObject = objectInMap.Value;
                     if (internalObject.IsInUse || internalObject.Locked || !internalObject.CustomCanReleaseFlag)
