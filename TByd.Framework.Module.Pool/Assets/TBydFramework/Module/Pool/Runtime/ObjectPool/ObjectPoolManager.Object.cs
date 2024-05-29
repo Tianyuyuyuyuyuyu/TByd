@@ -1,13 +1,8 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
+﻿using System;
+using GameFramework.ObjectPool;
+using TBydFramework.Runtime.Base;
 
-using System;
-
-namespace GameFramework.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     internal sealed partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
     {
@@ -178,7 +173,7 @@ namespace GameFramework.ObjectPool
                 m_SpawnCount--;
                 if (m_SpawnCount < 0)
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Object '{0}' spawn count is less than 0.", Name));
+                    throw new GameFrameworkException(string.Format("Object '{0}' spawn count is less than 0.", Name));
                 }
             }
 
