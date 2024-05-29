@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using TBydFramework.Runtime.Utilities;
+using TBydFramework.Runtime.Utility;
 
 namespace TBydFramework.Runtime.Configuration
 {
