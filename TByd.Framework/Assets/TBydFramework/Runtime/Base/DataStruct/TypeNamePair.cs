@@ -7,7 +7,7 @@ namespace TBydFramework.Runtime.Base.DataStruct
     /// 类型和名称的组合值。
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal struct TypeNamePair : IEquatable<TypeNamePair>
+    public struct TypeNamePair : IEquatable<TypeNamePair>
     {
         private readonly Type m_Type;
         private readonly string m_Name;
