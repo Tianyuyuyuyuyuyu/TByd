@@ -8,7 +8,7 @@
       "url": "https://package.openupm.com"
     },
     "com.r1ch.tbyd-framework": {
-      "version": "0.0.2",
+      "version": "0.0.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
