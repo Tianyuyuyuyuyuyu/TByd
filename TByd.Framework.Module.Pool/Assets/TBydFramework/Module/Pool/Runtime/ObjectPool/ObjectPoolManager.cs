@@ -1250,7 +1250,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 throw new GameFrameworkException(string.Format("Already exist object pool '{0}'.", typeNamePair));
             }
 
-            GameFramework.ObjectPool.ObjectPoolManager.ObjectPool<T> objectPool = new GameFramework.ObjectPool.ObjectPoolManager.ObjectPool<T>(name, allowMultiSpawn, autoReleaseInterval, capacity, expireTime, priority);
+            ObjectPoolManager.ObjectPool<T> objectPool = new ObjectPoolManager.ObjectPool<T>(name, allowMultiSpawn, autoReleaseInterval, capacity, expireTime, priority);
             m_ObjectPools.Add(typeNamePair, objectPool);
             return objectPool;
         }
@@ -1273,7 +1273,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 throw new GameFrameworkException(string.Format("Already exist object pool '{0}'.", typeNamePair));
             }
 
-            Type objectPoolType = typeof(GameFramework.ObjectPool.ObjectPoolManager.ObjectPool<>).MakeGenericType(objectType);
+            Type objectPoolType = typeof(ObjectPoolManager.ObjectPool<>).MakeGenericType(objectType);
             ObjectPoolBase objectPool = (ObjectPoolBase)Activator.CreateInstance(objectPoolType, name, allowMultiSpawn, autoReleaseInterval, capacity, expireTime, priority);
             m_ObjectPools.Add(typeNamePair, objectPool);
             return objectPool;
