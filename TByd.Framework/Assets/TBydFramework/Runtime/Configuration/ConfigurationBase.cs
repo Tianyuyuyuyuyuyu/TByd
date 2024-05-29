@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TBydFramework.Runtime.Log;
-using TBydFramework.Runtime.Utilities;
+using TBydFramework.Runtime.Utility;
 
 namespace TBydFramework.Runtime.Configuration
 {
