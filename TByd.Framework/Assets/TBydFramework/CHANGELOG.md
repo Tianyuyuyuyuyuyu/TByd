@@ -13,3 +13,8 @@
 ## [0.0.3]
 + 公开游戏框架模块抽象
 + 公开TypeNamePair
+
+## [0.0.4]
++ 增加ReferencePool
++ 增加GameFrameworkLog
++ 增加XX Utility
