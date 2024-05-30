@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GameFramework.ObjectPool;
 using TBydFramework.Runtime.Base;
 using TBydFramework.Runtime.Base.DataStruct;
+using TBydFramework.Runtime.Base.ReferencePool;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
