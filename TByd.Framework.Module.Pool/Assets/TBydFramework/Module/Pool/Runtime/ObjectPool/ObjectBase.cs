@@ -1,4 +1,6 @@
 ﻿using System;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.Base.ReferencePool;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
