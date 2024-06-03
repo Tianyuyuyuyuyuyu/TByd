@@ -1,7 +1,6 @@
 ﻿using System;
-using TBydFramework.Module.Pool.Runtime.ObjectPool;
 
-namespace GameFramework.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     /// <summary>
     /// 对象池接口。
