@@ -1,5 +1,8 @@
 ﻿using System;
 using TBydFramework.Module.Pool.Runtime.ObjectPool;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.Interface;
+using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
@@ -156,7 +159,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (target == null)
             {
-                throw new GameFrameworkException(Utility.Text.Format("Target '{0}' is invalid.", name));
+                throw new TBydFrameworkException(Utility.Text.Format("Target '{0}' is invalid.", name));
             }
 
             m_Name = name ?? string.Empty;
