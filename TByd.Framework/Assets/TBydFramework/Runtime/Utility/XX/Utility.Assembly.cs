@@ -51,7 +51,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (results == null)
                 {
-                    throw new GameFrameworkException("Results is invalid.");
+                    throw new TBydFrameworkException("Results is invalid.");
                 }
 
                 results.Clear();
@@ -70,7 +70,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (string.IsNullOrEmpty(typeName))
                 {
-                    throw new GameFrameworkException("Type name is invalid.");
+                    throw new TBydFrameworkException("Type name is invalid.");
                 }
 
                 Type type = null;
