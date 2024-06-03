@@ -1,4 +1,5 @@
 ﻿using System;
+using TBydFramework.Runtime.DataStruct;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
