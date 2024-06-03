@@ -1,13 +1,7 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
+﻿using System;
+using TBydFramework.Module.Pool.Runtime.ObjectPool;
 
-using System;
-
-namespace GameFramework.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     internal sealed partial class ObjectPoolManager : GameFrameworkModule, IObjectPoolManager
     {
@@ -127,7 +121,7 @@ namespace GameFramework.ObjectPool
                     throw new GameFrameworkException("Object is invalid.");
                 }
 
-                Object<T> internalObject = ReferencePool.Acquire<Object<T>>();
+                Object<T> internalObject = ObjectPool.ReferencePool.Acquire<Object<T>>();
                 internalObject.m_Object = obj;
                 internalObject.m_SpawnCount = spawned ? 1 : 0;
                 if (spawned)
@@ -189,7 +183,7 @@ namespace GameFramework.ObjectPool
             public void Release(bool isShutdown)
             {
                 m_Object.Release(isShutdown);
-                ReferencePool.Release(m_Object);
+                ObjectPool.ReferencePool.Release(m_Object);
             }
         }
     }
