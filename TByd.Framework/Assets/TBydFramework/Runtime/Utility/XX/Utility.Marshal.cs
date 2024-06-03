@@ -33,7 +33,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (ensureSize < 0)
                 {
-                    throw new GameFrameworkException("Ensure size is invalid.");
+                    throw new TBydFrameworkException("Ensure size is invalid.");
                 }
 
                 if (s_CachedHGlobalPtr == IntPtr.Zero || s_CachedHGlobalSize < ensureSize)
@@ -80,7 +80,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (structureSize < 0)
                 {
-                    throw new GameFrameworkException("Structure size is invalid.");
+                    throw new TBydFrameworkException("Structure size is invalid.");
                 }
 
                 EnsureCachedHGlobalSize(structureSize);
@@ -137,22 +137,22 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (structureSize < 0)
                 {
-                    throw new GameFrameworkException("Structure size is invalid.");
+                    throw new TBydFrameworkException("Structure size is invalid.");
                 }
 
                 if (result == null)
                 {
-                    throw new GameFrameworkException("Result is invalid.");
+                    throw new TBydFrameworkException("Result is invalid.");
                 }
 
                 if (startIndex < 0)
                 {
-                    throw new GameFrameworkException("Start index is invalid.");
+                    throw new TBydFrameworkException("Start index is invalid.");
                 }
 
                 if (startIndex + structureSize > result.Length)
                 {
-                    throw new GameFrameworkException("Result length is not enough.");
+                    throw new TBydFrameworkException("Result length is not enough.");
                 }
 
                 EnsureCachedHGlobalSize(structureSize);
@@ -207,22 +207,22 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (structureSize < 0)
                 {
-                    throw new GameFrameworkException("Structure size is invalid.");
+                    throw new TBydFrameworkException("Structure size is invalid.");
                 }
 
                 if (buffer == null)
                 {
-                    throw new GameFrameworkException("Buffer is invalid.");
+                    throw new TBydFrameworkException("Buffer is invalid.");
                 }
 
                 if (startIndex < 0)
                 {
-                    throw new GameFrameworkException("Start index is invalid.");
+                    throw new TBydFrameworkException("Start index is invalid.");
                 }
 
                 if (startIndex + structureSize > buffer.Length)
                 {
-                    throw new GameFrameworkException("Buffer length is not enough.");
+                    throw new TBydFrameworkException("Buffer length is not enough.");
                 }
 
                 EnsureCachedHGlobalSize(structureSize);
