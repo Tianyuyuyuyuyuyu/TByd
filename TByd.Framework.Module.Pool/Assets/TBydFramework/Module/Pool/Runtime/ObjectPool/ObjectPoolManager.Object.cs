@@ -1,9 +1,13 @@
 ﻿using System;
 using TBydFramework.Module.Pool.Runtime.ObjectPool;
+using TBydFramework.Runtime.Abstracts;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.Interface;
+using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
-    internal sealed partial class ObjectPoolManager : TBydFrameworkModule, IObjectPoolManager
+    internal sealed partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
     {
         /// <summary>
         /// 内部对象。
@@ -118,7 +122,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (obj == null)
                 {
-                    throw new GameFrameworkException("Object is invalid.");
+                    throw new TBydFrameworkException("Object is invalid.");
                 }
 
                 Object<T> internalObject = ObjectPool.ReferencePool.Acquire<Object<T>>();
@@ -172,7 +176,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 m_SpawnCount--;
                 if (m_SpawnCount < 0)
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Object '{0}' spawn count is less than 0.", Name));
+                    throw new TBydFrameworkException(Utility.Text.Format("Object '{0}' spawn count is less than 0.", Name));
                 }
             }
 
