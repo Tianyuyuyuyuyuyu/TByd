@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TBydFramework.Runtime.Base;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
 {
@@ -9,8 +10,8 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
     internal sealed class TaskPool<T> where T : TaskBase
     {
         private readonly Stack<ITaskAgent<T>> m_FreeAgents;
-        private readonly GameFrameworkLinkedList<ITaskAgent<T>> m_WorkingAgents;
-        private readonly GameFrameworkLinkedList<T> m_WaitingTasks;
+        private readonly TBydFrameworkLinkedList<ITaskAgent<T>> m_WorkingAgents;
+        private readonly TBydFrameworkLinkedList<T> m_WaitingTasks;
         private bool m_Paused;
 
         /// <summary>
@@ -19,8 +20,8 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
         public TaskPool()
         {
             m_FreeAgents = new Stack<ITaskAgent<T>>();
-            m_WorkingAgents = new GameFrameworkLinkedList<ITaskAgent<T>>();
-            m_WaitingTasks = new GameFrameworkLinkedList<T>();
+            m_WorkingAgents = new TBydFrameworkLinkedList<ITaskAgent<T>>();
+            m_WaitingTasks = new TBydFrameworkLinkedList<T>();
             m_Paused = false;
         }
 
@@ -120,7 +121,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
         {
             if (agent == null)
             {
-                throw new GameFrameworkException("Task agent is invalid.");
+                throw new TBydFrameworkException("Task agent is invalid.");
             }
 
             agent.Initialize();
@@ -175,7 +176,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
         {
             if (results == null)
             {
-                throw new GameFrameworkException("Results is invalid.");
+                throw new TBydFrameworkException("Results is invalid.");
             }
 
             results.Clear();
@@ -227,7 +228,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
         {
             if (results == null)
             {
-                throw new GameFrameworkException("Results is invalid.");
+                throw new TBydFrameworkException("Results is invalid.");
             }
 
             results.Clear();
