@@ -50,7 +50,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (string.IsNullOrEmpty(directoryName))
                 {
-                    throw new GameFrameworkException("Directory name is invalid.");
+                    throw new TBydFrameworkException("Directory name is invalid.");
                 }
 
                 try
