@@ -1,6 +1,13 @@
-﻿using System;
+﻿//------------------------------------------------------------
+// Game Framework
+// Copyright © 2013-2021 Jiang Yin. All rights reserved.
+// Homepage: https://gameframework.cn/
+// Feedback: mailto:ellan@gameframework.cn
+//------------------------------------------------------------
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool
+using System;
+
+namespace GameFramework.ObjectPool
 {
     /// <summary>
     /// 对象池接口。
