@@ -1,7 +1,7 @@
 {
   "name": "com.r1ch.tbyd-framework-guidregenerator",
   "displayName": "TByd Framework GuidRegenerator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "unity": "2021.3",
   "unityRelease": "8f1",
   "description": "A Unity editor tool to regenerate GUID for your assets.",  
@@ -34,7 +34,7 @@
   "relatedPackages": {},
   "dependencies": {
 	"com.cysharp.unitask": "2.5.0",
-	"com.r1ch.tbydframework": "0.0.1"
+	"com.r1ch.tbyd-framework": "0.0.5"
   },
   "samples": [
     {
