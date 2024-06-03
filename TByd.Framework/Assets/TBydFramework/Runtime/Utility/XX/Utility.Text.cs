@@ -31,7 +31,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -55,7 +55,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -81,7 +81,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -109,7 +109,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -139,7 +139,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -171,7 +171,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -205,7 +205,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -241,7 +241,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -279,7 +279,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -319,7 +319,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -361,7 +361,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -405,7 +405,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -451,7 +451,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -499,7 +499,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -549,7 +549,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
@@ -601,7 +601,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (format == null)
                 {
-                    throw new GameFrameworkException("Format is invalid.");
+                    throw new TBydFrameworkException("Format is invalid.");
                 }
 
                 if (s_TextHelper == null)
