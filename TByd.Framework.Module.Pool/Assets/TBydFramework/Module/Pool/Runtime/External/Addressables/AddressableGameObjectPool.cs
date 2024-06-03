@@ -1,10 +1,11 @@
 #if TBYD_ADDRESSABLES_SUPPORT
 using System;
 using System.Collections.Generic;
+using TBydFramework.Module.Pool.Runtime.Internal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace TBydFramework.Module.Pool.Runtime
+namespace TBydFramework.Module.Pool.Runtime.External.Addressables
 {
     public sealed class AddressableGameObjectPool : IObjectPool<GameObject>
     {
