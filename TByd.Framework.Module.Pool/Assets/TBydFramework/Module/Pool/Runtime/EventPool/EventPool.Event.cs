@@ -1,4 +1,5 @@
 ﻿using TBydFramework.Module.Pool.Runtime.ObjectPool;
+using TBydFramework.Runtime.Interface;
 
 namespace TBydFramework.Module.Pool.Runtime.EventPool
 {
