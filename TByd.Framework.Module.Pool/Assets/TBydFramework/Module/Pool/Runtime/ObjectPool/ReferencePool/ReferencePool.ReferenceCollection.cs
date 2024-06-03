@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.Interface;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
@@ -86,7 +88,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (typeof(T) != m_ReferenceType)
                 {
-                    throw new GameFrameworkException("Type is invalid.");
+                    throw new TBydFrameworkException("Type is invalid.");
                 }
 
                 m_UsingReferenceCount++;
@@ -126,7 +128,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 {
                     if (m_EnableStrictCheck && m_References.Contains(reference))
                     {
-                        throw new GameFrameworkException("The reference has been released.");
+                        throw new TBydFrameworkException("The reference has been released.");
                     }
 
                     m_References.Enqueue(reference);
@@ -140,7 +142,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (typeof(T) != m_ReferenceType)
                 {
-                    throw new GameFrameworkException("Type is invalid.");
+                    throw new TBydFrameworkException("Type is invalid.");
                 }
 
                 lock (m_References)
