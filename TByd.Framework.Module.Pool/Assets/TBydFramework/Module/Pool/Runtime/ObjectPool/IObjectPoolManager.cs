@@ -1,7 +1,14 @@
-﻿using System;
+﻿//------------------------------------------------------------
+// Game Framework
+// Copyright © 2013-2021 Jiang Yin. All rights reserved.
+// Homepage: https://gameframework.cn/
+// Feedback: mailto:ellan@gameframework.cn
+//------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool
+namespace GameFramework.ObjectPool
 {
     /// <summary>
     /// 对象池管理器。
