@@ -24,7 +24,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 return GetCrc32(bytes, 0, bytes.Length);
@@ -41,12 +41,12 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 if (offset < 0 || length < 0 || offset + length > bytes.Length)
                 {
-                    throw new GameFrameworkException("Offset or length is invalid.");
+                    throw new TBydFrameworkException("Offset or length is invalid.");
                 }
 
                 s_Algorithm.HashCore(bytes, offset, length);
@@ -64,7 +64,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (stream == null)
                 {
-                    throw new GameFrameworkException("Stream is invalid.");
+                    throw new TBydFrameworkException("Stream is invalid.");
                 }
 
                 while (true)
@@ -116,12 +116,12 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Result is invalid.");
+                    throw new TBydFrameworkException("Result is invalid.");
                 }
 
                 if (offset < 0 || offset + 4 > bytes.Length)
                 {
-                    throw new GameFrameworkException("Offset or length is invalid.");
+                    throw new TBydFrameworkException("Offset or length is invalid.");
                 }
 
                 bytes[offset] = (byte)((crc32 >> 24) & 0xff);
@@ -134,18 +134,18 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (stream == null)
                 {
-                    throw new GameFrameworkException("Stream is invalid.");
+                    throw new TBydFrameworkException("Stream is invalid.");
                 }
 
                 if (code == null)
                 {
-                    throw new GameFrameworkException("Code is invalid.");
+                    throw new TBydFrameworkException("Code is invalid.");
                 }
 
                 int codeLength = code.Length;
                 if (codeLength <= 0)
                 {
-                    throw new GameFrameworkException("Code length is invalid.");
+                    throw new TBydFrameworkException("Code length is invalid.");
                 }
 
                 int bytesLength = (int)stream.Length;
