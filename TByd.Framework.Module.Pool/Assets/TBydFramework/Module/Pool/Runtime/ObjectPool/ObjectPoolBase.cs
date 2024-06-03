@@ -1,7 +1,7 @@
 ﻿using System;
 using TBydFramework.Runtime.Base.DataStruct;
 
-namespace GameFramework.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     /// <summary>
     /// 对象池基类。
