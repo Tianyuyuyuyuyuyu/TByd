@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using TBydFramework.Module.Pool.Runtime.External.UniTask;
+using TBydFramework.Module.Pool.Runtime.Internal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace TBydFramework.Module.Pool.Runtime
+namespace TBydFramework.Module.Pool.Runtime.External.Addressables
 {
     public sealed class AsyncAddressableGameObjectPool : IAsyncObjectPool<GameObject>
     {
