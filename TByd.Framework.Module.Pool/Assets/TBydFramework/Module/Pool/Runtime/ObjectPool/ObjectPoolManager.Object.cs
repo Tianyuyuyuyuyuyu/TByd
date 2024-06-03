@@ -1,10 +1,15 @@
-﻿using System;
-using TBydFramework.Runtime.Base;
-using TBydFramework.Runtime.Base.ReferencePool;
+﻿//------------------------------------------------------------
+// Game Framework
+// Copyright © 2013-2021 Jiang Yin. All rights reserved.
+// Homepage: https://gameframework.cn/
+// Feedback: mailto:ellan@gameframework.cn
+//------------------------------------------------------------
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool
+using System;
+
+namespace GameFramework.ObjectPool
 {
-    internal partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
+    internal sealed partial class ObjectPoolManager : GameFrameworkModule, IObjectPoolManager
     {
         /// <summary>
         /// 内部对象。
@@ -173,7 +178,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 m_SpawnCount--;
                 if (m_SpawnCount < 0)
                 {
-                    throw new GameFrameworkException(string.Format("Object '{0}' spawn count is less than 0.", Name));
+                    throw new GameFrameworkException(Utility.Text.Format("Object '{0}' spawn count is less than 0.", Name));
                 }
             }
 
