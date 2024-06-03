@@ -1,11 +1,6 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
+﻿using TBydFramework.Module.Pool.Runtime.ObjectPool;
 
-namespace GameFramework
+namespace TBydFramework.Module.Pool.Runtime.EventPool
 {
     internal sealed partial class EventPool<T> where T : BaseEventArgs
     {
