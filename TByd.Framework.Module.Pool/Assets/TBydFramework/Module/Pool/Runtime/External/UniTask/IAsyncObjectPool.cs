@@ -2,7 +2,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace TBydFramework.Module.Pool.Runtime
+namespace TBydFramework.Module.Pool.Runtime.External.UniTask
 {
     public interface IAsyncObjectPool<T>
     {
