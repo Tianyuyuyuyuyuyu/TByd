@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using TBydFramework.Runtime.Base;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
 {
@@ -56,7 +57,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
             {
                 if (!m_IsValid)
                 {
-                    throw new GameFrameworkException("Data is invalid.");
+                    throw new TBydFrameworkException("Data is invalid.");
                 }
 
                 return m_SerialId;
@@ -72,7 +73,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
             {
                 if (!m_IsValid)
                 {
-                    throw new GameFrameworkException("Data is invalid.");
+                    throw new TBydFrameworkException("Data is invalid.");
                 }
 
                 return m_Tag;
@@ -88,7 +89,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
             {
                 if (!m_IsValid)
                 {
-                    throw new GameFrameworkException("Data is invalid.");
+                    throw new TBydFrameworkException("Data is invalid.");
                 }
 
                 return m_Priority;
@@ -104,7 +105,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
             {
                 if (!m_IsValid)
                 {
-                    throw new GameFrameworkException("Data is invalid.");
+                    throw new TBydFrameworkException("Data is invalid.");
                 }
 
                 return m_UserData;
@@ -120,7 +121,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
             {
                 if (!m_IsValid)
                 {
-                    throw new GameFrameworkException("Data is invalid.");
+                    throw new TBydFrameworkException("Data is invalid.");
                 }
 
                 return m_Status;
@@ -136,7 +137,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
             {
                 if (!m_IsValid)
                 {
-                    throw new GameFrameworkException("Data is invalid.");
+                    throw new TBydFrameworkException("Data is invalid.");
                 }
 
                 return m_Description;
