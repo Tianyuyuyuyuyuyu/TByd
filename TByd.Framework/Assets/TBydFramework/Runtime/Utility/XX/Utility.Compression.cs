@@ -31,7 +31,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 return Compress(bytes, 0, bytes.Length);
@@ -47,7 +47,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 return Compress(bytes, 0, bytes.Length, compressedStream);
@@ -87,22 +87,22 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (s_CompressionHelper == null)
                 {
-                    throw new GameFrameworkException("Compressed helper is invalid.");
+                    throw new TBydFrameworkException("Compressed helper is invalid.");
                 }
 
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 if (offset < 0 || length < 0 || offset + length > bytes.Length)
                 {
-                    throw new GameFrameworkException("Offset or length is invalid.");
+                    throw new TBydFrameworkException("Offset or length is invalid.");
                 }
 
                 if (compressedStream == null)
                 {
-                    throw new GameFrameworkException("Compressed stream is invalid.");
+                    throw new TBydFrameworkException("Compressed stream is invalid.");
                 }
 
                 try
@@ -111,12 +111,12 @@ namespace TBydFramework.Runtime.Utility.XX
                 }
                 catch (Exception exception)
                 {
-                    if (exception is GameFrameworkException)
+                    if (exception is TBydFrameworkException)
                     {
                         throw;
                     }
 
-                    throw new GameFrameworkException(Text.Format("Can not compress with exception '{0}'.", exception), exception);
+                    throw new TBydFrameworkException(Text.Format("Can not compress with exception '{0}'.", exception), exception);
                 }
             }
 
@@ -150,17 +150,17 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (s_CompressionHelper == null)
                 {
-                    throw new GameFrameworkException("Compressed helper is invalid.");
+                    throw new TBydFrameworkException("Compressed helper is invalid.");
                 }
 
                 if (stream == null)
                 {
-                    throw new GameFrameworkException("Stream is invalid.");
+                    throw new TBydFrameworkException("Stream is invalid.");
                 }
 
                 if (compressedStream == null)
                 {
-                    throw new GameFrameworkException("Compressed stream is invalid.");
+                    throw new TBydFrameworkException("Compressed stream is invalid.");
                 }
 
                 try
@@ -169,12 +169,12 @@ namespace TBydFramework.Runtime.Utility.XX
                 }
                 catch (Exception exception)
                 {
-                    if (exception is GameFrameworkException)
+                    if (exception is TBydFrameworkException)
                     {
                         throw;
                     }
 
-                    throw new GameFrameworkException(Text.Format("Can not compress with exception '{0}'.", exception), exception);
+                    throw new TBydFrameworkException(Text.Format("Can not compress with exception '{0}'.", exception), exception);
                 }
             }
 
@@ -187,7 +187,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 return Decompress(bytes, 0, bytes.Length);
@@ -203,7 +203,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 return Decompress(bytes, 0, bytes.Length, decompressedStream);
@@ -243,22 +243,22 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (s_CompressionHelper == null)
                 {
-                    throw new GameFrameworkException("Compressed helper is invalid.");
+                    throw new TBydFrameworkException("Compressed helper is invalid.");
                 }
 
                 if (bytes == null)
                 {
-                    throw new GameFrameworkException("Bytes is invalid.");
+                    throw new TBydFrameworkException("Bytes is invalid.");
                 }
 
                 if (offset < 0 || length < 0 || offset + length > bytes.Length)
                 {
-                    throw new GameFrameworkException("Offset or length is invalid.");
+                    throw new TBydFrameworkException("Offset or length is invalid.");
                 }
 
                 if (decompressedStream == null)
                 {
-                    throw new GameFrameworkException("Decompressed stream is invalid.");
+                    throw new TBydFrameworkException("Decompressed stream is invalid.");
                 }
 
                 try
@@ -267,12 +267,12 @@ namespace TBydFramework.Runtime.Utility.XX
                 }
                 catch (Exception exception)
                 {
-                    if (exception is GameFrameworkException)
+                    if (exception is TBydFrameworkException)
                     {
                         throw;
                     }
 
-                    throw new GameFrameworkException(Text.Format("Can not decompress with exception '{0}'.", exception), exception);
+                    throw new TBydFrameworkException(Text.Format("Can not decompress with exception '{0}'.", exception), exception);
                 }
             }
 
@@ -306,17 +306,17 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (s_CompressionHelper == null)
                 {
-                    throw new GameFrameworkException("Compressed helper is invalid.");
+                    throw new TBydFrameworkException("Compressed helper is invalid.");
                 }
 
                 if (stream == null)
                 {
-                    throw new GameFrameworkException("Stream is invalid.");
+                    throw new TBydFrameworkException("Stream is invalid.");
                 }
 
                 if (decompressedStream == null)
                 {
-                    throw new GameFrameworkException("Decompressed stream is invalid.");
+                    throw new TBydFrameworkException("Decompressed stream is invalid.");
                 }
 
                 try
@@ -325,12 +325,12 @@ namespace TBydFramework.Runtime.Utility.XX
                 }
                 catch (Exception exception)
                 {
-                    if (exception is GameFrameworkException)
+                    if (exception is TBydFrameworkException)
                     {
                         throw;
                     }
 
-                    throw new GameFrameworkException(Text.Format("Can not decompress with exception '{0}'.", exception), exception);
+                    throw new TBydFrameworkException(Text.Format("Can not decompress with exception '{0}'.", exception), exception);
                 }
             }
         }
