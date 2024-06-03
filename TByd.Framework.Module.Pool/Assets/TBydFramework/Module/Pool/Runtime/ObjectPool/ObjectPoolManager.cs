@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using TBydFramework.Runtime.Abstracts;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.DataStruct;
+using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     /// <summary>
     /// 对象池管理器。
     /// </summary>
-    internal sealed partial class ObjectPoolManager : TBydFrameworkModule, IObjectPoolManager
+    internal sealed partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
     {
         private const int DefaultCapacity = int.MaxValue;
         private const float DefaultExpireTime = float.MaxValue;
@@ -30,7 +34,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         /// 获取游戏框架模块优先级。
         /// </summary>
         /// <remarks>优先级较高的模块会优先轮询，并且关闭操作会后进行。</remarks>
-        internal override int Priority
+        public override int Priority
         {
             get
             {
@@ -54,7 +58,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         /// </summary>
         /// <param name="elapseSeconds">逻辑流逝时间，以秒为单位。</param>
         /// <param name="realElapseSeconds">真实流逝时间，以秒为单位。</param>
-        internal override void Update(float elapseSeconds, float realElapseSeconds)
+        public override void Update(float elapseSeconds, float realElapseSeconds)
         {
             foreach (KeyValuePair<TypeNamePair, ObjectPoolBase> objectPool in m_ObjectPools)
             {
@@ -65,7 +69,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         /// <summary>
         /// 关闭并清理对象池管理器。
         /// </summary>
-        internal override void Shutdown()
+        public override void Shutdown()
         {
             foreach (KeyValuePair<TypeNamePair, ObjectPoolBase> objectPool in m_ObjectPools)
             {
@@ -95,12 +99,12 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectType == null)
             {
-                throw new GameFrameworkException("Object type is invalid.");
+                throw new TBydFrameworkException("Object type is invalid.");
             }
 
             if (!typeof(ObjectBase).IsAssignableFrom(objectType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
             }
 
             return InternalHasObjectPool(new TypeNamePair(objectType));
@@ -127,12 +131,12 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectType == null)
             {
-                throw new GameFrameworkException("Object type is invalid.");
+                throw new TBydFrameworkException("Object type is invalid.");
             }
 
             if (!typeof(ObjectBase).IsAssignableFrom(objectType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
             }
 
             return InternalHasObjectPool(new TypeNamePair(objectType, name));
@@ -147,7 +151,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (condition == null)
             {
-                throw new GameFrameworkException("Condition is invalid.");
+                throw new TBydFrameworkException("Condition is invalid.");
             }
 
             foreach (KeyValuePair<TypeNamePair, ObjectPoolBase> objectPool in m_ObjectPools)
@@ -180,12 +184,12 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectType == null)
             {
-                throw new GameFrameworkException("Object type is invalid.");
+                throw new TBydFrameworkException("Object type is invalid.");
             }
 
             if (!typeof(ObjectBase).IsAssignableFrom(objectType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
             }
 
             return InternalGetObjectPool(new TypeNamePair(objectType));
@@ -212,12 +216,12 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectType == null)
             {
-                throw new GameFrameworkException("Object type is invalid.");
+                throw new TBydFrameworkException("Object type is invalid.");
             }
 
             if (!typeof(ObjectBase).IsAssignableFrom(objectType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
             }
 
             return InternalGetObjectPool(new TypeNamePair(objectType, name));
@@ -232,7 +236,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (condition == null)
             {
-                throw new GameFrameworkException("Condition is invalid.");
+                throw new TBydFrameworkException("Condition is invalid.");
             }
 
             foreach (KeyValuePair<TypeNamePair, ObjectPoolBase> objectPool in m_ObjectPools)
@@ -255,7 +259,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (condition == null)
             {
-                throw new GameFrameworkException("Condition is invalid.");
+                throw new TBydFrameworkException("Condition is invalid.");
             }
 
             List<ObjectPoolBase> results = new List<ObjectPoolBase>();
@@ -279,12 +283,12 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (condition == null)
             {
-                throw new GameFrameworkException("Condition is invalid.");
+                throw new TBydFrameworkException("Condition is invalid.");
             }
 
             if (results == null)
             {
-                throw new GameFrameworkException("Results is invalid.");
+                throw new TBydFrameworkException("Results is invalid.");
             }
 
             results.Clear();
@@ -355,7 +359,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (results == null)
             {
-                throw new GameFrameworkException("Results is invalid.");
+                throw new TBydFrameworkException("Results is invalid.");
             }
 
             results.Clear();
@@ -1125,12 +1129,12 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectType == null)
             {
-                throw new GameFrameworkException("Object type is invalid.");
+                throw new TBydFrameworkException("Object type is invalid.");
             }
 
             if (!typeof(ObjectBase).IsAssignableFrom(objectType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
             }
 
             return InternalDestroyObjectPool(new TypeNamePair(objectType));
@@ -1157,12 +1161,12 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectType == null)
             {
-                throw new GameFrameworkException("Object type is invalid.");
+                throw new TBydFrameworkException("Object type is invalid.");
             }
 
             if (!typeof(ObjectBase).IsAssignableFrom(objectType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
             }
 
             return InternalDestroyObjectPool(new TypeNamePair(objectType, name));
@@ -1178,7 +1182,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectPool == null)
             {
-                throw new GameFrameworkException("Object pool is invalid.");
+                throw new TBydFrameworkException("Object pool is invalid.");
             }
 
             return InternalDestroyObjectPool(new TypeNamePair(typeof(T), objectPool.Name));
@@ -1193,7 +1197,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectPool == null)
             {
-                throw new GameFrameworkException("Object pool is invalid.");
+                throw new TBydFrameworkException("Object pool is invalid.");
             }
 
             return InternalDestroyObjectPool(new TypeNamePair(objectPool.ObjectType, objectPool.Name));
@@ -1244,7 +1248,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             TypeNamePair typeNamePair = new TypeNamePair(typeof(T), name);
             if (HasObjectPool<T>(name))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Already exist object pool '{0}'.", typeNamePair));
+                throw new TBydFrameworkException(Utility.Text.Format("Already exist object pool '{0}'.", typeNamePair));
             }
 
             ObjectPool<T> objectPool = new ObjectPool<T>(name, allowMultiSpawn, autoReleaseInterval, capacity, expireTime, priority);
@@ -1256,18 +1260,18 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (objectType == null)
             {
-                throw new GameFrameworkException("Object type is invalid.");
+                throw new TBydFrameworkException("Object type is invalid.");
             }
 
             if (!typeof(ObjectBase).IsAssignableFrom(objectType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Object type '{0}' is invalid.", objectType.FullName));
             }
 
             TypeNamePair typeNamePair = new TypeNamePair(objectType, name);
             if (HasObjectPool(objectType, name))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Already exist object pool '{0}'.", typeNamePair));
+                throw new TBydFrameworkException(Utility.Text.Format("Already exist object pool '{0}'.", typeNamePair));
             }
 
             Type objectPoolType = typeof(ObjectPool<>).MakeGenericType(objectType);
