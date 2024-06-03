@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameFramework.ObjectPool;
 using TBydFramework.Runtime.Base;
 using TBydFramework.Runtime.Base.DataStruct;
 using TBydFramework.Runtime.Base.ReferencePool;
@@ -13,10 +12,10 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         /// 对象池。
         /// </summary>
         /// <typeparam name="T">对象类型。</typeparam>
-        private sealed class ObjectPool<T> : ObjectPoolBase, GameFramework.ObjectPool.IObjectPool<T> where T : ObjectBase
+        private sealed class ObjectPool<T> : ObjectPoolBase, IObjectPool<T> where T : ObjectBase
         {
             private readonly GameFrameworkMultiDictionary<string, Object<T>> m_Objects;
-            private readonly Dictionary<object, object> m_ObjectMap;
+            private readonly Dictionary<object, Object<T>> m_ObjectMap;
             private readonly ReleaseObjectFilterCallback<T> m_DefaultReleaseObjectFilterCallback;
             private readonly List<T> m_CachedCanReleaseObjects;
             private readonly List<T> m_CachedToReleaseObjects;
@@ -40,7 +39,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 : base(name)
             {
                 m_Objects = new GameFrameworkMultiDictionary<string, Object<T>>();
-                m_ObjectMap = new Dictionary<object, object>();
+                m_ObjectMap = new Dictionary<object, Object<T>>();
                 m_DefaultReleaseObjectFilterCallback = DefaultReleaseObjectFilterCallback;
                 m_CachedCanReleaseObjects = new List<T>();
                 m_CachedToReleaseObjects = new List<T>();
@@ -543,7 +542,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 
             internal override void Shutdown()
             {
-                foreach (KeyValuePair<object, object> objectInMap in m_ObjectMap)
+                foreach (KeyValuePair<object, Object<T>> objectInMap in m_ObjectMap)
                 {
                     objectInMap.Value.Release(true);
                     ReferencePool.Release(objectInMap.Value);
@@ -579,7 +578,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 }
 
                 results.Clear();
-                foreach (KeyValuePair<object, object> objectInMap in m_ObjectMap)
+                foreach (KeyValuePair<object, Object<T>> objectInMap in m_ObjectMap)
                 {
                     Object<T> internalObject = objectInMap.Value;
                     if (internalObject.IsInUse || internalObject.Locked || !internalObject.CustomCanReleaseFlag)
