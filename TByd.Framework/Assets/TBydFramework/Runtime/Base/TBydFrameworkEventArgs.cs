@@ -1,4 +1,5 @@
 ﻿using System;
+using TBydFramework.Runtime.Interface;
 
 namespace TBydFramework.Runtime.Base
 {
