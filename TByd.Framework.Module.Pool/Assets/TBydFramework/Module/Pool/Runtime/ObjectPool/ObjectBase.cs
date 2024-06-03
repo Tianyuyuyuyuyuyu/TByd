@@ -1,8 +1,13 @@
-﻿using System;
-using TBydFramework.Runtime.Base;
-using TBydFramework.Runtime.Base.ReferencePool;
+﻿//------------------------------------------------------------
+// Game Framework
+// Copyright © 2013-2021 Jiang Yin. All rights reserved.
+// Homepage: https://gameframework.cn/
+// Feedback: mailto:ellan@gameframework.cn
+//------------------------------------------------------------
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool
+using System;
+
+namespace GameFramework.ObjectPool
 {
     /// <summary>
     /// 对象基类。
@@ -157,7 +162,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (target == null)
             {
-                throw new GameFrameworkException(string.Format("Target '{0}' is invalid.", name));
+                throw new GameFrameworkException(Utility.Text.Format("Target '{0}' is invalid.", name));
             }
 
             m_Name = name ?? string.Empty;
