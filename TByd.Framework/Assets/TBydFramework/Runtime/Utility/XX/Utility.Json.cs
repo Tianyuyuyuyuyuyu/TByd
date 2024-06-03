@@ -30,7 +30,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (s_JsonHelper == null)
                 {
-                    throw new GameFrameworkException("JSON helper is invalid.");
+                    throw new TBydFrameworkException("JSON helper is invalid.");
                 }
 
                 try
@@ -39,12 +39,12 @@ namespace TBydFramework.Runtime.Utility.XX
                 }
                 catch (Exception exception)
                 {
-                    if (exception is GameFrameworkException)
+                    if (exception is TBydFrameworkException)
                     {
                         throw;
                     }
 
-                    throw new GameFrameworkException(Text.Format("Can not convert to JSON with exception '{0}'.", exception), exception);
+                    throw new TBydFrameworkException(Text.Format("Can not convert to JSON with exception '{0}'.", exception), exception);
                 }
             }
 
@@ -58,7 +58,7 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (s_JsonHelper == null)
                 {
-                    throw new GameFrameworkException("JSON helper is invalid.");
+                    throw new TBydFrameworkException("JSON helper is invalid.");
                 }
 
                 try
@@ -67,12 +67,12 @@ namespace TBydFramework.Runtime.Utility.XX
                 }
                 catch (Exception exception)
                 {
-                    if (exception is GameFrameworkException)
+                    if (exception is TBydFrameworkException)
                     {
                         throw;
                     }
 
-                    throw new GameFrameworkException(Text.Format("Can not convert to object with exception '{0}'.", exception), exception);
+                    throw new TBydFrameworkException(Text.Format("Can not convert to object with exception '{0}'.", exception), exception);
                 }
             }
 
@@ -86,12 +86,12 @@ namespace TBydFramework.Runtime.Utility.XX
             {
                 if (s_JsonHelper == null)
                 {
-                    throw new GameFrameworkException("JSON helper is invalid.");
+                    throw new TBydFrameworkException("JSON helper is invalid.");
                 }
 
                 if (objectType == null)
                 {
-                    throw new GameFrameworkException("Object type is invalid.");
+                    throw new TBydFrameworkException("Object type is invalid.");
                 }
 
                 try
@@ -100,12 +100,12 @@ namespace TBydFramework.Runtime.Utility.XX
                 }
                 catch (Exception exception)
                 {
-                    if (exception is GameFrameworkException)
+                    if (exception is TBydFrameworkException)
                     {
                         throw;
                     }
 
-                    throw new GameFrameworkException(Text.Format("Can not convert to object with exception '{0}'.", exception), exception);
+                    throw new TBydFrameworkException(Text.Format("Can not convert to object with exception '{0}'.", exception), exception);
                 }
             }
         }
