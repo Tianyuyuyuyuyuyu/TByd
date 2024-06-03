@@ -18,3 +18,7 @@
 + 增加ReferencePool
 + 增加GameFrameworkLog
 + 增加XX Utility
+
+## [0.0.5]
++ 工程结构规范制定
++ 工程结构调整
