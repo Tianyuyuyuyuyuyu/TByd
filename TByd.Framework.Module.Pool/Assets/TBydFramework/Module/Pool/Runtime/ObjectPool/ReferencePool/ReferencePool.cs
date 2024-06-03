@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.Interface;
+using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
@@ -103,7 +106,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (reference == null)
             {
-                throw new GameFrameworkException("Reference is invalid.");
+                throw new TBydFrameworkException("Reference is invalid.");
             }
 
             Type referenceType = reference.GetType();
@@ -181,17 +184,17 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 
             if (referenceType == null)
             {
-                throw new GameFrameworkException("Reference type is invalid.");
+                throw new TBydFrameworkException("Reference type is invalid.");
             }
 
             if (!referenceType.IsClass || referenceType.IsAbstract)
             {
-                throw new GameFrameworkException("Reference type is not a non-abstract class type.");
+                throw new TBydFrameworkException("Reference type is not a non-abstract class type.");
             }
 
             if (!typeof(IReference).IsAssignableFrom(referenceType))
             {
-                throw new GameFrameworkException(Utility.Text.Format("Reference type '{0}' is invalid.", referenceType.FullName));
+                throw new TBydFrameworkException(Utility.Text.Format("Reference type '{0}' is invalid.", referenceType.FullName));
             }
         }
 
@@ -199,7 +202,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         {
             if (referenceType == null)
             {
-                throw new GameFrameworkException("ReferenceType is invalid.");
+                throw new TBydFrameworkException("ReferenceType is invalid.");
             }
 
             ReferenceCollection referenceCollection = null;
