@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using TBydFramework.Runtime.Base;
-using TBydFramework.Runtime.Base.DataStruct;
-using TBydFramework.Runtime.Base.ReferencePool;
+﻿//------------------------------------------------------------
+// Game Framework
+// Copyright © 2013-2021 Jiang Yin. All rights reserved.
+// Homepage: https://gameframework.cn/
+// Feedback: mailto:ellan@gameframework.cn
+//------------------------------------------------------------
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool
+using System;
+using System.Collections.Generic;
+
+namespace GameFramework.ObjectPool
 {
-    internal sealed partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
+    internal sealed partial class ObjectPoolManager : GameFrameworkModule, IObjectPoolManager
     {
         /// <summary>
         /// 对象池。
@@ -309,7 +313,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(string.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -347,7 +351,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(string.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -385,7 +389,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(string.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
