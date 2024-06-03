@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
-    internal sealed partial class ObjectPoolManager : GameFrameworkModule, IObjectPoolManager
+    internal sealed partial class ObjectPoolManager : TBydFrameworkModule, IObjectPoolManager
     {
         /// <summary>
         /// 对象池。
