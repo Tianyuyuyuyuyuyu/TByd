@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using TBydFramework.Runtime.Abstracts;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.DataStruct;
+using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
-    internal sealed partial class ObjectPoolManager : TBydFrameworkModule, IObjectPoolManager
+    internal sealed partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
     {
         /// <summary>
         /// 对象池。
@@ -11,7 +15,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
         /// <typeparam name="T">对象类型。</typeparam>
         private sealed class ObjectPool<T> : ObjectPoolBase, IObjectPool<T> where T : ObjectBase
         {
-            private readonly GameFrameworkMultiDictionary<string, Object<T>> m_Objects;
+            private readonly TBydFrameworkMultiDictionary<string, Object<T>> m_Objects;
             private readonly Dictionary<object, Object<T>> m_ObjectMap;
             private readonly ReleaseObjectFilterCallback<T> m_DefaultReleaseObjectFilterCallback;
             private readonly List<T> m_CachedCanReleaseObjects;
@@ -35,7 +39,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             public ObjectPool(string name, bool allowMultiSpawn, float autoReleaseInterval, int capacity, float expireTime, int priority)
                 : base(name)
             {
-                m_Objects = new GameFrameworkMultiDictionary<string, Object<T>>();
+                m_Objects = new TBydFrameworkMultiDictionary<string, Object<T>>();
                 m_ObjectMap = new Dictionary<object, Object<T>>();
                 m_DefaultReleaseObjectFilterCallback = DefaultReleaseObjectFilterCallback;
                 m_CachedCanReleaseObjects = new List<T>();
@@ -121,7 +125,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 {
                     if (value < 0)
                     {
-                        throw new GameFrameworkException("Capacity is invalid.");
+                        throw new TBydFrameworkException("Capacity is invalid.");
                     }
 
                     if (m_Capacity == value)
@@ -148,7 +152,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 {
                     if (value < 0f)
                     {
-                        throw new GameFrameworkException("ExpireTime is invalid.");
+                        throw new TBydFrameworkException("ExpireTime is invalid.");
                     }
 
                     if (ExpireTime == value)
@@ -185,7 +189,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (obj == null)
                 {
-                    throw new GameFrameworkException("Object is invalid.");
+                    throw new TBydFrameworkException("Object is invalid.");
                 }
 
                 Object<T> internalObject = Object<T>.Create(obj, spawned);
@@ -216,10 +220,10 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (name == null)
                 {
-                    throw new GameFrameworkException("Name is invalid.");
+                    throw new TBydFrameworkException("Name is invalid.");
                 }
 
-                GameFrameworkLinkedListRange<Object<T>> objectRange = default(GameFrameworkLinkedListRange<Object<T>>);
+                TBydFrameworkLinkedListRange<Object<T>> objectRange = default(TBydFrameworkLinkedListRange<Object<T>>);
                 if (m_Objects.TryGetValue(name, out objectRange))
                 {
                     foreach (Object<T> internalObject in objectRange)
@@ -252,10 +256,10 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (name == null)
                 {
-                    throw new GameFrameworkException("Name is invalid.");
+                    throw new TBydFrameworkException("Name is invalid.");
                 }
 
-                GameFrameworkLinkedListRange<Object<T>> objectRange = default(GameFrameworkLinkedListRange<Object<T>>);
+                TBydFrameworkLinkedListRange<Object<T>> objectRange = default(TBydFrameworkLinkedListRange<Object<T>>);
                 if (m_Objects.TryGetValue(name, out objectRange))
                 {
                     foreach (Object<T> internalObject in objectRange)
@@ -278,7 +282,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (obj == null)
                 {
-                    throw new GameFrameworkException("Object is invalid.");
+                    throw new TBydFrameworkException("Object is invalid.");
                 }
 
                 Unspawn(obj.Target);
@@ -292,7 +296,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (target == null)
                 {
-                    throw new GameFrameworkException("Target is invalid.");
+                    throw new TBydFrameworkException("Target is invalid.");
                 }
 
                 Object<T> internalObject = GetObject(target);
@@ -306,7 +310,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new TBydFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -319,7 +323,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (obj == null)
                 {
-                    throw new GameFrameworkException("Object is invalid.");
+                    throw new TBydFrameworkException("Object is invalid.");
                 }
 
                 SetLocked(obj.Target, locked);
@@ -334,7 +338,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (target == null)
                 {
-                    throw new GameFrameworkException("Target is invalid.");
+                    throw new TBydFrameworkException("Target is invalid.");
                 }
 
                 Object<T> internalObject = GetObject(target);
@@ -344,7 +348,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new TBydFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -357,7 +361,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (obj == null)
                 {
-                    throw new GameFrameworkException("Object is invalid.");
+                    throw new TBydFrameworkException("Object is invalid.");
                 }
 
                 SetPriority(obj.Target, priority);
@@ -372,7 +376,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (target == null)
                 {
-                    throw new GameFrameworkException("Target is invalid.");
+                    throw new TBydFrameworkException("Target is invalid.");
                 }
 
                 Object<T> internalObject = GetObject(target);
@@ -382,7 +386,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 }
                 else
                 {
-                    throw new GameFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
+                    throw new TBydFrameworkException(Utility.Text.Format("Can not find target in object pool '{0}', target type is '{1}', target value is '{2}'.", new TypeNamePair(typeof(T), Name), target.GetType().FullName, target));
                 }
             }
 
@@ -395,7 +399,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (obj == null)
                 {
-                    throw new GameFrameworkException("Object is invalid.");
+                    throw new TBydFrameworkException("Object is invalid.");
                 }
 
                 return ReleaseObject(obj.Target);
@@ -410,7 +414,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (target == null)
                 {
-                    throw new GameFrameworkException("Target is invalid.");
+                    throw new TBydFrameworkException("Target is invalid.");
                 }
 
                 Object<T> internalObject = GetObject(target);
@@ -467,7 +471,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (releaseObjectFilterCallback == null)
                 {
-                    throw new GameFrameworkException("Release object filter callback is invalid.");
+                    throw new TBydFrameworkException("Release object filter callback is invalid.");
                 }
 
                 if (toReleaseCount < 0)
@@ -515,7 +519,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             public override ObjectInfo[] GetAllObjectInfos()
             {
                 List<ObjectInfo> results = new List<ObjectInfo>();
-                foreach (KeyValuePair<string, GameFrameworkLinkedListRange<Object<T>>> objectRanges in m_Objects)
+                foreach (KeyValuePair<string, TBydFrameworkLinkedListRange<Object<T>>> objectRanges in m_Objects)
                 {
                     foreach (Object<T> internalObject in objectRanges.Value)
                     {
@@ -555,7 +559,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (target == null)
                 {
-                    throw new GameFrameworkException("Target is invalid.");
+                    throw new TBydFrameworkException("Target is invalid.");
                 }
 
                 Object<T> internalObject = null;
@@ -571,7 +575,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             {
                 if (results == null)
                 {
-                    throw new GameFrameworkException("Results is invalid.");
+                    throw new TBydFrameworkException("Results is invalid.");
                 }
 
                 results.Clear();
