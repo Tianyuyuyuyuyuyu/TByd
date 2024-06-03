@@ -1,13 +1,6 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
+﻿using System.Collections.Generic;
 
-using System.Collections.Generic;
-
-namespace GameFramework
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
 {
     /// <summary>
     /// 任务池。
@@ -289,7 +282,7 @@ namespace GameFramework
                 if (task.SerialId == serialId)
                 {
                     m_WaitingTasks.Remove(task);
-                    ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     return true;
                 }
             }
@@ -305,7 +298,7 @@ namespace GameFramework
                     workingAgent.Reset();
                     m_FreeAgents.Push(workingAgent);
                     m_WorkingAgents.Remove(currentWorkingAgent);
-                    ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     return true;
                 }
 
@@ -332,7 +325,7 @@ namespace GameFramework
                 if (task.Tag == tag)
                 {
                     m_WaitingTasks.Remove(currentWaitingTask);
-                    ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     count++;
                 }
 
@@ -350,7 +343,7 @@ namespace GameFramework
                     workingAgent.Reset();
                     m_FreeAgents.Push(workingAgent);
                     m_WorkingAgents.Remove(currentWorkingAgent);
-                    ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     count++;
                 }
 
@@ -370,7 +363,7 @@ namespace GameFramework
 
             foreach (T task in m_WaitingTasks)
             {
-                ReferencePool.Release(task);
+                ObjectPool.ReferencePool.Release(task);
             }
 
             m_WaitingTasks.Clear();
@@ -380,7 +373,7 @@ namespace GameFramework
                 T task = workingAgent.Task;
                 workingAgent.Reset();
                 m_FreeAgents.Push(workingAgent);
-                ReferencePool.Release(task);
+                ObjectPool.ReferencePool.Release(task);
             }
 
             m_WorkingAgents.Clear();
@@ -405,7 +398,7 @@ namespace GameFramework
                 current.Value.Reset();
                 m_FreeAgents.Push(current.Value);
                 m_WorkingAgents.Remove(current);
-                ReferencePool.Release(task);
+                ObjectPool.ReferencePool.Release(task);
                 current = next;
             }
         }
@@ -434,7 +427,7 @@ namespace GameFramework
 
                 if (status == StartTaskStatus.Done || status == StartTaskStatus.UnknownError)
                 {
-                    ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                 }
 
                 current = next;
