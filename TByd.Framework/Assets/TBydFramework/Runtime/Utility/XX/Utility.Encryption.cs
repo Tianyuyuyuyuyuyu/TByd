@@ -102,18 +102,18 @@ namespace TBydFramework.Runtime.Utility.XX
 
                 if (code == null)
                 {
-                    throw new GameFrameworkException("Code is invalid.");
+                    throw new TBydFrameworkException("Code is invalid.");
                 }
 
                 int codeLength = code.Length;
                 if (codeLength <= 0)
                 {
-                    throw new GameFrameworkException("Code length is invalid.");
+                    throw new TBydFrameworkException("Code length is invalid.");
                 }
 
                 if (startIndex < 0 || length < 0 || startIndex + length > bytes.Length)
                 {
-                    throw new GameFrameworkException("Start index or length is invalid.");
+                    throw new TBydFrameworkException("Start index or length is invalid.");
                 }
 
                 int codeIndex = startIndex % codeLength;
