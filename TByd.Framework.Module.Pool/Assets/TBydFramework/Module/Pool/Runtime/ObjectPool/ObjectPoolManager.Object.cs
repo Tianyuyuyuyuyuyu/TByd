@@ -1,11 +1,10 @@
 ﻿using System;
-using GameFramework.ObjectPool;
 using TBydFramework.Runtime.Base;
 using TBydFramework.Runtime.Base.ReferencePool;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
-    internal sealed partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
+    internal partial class ObjectPoolManager : AbstractFrameworkModule, IObjectPoolManager
     {
         /// <summary>
         /// 内部对象。
