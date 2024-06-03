@@ -1,14 +1,7 @@
-﻿//------------------------------------------------------------
-// Game Framework
-// Copyright © 2013-2021 Jiang Yin. All rights reserved.
-// Homepage: https://gameframework.cn/
-// Feedback: mailto:ellan@gameframework.cn
-//------------------------------------------------------------
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace GameFramework.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     internal sealed partial class ObjectPoolManager : GameFrameworkModule, IObjectPoolManager
     {
@@ -435,7 +428,7 @@ namespace GameFramework.ObjectPool
                 m_ObjectMap.Remove(internalObject.Peek().Target);
 
                 internalObject.Release(false);
-                ReferencePool.Release(internalObject);
+                ObjectPool.ReferencePool.Release(internalObject);
                 return true;
             }
 
@@ -549,7 +542,7 @@ namespace GameFramework.ObjectPool
                 foreach (KeyValuePair<object, Object<T>> objectInMap in m_ObjectMap)
                 {
                     objectInMap.Value.Release(true);
-                    ReferencePool.Release(objectInMap.Value);
+                    ObjectPool.ReferencePool.Release(objectInMap.Value);
                 }
 
                 m_Objects.Clear();
