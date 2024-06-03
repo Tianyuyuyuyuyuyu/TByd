@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using TBydFramework.Module.Pool.Runtime.ObjectPool;
 
-namespace GameFramework.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     /// <summary>
     /// 释放对象筛选函数。
