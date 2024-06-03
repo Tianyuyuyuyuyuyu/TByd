@@ -5,7 +5,7 @@ namespace TBydFramework.Module.Pool.Runtime.EventPool
     /// <summary>
     /// 事件基类。
     /// </summary>
-    public abstract class BaseEventArgs : GameFrameworkEventArgs
+    public abstract class BaseEventArgs : TBydFrameworkEventArgs
     {
         /// <summary>
         /// 获取类型编号。
