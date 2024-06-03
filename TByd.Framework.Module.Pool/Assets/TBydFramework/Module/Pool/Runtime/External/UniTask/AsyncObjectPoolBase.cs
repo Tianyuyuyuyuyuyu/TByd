@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace TBydFramework.Module.Pool.Runtime
+namespace TBydFramework.Module.Pool.Runtime.External.UniTask
 {
     public abstract class AsyncObjectPoolBase<T> : IAsyncObjectPool<T>
         where T : class
