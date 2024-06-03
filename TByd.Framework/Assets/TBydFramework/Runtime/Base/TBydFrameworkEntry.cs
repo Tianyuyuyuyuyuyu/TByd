@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TBydFramework.Runtime.Abstracts;
 using TBydFramework.Runtime.Base.Log;
 
 namespace TBydFramework.Runtime.Base
@@ -35,7 +36,7 @@ namespace TBydFramework.Runtime.Base
             }
 
             s_AbstractFrameworkModules.Clear();
-            ReferencePool.ReferencePool.ClearAll();
+            // ReferencePool.ReferencePool.ClearAll();
             Utility.XX.Utility.Marshal.FreeCachedHGlobal();
             GameFrameworkLog.SetLogHelper(null);
         }
