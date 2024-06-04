@@ -1,8 +1,8 @@
 ﻿using System;
+using TBydFramework.Module.Pool.Runtime.Base;
+using TBydFramework.Module.Pool.Runtime.Base.Interface;
 using TBydFramework.Module.Pool.Runtime.ObjectPool;
 using TBydFramework.Runtime.Abstracts;
-using TBydFramework.Runtime.Base;
-using TBydFramework.Runtime.Interface;
 using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
@@ -125,7 +125,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                     throw new TBydFrameworkException("Object is invalid.");
                 }
 
-                Object<T> internalObject = ObjectPool.ReferencePool.Acquire<Object<T>>();
+                Object<T> internalObject = ReferencePool.ReferencePool.Acquire<Object<T>>();
                 internalObject.m_Object = obj;
                 internalObject.m_SpawnCount = spawned ? 1 : 0;
                 if (spawned)
@@ -187,7 +187,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
             public void Release(bool isShutdown)
             {
                 m_Object.Release(isShutdown);
-                ObjectPool.ReferencePool.Release(m_Object);
+                ReferencePool.ReferencePool.Release(m_Object);
             }
         }
     }
