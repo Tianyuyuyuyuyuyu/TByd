@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using TBydFramework.Runtime.Abstracts;
-using TBydFramework.Runtime.Base;
 using TBydFramework.Runtime.DataStruct;
 using TBydFramework.Runtime.Utility.XX;
 
@@ -432,7 +431,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 m_ObjectMap.Remove(internalObject.Peek().Target);
 
                 internalObject.Release(false);
-                ObjectPool.ReferencePool.Release(internalObject);
+                ReferencePool.ReferencePool.Release(internalObject);
                 return true;
             }
 
@@ -546,7 +545,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool
                 foreach (KeyValuePair<object, Object<T>> objectInMap in m_ObjectMap)
                 {
                     objectInMap.Value.Release(true);
-                    ObjectPool.ReferencePool.Release(objectInMap.Value);
+                    ReferencePool.ReferencePool.Release(objectInMap.Value);
                 }
 
                 m_Objects.Clear();
