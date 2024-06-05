@@ -1,7 +1,6 @@
 ﻿using System;
-using TBydFramework.Log4Net.Runtime;
 
-namespace TBydFramework.Runtime.Log
+namespace TBydFramework.Log
 {
     public interface ILogFactory
     {
