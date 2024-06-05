@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TBydFramework.Log4Net.Runtime
+namespace TBydFramework.Log
 {
     /// <summary>
 	/// The ILog interface is use by application to log messages into
