@@ -3,8 +3,7 @@
 namespace TBydFramework.Log
 {
     /// <summary>
-	/// The ILog interface is use by application to log messages into
-	/// the XFramework.Log framework.
+    /// application 使用 ILog 接口将消息记录到 XFramework.Log framework 中
 	/// </summary>	
 	/// <example>Simple example of logging messages
 	/// <code lang="C#">
