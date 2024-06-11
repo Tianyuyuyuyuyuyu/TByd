@@ -18,7 +18,7 @@ namespace TBydFramework.Log
 	/// }
 	/// </code>
 	/// </example>
-	/// <author>Tianyu</author>
+	/// <author>TianYu</author>
 	public interface ILog
     {
 
