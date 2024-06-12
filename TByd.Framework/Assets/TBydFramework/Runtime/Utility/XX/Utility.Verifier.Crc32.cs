@@ -1,4 +1,6 @@
-﻿namespace TBydFramework.Runtime.Utility.XX
+﻿using System.Security.Cryptography;
+
+namespace TBydFramework.Runtime.Utility.XX
 {
     public static partial class Utility
     {
