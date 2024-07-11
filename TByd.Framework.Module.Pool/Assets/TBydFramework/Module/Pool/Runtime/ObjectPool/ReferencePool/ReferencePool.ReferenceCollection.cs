@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using TBydFramework.Module.Pool.Runtime.Base;
-using TBydFramework.Module.Pool.Runtime.Base.Interface;
+using TBydFramework.Runtime.Base;
+using TBydFramework.Runtime.Interface;
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool.ReferencePool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     public static partial class ReferencePool
     {
