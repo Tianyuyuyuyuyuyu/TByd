@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using TBydFramework.Runtime.Base;
-using TBydFramework.Runtime.Interface;
-using TBydFramework.Runtime.Utility.XX;
+using TBydFramework.Module.Pool.Runtime.Base;
+using TBydFramework.Module.Pool.Runtime.Base.Interface;
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool.ReferencePool
 {
     /// <summary>
     /// 引用池。
