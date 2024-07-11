@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TBydFramework.Runtime.Base;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
 {
@@ -282,7 +283,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
                 if (task.SerialId == serialId)
                 {
                     m_WaitingTasks.Remove(task);
-                    ReferencePool.ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     return true;
                 }
             }
@@ -298,7 +299,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
                     workingAgent.Reset();
                     m_FreeAgents.Push(workingAgent);
                     m_WorkingAgents.Remove(currentWorkingAgent);
-                    ReferencePool.ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     return true;
                 }
 
@@ -325,7 +326,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
                 if (task.Tag == tag)
                 {
                     m_WaitingTasks.Remove(currentWaitingTask);
-                    ReferencePool.ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     count++;
                 }
 
@@ -343,7 +344,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
                     workingAgent.Reset();
                     m_FreeAgents.Push(workingAgent);
                     m_WorkingAgents.Remove(currentWorkingAgent);
-                    ReferencePool.ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                     count++;
                 }
 
@@ -363,7 +364,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
 
             foreach (T task in m_WaitingTasks)
             {
-                ReferencePool.ReferencePool.Release(task);
+                ObjectPool.ReferencePool.Release(task);
             }
 
             m_WaitingTasks.Clear();
@@ -373,7 +374,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
                 T task = workingAgent.Task;
                 workingAgent.Reset();
                 m_FreeAgents.Push(workingAgent);
-                ReferencePool.ReferencePool.Release(task);
+                ObjectPool.ReferencePool.Release(task);
             }
 
             m_WorkingAgents.Clear();
@@ -398,7 +399,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
                 current.Value.Reset();
                 m_FreeAgents.Push(current.Value);
                 m_WorkingAgents.Remove(current);
-                ReferencePool.ReferencePool.Release(task);
+                ObjectPool.ReferencePool.Release(task);
                 current = next;
             }
         }
@@ -427,7 +428,7 @@ namespace TBydFramework.Module.Pool.Runtime.ObjectPool.TaskPool
 
                 if (status == StartTaskStatus.Done || status == StartTaskStatus.UnknownError)
                 {
-                    ReferencePool.ReferencePool.Release(task);
+                    ObjectPool.ReferencePool.Release(task);
                 }
 
                 current = next;
