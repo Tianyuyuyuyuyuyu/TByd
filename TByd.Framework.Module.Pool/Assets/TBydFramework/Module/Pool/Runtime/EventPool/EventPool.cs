@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TBydFramework.Module.Pool.Runtime.ObjectPool;
-using TBydFramework.Runtime.Base;
+using TBydFramework.Module.Pool.Runtime.ObjectPool.ReferencePool;
 using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.EventPool
