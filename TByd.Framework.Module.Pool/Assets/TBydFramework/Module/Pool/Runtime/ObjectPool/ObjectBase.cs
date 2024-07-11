@@ -1,7 +1,7 @@
 ﻿using System;
+using TBydFramework.Module.Pool.Runtime.Base;
+using TBydFramework.Module.Pool.Runtime.Base.Interface;
 using TBydFramework.Module.Pool.Runtime.ObjectPool;
-using TBydFramework.Runtime.Base;
-using TBydFramework.Runtime.Interface;
 using TBydFramework.Runtime.Utility.XX;
 
 namespace TBydFramework.Module.Pool.Runtime.ObjectPool
