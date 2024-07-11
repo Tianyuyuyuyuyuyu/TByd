@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace TBydFramework.Module.Pool.Runtime.ObjectPool.ReferencePool
+namespace TBydFramework.Module.Pool.Runtime.ObjectPool
 {
     /// <summary>
     /// 引用池信息。
