@@ -2,7 +2,7 @@ name: Daily Commit
 
 on:
   schedule:
-    - cron: '50 20 * * *' # 每天下午20点（UTC时间）运行
+    - cron: '50 20 * * *' # 每天下午20点50分（UTC时间）运行
 
 jobs:
   auto-commit:
