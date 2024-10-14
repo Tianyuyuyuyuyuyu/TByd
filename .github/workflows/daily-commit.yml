@@ -1,0 +1,22 @@
+name: Daily Commit
+
+on:
+  schedule:
+    - cron: '0 20 * * *' # 每天下午20点（UTC时间）运行
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Add a new file
+        run: |
+          echo "Today is $(date)" > daily-$(date +\%Y-\%m-\%d).txt
+      - name: Commit and push
+        run: |
+          git config --global user.name 'Your Name'
+          git config --global user.email 'you@example.com'
+          git add .
+          git commit -m "Daily automated commit for $(date +\%Y-\%m-\%d)"
+          git push
