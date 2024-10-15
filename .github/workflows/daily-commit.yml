@@ -3,6 +3,7 @@ name: Daily Commit
 on:
   schedule:
     - cron: '50 20 * * *' # 每天下午20点50分（UTC时间）运行
+  workflow_dispatch: # 允许手动触发
 
 jobs:
   auto-commit:
@@ -17,9 +18,12 @@ jobs:
         run: |
           echo "Today is $(date)" > Diary/daily-$(date +\%Y-\%m-\%d).txt
       - name: Commit and push
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: |
-          git config --global user.name 'Your Name'
-          git config --global user.email 'you@example.com'
+          git config --global user.name 'Tianyuyuyuyuyuyu'
+          git config --global user.email '1933615755@qq.com'
           git add .
           git commit -m "Daily automated commit for $(date +\%Y-\%m-\%d)"
+          git remote set-url origin https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git
           git push
