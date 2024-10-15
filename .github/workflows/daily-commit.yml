@@ -20,6 +20,12 @@ jobs:
         run: |
           # 设置时区为 Asia/Shanghai (北京时间)
           echo "Today is $(TZ=Asia/Shanghai date)" > Diary/daily-$(date +\%Y-\%m-\%d).txt
+          # 使用 curl 获取 Quora 的热点话题，使用 grep 解析结果
+          # 注意: 你可能需要根据 Quora 网站的实际结构调整命令
+          # 这里示范性使用了一些假设的选择器
+          topics=$(curl -s 'https://www.quora.com/' | grep -oP '(?<=<h2 class="topic">).*?(?=</h2>)' | head -n 5)
+          echo "Latest Quora Topics:" > Diary/daily-$(date +\%Y-\%m-\%d).txt
+          echo "$topics" >> Diary/daily-$(date +\%Y-\%m-\%d).txt
       - name: Commit changes
         run: |
           git config --global user.name 'Tianyuyuyuyuyuyu'
