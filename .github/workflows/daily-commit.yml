@@ -25,6 +25,6 @@ jobs:
           git config --global user.email '1933615755@qq.com'
           git add .
           git commit -m "Daily automated commit for $(date +\%Y-\%m-\%d)"
-          # 使用正确的 HTTPS URL 格式
-          git remote set-url origin https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git
-          git push
+          # 使用正确的 HTTPS URL 格式，确保不会暴露 token
+          git push https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git HEAD:master
+
