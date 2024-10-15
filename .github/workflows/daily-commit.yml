@@ -19,7 +19,6 @@ jobs:
       - name: Add a new file to Diary folder
         run: |
           # 设置时区为 Asia/Shanghai (北京时间)
-          echo "Today is $(TZ=Asia/Shanghai date)" > Diary/daily-$(date +\%Y-\%m-\%d).txt
           # 使用 curl 获取 Quora 的热点话题，使用 grep 解析结果
           # 注意: 你可能需要根据 Quora 网站的实际结构调整命令
           # 这里示范性使用了一些假设的选择器
