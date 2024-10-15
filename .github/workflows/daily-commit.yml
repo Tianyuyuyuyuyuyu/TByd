@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Create Diary directory if it doesn't exist
         run: |
           mkdir -p Diary
@@ -25,5 +25,6 @@ jobs:
           git config --global user.email '1933615755@qq.com'
           git add .
           git commit -m "Daily automated commit for $(date +\%Y-\%m-\%d)"
+          # 使用正确的 HTTPS URL 格式
           git remote set-url origin https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git
           git push
