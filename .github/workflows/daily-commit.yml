@@ -18,7 +18,8 @@ jobs:
           mkdir -p Diary
       - name: Add a new file to Diary folder
         run: |
-          echo "Today is $(date)" > Diary/daily-$(date +\%Y-\%m-\%d).txt
+          # 设置时区为 Asia/Shanghai (北京时间)
+          echo "Today is $(TZ=Asia/Shanghai date)" > Diary/daily-$(date +\%Y-\%m-\%d).txt
       - name: Commit changes
         run: |
           git config --global user.name 'Tianyuyuyuyuyuyu'
