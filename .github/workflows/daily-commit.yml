@@ -2,7 +2,7 @@ name: Daily Commit
 
 on:
   schedule:
-    cron: '*/10 * * * *' # 每 10 分钟触发一次
+  - cron: '*/10 * * * *' # 每 10 分钟触发一次
   workflow_dispatch: # 允许手动触发
 
 jobs:
