@@ -22,8 +22,8 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: |
           git config --global user.name 'Tianyuyuyuyuyuyu'
-          git config --global user.email '1933615755@qq.com'
+          git config --global user.email 'TianyuLovecars@gmail.com'
           git add .
           git commit -m "Daily automated commit for $(date +\%Y-\%m-\%d)"
           # 使用 HTTPS 并通过 token 验证身份
-          git push https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git HEAD:main
+          git push https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git HEAD:master
