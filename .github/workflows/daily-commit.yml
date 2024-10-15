@@ -26,5 +26,5 @@ jobs:
           git add .
           git commit -m "Daily automated commit for $(date +\%Y-\%m-\%d)"
           # 使用正确的 HTTPS URL 格式，确保不会暴露 token
-          git push https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git HEAD:master
+          git push https://Tianyuyuyuyuyuyu:${ACCESS_TOKEN}@github.com/Tianyuyuyuyuyuyu/TByd.git HEAD:main
 
