@@ -5,8 +5,9 @@ using System;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.IO;
-using log4net.Core;
+using TBydFramework.Log.Runtime;
 using UnityEditorInternal;
+using Level = TBydFramework.Log.Runtime.Level;
 
 namespace TBydFramework.Log.Editors.Log4Net
 {
@@ -573,7 +574,7 @@ namespace TBydFramework.Log.Editors.Log4Net
             return result;
         }
 
-        private bool OpenSourceFile(Log.Log4Net.LocationInfo location)
+        private bool OpenSourceFile(Runtime.LocationInfo location)
         {
             if (location == null || location.StackFrames == null)
                 return false;
