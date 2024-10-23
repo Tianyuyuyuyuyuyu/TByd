@@ -6,7 +6,8 @@ using System.Text;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using log4net.Core;
+using TBydFramework.Log.Runtime;
+using Level = TBydFramework.Log.Runtime.Level;
 
 namespace TBydFramework.Log.Editors.Log4Net
 {
@@ -560,7 +561,7 @@ namespace TBydFramework.Log.Editors.Log4Net
             get { return loggingDatas[0].UserName; }
         }
 
-        public Log.Log4Net.LocationInfo LocationInfo
+        public Runtime.LocationInfo LocationInfo
         {
             get { return loggingDatas[0].LocationInfo; }
         }
