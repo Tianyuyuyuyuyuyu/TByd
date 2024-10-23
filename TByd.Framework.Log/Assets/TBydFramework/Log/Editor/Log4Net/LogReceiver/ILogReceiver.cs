@@ -1,4 +1,5 @@
 ﻿using System;
+using TBydFramework.Log.Runtime;
 
 namespace TBydFramework.Log.Editors.Log4Net
 {
