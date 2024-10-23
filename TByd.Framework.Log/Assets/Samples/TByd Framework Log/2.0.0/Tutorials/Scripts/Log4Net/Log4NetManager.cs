@@ -2,6 +2,7 @@
 using System.IO;
 using log4net;
 using TBydFramework.Log.Runtime;
+using LogManager = TBydFramework.Log.Runtime.LogManager;
 
 namespace TBydFramework.Framework.Tutorials
 {
