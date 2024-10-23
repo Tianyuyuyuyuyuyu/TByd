@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using TBydFramework.Log.Runtime;
 
 namespace TBydFramework.Log.Editors.Log4Net
 {
