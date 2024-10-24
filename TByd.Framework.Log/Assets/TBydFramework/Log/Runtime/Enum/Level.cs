@@ -1,4 +1,4 @@
-﻿namespace TBydFramework.Log.Runtime
+﻿namespace TBydFramework.Log.Runtime.Enum
 {
     public enum Level
     {

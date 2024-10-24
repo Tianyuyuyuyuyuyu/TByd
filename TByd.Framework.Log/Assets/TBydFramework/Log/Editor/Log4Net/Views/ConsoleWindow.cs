@@ -1,17 +1,18 @@
-﻿using UnityEngine;
-using UnityEditor;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using System.Text.RegularExpressions;
-using System.Text;
 using System.IO;
-using TBydFramework.Log.Runtime;
+using System.Text;
+using System.Text.RegularExpressions;
+using TBydFramework.Log.Editor.Log4Net.ViewModels;
+using TBydFramework.Log.Runtime.Serialization;
+using UnityEditor;
 using UnityEditorInternal;
-using Level = TBydFramework.Log.Runtime.Level;
+using UnityEngine;
+using Level = TBydFramework.Log.Runtime.Enum.Level;
+using LocationInfo = TBydFramework.Log.Runtime.Serialization.LocationInfo;
 
-namespace TBydFramework.Log.Editors.Log4Net
+namespace TBydFramework.Log.Editor.Log4Net.Views
 {
-
     public class ConsoleWindow : EditorWindow
     {
         [MenuItem("Tools/Loxodon/Log4Net Console")]
@@ -53,8 +54,7 @@ namespace TBydFramework.Log.Editors.Log4Net
         private float verticalSplitterPercent;
         private bool resizingVerticalSplitter = false;
 
-        [NonSerialized]
-        private Texture2D splitterLineTexture;
+        [NonSerialized] private Texture2D splitterLineTexture;
 
         private float lineHeight;
 
@@ -71,16 +71,17 @@ namespace TBydFramework.Log.Editors.Log4Net
             lineHeight = 30;
             toolbarHeight = 20f;
             splitterRectHeight = 10f;
-            verticalSplitterPercent = 0.7f;          
+            verticalSplitterPercent = 0.7f;
             verticalSplitterLineRect = new Rect(0f, (position.height * verticalSplitterPercent), position.width, 1);
-            verticalSplitterRect = new Rect(verticalSplitterLineRect.x, verticalSplitterLineRect.y - splitterRectHeight / 2f, verticalSplitterLineRect.width, splitterRectHeight);
+            verticalSplitterRect = new Rect(verticalSplitterLineRect.x,
+                verticalSplitterLineRect.y - splitterRectHeight / 2f, verticalSplitterLineRect.width,
+                splitterRectHeight);
             this.renderedList = new List<LoggingData>();
             this.renderedLineCountList = new List<int>();
 
             if (consoleVM == null)
                 consoleVM = new ConsoleVM();
-            consoleVM.OnEnable(); 
-                       
+            consoleVM.OnEnable();
         }
 
         void Disable()
@@ -100,7 +101,7 @@ namespace TBydFramework.Log.Editors.Log4Net
 
         private void Init()
         {
-            if (this.splitterLineTexture!=null)
+            if (this.splitterLineTexture != null)
                 return;
 
             this.entryStyleBackEven = new GUIStyle("CN EntryBackEven");
@@ -154,34 +155,48 @@ namespace TBydFramework.Log.Editors.Log4Net
             if (this.toolbarSeachCancelButtonStyle == null)
                 this.toolbarSeachCancelButtonStyle = new GUIStyle("ToolbarSeachCancelButton");
 
-            playToggle = new GUISwitchContentData(false, new GUIContent(Resources.Load<Texture2D>("Icons/play-on"), "Start"), new GUIContent(Resources.Load<Texture2D>("Icons/play-off"), "Stop"), EditorStyles.toolbarButton);
+            playToggle = new GUISwitchContentData(false,
+                new GUIContent(Resources.Load<Texture2D>("Icons/play-on"), "Start"),
+                new GUIContent(Resources.Load<Texture2D>("Icons/play-off"), "Stop"), EditorStyles.toolbarButton);
 
-            clearButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/delete"), "Clear"), EditorStyles.toolbarButton);
-            saveButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/save"), "Save"), EditorStyles.toolbarButton);
+            clearButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/delete"), "Clear"),
+                EditorStyles.toolbarButton);
+            saveButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/save"), "Save"),
+                EditorStyles.toolbarButton);
 
-            collapseToggle = new GUISwitchContentData(consoleVM.Collapse, new GUIContent("Collapse", "Collapse"), EditorStyles.toolbarButton);
+            collapseToggle = new GUISwitchContentData(consoleVM.Collapse, new GUIContent("Collapse", "Collapse"),
+                EditorStyles.toolbarButton);
 
             levelIconTextures = new Texture[]
-            {  Resources.Load<Texture2D>("Icons/debug")  ,
-                 Resources.Load<Texture2D>("Icons/info")  ,
-                 Resources.Load<Texture2D>("Icons/warn")  ,
-                 Resources.Load<Texture2D>("Icons/error")  ,
-                 Resources.Load<Texture2D>("Icons/fatal")
+            {
+                Resources.Load<Texture2D>("Icons/debug"),
+                Resources.Load<Texture2D>("Icons/info"),
+                Resources.Load<Texture2D>("Icons/warn"),
+                Resources.Load<Texture2D>("Icons/error"),
+                Resources.Load<Texture2D>("Icons/fatal")
             };
 
             levelButtonDatas = new GUISwitchContentData[5];
-            levelButtonDatas[0] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.DEBUG), new GUIContent(levelIconTextures[0], "Debug"), EditorStyles.toolbarButton);
-            levelButtonDatas[1] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.INFO), new GUIContent(levelIconTextures[1], "Info"), EditorStyles.toolbarButton);
-            levelButtonDatas[2] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.WARN), new GUIContent(levelIconTextures[2], "Warn"), EditorStyles.toolbarButton);
-            levelButtonDatas[3] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.ERROR), new GUIContent(levelIconTextures[3], "Error"), EditorStyles.toolbarButton);
-            levelButtonDatas[4] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.FATAL), new GUIContent(levelIconTextures[4], "Fatal"), EditorStyles.toolbarButton);
+            levelButtonDatas[0] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.DEBUG),
+                new GUIContent(levelIconTextures[0], "Debug"), EditorStyles.toolbarButton);
+            levelButtonDatas[1] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.INFO),
+                new GUIContent(levelIconTextures[1], "Info"), EditorStyles.toolbarButton);
+            levelButtonDatas[2] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.WARN),
+                new GUIContent(levelIconTextures[2], "Warn"), EditorStyles.toolbarButton);
+            levelButtonDatas[3] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.ERROR),
+                new GUIContent(levelIconTextures[3], "Error"), EditorStyles.toolbarButton);
+            levelButtonDatas[4] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.FATAL),
+                new GUIContent(levelIconTextures[4], "Fatal"), EditorStyles.toolbarButton);
 
 
             columnButtonDatas = new GUISwitchContentData[3];
-            columnButtonDatas[0] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.TimeStamp), new GUIContent("Time", "Time"), EditorStyles.toolbarButton);
-            columnButtonDatas[1] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.Thread), new GUIContent("Thread", "Thread"), EditorStyles.toolbarButton);
-            columnButtonDatas[2] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.Logger), new GUIContent("Logger", "Logger"), EditorStyles.toolbarButton);
-        }   
+            columnButtonDatas[0] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.TimeStamp),
+                new GUIContent("Time", "Time"), EditorStyles.toolbarButton);
+            columnButtonDatas[1] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.Thread),
+                new GUIContent("Thread", "Thread"), EditorStyles.toolbarButton);
+            columnButtonDatas[2] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.Logger),
+                new GUIContent("Logger", "Logger"), EditorStyles.toolbarButton);
+        }
 
         void OnGUI()
         {
@@ -285,7 +300,8 @@ namespace TBydFramework.Log.Editors.Log4Net
             {
                 foreach (var frame in data.LocationInfo.StackFrames)
                 {
-                    buf.Append(frame.FullInfo.Replace(Directory.GetCurrentDirectory().ToString() + @"\", "")).Append("\r\n");
+                    buf.Append(frame.FullInfo.Replace(Directory.GetCurrentDirectory().ToString() + @"\", ""))
+                        .Append("\r\n");
                 }
             }
 
@@ -299,6 +315,7 @@ namespace TBydFramework.Log.Editors.Log4Net
             {
                 list.Add(info.ToString());
             }
+
             return list.ToArray();
         }
 
@@ -307,15 +324,13 @@ namespace TBydFramework.Log.Editors.Log4Net
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
             if (this.consoleVM.CurrentIndex >= 0)
-                consoleVM.CurrentIndex = EditorGUILayout.Popup(consoleVM.CurrentIndex, GetTerminalInfoOptions(), EditorStyles.toolbarDropDown, GUILayout.MinWidth(100), GUILayout.MaxWidth(200));
+                consoleVM.CurrentIndex = EditorGUILayout.Popup(consoleVM.CurrentIndex, GetTerminalInfoOptions(),
+                    EditorStyles.toolbarDropDown, GUILayout.MinWidth(100), GUILayout.MaxWidth(200));
 
             GUILayout.Space(5f);
 
             this.collapseToggle.Value = consoleVM.Collapse;
-            this.Toggle(this.collapseToggle, () =>
-            {
-                consoleVM.Collapse = this.collapseToggle.Value;
-            });
+            this.Toggle(this.collapseToggle, () => { consoleVM.Collapse = this.collapseToggle.Value; });
 
             GUILayout.Space(5f);
 
@@ -326,7 +341,8 @@ namespace TBydFramework.Log.Editors.Log4Net
             GUILayout.FlexibleSpace();
 
             GUI.SetNextControlName("searchTextField");
-            consoleVM.FilterText = EditorGUILayout.TextField(consoleVM.FilterText, this.toolbarSeachTextFieldStyle, GUILayout.MinWidth(100), GUILayout.MaxWidth(500));
+            consoleVM.FilterText = EditorGUILayout.TextField(consoleVM.FilterText, this.toolbarSeachTextFieldStyle,
+                GUILayout.MinWidth(100), GUILayout.MaxWidth(500));
             if (GUILayout.Button("", this.toolbarSeachCancelButtonStyle))
             {
                 consoleVM.FilterText = "";
@@ -345,7 +361,6 @@ namespace TBydFramework.Log.Editors.Log4Net
                     this.consoleVM.Start();
                 else
                     this.consoleVM.Stop();
-
             });
 
             if (consoleVM.PlayState)
@@ -353,14 +368,16 @@ namespace TBydFramework.Log.Editors.Log4Net
                 if (GUILayout.Button("Running", EditorStyles.toolbarDropDown, GUILayout.Width(60)))
                 {
                     GenericMenu menu = new GenericMenu();
-                    menu.AddItem(new GUIContent(string.Format("{0}:{1}", consoleVM.GetLocalIPAddress().ToString(), consoleVM.Port.ToString())), false, delegate ()
-                    {
-                    });
+                    menu.AddItem(
+                        new GUIContent(string.Format("{0}:{1}", consoleVM.GetLocalIPAddress().ToString(),
+                            consoleVM.Port.ToString())), false, delegate() { });
                     menu.ShowAsContext();
                 }
             }
-            else {
-                consoleVM.Port = EditorGUILayout.IntField(consoleVM.Port, EditorStyles.toolbarTextField, GUILayout.Width(52));
+            else
+            {
+                consoleVM.Port =
+                    EditorGUILayout.IntField(consoleVM.Port, EditorStyles.toolbarTextField, GUILayout.Width(52));
             }
 
             GUILayout.Space(5f);
@@ -377,6 +394,7 @@ namespace TBydFramework.Log.Editors.Log4Net
             {
                 EditorApplication.delayCall += () => this.consoleVM.SaveLoggingData();
             }
+
             GUILayout.Space(5f);
             EditorGUILayout.EndHorizontal();
         }
@@ -390,10 +408,7 @@ namespace TBydFramework.Log.Editors.Log4Net
                 data.Value = consoleVM.IsLevelShow(level);
                 int count = container.GetCount(level);
                 data.Text = count < 1000 ? count.ToString() : "999+";
-                this.Toggle(data, () =>
-                {
-                    consoleVM.SetLevelShow(level, data.Value);
-                });
+                this.Toggle(data, () => { consoleVM.SetLevelShow(level, data.Value); });
             }
         }
 
@@ -404,10 +419,7 @@ namespace TBydFramework.Log.Editors.Log4Net
                 var data = columnButtonDatas[i];
                 Columns column = (Columns)i;
                 data.Value = consoleVM.IsColumnShow(column);
-                this.Toggle(data, () =>
-                {
-                    consoleVM.SetColumnShow(column, data.Value);
-                });
+                this.Toggle(data, () => { consoleVM.SetColumnShow(column, data.Value); });
             }
         }
 
@@ -419,7 +431,9 @@ namespace TBydFramework.Log.Editors.Log4Net
             if (string.IsNullOrEmpty(consoleVM.FilterText))
                 return true;
 
-            if (Regex.IsMatch(logging.Message, consoleVM.FilterText) || (consoleVM.IsColumnShow(Columns.Logger) && Regex.IsMatch(logging.LoggerName, consoleVM.FilterText)))
+            if (Regex.IsMatch(logging.Message, consoleVM.FilterText) || (consoleVM.IsColumnShow(Columns.Logger) &&
+                                                                         Regex.IsMatch(logging.LoggerName,
+                                                                             consoleVM.FilterText)))
                 return true;
 
             return false;
@@ -427,7 +441,8 @@ namespace TBydFramework.Log.Editors.Log4Net
 
         void DrawLoggingGrid(LoggingContainer container)
         {
-            var areaRect = new Rect(0f, toolbarHeight, position.width, position.height * this.verticalSplitterPercent - toolbarHeight - splitterRectHeight / 2f);
+            var areaRect = new Rect(0f, toolbarHeight, position.width,
+                position.height * this.verticalSplitterPercent - toolbarHeight - splitterRectHeight / 2f);
             List<LoggingEntry> list = container.GetLoggingList();
 
             this.renderedList.Clear();
@@ -445,7 +460,6 @@ namespace TBydFramework.Log.Editors.Log4Net
                 }
                 else
                     renderedList.AddRange(logging.LoggingDatas);
-
             }
 
             int count = renderedList.Count;
@@ -456,7 +470,8 @@ namespace TBydFramework.Log.Editors.Log4Net
 
             loggingPanelScrollPosition = GUI.BeginScrollView(areaRect, loggingPanelScrollPosition, viewRect);
             if (viewRect.height >= areaRect.height)
-                this.loggingVerticalScrollBarPercent = loggingPanelScrollPosition.y / (viewRect.height - areaRect.height);
+                this.loggingVerticalScrollBarPercent =
+                    loggingPanelScrollPosition.y / (viewRect.height - areaRect.height);
 
             int firstIndex = (int)(loggingPanelScrollPosition.y / lineHeight);
             int lastIndex = firstIndex + (int)(areaRect.height / lineHeight);
@@ -474,7 +489,9 @@ namespace TBydFramework.Log.Editors.Log4Net
                 var lineStyle = (i % 2 == 0) ? entryStyleBackEven : entryStyleBackOdd;
 
                 bool selected = i == selectedIndex;
-                lineStyle.normal = selected ? GUI.skin.GetStyle(lineStyle.name).onNormal : GUI.skin.GetStyle(lineStyle.name).normal;
+                lineStyle.normal = selected
+                    ? GUI.skin.GetStyle(lineStyle.name).onNormal
+                    : GUI.skin.GetStyle(lineStyle.name).normal;
 
                 if (GUI.Button(new Rect(0f, i * lineHeight, viewRect.width, lineHeight), content, lineStyle))
                 {
@@ -504,7 +521,9 @@ namespace TBydFramework.Log.Editors.Log4Net
                     var size = countBadgeStyle.CalcSize(countContent);
                     size.x = Mathf.Clamp(size.x + 5, 20, 30);
                     size.y = Mathf.Clamp(size.y, 20, lineHeight);
-                    GUI.Label(new Rect(viewRect.width - 15f - size.x / 2f, i * lineHeight + (lineHeight - size.y) / 2f, size.x, size.y), countContent, countBadgeStyle);
+                    GUI.Label(
+                        new Rect(viewRect.width - 15f - size.x / 2f, i * lineHeight + (lineHeight - size.y) / 2f,
+                            size.x, size.y), countContent, countBadgeStyle);
                 }
             }
 
@@ -513,14 +532,16 @@ namespace TBydFramework.Log.Editors.Log4Net
 
         void DrawLoggingDetail()
         {
-            var areaRect = new Rect(0f, this.verticalSplitterLineRect.y + this.splitterRectHeight / 2f, position.width, this.position.height * (1f - this.verticalSplitterPercent) - splitterRectHeight / 2f);
+            var areaRect = new Rect(0f, this.verticalSplitterLineRect.y + this.splitterRectHeight / 2f, position.width,
+                this.position.height * (1f - this.verticalSplitterPercent) - splitterRectHeight / 2f);
             GUILayout.BeginArea(areaRect);
             detailPanelScrollPosition = EditorGUILayout.BeginScrollView(detailPanelScrollPosition);
 
             if (this.selectedIndex >= 0 && this.selectedIndex < this.renderedList.Count)
             {
                 var data = renderedList[selectedIndex];
-                EditorGUILayout.SelectableLabel(this.GetLogDetailContent(data), detailStyle, GUILayout.Width(areaRect.width - 10), GUILayout.Height(areaRect.height - 10));
+                EditorGUILayout.SelectableLabel(this.GetLogDetailContent(data), detailStyle,
+                    GUILayout.Width(areaRect.width - 10), GUILayout.Height(areaRect.height - 10));
             }
 
             EditorGUILayout.EndScrollView();
@@ -532,8 +553,10 @@ namespace TBydFramework.Log.Editors.Log4Net
             if (splitterLineTexture == null)
                 return;
 
-            verticalSplitterLineRect.Set(verticalSplitterLineRect.x, position.height * verticalSplitterPercent, position.width, 1);
-            verticalSplitterRect.Set(verticalSplitterLineRect.x, verticalSplitterLineRect.y - splitterRectHeight / 2f, verticalSplitterLineRect.width, splitterRectHeight);
+            verticalSplitterLineRect.Set(verticalSplitterLineRect.x, position.height * verticalSplitterPercent,
+                position.width, 1);
+            verticalSplitterRect.Set(verticalSplitterLineRect.x, verticalSplitterLineRect.y - splitterRectHeight / 2f,
+                verticalSplitterLineRect.width, splitterRectHeight);
 
             GUI.DrawTexture(verticalSplitterLineRect, splitterLineTexture);
             EditorGUIUtility.AddCursorRect(verticalSplitterRect, MouseCursor.ResizeVertical);
@@ -543,7 +566,8 @@ namespace TBydFramework.Log.Editors.Log4Net
 
             if (resizingVerticalSplitter)
             {
-                verticalSplitterPercent = Mathf.Clamp(Event.current.mousePosition.y / this.position.height, 0.15f, 0.9f);
+                verticalSplitterPercent =
+                    Mathf.Clamp(Event.current.mousePosition.y / this.position.height, 0.15f, 0.9f);
                 verticalSplitterLineRect.y = position.height * verticalSplitterPercent;
             }
 
@@ -571,10 +595,11 @@ namespace TBydFramework.Log.Editors.Log4Net
                 if (onValueChanged != null)
                     onValueChanged();
             }
+
             return result;
         }
 
-        private bool OpenSourceFile(Runtime.LocationInfo location)
+        private bool OpenSourceFile(LocationInfo location)
         {
             if (location == null || location.StackFrames == null)
                 return false;
@@ -603,7 +628,9 @@ namespace TBydFramework.Log.Editors.Log4Net
                     if (InternalEditorUtility.OpenFileAtLineExternal(fileName, frame.LineNumber))
                         return true;
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                }
             }
 
             return false;
@@ -667,6 +694,7 @@ namespace TBydFramework.Log.Editors.Log4Net
                         this.layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
                         this.dirty = false;
                     }
+
                     return this.layoutOptions;
                 }
             }
@@ -683,7 +711,8 @@ namespace TBydFramework.Log.Editors.Log4Net
             protected GUIStyle style;
             protected GUILayoutOption[] layoutOptions;
 
-            public GUISwitchContentData(bool value, GUIContent contentOn, GUIStyle style) : this(value, contentOn, null, style)
+            public GUISwitchContentData(bool value, GUIContent contentOn, GUIStyle style) : this(value, contentOn, null,
+                style)
             {
             }
 
@@ -753,10 +782,10 @@ namespace TBydFramework.Log.Editors.Log4Net
                         this.layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
                         this.dirty = false;
                     }
+
                     return this.layoutOptions;
                 }
             }
         }
-
     }
 }

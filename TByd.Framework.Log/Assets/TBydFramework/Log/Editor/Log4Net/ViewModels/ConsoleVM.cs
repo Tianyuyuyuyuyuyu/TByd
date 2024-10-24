@@ -1,15 +1,17 @@
 ﻿using System;
-using UnityEngine;
 using System.Collections.Generic;
-using UnityEditor;
-using System.Text;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using TBydFramework.Log.Runtime;
-using Level = TBydFramework.Log.Runtime.Level;
+using System.Text;
+using TBydFramework.Log.Editor.Log4Net.LogReceiver;
+using TBydFramework.Log.Runtime.Serialization;
+using UnityEditor;
+using UnityEngine;
+using Level = TBydFramework.Log.Runtime.Enum.Level;
+using LocationInfo = TBydFramework.Log.Runtime.Serialization.LocationInfo;
 
-namespace TBydFramework.Log.Editors.Log4Net
+namespace TBydFramework.Log.Editor.Log4Net.ViewModels
 {
     [Serializable]
     public class ConsoleVM
@@ -561,7 +563,7 @@ namespace TBydFramework.Log.Editors.Log4Net
             get { return loggingDatas[0].UserName; }
         }
 
-        public Runtime.LocationInfo LocationInfo
+        public LocationInfo LocationInfo
         {
             get { return loggingDatas[0].LocationInfo; }
         }

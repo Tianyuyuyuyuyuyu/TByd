@@ -1,7 +1,7 @@
 ﻿using System;
-using TBydFramework.Log.Runtime;
+using TBydFramework.Log.Runtime.Serialization;
 
-namespace TBydFramework.Log.Editors.Log4Net
+namespace TBydFramework.Log.Editor.Log4Net.LogReceiver
 {
 
     public delegate void MessageHandler(TerminalInfo terminalInfo, LoggingData loggingData);

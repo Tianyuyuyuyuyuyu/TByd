@@ -1,12 +1,12 @@
-﻿using System.Net;
+﻿using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
-using System;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using TBydFramework.Log.Runtime;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using TBydFramework.Log.Runtime.Serialization;
 
-namespace TBydFramework.Log.Editors.Log4Net
+namespace TBydFramework.Log.Editor.Log4Net.LogReceiver
 {
     public class UdpLogReceiver : ILogReceiver
     {

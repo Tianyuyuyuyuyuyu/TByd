@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace TBydFramework.Log.Runtime
+namespace TBydFramework.Log.Runtime.Implementation
 {
     public class Log4NetLogImpl : Interface.ILog
     {
         private readonly log4net.ILog _log;
+
         public Log4NetLogImpl(log4net.ILog log)
         {
             _log = log;

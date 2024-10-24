@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.IO;
 using TBydFramework.Log.Runtime;
+using TBydFramework.Log.Runtime.Implementation;
 using LogManager = TBydFramework.Log.Runtime.LogManager;
 
 namespace TBydFramework.Framework.Tutorials
@@ -27,7 +28,7 @@ namespace TBydFramework.Framework.Tutorials
             }
 
             /* Initialize the Loxodon.Log.LogManager */
-            LogManager.Registry(new Log4NetFactory());
+            LogManager.Registry(new Log4NetILogFactory());
         }
 
         void OnDestroy()

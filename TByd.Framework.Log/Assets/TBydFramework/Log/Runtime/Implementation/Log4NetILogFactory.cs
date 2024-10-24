@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TBydFramework.Log.Runtime
+namespace TBydFramework.Log.Runtime.Implementation
 {
-    public class Log4NetFactory : Interface.ILogFactory
+    public class Log4NetILogFactory : Interface.ILogFactory
     {
         public Interface.ILog GetLogger<T>()
         {

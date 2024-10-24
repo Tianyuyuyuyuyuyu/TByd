@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using System.Runtime.Serialization.Formatters.Binary;
+using TBydFramework.Log.Runtime.Serialization;
 
 namespace TBydFramework.Log.Runtime.Appender
 {
