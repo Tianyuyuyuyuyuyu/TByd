@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TBydFramework.Log.Runtime.Interface;
 
 namespace TBydFramework.Log.Runtime
 {

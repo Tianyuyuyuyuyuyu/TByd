@@ -1,24 +1,23 @@
 ﻿using System;
-using log4net;
 
 namespace TBydFramework.Log.Runtime
 {
-    public class Log4NetFactory : ILogFactory
+    public class Log4NetFactory : Interface.ILogFactory
     {
-        public ILog GetLogger<T>()
+        public Interface.ILog GetLogger<T>()
         {
             return GetLogger(typeof(T));
         }
 
-        public ILog GetLogger(Type type)
+        public Interface.ILog GetLogger(Type type)
         {
-            log4net.ILog log = log4net.LogManager.GetLogger(type);
+            var log = log4net.LogManager.GetLogger(type);
             return new Log4NetLogImpl(log);
         }
 
-        public ILog GetLogger(string name)
+        public Interface.ILog GetLogger(string name)
         {
-            log4net.ILog log = log4net.LogManager.GetLogger(name);
+            var log = log4net.LogManager.GetLogger(name);
             return new Log4NetLogImpl(log);
         }
     }

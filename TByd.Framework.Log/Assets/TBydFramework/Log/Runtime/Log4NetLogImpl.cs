@@ -1,99 +1,98 @@
 ﻿using System;
-using log4net;
 
 namespace TBydFramework.Log.Runtime
 {
-    public class Log4NetLogImpl : ILog
+    public class Log4NetLogImpl : Interface.ILog
     {
-        private log4net.ILog log;
+        private readonly log4net.ILog _log;
         public Log4NetLogImpl(log4net.ILog log)
         {
-            this.log = log;
+            _log = log;
         }
 
-        public bool IsDebugEnabled { get { return log.IsDebugEnabled; } }
+        public bool IsDebugEnabled => _log.IsDebugEnabled;
 
-        public bool IsInfoEnabled { get { return log.IsInfoEnabled; } }
+        public bool IsInfoEnabled => _log.IsInfoEnabled;
 
-        public bool IsWarnEnabled { get { return log.IsWarnEnabled; } }
+        public bool IsWarnEnabled => _log.IsWarnEnabled;
 
-        public bool IsErrorEnabled { get { return log.IsErrorEnabled; } }
+        public bool IsErrorEnabled => _log.IsErrorEnabled;
 
-        public bool IsFatalEnabled { get { return log.IsFatalEnabled; } }
+        public bool IsFatalEnabled => _log.IsFatalEnabled;
 
         public void Debug(object message)
         {
-            log.Debug(message);
+            _log.Debug(message);
         }
 
         public void Debug(object message, Exception exception)
         {
-            log.Debug(message, exception);
+            _log.Debug(message, exception);
         }
 
         public void DebugFormat(string format, params object[] args)
         {
-            log.DebugFormat(format, args);
+            _log.DebugFormat(format, args);
         }
 
         public void Error(object message)
         {
-            log.Error(message);
+            _log.Error(message);
         }
 
         public void Error(object message, Exception exception)
         {
-            log.Error(message, exception);
+            _log.Error(message, exception);
         }
 
         public void ErrorFormat(string format, params object[] args)
         {
-            log.ErrorFormat(format, args);
+            _log.ErrorFormat(format, args);
         }
 
         public void Fatal(object message)
         {
-            log.Fatal(message);
+            _log.Fatal(message);
         }
 
         public void Fatal(object message, Exception exception)
         {
-            log.Fatal(message, exception);
+            _log.Fatal(message, exception);
         }
 
         public void FatalFormat(string format, params object[] args)
         {
-            log.FatalFormat(format, args);
+            _log.FatalFormat(format, args);
         }
 
         public void Info(object message)
         {
-            log.Info(message);
+            _log.Info(message);
         }
 
         public void Info(object message, Exception exception)
         {
-            log.Info(message, exception);
+            _log.Info(message, exception);
         }
 
         public void InfoFormat(string format, params object[] args)
         {
-            log.InfoFormat(format, args);
+            _log.InfoFormat(format, args);
         }
 
         public void Warn(object message)
         {
-            log.Warn(message);
+            _log.Warn(message);
         }
 
         public void Warn(object message, Exception exception)
         {
-            log.Warn(message, exception);
+            _log.Warn(message, exception);
         }
 
         public void WarnFormat(string format, params object[] args)
         {
-            log.WarnFormat(format, args);
+            _log.WarnFormat(format, args);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.IO;
-using log4net;
 using TBydFramework.Log.Runtime;
 using LogManager = TBydFramework.Log.Runtime.LogManager;
 
@@ -11,10 +10,10 @@ namespace TBydFramework.Framework.Tutorials
         void Awake()
         {
             InitializeLog();
-            DontDestroyOnLoad(this.gameObject);
+            DontDestroyOnLoad(gameObject);
         }
 
-        protected void InitializeLog()
+        private void InitializeLog()
         {
             /* Initialize the log4net */
             string configFilename = "Log4NetConfig";

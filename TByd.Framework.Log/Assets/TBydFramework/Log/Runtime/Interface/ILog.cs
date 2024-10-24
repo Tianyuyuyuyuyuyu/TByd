@@ -1,28 +1,9 @@
 ﻿using System;
 
-namespace TBydFramework.Log.Runtime
+namespace TBydFramework.Log.Runtime.Interface
 {
-    /// <summary>
-	/// The ILog interface is use by application to log messages into
-	/// the Loxodon.Log framework.
-	/// </summary>	
-	/// <example>Simple example of logging messages
-	/// <code lang="C#">
-	/// ILog log = LogManager.GetLogger("application-log");
-	/// 
-	/// log.Info("Application Start");
-	/// log.Debug("This is a debug message");
-	/// 
-	/// if (log.IsDebugEnabled)
-	/// {
-	///		log.Debug("This is another debug message");
-	/// }
-	/// </code>
-	/// </example>
-	/// <author>Clark</author>
-	public interface ILog
+    public interface ILog
     {
-
         void Debug(object message);
 
         void Debug(object message, Exception exception);
@@ -46,7 +27,7 @@ namespace TBydFramework.Log.Runtime
         void Error(object message, Exception exception);
 
         void ErrorFormat(string format, params object[] args);
-        
+
         void Fatal(object message);
 
         void Fatal(object message, Exception exception);

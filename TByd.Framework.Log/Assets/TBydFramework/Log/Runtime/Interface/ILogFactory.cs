@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TBydFramework.Log.Runtime
+namespace TBydFramework.Log.Runtime.Interface
 {
     public interface ILogFactory
     {

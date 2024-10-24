@@ -1,4 +1,5 @@
 ﻿using System;
+using TBydFramework.Log.Runtime.Interface;
 
 namespace TBydFramework.Log.Runtime
 {
