@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TBydFramework.Log.Editor.Log4Net.ViewModels;
@@ -22,152 +23,156 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             window.Show();
         }
 
-        private ConsoleVM consoleVM;
+        private ConsoleVM _consoleVm;
 
-        private Vector2 loggingPanelScrollPosition;
-        private Vector2 detailPanelScrollPosition;
-        private float loggingVerticalScrollBarPercent;
+        private Vector2 _loggingPanelScrollPosition;
+        private Vector2 _detailPanelScrollPosition;
+        private float _loggingVerticalScrollBarPercent;
 
-        private Texture[] levelIconTextures;
-        private GUISwitchContentData playToggle;
-        private GUISwitchContentData[] levelButtonDatas;
+        private Texture[] _levelIconTextures;
+        private GUISwitchContentData _playToggle;
+        private GUISwitchContentData[] _levelButtonDatas;
 
-        private GUIContentData clearButton;
-        private GUIContentData saveButton;
+        private GUIContentData _clearButton;
+        private GUIContentData _saveButton;
 
-        private GUISwitchContentData collapseToggle;
+        private GUISwitchContentData _collapseToggle;
 
-        private GUISwitchContentData[] columnButtonDatas;
+        private GUISwitchContentData[] _columnButtonDatas;
 
-        private GUIStyle entryStyleBackEven;
-        private GUIStyle entryStyleBackOdd;
-        private GUIStyle detailStyle;
-        private GUIStyle countBadgeStyle;
+        private GUIStyle _entryStyleBackEven;
+        private GUIStyle _entryStyleBackOdd;
+        private GUIStyle _detailStyle;
+        private GUIStyle _countBadgeStyle;
 
-        private GUIStyle toolbarSeachTextFieldStyle;
-        private GUIStyle toolbarSeachCancelButtonStyle;
+        private GUIStyle _toolbarSeachTextFieldStyle;
+        private GUIStyle _toolbarSeachCancelButtonStyle;
 
-        private float toolbarHeight = 20f;
-        private float splitterRectHeight = 20f;
-        private Rect verticalSplitterRect;
-        private Rect verticalSplitterLineRect;
-        private float verticalSplitterPercent;
-        private bool resizingVerticalSplitter = false;
+        private float _toolbarHeight = 20f;
+        private float _splitterRectHeight = 20f;
+        private Rect _verticalSplitterRect;
+        private Rect _verticalSplitterLineRect;
+        private float _verticalSplitterPercent;
+        private bool _resizingVerticalSplitter = false;
 
-        [NonSerialized] private Texture2D splitterLineTexture;
+        [NonSerialized] private Texture2D _splitterLineTexture;
 
-        private float lineHeight;
+        private float _lineHeight;
 
-        private int selectedIndex = -1;
-        private double lastClickTime = 0f;
-        private double doubleClickInterval = 0.2f;
+        private int _selectedIndex = -1;
+        private double _lastClickTime = 0f;
+        private double _doubleClickInterval = 0.2f;
 
-        private List<LoggingData> renderedList;
-        private List<int> renderedLineCountList;
+        private List<LoggingData> _renderedList;
+        private List<int> _renderedLineCountList;
 
-        void OnEnable()
+        private void OnEnable()
         {
-            loggingVerticalScrollBarPercent = 1f;
-            lineHeight = 30;
-            toolbarHeight = 20f;
-            splitterRectHeight = 10f;
-            verticalSplitterPercent = 0.7f;
-            verticalSplitterLineRect = new Rect(0f, (position.height * verticalSplitterPercent), position.width, 1);
-            verticalSplitterRect = new Rect(verticalSplitterLineRect.x,
-                verticalSplitterLineRect.y - splitterRectHeight / 2f, verticalSplitterLineRect.width,
-                splitterRectHeight);
-            this.renderedList = new List<LoggingData>();
-            this.renderedLineCountList = new List<int>();
+            _loggingVerticalScrollBarPercent = 1f;
+            _lineHeight = 30;
+            _toolbarHeight = 20f;
+            _splitterRectHeight = 10f;
+            _verticalSplitterPercent = 0.7f;
+            _verticalSplitterLineRect = new Rect(0f, (position.height * _verticalSplitterPercent), position.width, 1);
+            _verticalSplitterRect = new Rect(_verticalSplitterLineRect.x,
+                _verticalSplitterLineRect.y - _splitterRectHeight / 2f, _verticalSplitterLineRect.width,
+                _splitterRectHeight);
+            _renderedList = new List<LoggingData>();
+            _renderedLineCountList = new List<int>();
 
-            if (consoleVM == null)
-                consoleVM = new ConsoleVM();
-            consoleVM.OnEnable();
+            if (_consoleVm == null)
+                _consoleVm = new ConsoleVM();
+            _consoleVm.OnEnable();
         }
 
-        void Disable()
+        private void Disable()
         {
-            if (consoleVM != null)
-                consoleVM.OnDisable();
+            if (_consoleVm != null)
+                _consoleVm.OnDisable();
         }
 
         void OnDestroy()
         {
-            if (this.consoleVM != null)
+            if (_consoleVm != null)
             {
-                this.consoleVM.Stop();
-                this.consoleVM = null;
+                _consoleVm.Stop();
+                _consoleVm = null;
             }
         }
 
         private void Init()
         {
-            if (this.splitterLineTexture != null)
+            if (_splitterLineTexture != null)
                 return;
 
-            this.entryStyleBackEven = new GUIStyle("CN EntryBackEven");
-            this.entryStyleBackEven.margin = new RectOffset(0, 0, 0, 0);
-            this.entryStyleBackEven.border = new RectOffset(0, 0, 0, 0);
-            this.entryStyleBackEven.fixedHeight = 0;
-            this.entryStyleBackEven.fixedWidth = 0;
-            this.entryStyleBackEven.richText = true;
-            this.entryStyleBackEven.imagePosition = ImagePosition.ImageLeft;
-            this.entryStyleBackEven.contentOffset = new Vector2(0f, 0f);
-            this.entryStyleBackEven.padding = new RectOffset(10, 0, 0, 0);
-            this.entryStyleBackEven.alignment = TextAnchor.MiddleLeft;
+            _entryStyleBackEven = new GUIStyle("CN EntryBackEven");
+            _entryStyleBackEven.margin = new RectOffset(0, 0, 0, 0);
+            _entryStyleBackEven.border = new RectOffset(0, 0, 0, 0);
+            _entryStyleBackEven.fixedHeight = 0;
+            _entryStyleBackEven.fixedWidth = 0;
+            _entryStyleBackEven.richText = true;
+            _entryStyleBackEven.imagePosition = ImagePosition.ImageLeft;
+            _entryStyleBackEven.contentOffset = new Vector2(0f, 0f);
+            _entryStyleBackEven.padding = new RectOffset(10, 0, 0, 0);
+            _entryStyleBackEven.alignment = TextAnchor.MiddleLeft;
 
-            this.entryStyleBackOdd = new GUIStyle("CN EntryBackOdd");
-            this.entryStyleBackOdd.margin = new RectOffset(0, 0, 0, 0);
-            this.entryStyleBackOdd.border = new RectOffset(0, 0, 0, 0);
-            this.entryStyleBackOdd.fixedHeight = 0;
-            this.entryStyleBackOdd.fixedWidth = 0;
-            this.entryStyleBackOdd.richText = true;
-            this.entryStyleBackOdd.imagePosition = ImagePosition.ImageLeft;
-            this.entryStyleBackOdd.contentOffset = new Vector2(0f, 0f);
-            this.entryStyleBackOdd.padding = new RectOffset(10, 0, 0, 0);
-            this.entryStyleBackOdd.alignment = TextAnchor.MiddleLeft;
+            _entryStyleBackOdd = new GUIStyle("CN EntryBackOdd");
+            _entryStyleBackOdd.margin = new RectOffset(0, 0, 0, 0);
+            _entryStyleBackOdd.border = new RectOffset(0, 0, 0, 0);
+            _entryStyleBackOdd.fixedHeight = 0;
+            _entryStyleBackOdd.fixedWidth = 0;
+            _entryStyleBackOdd.richText = true;
+            _entryStyleBackOdd.imagePosition = ImagePosition.ImageLeft;
+            _entryStyleBackOdd.contentOffset = new Vector2(0f, 0f);
+            _entryStyleBackOdd.padding = new RectOffset(10, 0, 0, 0);
+            _entryStyleBackOdd.alignment = TextAnchor.MiddleLeft;
 
-            this.splitterLineTexture = new Texture2D(1, 1);
-            this.splitterLineTexture.SetPixel(0, 0, Color.black);
-            this.splitterLineTexture.Apply();
+            _splitterLineTexture = new Texture2D(1, 1);
+            _splitterLineTexture.SetPixel(0, 0, Color.black);
+            _splitterLineTexture.Apply();
 
-            this.detailStyle = new GUIStyle("CN EntryBackOdd");
-            this.detailStyle.margin = new RectOffset(0, 0, 0, 0);
-            this.detailStyle.border = new RectOffset(5, 5, 5, 5);
-            this.detailStyle.richText = true;
-            this.detailStyle.contentOffset = new Vector2(0f, 0f);
-            this.detailStyle.padding = new RectOffset(5, 5, 5, 5);
-            this.detailStyle.alignment = TextAnchor.UpperLeft;
-            this.detailStyle.fixedWidth = 0;
-            this.detailStyle.wordWrap = true;
+            _detailStyle = new GUIStyle("CN EntryBackOdd")
+            {
+                margin = new RectOffset(0, 0, 0, 0),
+                border = new RectOffset(5, 5, 5, 5),
+                richText = true,
+                contentOffset = new Vector2(0f, 0f),
+                padding = new RectOffset(5, 5, 5, 5),
+                alignment = TextAnchor.UpperLeft,
+                fixedWidth = 0,
+                wordWrap = true
+            };
 
-            this.countBadgeStyle = new GUIStyle("CN CountBadge");
-            this.countBadgeStyle.margin = new RectOffset(0, 0, 0, 0);
-            this.countBadgeStyle.border = new RectOffset(0, 0, 0, 0);
-            this.countBadgeStyle.contentOffset = new Vector2(0f, 0f);
-            this.countBadgeStyle.padding = new RectOffset(3, 3, 3, 3);
-            this.countBadgeStyle.fixedHeight = 0f;
-            this.countBadgeStyle.fixedWidth = 0f;
-            this.countBadgeStyle.alignment = TextAnchor.MiddleCenter;
+            _countBadgeStyle = new GUIStyle("CN CountBadge")
+            {
+                margin = new RectOffset(0, 0, 0, 0),
+                border = new RectOffset(0, 0, 0, 0),
+                contentOffset = new Vector2(0f, 0f),
+                padding = new RectOffset(3, 3, 3, 3),
+                fixedHeight = 0f,
+                fixedWidth = 0f,
+                alignment = TextAnchor.MiddleCenter
+            };
 
-            if (this.toolbarSeachTextFieldStyle == null)
-                this.toolbarSeachTextFieldStyle = new GUIStyle("ToolbarSeachTextField");
+            if (_toolbarSeachTextFieldStyle == null)
+                _toolbarSeachTextFieldStyle = new GUIStyle("ToolbarSeachTextField");
 
-            if (this.toolbarSeachCancelButtonStyle == null)
-                this.toolbarSeachCancelButtonStyle = new GUIStyle("ToolbarSeachCancelButton");
+            if (_toolbarSeachCancelButtonStyle == null)
+                _toolbarSeachCancelButtonStyle = new GUIStyle("ToolbarSeachCancelButton");
 
-            playToggle = new GUISwitchContentData(false,
+            _playToggle = new GUISwitchContentData(false,
                 new GUIContent(Resources.Load<Texture2D>("Icons/play-on"), "Start"),
                 new GUIContent(Resources.Load<Texture2D>("Icons/play-off"), "Stop"), EditorStyles.toolbarButton);
 
-            clearButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/delete"), "Clear"),
+            _clearButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/delete"), "Clear"),
                 EditorStyles.toolbarButton);
-            saveButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/save"), "Save"),
-                EditorStyles.toolbarButton);
-
-            collapseToggle = new GUISwitchContentData(consoleVM.Collapse, new GUIContent("Collapse", "Collapse"),
+            _saveButton = new GUIContentData(new GUIContent(Resources.Load<Texture2D>("Icons/save"), "Save"),
                 EditorStyles.toolbarButton);
 
-            levelIconTextures = new Texture[]
+            _collapseToggle = new GUISwitchContentData(_consoleVm.Collapse, new GUIContent("Collapse", "Collapse"),
+                EditorStyles.toolbarButton);
+
+            _levelIconTextures = new Texture[]
             {
                 Resources.Load<Texture2D>("Icons/debug"),
                 Resources.Load<Texture2D>("Icons/info"),
@@ -176,67 +181,67 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
                 Resources.Load<Texture2D>("Icons/fatal")
             };
 
-            levelButtonDatas = new GUISwitchContentData[5];
-            levelButtonDatas[0] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.DEBUG),
-                new GUIContent(levelIconTextures[0], "Debug"), EditorStyles.toolbarButton);
-            levelButtonDatas[1] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.INFO),
-                new GUIContent(levelIconTextures[1], "Info"), EditorStyles.toolbarButton);
-            levelButtonDatas[2] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.WARN),
-                new GUIContent(levelIconTextures[2], "Warn"), EditorStyles.toolbarButton);
-            levelButtonDatas[3] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.ERROR),
-                new GUIContent(levelIconTextures[3], "Error"), EditorStyles.toolbarButton);
-            levelButtonDatas[4] = new GUISwitchContentData(consoleVM.IsLevelShow(Level.FATAL),
-                new GUIContent(levelIconTextures[4], "Fatal"), EditorStyles.toolbarButton);
+            _levelButtonDatas = new GUISwitchContentData[5];
+            _levelButtonDatas[0] = new GUISwitchContentData(_consoleVm.IsLevelShow(Level.DEBUG),
+                new GUIContent(_levelIconTextures[0], "Debug"), EditorStyles.toolbarButton);
+            _levelButtonDatas[1] = new GUISwitchContentData(_consoleVm.IsLevelShow(Level.INFO),
+                new GUIContent(_levelIconTextures[1], "Info"), EditorStyles.toolbarButton);
+            _levelButtonDatas[2] = new GUISwitchContentData(_consoleVm.IsLevelShow(Level.WARN),
+                new GUIContent(_levelIconTextures[2], "Warn"), EditorStyles.toolbarButton);
+            _levelButtonDatas[3] = new GUISwitchContentData(_consoleVm.IsLevelShow(Level.ERROR),
+                new GUIContent(_levelIconTextures[3], "Error"), EditorStyles.toolbarButton);
+            _levelButtonDatas[4] = new GUISwitchContentData(_consoleVm.IsLevelShow(Level.FATAL),
+                new GUIContent(_levelIconTextures[4], "Fatal"), EditorStyles.toolbarButton);
 
 
-            columnButtonDatas = new GUISwitchContentData[3];
-            columnButtonDatas[0] = new GUISwitchContentData(consoleVM.IsColumnShow(EnumColumns.TimeStamp),
+            _columnButtonDatas = new GUISwitchContentData[3];
+            _columnButtonDatas[0] = new GUISwitchContentData(_consoleVm.IsColumnShow(EnumColumns.TimeStamp),
                 new GUIContent("Time", "Time"), EditorStyles.toolbarButton);
-            columnButtonDatas[1] = new GUISwitchContentData(consoleVM.IsColumnShow(EnumColumns.Thread),
+            _columnButtonDatas[1] = new GUISwitchContentData(_consoleVm.IsColumnShow(EnumColumns.Thread),
                 new GUIContent("Thread", "Thread"), EditorStyles.toolbarButton);
-            columnButtonDatas[2] = new GUISwitchContentData(consoleVM.IsColumnShow(EnumColumns.Logger),
+            _columnButtonDatas[2] = new GUISwitchContentData(_consoleVm.IsColumnShow(EnumColumns.Logger),
                 new GUIContent("Logger", "Logger"), EditorStyles.toolbarButton);
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             Init();
 
-            LoggingContainer container = consoleVM.GetCurrentContainer();
+            var container = _consoleVm.GetCurrentContainer();
 
-            Color oldColor = GUI.backgroundColor;
-            this.DrawToolbar(container);
+            var oldColor = GUI.backgroundColor;
+            DrawToolbar(container);
             GUI.backgroundColor = oldColor;
-            this.DrawVerticalSplitter();
+            DrawVerticalSplitter();
             GUI.backgroundColor = oldColor;
-            this.DrawLoggingGrid(container);
+            DrawLoggingGrid(container);
             GUI.backgroundColor = oldColor;
-            this.DrawLoggingDetail();
+            DrawLoggingDetail();
             GUI.backgroundColor = oldColor;
 
-            this.Repaint();
+            Repaint();
         }
 
-        Texture GetTextureIcon(Level level)
+        private Texture GetTextureIcon(Level level)
         {
             switch (level)
             {
                 case Level.DEBUG:
-                    return this.levelIconTextures[0];
+                    return _levelIconTextures[0];
                 case Level.INFO:
-                    return this.levelIconTextures[1];
+                    return _levelIconTextures[1];
                 case Level.WARN:
-                    return this.levelIconTextures[2];
+                    return _levelIconTextures[2];
                 case Level.ERROR:
-                    return this.levelIconTextures[3];
+                    return _levelIconTextures[3];
                 case Level.FATAL:
-                    return this.levelIconTextures[4];
+                    return _levelIconTextures[4];
                 default:
-                    return this.levelIconTextures[0];
+                    return _levelIconTextures[0];
             }
         }
 
-        string GetColorString(Level level)
+        private static string GetColorString(Level level)
         {
             switch (level)
             {
@@ -257,18 +262,18 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
 
         private GUIContent GetLogLineGUIContent(LoggingData data)
         {
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.AppendFormat("<color={0}>", GetColorString(data.Level));
 
-            if (this.consoleVM.IsColumnShow(EnumColumns.TimeStamp))
+            if (_consoleVm.IsColumnShow(EnumColumns.TimeStamp))
                 buf.AppendFormat("{0:yyyy-MM-dd HH:mm:ss.fff}", data.TimeStamp);
 
-            if (this.consoleVM.IsColumnShow(EnumColumns.Thread))
+            if (_consoleVm.IsColumnShow(EnumColumns.Thread))
                 buf.AppendFormat(" Thread[{0}]", data.ThreadName);
 
             buf.AppendFormat(" {0}", data.Level.ToString());
 
-            if (this.consoleVM.IsColumnShow(EnumColumns.Logger))
+            if (_consoleVm.IsColumnShow(EnumColumns.Logger))
                 buf.AppendFormat(" {0}", data.LoggerName);
 
             buf.AppendFormat(" - {0}", data.Message);
@@ -279,17 +284,17 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
 
         private string GetLogDetailContent(LoggingData data)
         {
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.AppendFormat("<color={0}>", GetColorString(data.Level));
 
-            if (this.consoleVM.IsColumnShow(EnumColumns.TimeStamp))
+            if (_consoleVm.IsColumnShow(EnumColumns.TimeStamp))
                 buf.AppendFormat("{0:yyyy-MM-dd HH:mm:ss.fff}", data.TimeStamp);
-            if (this.consoleVM.IsColumnShow(EnumColumns.Thread))
+            if (_consoleVm.IsColumnShow(EnumColumns.Thread))
                 buf.AppendFormat(" Thread[{0}]", data.ThreadName);
 
             buf.AppendFormat(" {0}", data.Level.ToString());
 
-            if (this.consoleVM.IsColumnShow(EnumColumns.Logger))
+            if (_consoleVm.IsColumnShow(EnumColumns.Logger))
                 buf.AppendFormat(" {0}", data.LoggerName);
 
             buf.AppendFormat(" - {0}", data.Message);
@@ -308,29 +313,23 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             return buf.ToString();
         }
 
-        string[] GetTerminalInfoOptions()
+        private string[] GetTerminalInfoOptions()
         {
-            List<string> list = new List<string>();
-            foreach (var info in consoleVM.TerminalInfos)
-            {
-                list.Add(info.ToString());
-            }
-
-            return list.ToArray();
+            return _consoleVm.TerminalInfos.Select(info => info.ToString()).ToArray();
         }
 
-        void DrawToolbar(LoggingContainer container)
+        private void DrawToolbar(LoggingContainer container)
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            if (this.consoleVM.CurrentIndex >= 0)
-                consoleVM.CurrentIndex = EditorGUILayout.Popup(consoleVM.CurrentIndex, GetTerminalInfoOptions(),
+            if (_consoleVm.CurrentIndex >= 0)
+                _consoleVm.CurrentIndex = EditorGUILayout.Popup(_consoleVm.CurrentIndex, GetTerminalInfoOptions(),
                     EditorStyles.toolbarDropDown, GUILayout.MinWidth(100), GUILayout.MaxWidth(200));
 
             GUILayout.Space(5f);
 
-            this.collapseToggle.Value = consoleVM.Collapse;
-            this.Toggle(this.collapseToggle, () => { consoleVM.Collapse = this.collapseToggle.Value; });
+            _collapseToggle.Value = _consoleVm.Collapse;
+            Toggle(_collapseToggle, () => { _consoleVm.Collapse = _collapseToggle.Value; });
 
             GUILayout.Space(5f);
 
@@ -341,11 +340,11 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             GUILayout.FlexibleSpace();
 
             GUI.SetNextControlName("searchTextField");
-            consoleVM.FilterText = EditorGUILayout.TextField(consoleVM.FilterText, this.toolbarSeachTextFieldStyle,
+            _consoleVm.FilterText = EditorGUILayout.TextField(_consoleVm.FilterText, _toolbarSeachTextFieldStyle,
                 GUILayout.MinWidth(100), GUILayout.MaxWidth(500));
-            if (GUILayout.Button("", this.toolbarSeachCancelButtonStyle))
+            if (GUILayout.Button("", _toolbarSeachCancelButtonStyle))
             {
-                consoleVM.FilterText = "";
+                _consoleVm.FilterText = "";
                 GUI.FocusControl("");
             }
 
@@ -353,194 +352,194 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
 
             GUILayout.Space(5f);
 
-            this.playToggle.Value = this.consoleVM.PlayState;
-            this.Toggle(this.playToggle, () =>
+            _playToggle.Value = _consoleVm.PlayState;
+            Toggle(_playToggle, () =>
             {
-                this.consoleVM.PlayState = this.playToggle.Value;
-                if (this.playToggle.Value)
-                    this.consoleVM.Start();
+                _consoleVm.PlayState = _playToggle.Value;
+                if (_playToggle.Value)
+                    _consoleVm.Start();
                 else
-                    this.consoleVM.Stop();
+                    _consoleVm.Stop();
             });
 
-            if (consoleVM.PlayState)
+            if (_consoleVm.PlayState)
             {
                 if (GUILayout.Button("Running", EditorStyles.toolbarDropDown, GUILayout.Width(60)))
                 {
                     GenericMenu menu = new GenericMenu();
                     menu.AddItem(
-                        new GUIContent(string.Format("{0}:{1}", consoleVM.GetLocalIPAddress().ToString(),
-                            consoleVM.Port.ToString())), false, delegate() { });
+                        new GUIContent(string.Format("{0}:{1}", _consoleVm.GetLocalIPAddress().ToString(),
+                            _consoleVm.Port.ToString())), false, delegate() { });
                     menu.ShowAsContext();
                 }
             }
             else
             {
-                consoleVM.Port =
-                    EditorGUILayout.IntField(consoleVM.Port, EditorStyles.toolbarTextField, GUILayout.Width(52));
+                _consoleVm.Port =
+                    EditorGUILayout.IntField(_consoleVm.Port, EditorStyles.toolbarTextField, GUILayout.Width(52));
             }
 
             GUILayout.Space(5f);
 
-            this.DrawToolbarLevelButtons(container);
+            DrawToolbarLevelButtons(container);
 
 
-            if (this.Button(this.clearButton))
+            if (Button(_clearButton))
             {
-                EditorApplication.delayCall += () => this.consoleVM.ClearLoggingData();
+                EditorApplication.delayCall += () => _consoleVm.ClearLoggingData();
             }
 
-            if (this.Button(this.saveButton))
+            if (Button(_saveButton))
             {
-                EditorApplication.delayCall += () => this.consoleVM.SaveLoggingData();
+                EditorApplication.delayCall += () => _consoleVm.SaveLoggingData();
             }
 
             GUILayout.Space(5f);
             EditorGUILayout.EndHorizontal();
         }
 
-        void DrawToolbarLevelButtons(LoggingContainer container)
+        private void DrawToolbarLevelButtons(LoggingContainer container)
         {
-            for (int i = 0; i < this.levelButtonDatas.Length; i++)
+            for (int i = 0; i < _levelButtonDatas.Length; i++)
             {
-                var data = levelButtonDatas[i];
-                Level level = (Level)(i + 1);
-                data.Value = consoleVM.IsLevelShow(level);
-                int count = container.GetCount(level);
+                var data = _levelButtonDatas[i];
+                var level = (Level)(i + 1);
+                data.Value = _consoleVm.IsLevelShow(level);
+                var count = container.GetCount(level);
                 data.Text = count < 1000 ? count.ToString() : "999+";
-                this.Toggle(data, () => { consoleVM.SetLevelShow(level, data.Value); });
+                Toggle(data, () => { _consoleVm.SetLevelShow(level, data.Value); });
             }
         }
 
-        void DrawToolbarColumnButtons(LoggingContainer container)
+        private void DrawToolbarColumnButtons(LoggingContainer container)
         {
-            for (int i = 0; i < this.columnButtonDatas.Length; i++)
+            for (var i = 0; i < _columnButtonDatas.Length; i++)
             {
-                var data = columnButtonDatas[i];
-                EnumColumns enumColumns = (EnumColumns)i;
-                data.Value = consoleVM.IsColumnShow(enumColumns);
-                this.Toggle(data, () => { consoleVM.SetColumnShow(enumColumns, data.Value); });
+                var data = _columnButtonDatas[i];
+                var enumColumns = (EnumColumns)i;
+                data.Value = _consoleVm.IsColumnShow(enumColumns);
+                Toggle(data, () => { _consoleVm.SetColumnShow(enumColumns, data.Value); });
             }
         }
 
-        bool ShouldShow(LoggingEntry logging)
+        private bool ShouldShow(LoggingEntry logging)
         {
-            if (!consoleVM.IsLevelShow(logging.Level))
+            if (!_consoleVm.IsLevelShow(logging.Level))
                 return false;
 
-            if (string.IsNullOrEmpty(consoleVM.FilterText))
+            if (string.IsNullOrEmpty(_consoleVm.FilterText))
                 return true;
 
-            if (Regex.IsMatch(logging.Message, consoleVM.FilterText) || (consoleVM.IsColumnShow(EnumColumns.Logger) &&
+            if (Regex.IsMatch(logging.Message, _consoleVm.FilterText) || (_consoleVm.IsColumnShow(EnumColumns.Logger) &&
                                                                          Regex.IsMatch(logging.LoggerName,
-                                                                             consoleVM.FilterText)))
+                                                                             _consoleVm.FilterText)))
                 return true;
 
             return false;
         }
 
-        void DrawLoggingGrid(LoggingContainer container)
+        private void DrawLoggingGrid(LoggingContainer container)
         {
-            var areaRect = new Rect(0f, toolbarHeight, position.width,
-                position.height * this.verticalSplitterPercent - toolbarHeight - splitterRectHeight / 2f);
+            var areaRect = new Rect(0f, _toolbarHeight, position.width,
+                position.height * _verticalSplitterPercent - _toolbarHeight - _splitterRectHeight / 2f);
             List<LoggingEntry> list = container.GetLoggingList();
 
-            this.renderedList.Clear();
-            this.renderedLineCountList.Clear();
+            _renderedList.Clear();
+            _renderedLineCountList.Clear();
 
             foreach (LoggingEntry logging in list)
             {
                 if (!ShouldShow(logging))
                     continue;
 
-                if (consoleVM.Collapse)
+                if (_consoleVm.Collapse)
                 {
-                    renderedList.Add(logging.LoggingData);
-                    renderedLineCountList.Add(logging.Count);
+                    _renderedList.Add(logging.LoggingData);
+                    _renderedLineCountList.Add(logging.Count);
                 }
                 else
-                    renderedList.AddRange(logging.LoggingDataList);
+                    _renderedList.AddRange(logging.LoggingDataList);
             }
 
-            int count = renderedList.Count;
-            var viewRect = new Rect(0, 0, areaRect.width - 20, count * lineHeight);
+            var count = _renderedList.Count;
+            var viewRect = new Rect(0, 0, areaRect.width - 20, count * _lineHeight);
 
-            if (viewRect.height >= areaRect.height && this.loggingVerticalScrollBarPercent > 0.95f)
-                loggingPanelScrollPosition.y = viewRect.height - areaRect.height;
+            if (viewRect.height >= areaRect.height && _loggingVerticalScrollBarPercent > 0.95f)
+                _loggingPanelScrollPosition.y = viewRect.height - areaRect.height;
 
-            loggingPanelScrollPosition = GUI.BeginScrollView(areaRect, loggingPanelScrollPosition, viewRect);
+            _loggingPanelScrollPosition = GUI.BeginScrollView(areaRect, _loggingPanelScrollPosition, viewRect);
             if (viewRect.height >= areaRect.height)
-                this.loggingVerticalScrollBarPercent =
-                    loggingPanelScrollPosition.y / (viewRect.height - areaRect.height);
+                _loggingVerticalScrollBarPercent =
+                    _loggingPanelScrollPosition.y / (viewRect.height - areaRect.height);
 
-            int firstIndex = (int)(loggingPanelScrollPosition.y / lineHeight);
-            int lastIndex = firstIndex + (int)(areaRect.height / lineHeight);
+            var firstIndex = (int)(_loggingPanelScrollPosition.y / _lineHeight);
+            var lastIndex = firstIndex + (int)(areaRect.height / _lineHeight);
 
             firstIndex = Mathf.Clamp(firstIndex - 5, 0, count);
             lastIndex = Mathf.Clamp(lastIndex + 5, 0, count);
 
-            if (this.selectedIndex >= count)
-                this.selectedIndex = -1;
+            if (_selectedIndex >= count)
+                _selectedIndex = -1;
 
-            for (int i = firstIndex; i < lastIndex; i++)
+            for (var i = firstIndex; i < lastIndex; i++)
             {
-                LoggingData data = renderedList[i];
-                var content = this.GetLogLineGUIContent(data);
-                var lineStyle = (i % 2 == 0) ? entryStyleBackEven : entryStyleBackOdd;
+                var data = _renderedList[i];
+                var content = GetLogLineGUIContent(data);
+                var lineStyle = (i % 2 == 0) ? _entryStyleBackEven : _entryStyleBackOdd;
 
-                bool selected = i == selectedIndex;
+                var selected = i == _selectedIndex;
                 lineStyle.normal = selected
                     ? GUI.skin.GetStyle(lineStyle.name).onNormal
                     : GUI.skin.GetStyle(lineStyle.name).normal;
 
-                if (GUI.Button(new Rect(0f, i * lineHeight, viewRect.width, lineHeight), content, lineStyle))
+                if (GUI.Button(new Rect(0f, i * _lineHeight, viewRect.width, _lineHeight), content, lineStyle))
                 {
                     if (selected)
                     {
-                        if (EditorApplication.timeSinceStartup - lastClickTime < doubleClickInterval)
+                        if (EditorApplication.timeSinceStartup - _lastClickTime < _doubleClickInterval)
                         {
-                            lastClickTime = 0;
+                            _lastClickTime = 0;
                             OpenSourceFile(data.LocationInfo);
                         }
                         else
                         {
-                            lastClickTime = EditorApplication.timeSinceStartup;
+                            _lastClickTime = EditorApplication.timeSinceStartup;
                         }
                     }
                     else
                     {
-                        this.selectedIndex = i;
-                        lastClickTime = EditorApplication.timeSinceStartup;
+                        _selectedIndex = i;
+                        _lastClickTime = EditorApplication.timeSinceStartup;
                     }
                 }
 
-                if (consoleVM.Collapse)
+                if (_consoleVm.Collapse)
                 {
-                    int logCount = renderedLineCountList[i];
-                    GUIContent countContent = new GUIContent(logCount < 100 ? logCount.ToString() : "99+");
-                    var size = countBadgeStyle.CalcSize(countContent);
+                    var logCount = _renderedLineCountList[i];
+                    var countContent = new GUIContent(logCount < 100 ? logCount.ToString() : "99+");
+                    var size = _countBadgeStyle.CalcSize(countContent);
                     size.x = Mathf.Clamp(size.x + 5, 20, 30);
-                    size.y = Mathf.Clamp(size.y, 20, lineHeight);
+                    size.y = Mathf.Clamp(size.y, 20, _lineHeight);
                     GUI.Label(
-                        new Rect(viewRect.width - 15f - size.x / 2f, i * lineHeight + (lineHeight - size.y) / 2f,
-                            size.x, size.y), countContent, countBadgeStyle);
+                        new Rect(viewRect.width - 15f - size.x / 2f, i * _lineHeight + (_lineHeight - size.y) / 2f,
+                            size.x, size.y), countContent, _countBadgeStyle);
                 }
             }
 
             GUI.EndScrollView();
         }
 
-        void DrawLoggingDetail()
+        private void DrawLoggingDetail()
         {
-            var areaRect = new Rect(0f, this.verticalSplitterLineRect.y + this.splitterRectHeight / 2f, position.width,
-                this.position.height * (1f - this.verticalSplitterPercent) - splitterRectHeight / 2f);
+            var areaRect = new Rect(0f, _verticalSplitterLineRect.y + _splitterRectHeight / 2f, position.width,
+                position.height * (1f - _verticalSplitterPercent) - _splitterRectHeight / 2f);
             GUILayout.BeginArea(areaRect);
-            detailPanelScrollPosition = EditorGUILayout.BeginScrollView(detailPanelScrollPosition);
+            _detailPanelScrollPosition = EditorGUILayout.BeginScrollView(_detailPanelScrollPosition);
 
-            if (this.selectedIndex >= 0 && this.selectedIndex < this.renderedList.Count)
+            if (_selectedIndex >= 0 && _selectedIndex < _renderedList.Count)
             {
-                var data = renderedList[selectedIndex];
-                EditorGUILayout.SelectableLabel(this.GetLogDetailContent(data), detailStyle,
+                var data = _renderedList[_selectedIndex];
+                EditorGUILayout.SelectableLabel(GetLogDetailContent(data), _detailStyle,
                     GUILayout.Width(areaRect.width - 10), GUILayout.Height(areaRect.height - 10));
             }
 
@@ -548,34 +547,34 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             GUILayout.EndArea();
         }
 
-        void DrawVerticalSplitter()
+        private void DrawVerticalSplitter()
         {
-            if (splitterLineTexture == null)
+            if (_splitterLineTexture == null)
                 return;
 
-            verticalSplitterLineRect.Set(verticalSplitterLineRect.x, position.height * verticalSplitterPercent,
+            _verticalSplitterLineRect.Set(_verticalSplitterLineRect.x, position.height * _verticalSplitterPercent,
                 position.width, 1);
-            verticalSplitterRect.Set(verticalSplitterLineRect.x, verticalSplitterLineRect.y - splitterRectHeight / 2f,
-                verticalSplitterLineRect.width, splitterRectHeight);
+            _verticalSplitterRect.Set(_verticalSplitterLineRect.x, _verticalSplitterLineRect.y - _splitterRectHeight / 2f,
+                _verticalSplitterLineRect.width, _splitterRectHeight);
 
-            GUI.DrawTexture(verticalSplitterLineRect, splitterLineTexture);
-            EditorGUIUtility.AddCursorRect(verticalSplitterRect, MouseCursor.ResizeVertical);
+            GUI.DrawTexture(_verticalSplitterLineRect, _splitterLineTexture);
+            EditorGUIUtility.AddCursorRect(_verticalSplitterRect, MouseCursor.ResizeVertical);
 
-            if (Event.current.type == EventType.MouseDown && verticalSplitterRect.Contains(Event.current.mousePosition))
-                resizingVerticalSplitter = true;
+            if (Event.current.type == EventType.MouseDown && _verticalSplitterRect.Contains(Event.current.mousePosition))
+                _resizingVerticalSplitter = true;
 
-            if (resizingVerticalSplitter)
+            if (_resizingVerticalSplitter)
             {
-                verticalSplitterPercent =
-                    Mathf.Clamp(Event.current.mousePosition.y / this.position.height, 0.15f, 0.9f);
-                verticalSplitterLineRect.y = position.height * verticalSplitterPercent;
+                _verticalSplitterPercent =
+                    Mathf.Clamp(Event.current.mousePosition.y / position.height, 0.15f, 0.9f);
+                _verticalSplitterLineRect.y = position.height * _verticalSplitterPercent;
             }
 
             if (Event.current.type == EventType.MouseUp)
-                resizingVerticalSplitter = false;
+                _resizingVerticalSplitter = false;
         }
 
-        private bool Button(GUIContentData model)
+        private static bool Button(GUIContentData model)
         {
             if (model == null)
                 return false;
@@ -583,7 +582,7 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             return GUILayout.Button(model.Content, model.Style, model.LayoutOptions);
         }
 
-        private bool Toggle(GUISwitchContentData model, Action onValueChanged = null)
+        private static bool Toggle(GUISwitchContentData model, Action onValueChanged = null)
         {
             if (model == null)
                 return false;
@@ -599,9 +598,9 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             return result;
         }
 
-        private bool OpenSourceFile(LocationInfo location)
+        private static bool OpenSourceFile(LocationInfo location)
         {
-            if (location == null || location.StackFrames == null)
+            if (location?.StackFrames == null)
                 return false;
 
             foreach (var frame in location.StackFrames)
@@ -639,63 +638,57 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
         [Serializable]
         class GUIContentData
         {
-            protected bool dirty;
-            protected GUIContent content;
-            protected GUIStyle style;
-            protected GUILayoutOption[] layoutOptions;
+            protected bool _dirty;
+            protected GUIContent _content;
+            protected GUIStyle _style;
+            protected GUILayoutOption[] _layoutOptions;
 
             public GUIContentData(GUIContent content, GUIStyle style)
             {
-                this.dirty = true;
-                this.content = content;
-                this.style = style;
-                Vector2 size = style.CalcSize(this.content);
-                this.layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
+                _dirty = true;
+                _content = content;
+                _style = style;
+                Vector2 size = style.CalcSize(content);
+                _layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
             }
 
             public string Text
             {
-                get { return this.content.text; }
+                get => _content.text;
                 set
                 {
-                    this.content.text = value;
-                    this.dirty = true;
+                    _content.text = value;
+                    _dirty = true;
                 }
             }
 
             public Texture Image
             {
-                get { return this.content.image; }
+                get => _content.image;
                 set
                 {
-                    this.content.image = value;
-                    this.dirty = true;
+                    _content.image = value;
+                    _dirty = true;
                 }
             }
 
-            public GUIContent Content
-            {
-                get { return this.content; }
-            }
+            public GUIContent Content => _content;
 
-            public GUIStyle Style
-            {
-                get { return this.style; }
-            }
+            public GUIStyle Style => _style;
 
 
             public GUILayoutOption[] LayoutOptions
             {
                 get
                 {
-                    if (this.dirty)
+                    if (_dirty)
                     {
-                        Vector2 size = style.CalcSize(this.Content);
-                        this.layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
-                        this.dirty = false;
+                        Vector2 size = _style.CalcSize(Content);
+                        _layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
+                        _dirty = false;
                     }
 
-                    return this.layoutOptions;
+                    return _layoutOptions;
                 }
             }
         }
@@ -704,12 +697,12 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
         [Serializable]
         class GUISwitchContentData
         {
-            protected bool dirty;
-            protected bool value;
-            protected GUIContent contentOn;
-            protected GUIContent contentOff;
-            protected GUIStyle style;
-            protected GUILayoutOption[] layoutOptions;
+            protected bool _dirty;
+            protected bool _value;
+            protected GUIContent _contentOn;
+            protected GUIContent _contentOff;
+            protected GUIStyle _style;
+            protected GUILayoutOption[] _layoutOptions;
 
             public GUISwitchContentData(bool value, GUIContent contentOn, GUIStyle style) : this(value, contentOn, null,
                 style)
@@ -718,72 +711,66 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
 
             public GUISwitchContentData(bool value, GUIContent contentOn, GUIContent contentOff, GUIStyle style)
             {
-                this.dirty = true;
-                this.value = value;
-                this.contentOn = contentOn;
-                this.contentOff = contentOff != null ? contentOff : contentOn;
-                this.style = style;
-                this.layoutOptions = null;
+                _dirty = true;
+                _value = value;
+                _contentOn = contentOn;
+                _contentOff = contentOff != null ? contentOff : contentOn;
+                _style = style;
+                _layoutOptions = null;
             }
 
             public bool Value
             {
-                get { return this.value; }
+                get => _value;
                 set
                 {
-                    if (this.value == value)
+                    if (_value == value)
                         return;
 
-                    this.value = value;
-                    this.dirty = true;
+                    _value = value;
+                    _dirty = true;
                 }
             }
 
             public string Text
             {
-                get { return this.Content.text; }
+                get => Content.text;
                 set
                 {
-                    if (string.Equals(this.Content.text, value))
+                    if (string.Equals(Content.text, value))
                         return;
 
-                    this.Content.text = value;
-                    this.dirty = true;
+                    Content.text = value;
+                    _dirty = true;
                 }
             }
 
             public Texture Image
             {
-                get { return this.Content.image; }
+                get => Content.image;
                 set
                 {
-                    this.Content.image = value;
-                    this.dirty = true;
+                    Content.image = value;
+                    _dirty = true;
                 }
             }
 
-            public GUIContent Content
-            {
-                get { return this.value ? this.contentOn : this.contentOff; }
-            }
+            public GUIContent Content => _value ? _contentOn : _contentOff;
 
-            public GUIStyle Style
-            {
-                get { return this.style; }
-            }
+            public GUIStyle Style => _style;
 
             public GUILayoutOption[] LayoutOptions
             {
                 get
                 {
-                    if (this.dirty)
+                    if (_dirty)
                     {
-                        Vector2 size = style.CalcSize(this.Content);
-                        this.layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
-                        this.dirty = false;
+                        Vector2 size = _style.CalcSize(Content);
+                        _layoutOptions = new GUILayoutOption[] { GUILayout.Width(size.x) };
+                        _dirty = false;
                     }
 
-                    return this.layoutOptions;
+                    return _layoutOptions;
                 }
             }
         }
