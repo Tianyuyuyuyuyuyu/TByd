@@ -1,0 +1,378 @@
+2024-10-24 20:25:38.090 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.123 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.629 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.655 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.665 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.673 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.684 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.691 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.698 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.705 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.712 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.720 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.727 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.735 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.742 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.749 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.756 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.764 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.773 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.789 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.801 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.809 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.817 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.826 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.834 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.842 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.849 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.857 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.864 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.873 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.881 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.889 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.897 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.904 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.912 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:38.920 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.929 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.937 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.945 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:38.953 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.960 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.968 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:38.976 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:38.984 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:38.995 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.003 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.011 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.019 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.026 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.035 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.043 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.051 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.059 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.067 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.075 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.083 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.091 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.105 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.113 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.121 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.129 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.138 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.146 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.154 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.164 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.172 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.180 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.189 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.201 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.209 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.217 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.225 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.233 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.242 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.250 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.258 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.266 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.275 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.282 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.291 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.299 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.307 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.315 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.323 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.330 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.338 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.346 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.354 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.363 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.371 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.379 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.387 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.395 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.406 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.421 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.429 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.437 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.445 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.452 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.461 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.469 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.477 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.484 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.492 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.500 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.508 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.516 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.529 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.537 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.545 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.554 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.562 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.570 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.577 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.585 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.593 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.602 Thread[1] ERROR TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a error test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:35)
+
+2024-10-24 20:25:39.614 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.628 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.638 Thread[1] DEBUG TBydFramework.Framework.Tutorials.Log4NetExample - This is a debug test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:22)
+
+2024-10-24 20:25:39.648 Thread[1] INFO TBydFramework.Framework.Tutorials.Log4NetExample - This is a info test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:26)
+
+2024-10-24 20:25:39.661 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.672 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.686 Thread[1] WARN TBydFramework.Framework.Tutorials.Log4NetExample - This is a warn test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:30)
+
+2024-10-24 20:25:39.694 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
+2024-10-24 20:25:39.709 Thread[1] FATAL TBydFramework.Framework.Tutorials.Log4NetExample - System.Exception: This is a fatal test.
+TBydFramework.Framework.Tutorials.Log4NetExample.Update(Assets\Samples\TByd Framework Log\2.0.0\Tutorials\Scripts\Log4Net\Log4NetExample.cs:39)
+
