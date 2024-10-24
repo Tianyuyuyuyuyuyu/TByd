@@ -4,110 +4,104 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
+using TBydFramework.Log.Editor.Log4Net.Views;
 using TBydFramework.Log.Runtime.Serialization;
 
 namespace TBydFramework.Log.Editor.Log4Net.LogReceiver
 {
-    public class UdpLogReceiver : ILogReceiver
+    public sealed class UdpLogReceiver : ILogReceiver
     {
-        private bool started;
+        private readonly int _port;
 
-        private int port;
+        private UdpClient _udpClient;
 
-        private UdpClient client;
+        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
 
-        private BinaryFormatter formatter = new BinaryFormatter();
-
-        private Dictionary<string, TerminalInfo> terminalInfos = new Dictionary<string, TerminalInfo>();
+        private readonly Dictionary<string, TerminalInfo> _terminalInfos = new Dictionary<string, TerminalInfo>();
 
         public event MessageHandler MessageReceived;
 
-        public bool Started
-        {
-            get { return this.started; }
-            protected set { this.started = value; }
-        }
+        public bool Started { get; private set; }
 
-        public int Port
-        {
-            get { return this.port; }
-        }
+        public int Port => _port;
 
         public UdpLogReceiver(int port)
         {
-            this.port = port;
-
+            _port = port;
         }
 
-        public IPEndPoint LocalEndPoint
-        {
-            get { return (IPEndPoint)client.Client.LocalEndPoint; }
-        }
+        public IPEndPoint LocalEndPoint => (IPEndPoint)_udpClient.Client.LocalEndPoint;
 
-        public virtual void Start()
+        public void Start()
         {
             try
             {
-                client = new UdpClient(this.port);
-                client.BeginReceive(ReceiveUdpMessage, client);
-                this.Started = true;
+                _udpClient = new UdpClient(this._port);
+                _udpClient.BeginReceive(ReceiveUdpMessage, _udpClient);
+                Started = true;
             }
             catch (Exception e)
             {
-                this.Started = false;
-                throw e;
+                Started = false;
+                UnityEngine.Debug.LogError(e);
+                throw;
             }
         }
 
-        public virtual void Stop()
+        public void Stop()
         {
             try
             {
-                if (client != null)
+                if (_udpClient != null)
                 {
-                    client.Close();
-                    client = null;
+                    _udpClient.Close();
+                    _udpClient = null;
                 }
-                this.Started = false;
+
+                Started = false;
             }
-            catch (Exception) { }
+            catch (Exception e)
+            {
+                UnityEngine.Debug.LogError(e);
+            }
         }
 
         private void ReceiveUdpMessage(IAsyncResult result)
         {
-            UdpClient client = (UdpClient)result.AsyncState;
-            if (client == null)
-                return;
+            var client = (UdpClient)result.AsyncState;
+            if (client == null) return;
 
             try
             {
                 var remoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                Byte[] buffer = client.EndReceive(result, ref remoteIPEndPoint);
+                var buffer = client.EndReceive(result, ref remoteIPEndPoint);
                 if (buffer != null)
                 {
-                    LoggingData loggingData = (LoggingData)formatter.Deserialize(new MemoryStream(buffer));
+                    LoggingData loggingData = (LoggingData)_binaryFormatter.Deserialize(new MemoryStream(buffer));
                     try
                     {
-                        if (this.MessageReceived != null)
+                        if (MessageReceived != null)
                         {
-                            TerminalInfo terminalInfo;
-                            string key = remoteIPEndPoint.ToString();
-                            if (!this.terminalInfos.TryGetValue(key, out terminalInfo))
+                            var key = remoteIPEndPoint.ToString();
+                            if (!_terminalInfos.TryGetValue(key, out var terminalInfo))
                             {
-                                terminalInfo = new TerminalInfo(loggingData.UserName, remoteIPEndPoint.Address.ToString(), remoteIPEndPoint.Port);
-                                this.terminalInfos.Add(key, terminalInfo);
+                                terminalInfo = new TerminalInfo(loggingData.UserName,
+                                    remoteIPEndPoint.Address.ToString(), remoteIPEndPoint.Port);
+                                _terminalInfos.Add(key, terminalInfo);
                             }
 
-                            this.MessageReceived(terminalInfo, loggingData);
+                            MessageReceived(terminalInfo, loggingData);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        UnityEngine.Debug.LogError(e);
                     }
                 }
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException disposedException)
             {
+                UnityEngine.Debug.LogError(disposedException);
                 return;
             }
             catch (Exception e)
@@ -119,14 +113,15 @@ namespace TBydFramework.Log.Editor.Log4Net.LogReceiver
         }
 
         #region IDisposable Support
-        private bool disposed = false;
 
-        protected virtual void Dispose(bool disposing)
+        private bool _disposed;
+
+        private void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
-                this.Stop();
-                disposed = true;
+                Stop();
+                _disposed = true;
             }
         }
 
@@ -134,11 +129,13 @@ namespace TBydFramework.Log.Editor.Log4Net.LogReceiver
         {
             Dispose(false);
         }
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
         #endregion
     }
 }

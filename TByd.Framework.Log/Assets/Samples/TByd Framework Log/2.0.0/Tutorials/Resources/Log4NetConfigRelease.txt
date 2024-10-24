@@ -5,7 +5,7 @@
 			<level value="ERROR" />
 			<appender-ref ref="Console" />
 		</root>
-		<appender name="Console" type="Loxodon.Log.Log4Net.Appender.UnityDebugAppender">
+		<appender name="Console" type="TBydFramework.Log.Runtime.Appender.UnityDebugAppender">
 		  <layout type="log4net.Layout.PatternLayout">
         		<conversionPattern value="%date Thread[%thread] %-5level %logger - %message%newline" />
     		</layout>

@@ -9,9 +9,9 @@ namespace TBydFramework.Log.Runtime.Appender
         protected override void Append(LoggingEvent loggingEvent)
         {
             var level = loggingEvent.Level;
-            if (log4net.Core.Level.Fatal.Equals(level) || log4net.Core.Level.Error.Equals(level))
+            if (Level.Fatal.Equals(level) || Level.Error.Equals(level))
                 Debug.LogError(RenderLoggingEvent(loggingEvent));
-            else if(log4net.Core.Level.Warn.Equals(level))
+            else if(Level.Warn.Equals(level))
                 Debug.LogWarning(RenderLoggingEvent(loggingEvent));
             else
                 Debug.Log(RenderLoggingEvent(loggingEvent));

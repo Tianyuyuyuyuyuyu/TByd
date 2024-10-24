@@ -7,24 +7,24 @@
 			<appender-ref ref="UdpAppender" />
 		</root>
 
-		<logger name="Loxodon.Framework.Tutorials.Log4NetExample">
+		<logger name="TBydFramework.Framework.Tutorials.Log4NetExample">
 			<level value="DEBUG"/>
 			<appender-ref ref="File" />
 		</logger>
 
-		<appender name="Console" type="Loxodon.Log.Log4Net.Appender.UnityDebugAppender">
+		<appender name="Console" type="TBydFramework.Log.Runtime.Appender.UnityDebugAppender">
 			<layout type="log4net.Layout.PatternLayout">
 				<conversionPattern value="%date Thread[%thread] %-5level %logger - %message%newline" />
 			</layout>
 		</appender>
-		<appender name="File" type="Loxodon.Log.Log4Net.Appender.UnityFileAppender">
+		<appender name="File" type="TBydFramework.Log.Runtime.Appender.UnityFileAppender">
 			<file type="log4net.Util.PatternString" value="Unity-%date{yyyy-MM-dd_HH-mm-ss}.log" />
 			<appendToFile value="true" />
 			<layout type="log4net.Layout.PatternLayout">
 				<conversionPattern value="%date Thread[%thread] %-5level %logger - %message%newline" />
 			</layout>
 		</appender>
-		<appender name="UdpAppender" type="Loxodon.Log.Log4Net.Appender.UnityUdpRemotingAppender">
+		<appender name="UdpAppender" type="TBydFramework.Log.Runtime.Appender.UnityUdpRemotingAppender">
 			<localPort value="9000" />
 			<remoteAddress value="127.0.0.1" />
 			<remotePort value="8085" />

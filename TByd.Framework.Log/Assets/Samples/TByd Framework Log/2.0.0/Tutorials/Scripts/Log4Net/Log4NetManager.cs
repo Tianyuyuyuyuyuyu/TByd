@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.IO;
-using TBydFramework.Log.Runtime;
 using TBydFramework.Log.Runtime.Implementation;
 using LogManager = TBydFramework.Log.Runtime.LogManager;
 
@@ -21,13 +21,21 @@ namespace TBydFramework.Framework.Tutorials
             TextAsset configText = Resources.Load<TextAsset>(configFilename);
             if (configText != null)
             {
-                using (MemoryStream memStream = new MemoryStream(configText.bytes))
+                try
                 {
-                    log4net.Config.XmlConfigurator.Configure(memStream);
+                    using (MemoryStream memStream = new MemoryStream(configText.bytes))
+                    {
+                        log4net.Config.XmlConfigurator.Configure(memStream);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    throw;
                 }
             }
 
-            /* Initialize the Loxodon.Log.LogManager */
+            /* Initialize the TBydFramework.Log.LogManager */
             LogManager.Registry(new Log4NetILogFactory());
         }
 

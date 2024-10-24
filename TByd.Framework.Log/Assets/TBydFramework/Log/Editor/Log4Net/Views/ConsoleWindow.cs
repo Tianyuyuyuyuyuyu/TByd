@@ -15,7 +15,7 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
 {
     public class ConsoleWindow : EditorWindow
     {
-        [MenuItem("Tools/Loxodon/Log4Net Console")]
+        [MenuItem("Tools/TBydFramework/Log4Net Console")]
         static void ShowWindow()
         {
             var window = GetWindow<ConsoleWindow>(false, "Remoting");
@@ -190,11 +190,11 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
 
 
             columnButtonDatas = new GUISwitchContentData[3];
-            columnButtonDatas[0] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.TimeStamp),
+            columnButtonDatas[0] = new GUISwitchContentData(consoleVM.IsColumnShow(EnumColumns.TimeStamp),
                 new GUIContent("Time", "Time"), EditorStyles.toolbarButton);
-            columnButtonDatas[1] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.Thread),
+            columnButtonDatas[1] = new GUISwitchContentData(consoleVM.IsColumnShow(EnumColumns.Thread),
                 new GUIContent("Thread", "Thread"), EditorStyles.toolbarButton);
-            columnButtonDatas[2] = new GUISwitchContentData(consoleVM.IsColumnShow(Columns.Logger),
+            columnButtonDatas[2] = new GUISwitchContentData(consoleVM.IsColumnShow(EnumColumns.Logger),
                 new GUIContent("Logger", "Logger"), EditorStyles.toolbarButton);
         }
 
@@ -260,15 +260,15 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             StringBuilder buf = new StringBuilder();
             buf.AppendFormat("<color={0}>", GetColorString(data.Level));
 
-            if (this.consoleVM.IsColumnShow(Columns.TimeStamp))
+            if (this.consoleVM.IsColumnShow(EnumColumns.TimeStamp))
                 buf.AppendFormat("{0:yyyy-MM-dd HH:mm:ss.fff}", data.TimeStamp);
 
-            if (this.consoleVM.IsColumnShow(Columns.Thread))
+            if (this.consoleVM.IsColumnShow(EnumColumns.Thread))
                 buf.AppendFormat(" Thread[{0}]", data.ThreadName);
 
             buf.AppendFormat(" {0}", data.Level.ToString());
 
-            if (this.consoleVM.IsColumnShow(Columns.Logger))
+            if (this.consoleVM.IsColumnShow(EnumColumns.Logger))
                 buf.AppendFormat(" {0}", data.LoggerName);
 
             buf.AppendFormat(" - {0}", data.Message);
@@ -282,14 +282,14 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             StringBuilder buf = new StringBuilder();
             buf.AppendFormat("<color={0}>", GetColorString(data.Level));
 
-            if (this.consoleVM.IsColumnShow(Columns.TimeStamp))
+            if (this.consoleVM.IsColumnShow(EnumColumns.TimeStamp))
                 buf.AppendFormat("{0:yyyy-MM-dd HH:mm:ss.fff}", data.TimeStamp);
-            if (this.consoleVM.IsColumnShow(Columns.Thread))
+            if (this.consoleVM.IsColumnShow(EnumColumns.Thread))
                 buf.AppendFormat(" Thread[{0}]", data.ThreadName);
 
             buf.AppendFormat(" {0}", data.Level.ToString());
 
-            if (this.consoleVM.IsColumnShow(Columns.Logger))
+            if (this.consoleVM.IsColumnShow(EnumColumns.Logger))
                 buf.AppendFormat(" {0}", data.LoggerName);
 
             buf.AppendFormat(" - {0}", data.Message);
@@ -417,9 +417,9 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             for (int i = 0; i < this.columnButtonDatas.Length; i++)
             {
                 var data = columnButtonDatas[i];
-                Columns column = (Columns)i;
-                data.Value = consoleVM.IsColumnShow(column);
-                this.Toggle(data, () => { consoleVM.SetColumnShow(column, data.Value); });
+                EnumColumns enumColumns = (EnumColumns)i;
+                data.Value = consoleVM.IsColumnShow(enumColumns);
+                this.Toggle(data, () => { consoleVM.SetColumnShow(enumColumns, data.Value); });
             }
         }
 
@@ -431,7 +431,7 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
             if (string.IsNullOrEmpty(consoleVM.FilterText))
                 return true;
 
-            if (Regex.IsMatch(logging.Message, consoleVM.FilterText) || (consoleVM.IsColumnShow(Columns.Logger) &&
+            if (Regex.IsMatch(logging.Message, consoleVM.FilterText) || (consoleVM.IsColumnShow(EnumColumns.Logger) &&
                                                                          Regex.IsMatch(logging.LoggerName,
                                                                              consoleVM.FilterText)))
                 return true;
@@ -459,7 +459,7 @@ namespace TBydFramework.Log.Editor.Log4Net.Views
                     renderedLineCountList.Add(logging.Count);
                 }
                 else
-                    renderedList.AddRange(logging.LoggingDatas);
+                    renderedList.AddRange(logging.LoggingDataList);
             }
 
             int count = renderedList.Count;

@@ -11,14 +11,12 @@ namespace TBydFramework.Framework.Tutorials
         {
             log = LogManager.GetLogger(typeof(Log4NetExample));
         }
-
-
+        
         void Update()
         {
             int r = Random.Range(0, 5);
             switch (r)
             {
-
                 case 0:
                     if (log.IsDebugEnabled)
                         log.Debug("This is a debug test.");
