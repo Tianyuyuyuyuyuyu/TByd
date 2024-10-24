@@ -99,9 +99,8 @@ namespace TBydFramework.Log.Editor.Log4Net.LogReceiver
                     }
                 }
             }
-            catch (ObjectDisposedException disposedException)
+            catch (ObjectDisposedException)
             {
-                UnityEngine.Debug.LogError(disposedException);
                 return;
             }
             catch (Exception e)
