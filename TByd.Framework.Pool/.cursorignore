@@ -1,0 +1,82 @@
+# 在索引过程中忽略的目录或文件模式（例如 foo/ 或 *.csv）
+
+# 忽略所有文件
+*
+
+# 但不忽略.cs文件
+!*.cs
+
+# 忽略所有目录
+*/
+
+# 但不忽略包含.cs文件的目录
+!*/
+
+# Unity 项目目录（保持这些忽略以确保不会索引大型生成目录）
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# MemoryCaptures 可能会变得过大，且可能包含敏感数据
+/[Mm]emoryCaptures/
+
+# Recordings 可能会变得过大
+/[Rr]ecordings/
+
+# 如果您希望忽略资源商店工具插件，请取消注释下面这行
+# /[Aa]ssets/AssetStoreTools*
+
+# 自动生成的 Jetbrains Rider 插件
+/[Aa]ssets/Plugins/Editor/JetBrains*
+
+# Visual Studio 缓存目录
+.vs/
+
+# Gradle 缓存目录
+.gradle/
+
+# 自动生成的 VS/MD/Consulo 解决方案和项目文件
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity3D 生成的元文件
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Unity3D 生成的崩溃报告文件
+sysinfo.txt
+
+# 构建文件
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Crashlytics 生成的文件
+crashlytics-build.properties
+
+# 打包的 Addressables
+/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
+
+# 临时自动生成的 Android Assets
+/[Aa]ssets/[Ss]treamingAssets/aa.meta
+/[Aa]ssets/[Ss]treamingAssets/aa/*
