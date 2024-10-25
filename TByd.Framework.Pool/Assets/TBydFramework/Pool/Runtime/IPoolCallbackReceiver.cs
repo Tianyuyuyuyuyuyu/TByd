@@ -1,4 +1,4 @@
-namespace uPools
+namespace TBydFramework.Pool.Runtime
 {
     public interface IPoolCallbackReceiver
     {

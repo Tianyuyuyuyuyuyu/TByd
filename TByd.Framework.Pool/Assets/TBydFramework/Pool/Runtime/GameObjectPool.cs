@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using TBydFramework.Pool.Runtime.Internal;
 using UnityEngine;
 
-namespace uPools
+namespace TBydFramework.Pool.Runtime
 {
     public sealed class GameObjectPool : IObjectPool<GameObject>
     {

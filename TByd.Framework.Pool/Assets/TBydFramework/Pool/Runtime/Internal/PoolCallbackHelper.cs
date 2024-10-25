@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace uPools
+namespace TBydFramework.Pool.Runtime.Internal
 {
     internal static class PoolCallbackHelper
     {

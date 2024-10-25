@@ -1,33 +1,30 @@
-#if UPOOLS_UNITASK_SUPPORT
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using Cysharp.Threading.Tasks;
 
-namespace uPools
+namespace TBydFramework.Pool.Runtime
 {
-    public abstract class AsyncObjectPoolBase<T> : IAsyncObjectPool<T>
+    public abstract class ObjectPoolBase<T> : IObjectPool<T>
         where T : class
     {
         protected readonly Stack<T> stack = new(32);
         bool isDisposed;
 
-        protected abstract UniTask<T> CreateInstanceAsync(CancellationToken cancellationToken);
+        protected abstract T CreateInstance();
         protected virtual void OnDestroy(T instance) { }
         protected virtual void OnRent(T instance) { }
         protected virtual void OnReturn(T instance) { }
 
-        public UniTask<T> RentAsync(CancellationToken cancellationToken = default)
+        public T Rent()
         {
             ThrowIfDisposed();
             if (stack.TryPop(out var obj))
             {
                 OnRent(obj);
                 if (obj is IPoolCallbackReceiver receiver) receiver.OnRent();
-                return new UniTask<T>(obj);
+                return obj;
             }
 
-            return CreateInstanceAsync(cancellationToken);
+            return CreateInstance();
         }
 
         public void Return(T obj)
@@ -49,12 +46,12 @@ namespace uPools
             }
         }
 
-        public async UniTask PrewarmAsync(int count, CancellationToken cancellationToken = default)
+        public void Prewarm(int count)
         {
             ThrowIfDisposed();
             for (int i = 0; i < count; i++)
             {
-                var instance = await CreateInstanceAsync(cancellationToken);
+                var instance = CreateInstance();
                 Return(instance);
             }
         }
@@ -62,7 +59,7 @@ namespace uPools
         public int Count => stack.Count;
         public bool IsDisposed => isDisposed;
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             ThrowIfDisposed();
             Clear();
@@ -75,4 +72,3 @@ namespace uPools
         }
     }
 }
-#endif

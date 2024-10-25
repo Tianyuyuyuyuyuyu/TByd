@@ -1,39 +1,61 @@
 #if TBYDPOOL_ADDRESSABLES_SUPPORT
 using System;
 using System.Collections.Generic;
+using TBydFramework.Pool.Runtime.Internal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace uPools
+namespace TBydFramework.Pool.Runtime.External.Addressables
 {
+    /// <summary>
+    /// 可寻址资源游戏对象池,用于管理通过Addressables加载的GameObject实例。
+    /// </summary>
     public sealed class AddressableGameObjectPool : IObjectPool<GameObject>
     {
+        private readonly object _key;
+        private readonly Stack<GameObject> _stack = new(32);
+        private bool _isDisposed;
+
+        /// <summary>
+        /// 使用资源键初始化对象池。
+        /// </summary>
+        /// <param name="key">Addressable资源的键</param>
         public AddressableGameObjectPool(object key)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            this.key = key;
+            _key = key ?? throw new ArgumentNullException(nameof(key));
         }
 
+        /// <summary>
+        /// 使用AssetReferenceGameObject初始化对象池。
+        /// </summary>
+        /// <param name="reference">AssetReferenceGameObject引用</param>
         public AddressableGameObjectPool(AssetReferenceGameObject reference)
         {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            this.key = reference.RuntimeKey;
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
+            _key = reference.RuntimeKey;
         }
 
-        readonly object key;
-        readonly Stack<GameObject> stack = new(32);
-        bool isDisposed;
+        /// <summary>
+        /// 获取池中当前的对象数量。
+        /// </summary>
+        public int Count => _stack.Count;
 
-        public int Count => stack.Count;
-        public bool IsDisposed => isDisposed;
+        /// <summary>
+        /// 获取池是否已被释放。
+        /// </summary>
+        public bool IsDisposed => _isDisposed;
 
+        /// <summary>
+        /// 从池中租用一个GameObject。
+        /// </summary>
+        /// <returns>租用的GameObject</returns>
         public GameObject Rent()
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key).WaitForCompletion();
             }
             else
             {
@@ -44,13 +66,18 @@ namespace uPools
             return obj;
         }
 
+        /// <summary>
+        /// 从池中租用一个GameObject并设置其父级。
+        /// </summary>
+        /// <param name="parent">父级Transform</param>
+        /// <returns>租用的GameObject</returns>
         public GameObject Rent(Transform parent)
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key, parent).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, parent).WaitForCompletion();
             }
             else
             {
@@ -62,13 +89,19 @@ namespace uPools
             return obj;
         }
 
+        /// <summary>
+        /// 从池中租用一个GameObject并设置其位置和旋转。
+        /// </summary>
+        /// <param name="position">位置</param>
+        /// <param name="rotation">旋转</param>
+        /// <returns>租用的GameObject</returns>
         public GameObject Rent(Vector3 position, Quaternion rotation)
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key, position, rotation).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, position, rotation).WaitForCompletion();
             }
             else
             {
@@ -80,13 +113,20 @@ namespace uPools
             return obj;
         }
 
+        /// <summary>
+        /// 从池中租用一个GameObject并设置其位置、旋转和父级。
+        /// </summary>
+        /// <param name="position">位置</param>
+        /// <param name="rotation">旋转</param>
+        /// <param name="parent">父级Transform</param>
+        /// <returns>租用的GameObject</returns>
         public GameObject Rent(Vector3 position, Quaternion rotation, Transform parent)
         {
             ThrowIfDisposed();
 
-            if (!stack.TryPop(out var obj))
+            if (!_stack.TryPop(out var obj))
             {
-                obj = Addressables.InstantiateAsync(key, position, rotation, parent).WaitForCompletion();
+                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, position, rotation, parent).WaitForCompletion();
             }
             else
             {
@@ -99,51 +139,68 @@ namespace uPools
             return obj;
         }
 
+        /// <summary>
+        /// 将GameObject归还到池中。
+        /// </summary>
+        /// <param name="obj">要归还的GameObject</param>
         public void Return(GameObject obj)
         {
             ThrowIfDisposed();
 
-            stack.Push(obj);
+            _stack.Push(obj);
             obj.SetActive(false);
 
             PoolCallbackHelper.InvokeOnReturn(obj);
         }
 
+        /// <summary>
+        /// 清空池中的所有对象。
+        /// </summary>
         public void Clear()
         {
             ThrowIfDisposed();
             
-            while (stack.TryPop(out var obj))
+            while (_stack.TryPop(out var obj))
             {
-                Addressables.ReleaseInstance(obj);
+                UnityEngine.AddressableAssets.Addressables.ReleaseInstance(obj);
             }
         }
 
+        /// <summary>
+        /// 预热池,创建指定数量的对象并添加到池中。
+        /// </summary>
+        /// <param name="count">要预热的对象数量</param>
         public void Prewarm(int count)
         {
             ThrowIfDisposed();
 
             for (int i = 0; i < count; i++)
             {
-                var obj = Addressables.InstantiateAsync(key).WaitForCompletion();
+                var obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key).WaitForCompletion();
 
-                stack.Push(obj);
+                _stack.Push(obj);
                 obj.SetActive(false);
 
                 PoolCallbackHelper.InvokeOnReturn(obj);
             }
         }
 
+        /// <summary>
+        /// 释放池中的所有资源。
+        /// </summary>
         public void Dispose()
         {
             ThrowIfDisposed();
             Clear();
-            isDisposed = true;
+            _isDisposed = true;
         }
 
-        void ThrowIfDisposed()
+        /// <summary>
+        /// 检查池是否已被释放,如果已释放则抛出异常。
+        /// </summary>
+        private void ThrowIfDisposed()
         {
-            if (isDisposed) throw new ObjectDisposedException(GetType().Name);
+            if (_isDisposed) throw new ObjectDisposedException(GetType().Name);
         }
     }
 }

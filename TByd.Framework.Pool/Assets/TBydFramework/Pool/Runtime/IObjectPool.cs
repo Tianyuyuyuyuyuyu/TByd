@@ -1,6 +1,6 @@
 using System;
 
-namespace uPools
+namespace TBydFramework.Pool.Runtime
 {
     public interface IObjectPool<T> : IDisposable
     {
