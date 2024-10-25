@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TBydFramework.Pool.Runtime.Internal;
 using UnityEngine;
 
-namespace TBydFramework.Pool.Runtime
+namespace TBydFramework.Pool.Runtime.Core
 {
     /// <summary>
     /// 共享的GameObject对象池，用于管理和复用多个不同类型的GameObject实例。

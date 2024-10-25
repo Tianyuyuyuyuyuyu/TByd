@@ -1,6 +1,7 @@
 using System;
+using TBydFramework.Pool.Runtime.Base;
 
-namespace TBydFramework.Pool.Runtime
+namespace TBydFramework.Pool.Runtime.Core
 {
     /// <summary>
     /// 通用对象池类，用于管理和复用对象实例。

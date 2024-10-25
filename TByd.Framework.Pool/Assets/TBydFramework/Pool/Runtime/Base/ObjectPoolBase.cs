@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TBydFramework.Pool.Runtime
+namespace TBydFramework.Pool.Runtime.Base
 {
     /// <summary>
     /// 对象池的抽象基类，提供了对象池的基本实现。
