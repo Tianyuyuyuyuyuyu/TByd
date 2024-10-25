@@ -266,5 +266,22 @@ namespace TBydFramework.Pool.Runtime.Core
             }
             return pool;
         }
+
+        /// <summary>
+        /// 获取指定预制体对应的池中当前的对象数量。
+        /// </summary>
+        /// <param name="original">原始GameObject预制体</param>
+        /// <returns>池中当前的对象数量</returns>
+        public static int GetPoolSize(GameObject original)
+        {
+            if (original == null) throw new ArgumentNullException(nameof(original));
+
+            if (_pools.TryGetValue(original, out var pool))
+            {
+                return pool.Count;
+            }
+
+            return 0;
+        }
     }
 }
