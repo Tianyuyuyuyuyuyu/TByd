@@ -14,6 +14,11 @@ namespace TBydFramework.Pool.Runtime.Core
         private readonly Action<T> _onRent;
         private readonly Action<T> _onReturn;
         private readonly Action<T> _onDestroy;
+        private readonly int _maxSize;
+
+        private int _totalCreated;
+        private int _maxInUse;
+        private int _currentInUse;
 
         /// <summary>
         /// 初始化对象池。
@@ -22,12 +27,15 @@ namespace TBydFramework.Pool.Runtime.Core
         /// <param name="onRent">当对象被租用时调用的操作</param>
         /// <param name="onReturn">当对象被归还时调用的操作</param>
         /// <param name="onDestroy">当对象被销毁时调用的操作</param>
-        public ObjectPool(Func<T> createFunc, Action<T> onRent = null, Action<T> onReturn = null, Action<T> onDestroy = null)
+        /// <param name="maxSize">池的最大大小，默认为int.MaxValue</param>
+        public ObjectPool(Func<T> createFunc, Action<T> onRent = null, Action<T> onReturn = null, Action<T> onDestroy = null, int maxSize = int.MaxValue)
+            : base()
         {
             _createFunc = createFunc ?? throw new ArgumentNullException(nameof(createFunc));
             _onRent = onRent;
             _onReturn = onReturn;
             _onDestroy = onDestroy;
+            _maxSize = maxSize;
         }
 
         /// <summary>
@@ -36,6 +44,7 @@ namespace TBydFramework.Pool.Runtime.Core
         /// <returns>创建的新实例</returns>
         protected override T CreateInstance()
         {
+            _totalCreated++;
             return _createFunc();
         }
 
@@ -54,6 +63,8 @@ namespace TBydFramework.Pool.Runtime.Core
         /// <param name="instance">被租用的实例</param>
         protected override void OnRent(T instance)
         {
+            _currentInUse++;
+            _maxInUse = Math.Max(_maxInUse, _currentInUse);
             _onRent?.Invoke(instance);
         }
 
@@ -63,7 +74,61 @@ namespace TBydFramework.Pool.Runtime.Core
         /// <param name="instance">被归还的实例</param>
         protected override void OnReturn(T instance)
         {
+            _currentInUse--;
             _onReturn?.Invoke(instance);
         }
+
+        /// <summary>
+        /// 从池中租用一个对象。
+        /// </summary>
+        /// <returns>租用的对象</returns>
+        public override T Rent()
+        {
+            var instance = base.Rent();
+            OnRent(instance);
+            return instance;
+        }
+
+        /// <summary>
+        /// 将对象归还到池中。
+        /// </summary>
+        /// <param name="obj">要归还的对象</param>
+        public override void Return(T obj)
+        {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+            OnReturn(obj);
+            if (_stack.Count < _maxSize)
+            {
+                base.Return(obj);
+            }
+            else
+            {
+                OnDestroy(obj);
+            }
+        }
+
+        /// <summary>
+        /// 获取池的统计信息。
+        /// </summary>
+        /// <returns>池的统计信息</returns>
+        public PoolStatistics GetStatistics() => new PoolStatistics
+        {
+            TotalCreated = _totalCreated,
+            MaxInUse = _maxInUse,
+            CurrentInUse = _currentInUse,
+            AvailableInPool = Count
+        };
+    }
+
+    /// <summary>
+    /// 池的统计信息结构。
+    /// </summary>
+    public struct PoolStatistics
+    {
+        public int TotalCreated { get; set; }
+        public int MaxInUse { get; set; }
+        public int CurrentInUse { get; set; }
+        public int AvailableInPool { get; set; }
     }
 }

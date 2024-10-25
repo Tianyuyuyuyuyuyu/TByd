@@ -48,7 +48,7 @@ namespace TBydFramework.Pool.Runtime.Base
         /// 从池中租用一个对象。
         /// </summary>
         /// <returns>租用的对象</returns>
-        public T Rent()
+        public virtual T Rent()
         {
             ThrowIfDisposed();
             if (_stack.TryPop(out var obj))
@@ -65,7 +65,7 @@ namespace TBydFramework.Pool.Runtime.Base
         /// 将对象归还到池中。
         /// </summary>
         /// <param name="obj">要归还的对象</param>
-        public void Return(T obj)
+        public virtual void Return(T obj)
         {
             ThrowIfDisposed();
             if (obj == null) throw new ArgumentNullException(nameof(obj));
