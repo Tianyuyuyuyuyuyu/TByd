@@ -1,16 +1,19 @@
-#if TBYDPOOL_ADDRESSABLES_SUPPORT
+#if TBYDPOOL_ADDRESSABLES_SUPPORT && TBYDPOOL_UNITASK_SUPPORT
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using TBydFramework.Pool.Runtime.External.UniTask;
 using TBydFramework.Pool.Runtime.Internal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace TBydFramework.Pool.Runtime.External.Addressables
+namespace TBydFramework.Pool.Runtime.External.Addressable
 {
     /// <summary>
-    /// 可寻址资源游戏对象池,用于管理通过Addressables加载的GameObject实例。
+    /// 异步可寻址资源游戏对象池,用于异步管理通过Addressable加载的GameObject实例。
     /// </summary>
-    public sealed class AddressableGameObjectPool : IObjectPool<GameObject>
+    public sealed class AsyncAddressableGameObjectPool : IAsyncObjectPool<GameObject>
     {
         private readonly object _key;
         private readonly Stack<GameObject> _stack = new(32);
@@ -20,16 +23,16 @@ namespace TBydFramework.Pool.Runtime.External.Addressables
         /// 使用资源键初始化对象池。
         /// </summary>
         /// <param name="key">Addressable资源的键</param>
-        public AddressableGameObjectPool(object key)
+        public AsyncAddressableGameObjectPool(object key)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
         }
-
+        
         /// <summary>
         /// 使用AssetReferenceGameObject初始化对象池。
         /// </summary>
         /// <param name="reference">AssetReferenceGameObject引用</param>
-        public AddressableGameObjectPool(AssetReferenceGameObject reference)
+        public AsyncAddressableGameObjectPool(AssetReferenceGameObject reference)
         {
             if (reference == null) throw new ArgumentNullException(nameof(reference));
             _key = reference.RuntimeKey;
@@ -46,16 +49,17 @@ namespace TBydFramework.Pool.Runtime.External.Addressables
         public bool IsDisposed => _isDisposed;
 
         /// <summary>
-        /// 从池中租用一个GameObject。
+        /// 异步从池中租用一个GameObject。
         /// </summary>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent()
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>表示异步操作的UniTask,其结果为租用的GameObject</returns>
+        public async UniTask<GameObject> RentAsync(CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key).WaitForCompletion();
+                obj = await Addressables.InstantiateAsync(_key).ToUniTask(cancellationToken: cancellationToken);
             }
             else
             {
@@ -67,17 +71,18 @@ namespace TBydFramework.Pool.Runtime.External.Addressables
         }
 
         /// <summary>
-        /// 从池中租用一个GameObject并设置其父级。
+        /// 异步从池中租用一个GameObject并设置其父级。
         /// </summary>
         /// <param name="parent">父级Transform</param>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent(Transform parent)
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>表示异步操作的UniTask,其结果为租用的GameObject</returns>
+        public async UniTask<GameObject> RentAsync(Transform parent, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, parent).WaitForCompletion();
+                obj = await Addressables.InstantiateAsync(_key, parent).ToUniTask(cancellationToken: cancellationToken);
             }
             else
             {
@@ -90,18 +95,19 @@ namespace TBydFramework.Pool.Runtime.External.Addressables
         }
 
         /// <summary>
-        /// 从池中租用一个GameObject并设置其位置和旋转。
+        /// 异步从池中租用一个GameObject并设置其位置和旋转。
         /// </summary>
         /// <param name="position">位置</param>
         /// <param name="rotation">旋转</param>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent(Vector3 position, Quaternion rotation)
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>表示异步操作的UniTask,其结果为租用的GameObject</returns>
+        public async UniTask<GameObject> RentAsync(Vector3 position, Quaternion rotation, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, position, rotation).WaitForCompletion();
+                obj = await Addressables.InstantiateAsync(_key, position, rotation).ToUniTask(cancellationToken: cancellationToken);
             }
             else
             {
@@ -114,19 +120,20 @@ namespace TBydFramework.Pool.Runtime.External.Addressables
         }
 
         /// <summary>
-        /// 从池中租用一个GameObject并设置其位置、旋转和父级。
+        /// 异步从池中租用一个GameObject并设置其位置、旋转和父级。
         /// </summary>
         /// <param name="position">位置</param>
         /// <param name="rotation">旋转</param>
         /// <param name="parent">父级Transform</param>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent(Vector3 position, Quaternion rotation, Transform parent)
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>表示异步操作的UniTask,其结果为租用的GameObject</returns>
+        public async UniTask<GameObject> RentAsync(Vector3 position, Quaternion rotation, Transform parent, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
             if (!_stack.TryPop(out var obj))
             {
-                obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key, position, rotation, parent).WaitForCompletion();
+                obj = await Addressables.InstantiateAsync(_key, position, rotation, parent).ToUniTask(cancellationToken: cancellationToken);
             }
             else
             {
@@ -159,24 +166,26 @@ namespace TBydFramework.Pool.Runtime.External.Addressables
         public void Clear()
         {
             ThrowIfDisposed();
-            
+
             while (_stack.TryPop(out var obj))
             {
-                UnityEngine.AddressableAssets.Addressables.ReleaseInstance(obj);
+                Addressables.ReleaseInstance(obj);
             }
         }
 
         /// <summary>
-        /// 预热池,创建指定数量的对象并添加到池中。
+        /// 异步预热池,创建指定数量的对象并添加到池中。
         /// </summary>
         /// <param name="count">要预热的对象数量</param>
-        public void Prewarm(int count)
+        /// <param name="cancellationToken">取消令牌</param>
+        /// <returns>表示异步操作的UniTask</returns>
+        public async Cysharp.Threading.Tasks.UniTask PrewarmAsync(int count, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
 
             for (int i = 0; i < count; i++)
             {
-                var obj = UnityEngine.AddressableAssets.Addressables.InstantiateAsync(_key).WaitForCompletion();
+                var obj = await Addressables.InstantiateAsync(_key).ToUniTask(cancellationToken: cancellationToken);
 
                 _stack.Push(obj);
                 obj.SetActive(false);

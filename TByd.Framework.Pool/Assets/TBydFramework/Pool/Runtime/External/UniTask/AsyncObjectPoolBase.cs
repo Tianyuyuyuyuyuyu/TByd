@@ -97,7 +97,7 @@ namespace TBydFramework.Pool.Runtime.External.UniTask
         /// </summary>
         /// <param name="count">要预热的对象数量</param>
         /// <param name="cancellationToken">取消令牌</param>
-        public async UniTask PrewarmAsync(int count, CancellationToken cancellationToken = default)
+        public async Cysharp.Threading.Tasks.UniTask PrewarmAsync(int count, CancellationToken cancellationToken = default)
         {
             ThrowIfDisposed();
             for (int i = 0; i < count; i++)
