@@ -13,7 +13,7 @@ namespace TBydFramework.Pool.Runtime.Base
         /// <summary>
         /// 用于存储池中对象的栈。
         /// </summary>
-        protected readonly Stack<T> _stack = new(32);
+        protected readonly Stack<T> Stack = new(32);
 
         /// <summary>
         /// 标记池是否已被释放。
@@ -51,7 +51,7 @@ namespace TBydFramework.Pool.Runtime.Base
         public virtual T Rent()
         {
             ThrowIfDisposed();
-            if (_stack.TryPop(out var obj))
+            if (Stack.TryPop(out var obj))
             {
                 OnRent(obj);
                 if (obj is IPoolCallbackReceiver receiver) receiver.OnRent();
@@ -72,7 +72,7 @@ namespace TBydFramework.Pool.Runtime.Base
 
             OnReturn(obj);
             if (obj is IPoolCallbackReceiver receiver) receiver.OnReturn();
-            _stack.Push(obj);
+            Stack.Push(obj);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace TBydFramework.Pool.Runtime.Base
         public void Clear()
         {
             ThrowIfDisposed();
-            while (_stack.TryPop(out var obj))
+            while (Stack.TryPop(out var obj))
             {
                 OnDestroy(obj);
             }
@@ -104,7 +104,7 @@ namespace TBydFramework.Pool.Runtime.Base
         /// <summary>
         /// 获取池中当前的对象数量。
         /// </summary>
-        public int Count => _stack.Count;
+        public int Count => Stack.Count;
 
         /// <summary>
         /// 获取池是否已被释放。

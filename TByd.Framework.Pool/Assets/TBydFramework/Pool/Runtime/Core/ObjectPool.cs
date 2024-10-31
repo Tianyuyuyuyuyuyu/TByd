@@ -98,7 +98,7 @@ namespace TBydFramework.Pool.Runtime.Core
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             OnReturn(obj);
-            if (_stack.Count < _maxSize)
+            if (Stack.Count < _maxSize)
             {
                 base.Return(obj);
             }
