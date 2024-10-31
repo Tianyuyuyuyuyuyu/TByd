@@ -1,6 +1,6 @@
 using System;
 
-namespace TBydFramework.Pool.Runtime
+namespace TBydFramework.Pool.Runtime.Base
 {
     /// <summary>
     /// 定义对象池的通用接口。

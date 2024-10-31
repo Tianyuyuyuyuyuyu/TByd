@@ -1,4 +1,4 @@
-namespace TBydFramework.Pool.Runtime
+namespace TBydFramework.Pool.Runtime.Base
 {
     /// <summary>
     /// 定义对象池回调接收器的接口。

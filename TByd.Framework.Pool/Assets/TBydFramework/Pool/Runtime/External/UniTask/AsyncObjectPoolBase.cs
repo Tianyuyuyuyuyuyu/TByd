@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using TBydFramework.Pool.Runtime.Base;
 
 namespace TBydFramework.Pool.Runtime.External.UniTask
 {
