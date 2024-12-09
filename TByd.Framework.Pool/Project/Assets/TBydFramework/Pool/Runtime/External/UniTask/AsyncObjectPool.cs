@@ -1,9 +1,9 @@
-#if TBYDPOOL_UNITASK_SUPPORT
+#if TBYD_UNITASK_SUPPORT
 using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace TBydFramework.Pool.Runtime.External.UniTask
+namespace TBydFramework.Pool.Runtime.External
 {
     /// <summary>
     /// 异步对象池的具体实现类,用于管理可异步创建的对象。

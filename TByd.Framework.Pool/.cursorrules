@@ -1,0 +1,9 @@
+Context for the code and wider project:
+
+I am developing a custom package related to object pooling, which I plan to publish to my personal npm repository. The goal is for multiple projects to install and share this package via Unity's Package Manager. This will allow for a more efficient and modular way of handling object pooling across various Unity projects.
+
+Currently, I am in the process of refactoring the entire package to ensure that it is both flexible and maintainable in the long term. While the initial version of the code was written quickly, I want to make sure the architecture is scalable and easy to extend as I continue to refine the package and add new features.
+
+The package is being developed in Unity 2021.3.8f1 using C#. I want to ensure that it integrates seamlessly with other Unity projects, and that it can be easily shared and updated across different teams and applications.
+
+Feel free to ask any questions that would help clarify my goals and how best to improve the code and package structure.

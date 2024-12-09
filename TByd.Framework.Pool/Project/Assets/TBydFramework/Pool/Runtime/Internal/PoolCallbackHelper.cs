@@ -12,7 +12,7 @@ namespace TBydFramework.Pool.Runtime.Internal
         /// <summary>
         /// 用于存储组件的缓冲列表,避免重复分配。
         /// </summary>
-        private static readonly List<IPoolCallbackReceiver> ComponentsBuffer = new();
+        private static readonly List<IPoolCallbackReceiver> _componentsBuffer = new();
 
         /// <summary>
         /// 调用GameObject及其子对象上所有IPoolCallbackReceiver接口的OnRent方法。
@@ -20,8 +20,8 @@ namespace TBydFramework.Pool.Runtime.Internal
         /// <param name="obj">要处理的GameObject</param>
         public static void InvokeOnRent(GameObject obj)
         {
-            obj.GetComponentsInChildren(ComponentsBuffer);
-            foreach (var receiver in ComponentsBuffer)
+            obj.GetComponentsInChildren(_componentsBuffer);
+            foreach (var receiver in _componentsBuffer)
             {
                 receiver.OnRent();
             }
@@ -33,8 +33,8 @@ namespace TBydFramework.Pool.Runtime.Internal
         /// <param name="obj">要处理的GameObject</param>
         public static void InvokeOnReturn(GameObject obj)
         {
-            obj.GetComponentsInChildren(ComponentsBuffer);
-            foreach (var receiver in ComponentsBuffer)
+            obj.GetComponentsInChildren(_componentsBuffer);
+            foreach (var receiver in _componentsBuffer)
             {
                 receiver.OnReturn();
             }

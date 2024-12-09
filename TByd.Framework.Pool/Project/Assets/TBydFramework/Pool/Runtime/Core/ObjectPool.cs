@@ -112,7 +112,7 @@ namespace TBydFramework.Pool.Runtime.Core
         /// 获取池的统计信息。
         /// </summary>
         /// <returns>池的统计信息</returns>
-        public PoolStatistics GetStatistics() => new PoolStatistics
+        public PoolStatistics GetStatistics() => new()
         {
             TotalCreated = _totalCreated,
             MaxInUse = _maxInUse,

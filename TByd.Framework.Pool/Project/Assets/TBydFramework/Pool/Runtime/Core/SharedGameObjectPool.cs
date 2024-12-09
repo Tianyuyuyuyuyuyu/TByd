@@ -50,9 +50,7 @@ namespace TBydFramework.Pool.Runtime.Core
             }
 
             _cloneReferences.Add(obj, pool);
-
             PoolCallbackHelper.InvokeOnRent(obj);
-            
             return obj;
         }
 
@@ -85,9 +83,7 @@ namespace TBydFramework.Pool.Runtime.Core
             }
 
             _cloneReferences.Add(obj, pool);
-
             PoolCallbackHelper.InvokeOnRent(obj);
-
             return obj;
         }
 
@@ -121,9 +117,7 @@ namespace TBydFramework.Pool.Runtime.Core
             }
 
             _cloneReferences.Add(obj, pool);
-
             PoolCallbackHelper.InvokeOnRent(obj);
-
             return obj;
         }
 
@@ -159,9 +153,7 @@ namespace TBydFramework.Pool.Runtime.Core
             }
 
             _cloneReferences.Add(obj, pool);
-
             PoolCallbackHelper.InvokeOnRent(obj);
-
             return obj;
         }
 
@@ -174,6 +166,31 @@ namespace TBydFramework.Pool.Runtime.Core
         public static TComponent Rent<TComponent>(TComponent original) where TComponent : Component
         {
             return Rent(original.gameObject).GetComponent<TComponent>();
+        }
+
+        /// <summary>
+        /// 从池中租用一个指定类型的Component并设置其父级。
+        /// </summary>
+        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
+        /// <param name="original">用于创建新实例的原始Component</param>
+        /// <param name="parent">父级Transform</param>
+        /// <returns>租用的Component</returns>
+        public static TComponent Rent<TComponent>(TComponent original, Transform parent) where TComponent : Component
+        {
+            return Rent(original.gameObject, parent).GetComponent<TComponent>();
+        }
+
+        /// <summary>
+        /// 从池中租用一个指定类型的Component并设置其位置和旋转。
+        /// </summary>
+        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
+        /// <param name="original">用于创建新实例的原始Component</param>
+        /// <param name="position">位置</param>
+        /// <param name="rotation">旋转</param>
+        /// <returns>租用的Component</returns>
+        public static TComponent Rent<TComponent>(TComponent original, Vector3 position, Quaternion rotation) where TComponent : Component
+        {
+            return Rent(original.gameObject, position, rotation).GetComponent<TComponent>();
         }
 
         /// <summary>
@@ -191,31 +208,6 @@ namespace TBydFramework.Pool.Runtime.Core
         }
 
         /// <summary>
-        /// 从池中租用一个指定类型的Component并设置其位置和旋转。
-        /// </summary>
-        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
-        /// <param name="original">用于创建新实例的原始Component</param>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <returns>租用的Component</returns>
-        public static TComponent Rent<TComponent>(TComponent original, Vector3 position, Quaternion rotation) where TComponent : Component
-        {
-            return Rent(original.gameObject, position, rotation).GetComponent<TComponent>();
-        }
-
-        /// <summary>
-        /// 从池中租用一个指定类型的Component并设置其父级。
-        /// </summary>
-        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
-        /// <param name="original">用于创建新实例的原始Component</param>
-        /// <param name="parent">父级Transform</param>
-        /// <returns>租用的Component</returns>
-        public static TComponent Rent<TComponent>(TComponent original, Transform parent) where TComponent : Component
-        {
-            return Rent(original.gameObject, parent).GetComponent<TComponent>();
-        }
-
-        /// <summary>
         /// 将GameObject归还到池中。
         /// </summary>
         /// <param name="instance">要归还的GameObject</param>
@@ -223,12 +215,19 @@ namespace TBydFramework.Pool.Runtime.Core
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
 
-            var pool = _cloneReferences[instance];
-            instance.SetActive(false);
-            pool.Push(instance);
-            _cloneReferences.Remove(instance);
+            if (_cloneReferences.TryGetValue(instance, out var pool))
+            {
+                instance.SetActive(false);
+                pool.Push(instance);
+                _cloneReferences.Remove(instance);
 
-            PoolCallbackHelper.InvokeOnReturn(instance);
+                PoolCallbackHelper.InvokeOnReturn(instance);
+            }
+            else
+            {
+                Debug.LogWarning($"Trying to return an object that was not rented from the pool: {instance.name}");
+                UnityEngine.Object.Destroy(instance);
+            }
         }
 
         /// <summary>
@@ -253,21 +252,6 @@ namespace TBydFramework.Pool.Runtime.Core
         }
 
         /// <summary>
-        /// 获取或创建指定原始GameObject的对象池。
-        /// </summary>
-        /// <param name="original">原始GameObject</param>
-        /// <returns>对应的对象池</returns>
-        private static Stack<GameObject> GetOrCreatePool(GameObject original)
-        {
-            if (!_pools.TryGetValue(original, out var pool))
-            {
-                pool = new Stack<GameObject>();
-                _pools.Add(original, pool);
-            }
-            return pool;
-        }
-
-        /// <summary>
         /// 获取指定预制体对应的池中当前的对象数量。
         /// </summary>
         /// <param name="original">原始GameObject预制体</param>
@@ -276,12 +260,36 @@ namespace TBydFramework.Pool.Runtime.Core
         {
             if (original == null) throw new ArgumentNullException(nameof(original));
 
-            if (_pools.TryGetValue(original, out var pool))
-            {
-                return pool.Count;
-            }
+            return _pools.TryGetValue(original, out var pool) ? pool.Count : 0;
+        }
 
-            return 0;
+        /// <summary>
+        /// 清空所有对象池。
+        /// </summary>
+        public static void ClearAll()
+        {
+            foreach (var pool in _pools.Values)
+            {
+                while (pool.Count > 0)
+                {
+                    if (pool.TryPop(out var obj))
+                    {
+                        UnityEngine.Object.Destroy(obj);
+                    }
+                }
+            }
+            _pools.Clear();
+            _cloneReferences.Clear();
+        }
+
+        private static Stack<GameObject> GetOrCreatePool(GameObject original)
+        {
+            if (!_pools.TryGetValue(original, out var pool))
+            {
+                pool = new Stack<GameObject>();
+                _pools.Add(original, pool);
+            }
+            return pool;
         }
     }
 }
