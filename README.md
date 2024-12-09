@@ -1,4 +1,4 @@
-![TByd Logo](https://github.com/Tianyuyuyuyuyuyu/TByd/blob/main/docs/images/TBydLogo.png)
+![TByd Logo](https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/docs/images/TBydLogo.png)
 <p align="center">
 <a href="http://120.26.201.54:1998/"><img src="https://img.shields.io/badge/download-brightgreen.svg?style=for-the-badge&logo=unity&colorA=363a4f&colorB=f5a97f" alt="Download"></a>
 <a href="https://github.com/Tianyuyuyuyuyuyu/TByd#made-with-tbyd"><img src="https://img.shields.io/badge/showcase-brightgreen.svg?style=for-the-badge&logo=github&colorA=363a4f&colorB=f5a97f" alt="Showcase"></a>
