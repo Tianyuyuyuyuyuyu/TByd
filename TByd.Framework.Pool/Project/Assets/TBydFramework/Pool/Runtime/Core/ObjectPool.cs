@@ -15,6 +15,7 @@ namespace TBydFramework.Pool.Runtime.Core
         private readonly Action<T> _onReturn;
         private readonly Action<T> _onDestroy;
         private readonly int _maxSize;
+        private readonly Func<T, bool> _validateFunc;
 
         private int _totalCreated;
         private int _maxInUse;
@@ -28,7 +29,14 @@ namespace TBydFramework.Pool.Runtime.Core
         /// <param name="onReturn">当对象被归还时调用的操作</param>
         /// <param name="onDestroy">当对象被销毁时调用的操作</param>
         /// <param name="maxSize">池的最大大小，默认为int.MaxValue</param>
-        public ObjectPool(Func<T> createFunc, Action<T> onRent = null, Action<T> onReturn = null, Action<T> onDestroy = null, int maxSize = int.MaxValue)
+        /// <param name="validateFunc">用于验证对象有效性的函数，默认为null</param>
+        public ObjectPool(
+            Func<T> createFunc, 
+            Action<T> onRent = null, 
+            Action<T> onReturn = null, 
+            Action<T> onDestroy = null, 
+            int maxSize = int.MaxValue,
+            Func<T, bool> validateFunc = null)
             : base()
         {
             _createFunc = createFunc ?? throw new ArgumentNullException(nameof(createFunc));
@@ -36,6 +44,7 @@ namespace TBydFramework.Pool.Runtime.Core
             _onReturn = onReturn;
             _onDestroy = onDestroy;
             _maxSize = maxSize;
+            _validateFunc = validateFunc;
         }
 
         /// <summary>
@@ -79,12 +88,52 @@ namespace TBydFramework.Pool.Runtime.Core
         }
 
         /// <summary>
+        /// 验证对象是否有效。
+        /// </summary>
+        /// <param name="obj">要验证的对象</param>
+        /// <returns>对象是否有效</returns>
+        protected override bool ValidateObject(T obj)
+        {
+            if (obj == null) return false;
+            
+            // 如果有自定义验证函数，则使用它
+            if (_validateFunc != null)
+            {
+                return _validateFunc(obj);
+            }
+
+            // 对于Unity对象，检查是否已被销毁
+            if (obj is UnityEngine.Object unityObj)
+            {
+                return unityObj != null;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// 从池中租用一个对象。
         /// </summary>
         /// <returns>租用的对象</returns>
         public override T Rent()
         {
-            var instance = base.Rent();
+            T instance;
+            // 尝试获取有效的对象
+            while (Stack.Count > 0)
+            {
+                instance = base.Rent();
+                if (ValidateObject(instance))
+                {
+                    OnRent(instance);
+                    return instance;
+                }
+                // 如果对象无效，则销毁它并继续尝试
+                OnDestroy(instance);
+                _totalCreated--; // 减少计数，因为这个对象已经无效
+            }
+
+            // 如果没有有效对象，创建新的
+            instance = CreateInstance();
             OnRent(instance);
             return instance;
         }
@@ -96,6 +145,14 @@ namespace TBydFramework.Pool.Runtime.Core
         public override void Return(T obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
+
+            // 验证对象是否有效
+            if (!ValidateObject(obj))
+            {
+                OnDestroy(obj);
+                _totalCreated--; // 减少计数，因为这个对象已经无效
+                return;
+            }
 
             OnReturn(obj);
             if (Stack.Count < _maxSize)

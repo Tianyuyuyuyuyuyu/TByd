@@ -45,6 +45,13 @@ namespace TBydFramework.Pool.Runtime.Base
         protected virtual void OnReturn(T instance) { }
 
         /// <summary>
+        /// 验证对象是否有效的抽象方法。
+        /// </summary>
+        /// <param name="obj">要验证的对象</param>
+        /// <returns>对象是否有效</returns>
+        protected abstract bool ValidateObject(T obj);
+
+        /// <summary>
         /// 从池中租用一个对象。
         /// </summary>
         /// <returns>租用的对象</returns>
