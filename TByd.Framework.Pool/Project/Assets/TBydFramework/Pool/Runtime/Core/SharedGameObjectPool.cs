@@ -8,278 +8,127 @@ namespace TBydFramework.Pool.Runtime.Core
     /// <summary>
     /// 共享的GameObject对象池，用于管理和复用多个不同类型的GameObject实例。
     /// </summary>
-    public static class SharedGameObjectPool
+    public class SharedGameObjectPool : ISharedGameObjectPool
     {
         private static readonly Dictionary<GameObject, Stack<GameObject>> _pools = new();
-        private static readonly Dictionary<GameObject, Stack<GameObject>> _cloneReferences = new();
+        private static readonly Dictionary<GameObject, Transform> _parents = new();
+        
+        private readonly GameObject _prefab;
+        private readonly Transform _parent;
+        private readonly Stack<GameObject> _pool = new();
 
-        /// <summary>
-        /// 在场景加载之前初始化对象池。
-        /// </summary>
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        private static void Init()
+        public SharedGameObjectPool(GameObject prefab, Transform parent)
         {
-            _pools.Clear();
-            _cloneReferences.Clear();
+            _prefab = prefab ? prefab : throw new ArgumentNullException(nameof(prefab));
+            _parent = parent;
         }
 
-        /// <summary>
-        /// 从池中租用一个GameObject。
-        /// </summary>
-        /// <param name="original">用于创建新实例的原始GameObject</param>
-        /// <returns>租用的GameObject</returns>
-        public static GameObject Rent(GameObject original)
-        {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-
-            var pool = GetOrCreatePool(original);
-
-            GameObject obj;
-            while (true)
-            {
-                if (!pool.TryPop(out obj))
-                {
-                    obj = UnityEngine.Object.Instantiate(original);
-                    break;
-                }
-                else if (obj != null)
-                {
-                    obj.SetActive(true);
-                    break;
-                }
-            }
-
-            _cloneReferences.Add(obj, pool);
-            PoolCallbackHelper.InvokeOnRent(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// 从池中租用一个GameObject并设置其父级。
-        /// </summary>
-        /// <param name="original">用于创建新实例的原始GameObject</param>
-        /// <param name="parent">父级Transform</param>
-        /// <returns>租用的GameObject</returns>
-        public static GameObject Rent(GameObject original, Transform parent)
-        {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-
-            var pool = GetOrCreatePool(original);
-
-            GameObject obj;
-            while (true)
-            {
-                if (!pool.TryPop(out obj))
-                {
-                    obj = UnityEngine.Object.Instantiate(original, parent);
-                    break;
-                }
-                else if (obj != null)
-                {
-                    obj.transform.SetParent(parent);
-                    obj.SetActive(true);
-                    break;
-                }
-            }
-
-            _cloneReferences.Add(obj, pool);
-            PoolCallbackHelper.InvokeOnRent(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// 从池中租用一个GameObject并设置其位置和旋转。
-        /// </summary>
-        /// <param name="original">用于创建新实例的原始GameObject</param>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <returns>租用的GameObject</returns>
-        public static GameObject Rent(GameObject original, Vector3 position, Quaternion rotation)
-        {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-
-            var pool = GetOrCreatePool(original);
-
-            GameObject obj;
-            while (true)
-            {
-                if (!pool.TryPop(out obj))
-                {
-                    obj = UnityEngine.Object.Instantiate(original, position, rotation);
-                    break;
-                }
-                else if (obj != null)
-                {
-                    obj.transform.SetPositionAndRotation(position, rotation);
-                    obj.SetActive(true);
-                    break;
-                }
-            }
-
-            _cloneReferences.Add(obj, pool);
-            PoolCallbackHelper.InvokeOnRent(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// 从池中租用一个GameObject并设置其位置、旋转和父级。
-        /// </summary>
-        /// <param name="original">用于创建新实例的原始GameObject</param>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <param name="parent">父级Transform</param>
-        /// <returns>租用的GameObject</returns>
-        public static GameObject Rent(GameObject original, Vector3 position, Quaternion rotation, Transform parent)
-        {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-
-            var pool = GetOrCreatePool(original);
-
-            GameObject obj;
-            while (true)
-            {
-                if (!pool.TryPop(out obj))
-                {
-                    obj = UnityEngine.Object.Instantiate(original, position, rotation, parent);
-                    break;
-                }
-                else if (obj != null)
-                {
-                    obj.transform.SetParent(parent);
-                    obj.transform.SetPositionAndRotation(position, rotation);
-                    obj.SetActive(true);
-                    break;
-                }
-            }
-
-            _cloneReferences.Add(obj, pool);
-            PoolCallbackHelper.InvokeOnRent(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// 从池中租用一个指定类型的Component。
-        /// </summary>
-        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
-        /// <param name="original">用于创建新实例的原始Component</param>
-        /// <returns>租用的Component</returns>
-        public static TComponent Rent<TComponent>(TComponent original) where TComponent : Component
-        {
-            return Rent(original.gameObject).GetComponent<TComponent>();
-        }
-
-        /// <summary>
-        /// 从池中租用一个指定类型的Component并设置其父级。
-        /// </summary>
-        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
-        /// <param name="original">用于创建新实例的原始Component</param>
-        /// <param name="parent">父级Transform</param>
-        /// <returns>租用的Component</returns>
-        public static TComponent Rent<TComponent>(TComponent original, Transform parent) where TComponent : Component
-        {
-            return Rent(original.gameObject, parent).GetComponent<TComponent>();
-        }
-
-        /// <summary>
-        /// 从池中租用一个指定类型的Component并设置其位置和旋转。
-        /// </summary>
-        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
-        /// <param name="original">用于创建新实例的原始Component</param>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <returns>租用的Component</returns>
-        public static TComponent Rent<TComponent>(TComponent original, Vector3 position, Quaternion rotation) where TComponent : Component
-        {
-            return Rent(original.gameObject, position, rotation).GetComponent<TComponent>();
-        }
-
-        /// <summary>
-        /// 从池中租用一个指定类型的Component并设置其位置、旋转和父级。
-        /// </summary>
-        /// <typeparam name="TComponent">要租用的Component类型</typeparam>
-        /// <param name="original">用于创建新实例的原始Component</param>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <param name="parent">父级Transform</param>
-        /// <returns>租用的Component</returns>
-        public static TComponent Rent<TComponent>(TComponent original, Vector3 position, Quaternion rotation, Transform parent) where TComponent : Component
-        {
-            return Rent(original.gameObject, position, rotation, parent).GetComponent<TComponent>();
-        }
-
-        /// <summary>
-        /// 将GameObject归还到池中。
-        /// </summary>
-        /// <param name="instance">要归还的GameObject</param>
-        public static void Return(GameObject instance)
-        {
-            if (instance == null) throw new ArgumentNullException(nameof(instance));
-
-            if (_cloneReferences.TryGetValue(instance, out var pool))
-            {
-                instance.SetActive(false);
-                pool.Push(instance);
-                _cloneReferences.Remove(instance);
-
-                PoolCallbackHelper.InvokeOnReturn(instance);
-            }
-            else
-            {
-                Debug.LogWarning($"Trying to return an object that was not rented from the pool: {instance.name}");
-                UnityEngine.Object.Destroy(instance);
-            }
-        }
-
-        /// <summary>
-        /// 预热池，创建指定数量的对象并添加到池中。
-        /// </summary>
-        /// <param name="original">用于创建新实例的原始GameObject</param>
-        /// <param name="count">要预热的对象数量</param>
+        #region Static Methods
+        
         public static void Prewarm(GameObject original, int count)
         {
             if (original == null) throw new ArgumentNullException(nameof(original));
 
             var pool = GetOrCreatePool(original);
-
             for (int i = 0; i < count; i++)
             {
-                var obj = UnityEngine.Object.Instantiate(original);
+                var obj = UnityEngine.Object.Instantiate(original, GetParentTransform(original));
                 obj.SetActive(false);
                 pool.Push(obj);
-
                 PoolCallbackHelper.InvokeOnReturn(obj);
             }
         }
 
-        /// <summary>
-        /// 获取指定预制体对应的池中当前的对象数量。
-        /// </summary>
-        /// <param name="original">原始GameObject预制体</param>
-        /// <returns>池中当前的对象数量</returns>
-        public static int GetPoolSize(GameObject original)
+        public static GameObject Rent(GameObject original)
         {
             if (original == null) throw new ArgumentNullException(nameof(original));
 
-            return _pools.TryGetValue(original, out var pool) ? pool.Count : 0;
-        }
+            var pool = GetOrCreatePool(original);
+            GameObject obj;
 
-        /// <summary>
-        /// 清空所有对象池。
-        /// </summary>
-        public static void ClearAll()
-        {
-            foreach (var pool in _pools.Values)
+            while (true)
             {
-                while (pool.Count > 0)
+                if (!pool.TryPop(out obj))
                 {
-                    if (pool.TryPop(out var obj))
-                    {
-                        UnityEngine.Object.Destroy(obj);
-                    }
+                    obj = UnityEngine.Object.Instantiate(original, GetParentTransform(original));
+                    break;
+                }
+                else if (obj != null)
+                {
+                    obj.SetActive(true);
+                    break;
                 }
             }
-            _pools.Clear();
-            _cloneReferences.Clear();
+
+            PoolCallbackHelper.InvokeOnRent(obj);
+            return obj;
+        }
+
+        public static GameObject Rent(GameObject original, Transform parent)
+        {
+            var obj = Rent(original);
+            obj.transform.SetParent(parent);
+            return obj;
+        }
+
+        public static GameObject Rent(GameObject original, Vector3 position, Quaternion rotation)
+        {
+            var obj = Rent(original);
+            obj.transform.SetPositionAndRotation(position, rotation);
+            return obj;
+        }
+
+        public static GameObject Rent(GameObject original, Vector3 position, Quaternion rotation, Transform parent)
+        {
+            var obj = Rent(original);
+            obj.transform.SetParent(parent);
+            obj.transform.SetPositionAndRotation(position, rotation);
+            return obj;
+        }
+
+        public static TComponent Rent<TComponent>(TComponent original) where TComponent : Component
+        {
+            return Rent(original.gameObject).GetComponent<TComponent>();
+        }
+
+        public static TComponent Rent<TComponent>(TComponent original, Transform parent) where TComponent : Component
+        {
+            return Rent(original.gameObject, parent).GetComponent<TComponent>();
+        }
+
+        public static TComponent Rent<TComponent>(TComponent original, Vector3 position, Quaternion rotation) where TComponent : Component
+        {
+            return Rent(original.gameObject, position, rotation).GetComponent<TComponent>();
+        }
+
+        public static TComponent Rent<TComponent>(TComponent original, Vector3 position, Quaternion rotation, Transform parent) where TComponent : Component
+        {
+            return Rent(original.gameObject, position, rotation, parent).GetComponent<TComponent>();
+        }
+
+        public static void Return(GameObject instance)
+        {
+            if (instance == null) return;
+
+            foreach (var pair in _pools)
+            {
+                if (instance.name.StartsWith(pair.Key.name))
+                {
+                    instance.SetActive(false);
+                    instance.transform.SetParent(GetParentTransform(pair.Key));
+                    pair.Value.Push(instance);
+                    PoolCallbackHelper.InvokeOnReturn(instance);
+                    return;
+                }
+            }
+
+            Debug.LogWarning($"尝试归还一个不是从对象池租用的对象: {instance.name}");
+            UnityEngine.Object.Destroy(instance);
+        }
+
+        public static int GetPoolSize(GameObject original)
+        {
+            return _pools.TryGetValue(original, out var pool) ? pool.Count : 0;
         }
 
         private static Stack<GameObject> GetOrCreatePool(GameObject original)
@@ -291,5 +140,49 @@ namespace TBydFramework.Pool.Runtime.Core
             }
             return pool;
         }
+
+        private static Transform GetParentTransform(GameObject original)
+        {
+            if (!_parents.TryGetValue(original, out var parent))
+            {
+                var go = new GameObject($"[Pool]{original.name}");
+                parent = go.transform;
+                _parents.Add(original, parent);
+            }
+            return parent;
+        }
+
+        #endregion
+
+        #region Instance Methods
+
+        public GameObject Get()
+        {
+            return Rent(_prefab);
+        }
+
+        public void Release(GameObject obj)
+        {
+            Return(obj);
+        }
+
+        public void Clear()
+        {
+            while (_pool.Count > 0)
+            {
+                var obj = _pool.Pop();
+                if (obj != null)
+                {
+                    UnityEngine.Object.Destroy(obj);
+                }
+            }
+        }
+
+        public void Prewarm(int count)
+        {
+            Prewarm(_prefab, count);
+        }
+
+        #endregion
     }
 }

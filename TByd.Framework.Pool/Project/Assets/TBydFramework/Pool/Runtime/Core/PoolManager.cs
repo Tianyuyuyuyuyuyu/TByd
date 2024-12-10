@@ -35,7 +35,7 @@ namespace TBydFramework.Pool.Runtime.Core
         private readonly Dictionary<string, GameObjectPool> _gameObjectPools = new();
         
         // 存储所有共享GameObject对象池
-        private readonly Dictionary<string, SharedGameObjectPool> _sharedGameObjectPools = new();
+        private readonly Dictionary<string, ISharedGameObjectPool> _sharedGameObjectPools = new();
 
         private void Awake()
         {
@@ -77,7 +77,7 @@ namespace TBydFramework.Pool.Runtime.Core
         /// <summary>
         /// 获取或创建共享GameObject对象池
         /// </summary>
-        public SharedGameObjectPool GetSharedGameObjectPool(string key, GameObject prefab)
+        public ISharedGameObjectPool GetSharedGameObjectPool(string key, GameObject prefab)
         {
             if (!_sharedGameObjectPools.TryGetValue(key, out var pool))
             {
