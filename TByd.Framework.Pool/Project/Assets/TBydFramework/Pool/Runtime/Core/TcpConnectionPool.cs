@@ -34,7 +34,7 @@ namespace TBydFramework.Pool.Runtime.Core
             int sendTimeout = 30000) 
             : base(maxSize, connectionTimeout, idleTimeout)
         {
-            _host = host ?? throw new ArgumentNullException(nameof(host));
+            _host = host;
             _port = port;
             _receiveTimeout = receiveTimeout;
             _sendTimeout = sendTimeout;

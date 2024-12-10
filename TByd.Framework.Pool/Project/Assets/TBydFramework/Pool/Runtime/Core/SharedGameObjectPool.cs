@@ -51,6 +51,7 @@ namespace TBydFramework.Pool.Runtime.Core
                 if (!pool.TryPop(out obj))
                 {
                     obj = UnityEngine.Object.Instantiate(original, GetParentTransform(original));
+                    PoolCallbackHelper.InvokeOnCreate(obj);
                     break;
                 }
                 else if (obj != null)
@@ -60,7 +61,7 @@ namespace TBydFramework.Pool.Runtime.Core
                 }
             }
 
-            PoolCallbackHelper.InvokeOnRent(obj);
+            PoolCallbackHelper.InvokeOnGet(obj);
             return obj;
         }
 
@@ -150,6 +151,31 @@ namespace TBydFramework.Pool.Runtime.Core
                 _parents.Add(original, parent);
             }
             return parent;
+        }
+
+        public static void ClearAll()
+        {
+            foreach (var pair in _pools)
+            {
+                while (pair.Value.Count > 0)
+                {
+                    var obj = pair.Value.Pop();
+                    if (obj != null)
+                    {
+                        UnityEngine.Object.Destroy(obj);
+                    }
+                }
+            }
+            _pools.Clear();
+
+            foreach (var pair in _parents)
+            {
+                if (pair.Value != null)
+                {
+                    UnityEngine.Object.Destroy(pair.Value.gameObject);
+                }
+            }
+            _parents.Clear();
         }
 
         #endregion

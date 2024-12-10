@@ -2,6 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Cysharp.Threading.Tasks;
+using TBydFramework.Pool.Runtime.Extensions;
+using TBydFramework.Pool.Runtime.Config;
+using TBydFramework.Pool.Runtime.Diagnostics;
+using TBydFramework.Pool.Runtime.Interfaces;
 
 namespace TBydFramework.Pool.Runtime.Core
 {
@@ -9,200 +14,68 @@ namespace TBydFramework.Pool.Runtime.Core
     /// 资源回收池，用于管理和复用Unity资源(如纹理、音频等)。
     /// </summary>
     /// <typeparam name="T">资源类型，必须继承自UnityEngine.Object</typeparam>
-    public sealed class ResourcePool<T> where T : Object
+    public class ResourcePool<T> : IPool<T> where T : UnityEngine.Object
     {
-        private readonly Dictionary<int, Stack<T>> _resourceStacks = new();
-        private readonly Dictionary<int, T> _originalResources = new();
-        private readonly int _maxSize;
-        private bool _isDisposed;
+        private readonly ObjectPool<T> _internalPool;
+        private readonly string _resourcePath;
+        private readonly PoolSettings _settings;
+        private readonly PoolStatistics _statistics = new();
 
-        /// <summary>
-        /// 初始化资源回收池
-        /// </summary>
-        /// <param name="maxSize">每个资源类型的最大缓存数量，默认为8</param>
-        public ResourcePool(int maxSize = 8)
+        public ResourcePool(string resourcePath, PoolSettings settings = null)
         {
-            _maxSize = maxSize;
+            _resourcePath = resourcePath;
+            _settings = settings;
+            _internalPool = new ObjectPool<T>(CreateInstance, settings);
         }
 
-        /// <summary>
-        /// 获取指定资源的实例
-        /// </summary>
-        /// <param name="original">原始资源</param>
-        /// <returns>资源实例</returns>
-        public T Get(T original)
+        private T CreateInstance()
         {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-            ThrowIfDisposed();
-
-            int id = original.GetInstanceID();
+            var startTime = Time.realtimeSinceStartup;
+            var instance = Resources.Load<T>(_resourcePath);
             
-            // 记录原始资源
-            if (!_originalResources.ContainsKey(id))
-            {
-                _originalResources[id] = original;
-            }
-
-            // 尝试从对应的栈中获取资源
-            if (!_resourceStacks.TryGetValue(id, out var stack))
-            {
-                stack = new Stack<T>();
-                _resourceStacks[id] = stack;
-            }
-
-            if (stack.Count > 0)
-            {
-                return stack.Pop();
-            }
-
-            // 创建新的资源副本
-            return Object.Instantiate(original);
-        }
-
-        /// <summary>
-        /// 回收资源实例
-        /// </summary>
-        /// <param name="resource">要回收的资源实例</param>
-        public void Release(T resource)
-        {
-            if (resource == null) throw new ArgumentNullException(nameof(resource));
-            ThrowIfDisposed();
-
-            // 查找原始资源
-            T original = null;
-            int originalId = -1;
+            if (instance == null)
+                throw new ArgumentException($"无法加载资源: {_resourcePath}");
             
-            foreach (var kvp in _originalResources)
-            {
-                if (CompareResources(resource, kvp.Value))
-                {
-                    original = kvp.Value;
-                    originalId = kvp.Key;
-                    break;
-                }
-            }
-
-            if (original == null)
-            {
-                Debug.LogWarning($"无法找到资源 {resource.name} 的原始资源，将直接销毁");
-                Object.Destroy(resource);
-                return;
-            }
-
-            // 获取对应的资源栈
-            if (!_resourceStacks.TryGetValue(originalId, out var stack))
-            {
-                stack = new Stack<T>();
-                _resourceStacks[originalId] = stack;
-            }
-
-            // 如果栈未满，则回收资源
-            if (stack.Count < _maxSize)
-            {
-                stack.Push(resource);
-            }
-            else
-            {
-                Object.Destroy(resource);
-            }
-        }
-
-        /// <summary>
-        /// 预热指定资源的实例
-        /// </summary>
-        /// <param name="original">原始资源</param>
-        /// <param name="count">预热数量</param>
-        public void Prewarm(T original, int count)
-        {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-            ThrowIfDisposed();
-
-            for (int i = 0; i < count; i++)
-            {
-                var resource = Get(original);
-                Release(resource);
-            }
-        }
-
-        /// <summary>
-        /// 清理指定资源的所有实例
-        /// </summary>
-        /// <param name="original">原始资源</param>
-        public void Clear(T original)
-        {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-            ThrowIfDisposed();
-
-            int id = original.GetInstanceID();
-            if (_resourceStacks.TryGetValue(id, out var stack))
-            {
-                while (stack.Count > 0)
-                {
-                    var resource = stack.Pop();
-                    Object.Destroy(resource);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 清理所有资源
-        /// </summary>
-        public void ClearAll()
-        {
-            ThrowIfDisposed();
-
-            foreach (var stack in _resourceStacks.Values)
-            {
-                while (stack.Count > 0)
-                {
-                    var resource = stack.Pop();
-                    Object.Destroy(resource);
-                }
-            }
+            _statistics.TotalCreated++;
+            _statistics.UpdateLatency(Time.realtimeSinceStartup - startTime);
             
-            _resourceStacks.Clear();
-            _originalResources.Clear();
+            return instance;
         }
 
-        /// <summary>
-        /// 获取指定资源当前缓存的实例数量
-        /// </summary>
-        public int GetCount(T original)
+        public T Get()
         {
-            if (original == null) throw new ArgumentNullException(nameof(original));
-            
-            int id = original.GetInstanceID();
-            return _resourceStacks.TryGetValue(id, out var stack) ? stack.Count : 0;
+            var item = _internalPool.Get();
+            _statistics.CurrentSize = Count;
+            _statistics.PeakSize = Math.Max(_statistics.PeakSize, Count);
+            return item;
         }
 
-        /// <summary>
-        /// 比较两个资源是否相关
-        /// </summary>
-        private bool CompareResources(T resource1, T resource2)
+        public void Return(T item)
         {
-            // 对于不同类型的资源可能需要不同的比较方法
-            if (resource1 is Texture2D || resource1 is AudioClip)
-            {
-                return resource1.name == resource2.name;
-            }
-            
-            return resource1.GetInstanceID() == resource2.GetInstanceID();
+            _internalPool.Return(item);
+            _statistics.TotalReturned++;
+            _statistics.CurrentSize = Count;
         }
 
-        /// <summary>
-        /// 释放资源池
-        /// </summary>
-        public void Dispose()
+        public void Clear()
         {
-            if (_isDisposed) return;
-            
-            ClearAll();
-            _isDisposed = true;
+            _internalPool.Clear();
+            _statistics.CurrentSize = 0;
         }
 
-        private void ThrowIfDisposed()
+        public int Count => _internalPool.Count;
+        public int Capacity => _settings?.DefaultPoolSize ?? 32;
+
+        public void Prewarm(int count)
         {
-            if (_isDisposed) throw new ObjectDisposedException(GetType().Name);
+            _internalPool.Prewarm(count);
+            _statistics.CurrentSize = Count;
+        }
+
+        public PoolStatistics GetStatistics()
+        {
+            _statistics.UpdateUptime();
+            return _statistics;
         }
     }
 } 

@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Concurrent;
 
 namespace TBydFramework.Pool.Runtime.Core
 {
     /// <summary>
     /// 对象池管理器,用于全局管理和复用对象池
     /// </summary>
-    public class PoolManager : MonoBehaviour
+    public sealed class PoolManager : SingletonBehaviour<PoolManager>
     {
         private static PoolManager _instance;
         
@@ -28,14 +29,29 @@ namespace TBydFramework.Pool.Runtime.Core
             }
         }
 
-        // 存储所有类型的对象池
-        private readonly Dictionary<Type, object> _poolMap = new();
+        // 使用泛型缓存优化性能
+        private readonly ConcurrentDictionary<Type, object> _poolMap = new();
         
         // 存储所有GameObject对象池
-        private readonly Dictionary<string, GameObjectPool> _gameObjectPools = new();
+        private readonly ConcurrentDictionary<string, GameObjectPool> _gameObjectPools = new();
         
         // 存储所有共享GameObject对象池
         private readonly Dictionary<string, ISharedGameObjectPool> _sharedGameObjectPools = new();
+
+        private readonly Dictionary<Type, GameObject> _prefabMap = new();
+
+        private readonly Dictionary<Type, string> _resourcePathMap = new();
+
+        // 添加池配置
+        [Serializable]
+        public class PoolConfig
+        {
+            public int DefaultCapacity = 32;
+            public int MaxSize = 1000;
+            public float CleanupInterval = 60f;
+        }
+        
+        [SerializeField] private PoolConfig _config = new PoolConfig();
 
         private void Awake()
         {
@@ -153,6 +169,44 @@ namespace TBydFramework.Pool.Runtime.Core
                 pool.Clear();
             }
             _sharedGameObjectPools.Clear();
+        }
+
+        public void RegisterPrefab<T>(GameObject prefab) where T : Component
+        {
+            RegisterPrefab(typeof(T), prefab);
+        }
+
+        public GameObject GetPrefab(Type type)
+        {
+            return _prefabMap.TryGetValue(type, out var prefab) ? prefab : null;
+        }
+
+        public void RegisterPrefab(Type type, GameObject prefab)
+        {
+            if (!prefab.GetComponent(type))
+                throw new ArgumentException($"预制体上没有找到组件 {type}");
+
+            _prefabMap[type] = prefab;
+        }
+
+        public void RegisterResourcePath(Type type, string path)
+        {
+            _resourcePathMap[type] = path;
+        }
+
+        public void RegisterResourcePath<T>(string path)
+        {
+            RegisterResourcePath(typeof(T), path);
+        }
+
+        public string GetResourcePath(Type type)
+        {
+            return _resourcePathMap.TryGetValue(type, out var path) ? path : null;
+        }
+
+        public string GetResourcePath<T>()
+        {
+            return GetResourcePath(typeof(T));
         }
 
         private void OnDestroy()

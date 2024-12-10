@@ -13,7 +13,8 @@ namespace TBydFramework.Pool.Runtime.Base
         /// <summary>
         /// 用于存储池中对象的栈。
         /// </summary>
-        protected readonly Stack<T> Stack = new(32);
+        private readonly Stack<T> _stack;
+        private readonly int _initialCapacity;
 
         /// <summary>
         /// 标记池是否已被释放。
@@ -58,7 +59,7 @@ namespace TBydFramework.Pool.Runtime.Base
         public virtual T Rent()
         {
             ThrowIfDisposed();
-            if (Stack.TryPop(out var obj))
+            if (_stack.TryPop(out var obj))
             {
                 OnRent(obj);
                 if (obj is IPoolCallbackReceiver receiver) receiver.OnRent();
@@ -79,7 +80,7 @@ namespace TBydFramework.Pool.Runtime.Base
 
             OnReturn(obj);
             if (obj is IPoolCallbackReceiver receiver) receiver.OnReturn();
-            Stack.Push(obj);
+            _stack.Push(obj);
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace TBydFramework.Pool.Runtime.Base
         public void Clear()
         {
             ThrowIfDisposed();
-            while (Stack.TryPop(out var obj))
+            while (_stack.TryPop(out var obj))
             {
                 OnDestroy(obj);
             }
@@ -111,7 +112,7 @@ namespace TBydFramework.Pool.Runtime.Base
         /// <summary>
         /// 获取池中当前的对象数量。
         /// </summary>
-        public int Count => Stack.Count;
+        public int Count => _stack.Count;
 
         /// <summary>
         /// 获取池是否已被释放。
@@ -134,6 +135,19 @@ namespace TBydFramework.Pool.Runtime.Base
         protected void ThrowIfDisposed()
         {
             if (_isDisposed) throw new ObjectDisposedException(GetType().Name);
+        }
+
+        /// <summary>
+        /// 添加批量操作支持
+        /// </summary>
+        /// <param name="items">要租用的对象数组</param>
+        /// <param name="count">要租用的对象数量</param>
+        public virtual void RentBulk(T[] items, int count)
+        {
+            for(int i = 0; i < count; i++)
+            {
+                items[i] = Rent();
+            }
         }
     }
 }

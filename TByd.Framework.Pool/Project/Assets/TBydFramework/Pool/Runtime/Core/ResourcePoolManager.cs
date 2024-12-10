@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using TBydFramework.Pool.Runtime.Config;
 
 namespace TBydFramework.Pool.Runtime.Core
 {
@@ -13,6 +14,7 @@ namespace TBydFramework.Pool.Runtime.Core
         private static ResourcePoolManager _instance;
         
         private readonly Dictionary<Type, object> _pools = new();
+        private readonly Dictionary<Type, string> _resourcePaths = new();
         
         public static ResourcePoolManager Instance
         {
@@ -39,14 +41,27 @@ namespace TBydFramework.Pool.Runtime.Core
         }
 
         /// <summary>
+        /// 注册资源路径
+        /// </summary>
+        public void RegisterResourcePath<T>(string resourcePath) where T : Object
+        {
+            _resourcePaths[typeof(T)] = resourcePath;
+        }
+
+        /// <summary>
         /// 获取指定类型的资源池
         /// </summary>
-        public ResourcePool<T> GetPool<T>(int maxSize = 8) where T : Object
+        public ResourcePool<T> GetPool<T>() where T : Object
         {
             var type = typeof(T);
             if (!_pools.TryGetValue(type, out var pool))
             {
-                pool = new ResourcePool<T>(maxSize);
+                if (!_resourcePaths.TryGetValue(type, out var path))
+                {
+                    throw new ArgumentException($"未找到类型 {type} 的资源路径，请先调用 RegisterResourcePath");
+                }
+                
+                pool = new ResourcePool<T>(path);
                 _pools[type] = pool;
             }
             return (ResourcePool<T>)pool;
@@ -59,7 +74,7 @@ namespace TBydFramework.Pool.Runtime.Core
         {
             if (_pools.TryGetValue(typeof(T), out var pool))
             {
-                ((ResourcePool<T>)pool).ClearAll();
+                ((ResourcePool<T>)pool).Clear();
             }
         }
 

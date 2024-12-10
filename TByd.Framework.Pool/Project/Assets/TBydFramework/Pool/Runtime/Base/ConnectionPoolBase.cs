@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace TBydFramework.Pool.Runtime.Base
 {
@@ -11,23 +14,24 @@ namespace TBydFramework.Pool.Runtime.Base
     public abstract class ConnectionPoolBase<TConnection> : IConnectionPool<TConnection>
         where TConnection : class
     {
-        protected readonly Stack<TConnection> IdleConnections;
-        protected readonly HashSet<TConnection> ActiveConnections;
-        protected readonly object SyncRoot = new object();
-        
+        private readonly SemaphoreSlim _semaphore;
+        private readonly ConcurrentQueue<TConnection> _idleConnections;
+        private readonly ConcurrentDictionary<TConnection, DateTime> _activeConnections;
         private readonly int _maxSize;
         private readonly TimeSpan _connectionTimeout;
         private readonly TimeSpan _idleTimeout;
         private bool _isDisposed;
+        private readonly object _syncRoot = new object();
 
-        protected ConnectionPoolBase(int maxSize = 10, TimeSpan? connectionTimeout = null, TimeSpan? idleTimeout = null)
+        protected ConnectionPoolBase(int maxSize, TimeSpan? connectionTimeout = null, TimeSpan? idleTimeout = null)
         {
             _maxSize = maxSize;
             _connectionTimeout = connectionTimeout ?? TimeSpan.FromSeconds(30);
             _idleTimeout = idleTimeout ?? TimeSpan.FromMinutes(5);
             
-            IdleConnections = new Stack<TConnection>(_maxSize);
-            ActiveConnections = new HashSet<TConnection>();
+            _semaphore = new SemaphoreSlim(maxSize, maxSize);
+            _idleConnections = new ConcurrentQueue<TConnection>();
+            _activeConnections = new ConcurrentDictionary<TConnection, DateTime>();
             
             StartMaintenanceTimer();
         }
@@ -47,37 +51,67 @@ namespace TBydFramework.Pool.Runtime.Base
         /// </summary>
         protected abstract void CloseConnection(TConnection connection);
 
+        /// <summary>
+        /// 同步获取连接（不推荐使用，建议使用 AcquireAsync）
+        /// </summary>
         public virtual TConnection Acquire()
         {
             ThrowIfDisposed();
+            _semaphore.Wait();
 
-            lock (SyncRoot)
+            try
             {
-                TConnection connection = null;
-                
-                while (IdleConnections.Count > 0)
+                TConnection connection;
+                while (_idleConnections.TryDequeue(out connection))
                 {
-                    connection = IdleConnections.Pop();
                     if (ValidateConnection(connection))
                     {
-                        break;
+                        _activeConnections.TryAdd(connection, DateTime.UtcNow);
+                        return connection;
                     }
                     CloseConnection(connection);
-                    connection = null;
                 }
 
-                if (connection == null && ActiveConnections.Count < _maxSize)
+                connection = CreateConnection();
+                _activeConnections.TryAdd(connection, DateTime.UtcNow);
+                return connection;
+            }
+            catch
+            {
+                _semaphore.Release();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 异步获取连接（推荐使用此方法）
+        /// </summary>
+        public virtual async Task<TConnection> AcquireAsync(CancellationToken cancellationToken = default)
+        {
+            ThrowIfDisposed();
+            await _semaphore.WaitAsync(cancellationToken);
+
+            try
+            {
+                TConnection connection;
+                while (_idleConnections.TryDequeue(out connection))
                 {
-                    connection = CreateConnection();
+                    if (ValidateConnection(connection))
+                    {
+                        _activeConnections.TryAdd(connection, DateTime.UtcNow);
+                        return connection;
+                    }
+                    CloseConnection(connection);
                 }
 
-                if (connection != null)
-                {
-                    ActiveConnections.Add(connection);
-                    return connection;
-                }
-
-                throw new InvalidOperationException("无法获取可用连接，连接池已满");
+                connection = CreateConnection();
+                _activeConnections.TryAdd(connection, DateTime.UtcNow);
+                return connection;
+            }
+            catch
+            {
+                _semaphore.Release();
+                throw;
             }
         }
 
@@ -86,27 +120,27 @@ namespace TBydFramework.Pool.Runtime.Base
             ThrowIfDisposed();
             if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-            lock (SyncRoot)
+            DateTime lastUsed;
+            if (!_activeConnections.TryRemove(connection, out lastUsed))
             {
-                if (!ActiveConnections.Remove(connection))
-                {
-                    throw new InvalidOperationException("试图释放一个不属于此池的连接");
-                }
-
-                if (ValidateConnection(connection))
-                {
-                    IdleConnections.Push(connection);
-                }
-                else
-                {
-                    CloseConnection(connection);
-                }
+                throw new InvalidOperationException("试图释放一个不属于此池的连接");
             }
+
+            if (ValidateConnection(connection))
+            {
+                _idleConnections.Enqueue(connection);
+            }
+            else
+            {
+                CloseConnection(connection);
+            }
+
+            _semaphore.Release();
         }
 
-        public int Count => IdleConnections.Count;
+        public int Count => _idleConnections.Count;
         
-        public int ActiveCount => ActiveConnections.Count;
+        public int ActiveCount => _activeConnections.Count;
         
         public bool IsDisposed => _isDisposed;
 
@@ -114,19 +148,18 @@ namespace TBydFramework.Pool.Runtime.Base
         {
             ThrowIfDisposed();
             
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
-                foreach (var connection in IdleConnections)
+                while (_idleConnections.TryDequeue(out var connection))
                 {
                     CloseConnection(connection);
                 }
-                IdleConnections.Clear();
 
-                foreach (var connection in ActiveConnections)
+                foreach (var kvp in _activeConnections)
                 {
-                    CloseConnection(connection);
+                    CloseConnection(kvp.Key);
                 }
-                ActiveConnections.Clear();
+                _activeConnections.Clear();
             }
         }
 
@@ -140,7 +173,7 @@ namespace TBydFramework.Pool.Runtime.Base
                 var connection = CreateConnection();
                 if (connection != null)
                 {
-                    IdleConnections.Push(connection);
+                    _idleConnections.Enqueue(connection);
                 }
             }
         }
@@ -183,22 +216,24 @@ namespace TBydFramework.Pool.Runtime.Base
 
         private void RemoveStaleConnections()
         {
-            lock (SyncRoot)
+            lock (_syncRoot)
             {
-                var connectionsToRemove = new List<TConnection>();
+                var staleConnections = new List<TConnection>();
                 
-                foreach (var connection in IdleConnections)
+                foreach (var connection in _idleConnections)
                 {
                     if (!ValidateConnection(connection))
                     {
-                        connectionsToRemove.Add(connection);
+                        staleConnections.Add(connection);
                     }
                 }
 
-                foreach (var connection in connectionsToRemove)
+                foreach (var connection in staleConnections)
                 {
-                    IdleConnections.Pop();
-                    CloseConnection(connection);
+                    if (_idleConnections.TryDequeue(out _))
+                    {
+                        CloseConnection(connection);
+                    }
                 }
             }
         }

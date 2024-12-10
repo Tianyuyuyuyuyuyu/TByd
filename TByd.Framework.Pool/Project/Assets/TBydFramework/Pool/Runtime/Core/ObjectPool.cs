@@ -1,191 +1,93 @@
 using System;
-using TBydFramework.Pool.Runtime.Base;
+using System.Collections.Generic;
+using TBydFramework.Pool.Runtime.Config;
+using TBydFramework.Pool.Runtime.Interfaces;
+using TBydFramework.Pool.Runtime.Diagnostics;
+using UnityEngine;
 
 namespace TBydFramework.Pool.Runtime.Core
 {
-    /// <summary>
-    /// 通用对象池类，用于管理和复用对象实例。
-    /// </summary>
-    /// <typeparam name="T">池中管理的对象类型</typeparam>
-    public sealed class ObjectPool<T> : ObjectPoolBase<T>
-        where T : class
+    public class ObjectPool<T> : IPool<T> where T : class
     {
+        private readonly Stack<T> _stack;
         private readonly Func<T> _createFunc;
-        private readonly Action<T> _onRent;
+        private readonly Action<T> _onGet;
         private readonly Action<T> _onReturn;
-        private readonly Action<T> _onDestroy;
-        private readonly int _maxSize;
-        private readonly Func<T, bool> _validateFunc;
+        private readonly PoolSettings _settings;
+        private readonly PoolStatistics _statistics = new();
 
-        private int _totalCreated;
-        private int _maxInUse;
-        private int _currentInUse;
-
-        /// <summary>
-        /// 初始化对象池。
-        /// </summary>
-        /// <param name="createFunc">用于创建新实例的函数</param>
-        /// <param name="onRent">当对象被租用时调用的操作</param>
-        /// <param name="onReturn">当对象被归还时调用的操作</param>
-        /// <param name="onDestroy">当对象被销毁时调用的操作</param>
-        /// <param name="maxSize">池的最大大小，默认为int.MaxValue</param>
-        /// <param name="validateFunc">用于验证对象有效性的函数，默认为null</param>
-        public ObjectPool(
-            Func<T> createFunc, 
-            Action<T> onRent = null, 
-            Action<T> onReturn = null, 
-            Action<T> onDestroy = null, 
-            int maxSize = int.MaxValue,
-            Func<T, bool> validateFunc = null)
-            : base()
+        public ObjectPool(Func<T> createFunc = null, PoolSettings settings = null, Action<T> onGet = null, Action<T> onReturn = null)
         {
-            _createFunc = createFunc ?? throw new ArgumentNullException(nameof(createFunc));
-            _onRent = onRent;
+            _createFunc = createFunc ?? (() => Activator.CreateInstance<T>());
+            _settings = settings;
+            _onGet = onGet;
             _onReturn = onReturn;
-            _onDestroy = onDestroy;
-            _maxSize = maxSize;
-            _validateFunc = validateFunc;
+            _stack = new Stack<T>(_settings?.DefaultPoolSize ?? 32);
         }
 
-        /// <summary>
-        /// 创建新的实例。
-        /// </summary>
-        /// <returns>创建的新实例</returns>
-        protected override T CreateInstance()
+        public T Get()
         {
-            _totalCreated++;
-            return _createFunc();
-        }
+            var startTime = Time.realtimeSinceStartup;
+            T item;
 
-        /// <summary>
-        /// 当实例被销毁时调用。
-        /// </summary>
-        /// <param name="instance">被销毁的实例</param>
-        protected override void OnDestroy(T instance)
-        {
-            _onDestroy?.Invoke(instance);
-        }
-
-        /// <summary>
-        /// 当实例被租用时调用。
-        /// </summary>
-        /// <param name="instance">被租用的实例</param>
-        protected override void OnRent(T instance)
-        {
-            _currentInUse++;
-            _maxInUse = Math.Max(_maxInUse, _currentInUse);
-            _onRent?.Invoke(instance);
-        }
-
-        /// <summary>
-        /// 当实例被归还时调用。
-        /// </summary>
-        /// <param name="instance">被归还的实例</param>
-        protected override void OnReturn(T instance)
-        {
-            _currentInUse--;
-            _onReturn?.Invoke(instance);
-        }
-
-        /// <summary>
-        /// 验证对象是否有效。
-        /// </summary>
-        /// <param name="obj">要验证的对象</param>
-        /// <returns>对象是否有效</returns>
-        protected override bool ValidateObject(T obj)
-        {
-            if (obj == null) return false;
-            
-            // 如果有自定义验证函数，则使用它
-            if (_validateFunc != null)
+            if (_stack.Count > 0)
             {
-                return _validateFunc(obj);
-            }
-
-            // 对于Unity对象，检查是否已被销毁
-            if (obj is UnityEngine.Object unityObj)
-            {
-                return unityObj != null;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// 从池中租用一个对象。
-        /// </summary>
-        /// <returns>租用的对象</returns>
-        public override T Rent()
-        {
-            T instance;
-            // 尝试获取有效的对象
-            while (Stack.Count > 0)
-            {
-                instance = base.Rent();
-                if (ValidateObject(instance))
-                {
-                    OnRent(instance);
-                    return instance;
-                }
-                // 如果对象无效，则销毁它并继续尝试
-                OnDestroy(instance);
-                _totalCreated--; // 减少计数，因为这个对象已经无效
-            }
-
-            // 如果没有有效对象，创建新的
-            instance = CreateInstance();
-            OnRent(instance);
-            return instance;
-        }
-
-        /// <summary>
-        /// 将对象归还到池中。
-        /// </summary>
-        /// <param name="obj">要归还的对象</param>
-        public override void Return(T obj)
-        {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
-
-            // 验证对象是否有效
-            if (!ValidateObject(obj))
-            {
-                OnDestroy(obj);
-                _totalCreated--; // 减少计数，因为这个对象已经无效
-                return;
-            }
-
-            OnReturn(obj);
-            if (Stack.Count < _maxSize)
-            {
-                base.Return(obj);
+                item = _stack.Pop();
             }
             else
             {
-                OnDestroy(obj);
+                item = _createFunc();
+                _statistics.TotalCreated++;
+                _statistics.MissCount++;
+            }
+
+            _statistics.CurrentSize = Count;
+            _statistics.PeakSize = Math.Max(_statistics.PeakSize, Count);
+            _statistics.UpdateLatency(Time.realtimeSinceStartup - startTime);
+
+            _onGet?.Invoke(item);
+            return item;
+        }
+
+        public void Return(T item)
+        {
+            if (item == null) return;
+
+            if (_settings != null && Count >= _settings.DefaultPoolSize)
+                return;
+
+            _onReturn?.Invoke(item);
+            _stack.Push(item);
+            
+            _statistics.TotalReturned++;
+            _statistics.CurrentSize = Count;
+        }
+
+        public void Clear()
+        {
+            _stack.Clear();
+            _statistics.CurrentSize = 0;
+        }
+
+        public int Count => _stack.Count;
+
+        public int Capacity => _settings?.DefaultPoolSize ?? 32;
+
+        public void Prewarm(int count)
+        {
+            var targetCount = _settings != null ? Math.Min(count, _settings.DefaultPoolSize - Count) : count;
+            for (int i = 0; i < targetCount; i++)
+            {
+                var item = _createFunc();
+                _statistics.TotalCreated++;
+                Return(item);
             }
         }
 
-        /// <summary>
-        /// 获取池的统计信息。
-        /// </summary>
-        /// <returns>池的统计信息</returns>
-        public PoolStatistics GetStatistics() => new()
+        public PoolStatistics GetStatistics()
         {
-            TotalCreated = _totalCreated,
-            MaxInUse = _maxInUse,
-            CurrentInUse = _currentInUse,
-            AvailableInPool = Count
-        };
-    }
-
-    /// <summary>
-    /// 池的统计信息结构。
-    /// </summary>
-    public struct PoolStatistics
-    {
-        public int TotalCreated { get; set; }
-        public int MaxInUse { get; set; }
-        public int CurrentInUse { get; set; }
-        public int AvailableInPool { get; set; }
+            _statistics.UpdateUptime();
+            return _statistics;
+        }
     }
 }

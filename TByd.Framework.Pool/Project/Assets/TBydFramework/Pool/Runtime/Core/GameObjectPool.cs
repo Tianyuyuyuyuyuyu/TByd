@@ -2,26 +2,34 @@ using System;
 using System.Collections.Generic;
 using TBydFramework.Pool.Runtime.Base;
 using TBydFramework.Pool.Runtime.Internal;
+using TBydFramework.Pool.Runtime.Exceptions;
 using UnityEngine;
+using TBydFramework.Pool.Runtime.Config;
+using TBydFramework.Pool.Runtime.Interfaces;
+using TBydFramework.Pool.Runtime.Diagnostics;
 
 namespace TBydFramework.Pool.Runtime.Core
 {
     /// <summary>
     /// GameObject对象池，用于管理和复用GameObject实例。
     /// </summary>
-    public sealed class GameObjectPool : IObjectPool<GameObject>
+    public sealed class GameObjectPool : IPool<GameObject>, IDisposable
     {
         private readonly GameObject _original;
         private readonly Stack<GameObject> _stack = new(32);
+        private readonly PoolSettings _settings;
         private bool _isDisposed;
+        private readonly PoolStatistics _statistics = new();
 
         /// <summary>
         /// 初始化GameObject对象池。
         /// </summary>
         /// <param name="original">用于创建新实例的原始GameObject</param>
-        public GameObjectPool(GameObject original)
+        /// <param name="settings">池配置</param>
+        public GameObjectPool(GameObject original, PoolSettings settings = null)
         {
             _original = original ? original : throw new ArgumentNullException(nameof(original));
+            _settings = settings;
         }
 
         /// <summary>
@@ -30,116 +38,63 @@ namespace TBydFramework.Pool.Runtime.Core
         public int Count => _stack.Count;
 
         /// <summary>
-        /// 获取池是否已被释放。
+        /// 获取池的容量。
         /// </summary>
-        public bool IsDisposed => _isDisposed;
+        public int Capacity => _settings?.DefaultPoolSize ?? 32;
 
         /// <summary>
-        /// 从池中租用一个GameObject。
+        /// 从池中获取一个GameObject实例。
         /// </summary>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent()
+        public GameObject Get()
         {
             ThrowIfDisposed();
 
-            if (!_stack.TryPop(out var obj))
+            var startTime = Time.realtimeSinceStartup;
+            GameObject obj;
+            
+            if (_stack.Count > 0)
+            {
+                obj = _stack.Pop();
+            }
+            else
             {
                 obj = UnityEngine.Object.Instantiate(_original);
-            }
-            else
-            {
-                obj.SetActive(true);
+                _statistics.TotalCreated++;
+                _statistics.MissCount++;
+                PoolCallbackHelper.InvokeOnCreate(obj);
             }
 
-            PoolCallbackHelper.InvokeOnRent(obj);
+            _statistics.CurrentSize = Count;
+            _statistics.PeakSize = Math.Max(_statistics.PeakSize, Count);
+            _statistics.UpdateLatency(Time.realtimeSinceStartup - startTime);
+            
+            obj.SetActive(true);
+            PoolCallbackHelper.InvokeOnGet(obj);
             return obj;
         }
 
         /// <summary>
-        /// 从池中租用一个GameObject并设置其父级。
+        /// 将GameObject实例返回到池中。
         /// </summary>
-        /// <param name="parent">父级Transform</param>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent(Transform parent)
-        {
-            ThrowIfDisposed();
-
-            if (!_stack.TryPop(out var obj))
-            {
-                obj = UnityEngine.Object.Instantiate(_original, parent);
-            }
-            else
-            {
-                obj.transform.SetParent(parent);
-                obj.SetActive(true);
-            }
-
-            PoolCallbackHelper.InvokeOnRent(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// 从池中租用一个GameObject并设置其位置和旋转。
-        /// </summary>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent(Vector3 position, Quaternion rotation)
-        {
-            ThrowIfDisposed();
-
-            if (!_stack.TryPop(out var obj))
-            {
-                obj = UnityEngine.Object.Instantiate(_original, position, rotation);
-            }
-            else
-            {
-                obj.transform.SetPositionAndRotation(position, rotation);
-                obj.SetActive(true);
-            }
-
-            PoolCallbackHelper.InvokeOnRent(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// 从池中租用一个GameObject并设置其位置、旋转和父级。
-        /// </summary>
-        /// <param name="position">位置</param>
-        /// <param name="rotation">旋转</param>
-        /// <param name="parent">父级Transform</param>
-        /// <returns>租用的GameObject</returns>
-        public GameObject Rent(Vector3 position, Quaternion rotation, Transform parent)
-        {
-            ThrowIfDisposed();
-
-            if (!_stack.TryPop(out var obj))
-            {
-                obj = UnityEngine.Object.Instantiate(_original, position, rotation, parent);
-            }
-            else
-            {
-                obj.transform.SetParent(parent);
-                obj.transform.SetPositionAndRotation(position, rotation);
-                obj.SetActive(true);
-            }
-
-            PoolCallbackHelper.InvokeOnRent(obj);
-            return obj;
-        }
-
-        /// <summary>
-        /// 将GameObject归还到池中。
-        /// </summary>
-        /// <param name="obj">要归还的GameObject</param>
+        /// <param name="obj">要返回的GameObject实例</param>
         public void Return(GameObject obj)
         {
+            if (obj == null) return;
             ThrowIfDisposed();
+
+            if (_settings != null && Count >= _settings.DefaultPoolSize)
+            {
+                UnityEngine.Object.Destroy(obj);
+                PoolCallbackHelper.InvokeOnDestroy(obj);
+                return;
+            }
 
             _stack.Push(obj);
             obj.SetActive(false);
-
             PoolCallbackHelper.InvokeOnReturn(obj);
+            
+            _statistics.TotalReturned++;
+            _statistics.CurrentSize = Count;
         }
 
         /// <summary>
@@ -149,9 +104,14 @@ namespace TBydFramework.Pool.Runtime.Core
         {
             ThrowIfDisposed();
             
-            while (_stack.TryPop(out var obj))
+            while (_stack.Count > 0)
             {
-                UnityEngine.Object.Destroy(obj);
+                var obj = _stack.Pop();
+                if (obj != null)
+                {
+                    PoolCallbackHelper.InvokeOnDestroy(obj);
+                    UnityEngine.Object.Destroy(obj);
+                }
             }
         }
 
@@ -163,33 +123,44 @@ namespace TBydFramework.Pool.Runtime.Core
         {
             ThrowIfDisposed();
 
+            // 检查预热数量是否超出最大容量
+            if (_settings != null)
+            {
+                count = Mathf.Min(count, _settings.DefaultPoolSize - Count);
+            }
+
             for (int i = 0; i < count; i++)
             {
                 var obj = UnityEngine.Object.Instantiate(_original);
-
                 _stack.Push(obj);
                 obj.SetActive(false);
-
                 PoolCallbackHelper.InvokeOnReturn(obj);
             }
         }
 
         /// <summary>
-        /// 释放池中的所有资源。
+        /// 释放池中的��有资源。
         /// </summary>
         public void Dispose()
         {
-            ThrowIfDisposed();
+            if (_isDisposed) return;
+            
             Clear();
             _isDisposed = true;
         }
 
-        /// <summary>
-        /// 检查池是否已被释放，如果已释放则抛出异常。
-        /// </summary>
         private void ThrowIfDisposed()
         {
-            if (_isDisposed) throw new ObjectDisposedException(GetType().Name);
+            if (_isDisposed)
+            {
+                throw new ObjectDisposedException(nameof(GameObjectPool));
+            }
+        }
+
+        public PoolStatistics GetStatistics()
+        {
+            _statistics.UpdateUptime();
+            return _statistics;
         }
     }
 }

@@ -1,42 +1,48 @@
 using System.Collections.Generic;
 using TBydFramework.Pool.Runtime.Base;
 using UnityEngine;
+using TBydFramework.Pool.Runtime.Interfaces;
 
 namespace TBydFramework.Pool.Runtime.Internal
 {
     /// <summary>
-    /// 提供对象池回调辅助方法的内部静态类。
+    /// 对象池回调辅助类
     /// </summary>
     internal static class PoolCallbackHelper
     {
-        /// <summary>
-        /// 用于存储组件的缓冲列表,避免重复分配。
-        /// </summary>
-        private static readonly List<IPoolCallbackReceiver> _componentsBuffer = new();
-
-        /// <summary>
-        /// 调用GameObject及其子对象上所有IPoolCallbackReceiver接口的OnRent方法。
-        /// </summary>
-        /// <param name="obj">要处理的GameObject</param>
-        public static void InvokeOnRent(GameObject obj)
+        public static void InvokeOnCreate(GameObject obj)
         {
-            obj.GetComponentsInChildren(_componentsBuffer);
-            foreach (var receiver in _componentsBuffer)
+            var callbacks = obj.GetComponents<IPoolCallbacks>();
+            foreach (var callback in callbacks)
             {
-                receiver.OnRent();
+                callback.OnCreate();
             }
         }
 
-        /// <summary>
-        /// 调用GameObject及其子对象上所有IPoolCallbackReceiver接口的OnReturn方法。
-        /// </summary>
-        /// <param name="obj">要处理的GameObject</param>
+        public static void InvokeOnGet(GameObject obj)
+        {
+            var callbacks = obj.GetComponents<IPoolCallbacks>();
+            foreach (var callback in callbacks)
+            {
+                callback.OnGet();
+            }
+        }
+
         public static void InvokeOnReturn(GameObject obj)
         {
-            obj.GetComponentsInChildren(_componentsBuffer);
-            foreach (var receiver in _componentsBuffer)
+            var callbacks = obj.GetComponents<IPoolCallbacks>();
+            foreach (var callback in callbacks)
             {
-                receiver.OnReturn();
+                callback.OnReturn();
+            }
+        }
+
+        public static void InvokeOnDestroy(GameObject obj)
+        {
+            var callbacks = obj.GetComponents<IPoolCallbacks>();
+            foreach (var callback in callbacks)
+            {
+                callback.OnDestroy();
             }
         }
     }
