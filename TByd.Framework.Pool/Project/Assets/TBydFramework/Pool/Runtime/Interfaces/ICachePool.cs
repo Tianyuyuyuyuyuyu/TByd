@@ -1,6 +1,6 @@
 using System;
 
-namespace TBydFramework.Pool.Runtime.Base
+namespace TBydFramework.Pool.Runtime.Interfaces
 {
     /// <summary>
     /// 定义缓存池的通用接口

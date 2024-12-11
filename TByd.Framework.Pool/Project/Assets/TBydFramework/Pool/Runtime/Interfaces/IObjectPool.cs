@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
-namespace TBydFramework.Pool.Runtime.Base
+namespace TBydFramework.Pool.Runtime.Interfaces
 {
     /// <summary>
     /// 定义对象池的通用接口。

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TBydFramework.Pool.Runtime.Interfaces;
 
 namespace TBydFramework.Pool.Runtime.Base
 {

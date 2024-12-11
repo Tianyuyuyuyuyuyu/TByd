@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Concurrent;
+using TBydFramework.Pool.Runtime.Interfaces;
 
 namespace TBydFramework.Pool.Runtime.Core
 {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace TBydFramework.Pool.Runtime.Core
+namespace TBydFramework.Pool.Runtime.Interfaces
 {
     /// <summary>
     /// 共享GameObject对象池接口

@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using TBydFramework.Pool.Runtime.Interfaces;
 
 namespace TBydFramework.Pool.Runtime.Base
 {

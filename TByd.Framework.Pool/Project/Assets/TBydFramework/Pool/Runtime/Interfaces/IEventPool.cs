@@ -1,6 +1,6 @@
 using System;
 
-namespace TBydFramework.Pool.Runtime.Base
+namespace TBydFramework.Pool.Runtime.Interfaces
 {
     /// <summary>
     /// 事件池接口，定义事件池的基本操作
