@@ -1,0 +1,10 @@
+{
+    "appTitle": "NPM Registry Manager",
+    "@appTitle": {
+        "description": "The title of the application"
+    },
+    "welcome": "Welcome to NPM Registry Manager",
+    "@welcome": {
+        "description": "Welcome message on the home page"
+    }
+} 
