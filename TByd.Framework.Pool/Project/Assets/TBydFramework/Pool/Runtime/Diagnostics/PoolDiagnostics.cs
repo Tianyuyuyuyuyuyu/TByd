@@ -1,53 +1,130 @@
+using UnityEngine;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using TBydFramework.Pool.Runtime.Core;
 
 namespace TBydFramework.Pool.Runtime.Diagnostics
 {
-    public sealed class PoolDiagnostics
+    public static class PoolDiagnostics
     {
-        private readonly Dictionary<string, PoolMetrics> _poolMetrics = new();
-        private readonly object _syncRoot = new object();
+        private static readonly Dictionary<string, PoolHealthInfo> _healthInfo = new Dictionary<string, PoolHealthInfo>();
+        private static readonly List<PoolWarning> _warnings = new List<PoolWarning>();
+        private const int MaxWarnings = 100;
 
-        public void TrackAllocation(string poolName)
+        public static void RecordOperation(string poolName, PoolOperation operation, float duration)
         {
-            lock (_syncRoot)
+            if (!_healthInfo.TryGetValue(poolName, out var info))
             {
-                GetOrCreateMetrics(poolName).Allocations++;
+                info = new PoolHealthInfo();
+                _healthInfo[poolName] = info;
+            }
+
+            info.RecordOperation(operation, duration);
+            CheckHealth(poolName, info);
+        }
+
+        private static void CheckHealth(string poolName, PoolHealthInfo info)
+        {
+            var pool = PoolRegistry.GetPoolInfo(poolName);
+            if (pool == null) return;
+
+            // 检查池容量
+            if (pool.Count >= pool.MaxSize * 0.9f)
+            {
+                AddWarning(new PoolWarning
+                {
+                    PoolName = poolName,
+                    Type = WarningType.CapacityNearLimit,
+                    Message = $"Pool {poolName} is near capacity limit ({pool.Count}/{pool.MaxSize})"
+                });
+            }
+
+            // 检查性能
+            if (info.AverageOperationTime > 1.0f) // 1ms阈值
+            {
+                AddWarning(new PoolWarning
+                {
+                    PoolName = poolName,
+                    Type = WarningType.PerformanceIssue,
+                    Message = $"Pool {poolName} operations are slow (avg: {info.AverageOperationTime:F2}ms)"
+                });
             }
         }
 
-        public void TrackReuse(string poolName)
+        private static void AddWarning(PoolWarning warning)
         {
-            lock (_syncRoot)
+            _warnings.Add(warning);
+            if (_warnings.Count > MaxWarnings)
             {
-                GetOrCreateMetrics(poolName).Reuses++;
+                _warnings.RemoveAt(0);
             }
+
+            Debug.LogWarning($"[Pool Diagnostics] {warning.Message}");
         }
 
-        public PoolMetrics GetMetrics(string poolName)
+        public static IReadOnlyList<PoolWarning> GetWarnings()
         {
-            lock (_syncRoot)
-            {
-                return GetOrCreateMetrics(poolName);
-            }
+            return _warnings;
         }
 
-        private PoolMetrics GetOrCreateMetrics(string poolName)
+        public static void ClearWarnings()
         {
-            if (!_poolMetrics.TryGetValue(poolName, out var metrics))
-            {
-                metrics = new PoolMetrics();
-                _poolMetrics[poolName] = metrics;
-            }
-            return metrics;
+            _warnings.Clear();
         }
     }
 
-    public class PoolMetrics
+    public class PoolHealthInfo
     {
-        public long Allocations { get; set; }
-        public long Reuses { get; set; }
-        public float ReuseRatio => Allocations == 0 ? 0 : (float)Reuses / Allocations;
+        private readonly Queue<float> _operationTimes = new Queue<float>();
+        private const int MaxSamples = 100;
+
+        public float AverageOperationTime { get; private set; }
+        public int OperationCount { get; private set; }
+
+        public void RecordOperation(PoolOperation operation, float duration)
+        {
+            _operationTimes.Enqueue(duration);
+            if (_operationTimes.Count > MaxSamples)
+            {
+                _operationTimes.Dequeue();
+            }
+
+            UpdateStats();
+            OperationCount++;
+        }
+
+        private void UpdateStats()
+        {
+            if (_operationTimes.Count == 0) return;
+
+            float sum = 0;
+            foreach (var time in _operationTimes)
+            {
+                sum += time;
+            }
+            AverageOperationTime = sum / _operationTimes.Count;
+        }
+    }
+
+    public enum PoolOperation
+    {
+        Get,
+        Return,
+        Cleanup
+    }
+
+    public enum WarningType
+    {
+        CapacityNearLimit,
+        PerformanceIssue,
+        ResourceLeak
+    }
+
+    public struct PoolWarning
+    {
+        public string PoolName;
+        public WarningType Type;
+        public string Message;
+        public DateTime Timestamp;
     }
 } 

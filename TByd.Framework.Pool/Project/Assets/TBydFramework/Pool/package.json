@@ -1,50 +1,45 @@
 {
-  "name": "com.r1ch.tbyd-framework-module-pool",
-  "displayName": "TByd Framework Module Pool",
-  "version": "0.0.1",
+  "name": "com.tbyd.pool",
+  "version": "0.2.0",
+  "displayName": "TByd Pool",
+  "description": "A high-performance object pooling system for Unity",
   "unity": "2021.3",
-  "unityRelease": "8f1",
-  "description": "Object Pool. Recycle Pool. Event Pool. Connection Pool. Cache Pool.",  
-  "license": "MIT",
+  "dependencies": {
+    "com.unity.addressables": "1.19.19"
+  },
   "keywords": [
-    "TByd",
-    "Framework",
-	"Pool",
-	"Object",
-	"Recycle",
-	"Event",
-	"Connection",
-	"Cache"
+    "pool",
+    "object pooling",
+    "performance"
   ],
   "author": {
-    "name": "R1ch, Inc.",
-    "email": "tianyulovecars@gmail.com"
-  },
-  "contributors": [
-    {
-      "name": "Tianyu",
-      "twitter": "@TianYuFromChina"
-    }
-  ],
-  "category": "Pool",
-  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework.Module.Pool",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
-  },
-  "bugs": {
-    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
-  },
-  "relatedPackages": {},
-  "dependencies": {
-	"com.cysharp.unitask": "2.5.0",
-	"com.r1ch.tbyd-framework": "0.0.5"
+    "name": "TByd",
+    "email": "your-email@example.com",
+    "url": "https://your-website.com"
   },
   "samples": [
     {
-      "displayName": "Tutorials",
-      "description": "Tutorials",
-      "path": "Samples~/Tutorials"
+      "displayName": "Basic Object Pool",
+      "description": "Demonstrates basic usage of ObjectPool<T>",
+      "path": "Samples~/01_BasicObjectPool"
+    },
+    {
+      "displayName": "GameObject Pool",
+      "description": "Shows how to use GameObjectPool with prefabs",
+      "path": "Samples~/02_GameObjectPool"
+    },
+    {
+      "displayName": "Shared Pool",
+      "description": "Example of sharing pools between multiple components",
+      "path": "Samples~/03_SharedPool"
+    },
+    {
+      "displayName": "Addressable Pool",
+      "description": "Demonstrates using pools with Addressable assets",
+      "path": "Samples~/04_AddressablePool",
+      "dependencies": {
+        "com.unity.addressables": "1.19.19"
+      }
     }
   ]
 }

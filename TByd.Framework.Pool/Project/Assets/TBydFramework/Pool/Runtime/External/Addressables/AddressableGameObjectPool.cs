@@ -1,27 +1,47 @@
 #if TBYD_ADDRESSABLES_SUPPORT
 using System;
 using System.Collections.Generic;
+using TBydFramework.Pool.Runtime.Interfaces;
+using TBydFramework.Pool.Runtime.Internal;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using TBydFramework.Pool.Runtime.Diagnostics;
+using Cysharp.Threading.Tasks;
+using TBydFramework.Pool.Runtime.Enums;
 
 namespace TBydFramework.Pool.Runtime.External
 {
     /// <summary>
     /// Addressable资源对象池,用于管理通过Addressables加载的GameObject实例。
     /// </summary>
-    public sealed class AddressableGameObjectPool : IObjectPool<GameObject>
+    public sealed class AddressableGameObjectPool : IObjectPool<GameObject>, IPoolDiagnostics, IPoolInfo
     {
         private readonly object _key;
         private readonly Stack<GameObject> _stack = new(32);
+        private readonly HashSet<GameObject> _activeObjects = new();
         private bool _isDisposed;
+        private readonly PoolStatistics _statistics = new();
+        private PoolDiagnosticInfo _diagnosticInfo = new();
+        private readonly System.Diagnostics.Stopwatch _stopwatch = new();
+        private GameObject _prefab;
+        private bool _isInitialized;
+
+        public string Name => _key.ToString();
+        public int ActiveCount => _activeObjects.Count;
+        public int Capacity { get; private set; }
+        public int MaxSize { get; }
+        public PoolType Type => PoolType.Addressable;
 
         /// <summary>
         /// 使用资源key初始化Addressable对象池。
         /// </summary>
         /// <param name="key">Addressable资源的key</param>
-        public AddressableGameObjectPool(object key)
+        /// <param name="maxSize">对象池的最大容量</param>
+        public AddressableGameObjectPool(object key, int maxSize = 100)
         {
             _key = key ?? throw new ArgumentNullException(nameof(key));
+            MaxSize = maxSize;
+            Capacity = maxSize;
         }
 
         /// <summary>
@@ -45,23 +65,47 @@ namespace TBydFramework.Pool.Runtime.External
         public bool IsDisposed => _isDisposed;
 
         /// <summary>
+        /// 异步初始化对象池
+        /// </summary>
+        public async UniTask InitializeAsync()
+        {
+            if (_isInitialized) return;
+            _prefab = await Addressables.LoadAssetAsync<GameObject>(_key).Task;
+            _isInitialized = true;
+        }
+
+        /// <summary>
+        /// 异步获取对象
+        /// </summary>
+        public async UniTask<GameObject> GetAsync()
+        {
+            if (!_isInitialized)
+                await InitializeAsync();
+            return Rent();
+        }
+
+        /// <summary>
         /// 从池中租用一个GameObject。
         /// </summary>
         /// <returns>租用的GameObject</returns>
         public GameObject Rent()
         {
             ThrowIfDisposed();
+            _stopwatch.Restart();
 
-            if (!_stack.TryPop(out var obj))
+            GameObject obj;
+            if (!_stack.TryPop(out obj))
             {
                 obj = Addressables.InstantiateAsync(_key).WaitForCompletion();
+                _statistics.TotalCreated++;
+                _diagnosticInfo.TotalCreated++;
             }
             else
             {
                 obj.SetActive(true);
             }
 
-            PoolCallbackHelper.InvokeOnRent(obj);
+            OnRent(obj);
             return obj;
         }
 
@@ -84,7 +128,7 @@ namespace TBydFramework.Pool.Runtime.External
                 obj.SetActive(true);
             }
 
-            PoolCallbackHelper.InvokeOnRent(obj);
+            OnRent(obj);
             return obj;
         }
 
@@ -108,7 +152,7 @@ namespace TBydFramework.Pool.Runtime.External
                 obj.SetActive(true);
             }
 
-            PoolCallbackHelper.InvokeOnRent(obj);
+            OnRent(obj);
             return obj;
         }
 
@@ -134,7 +178,7 @@ namespace TBydFramework.Pool.Runtime.External
                 obj.SetActive(true);
             }
 
-            PoolCallbackHelper.InvokeOnRent(obj);
+            OnRent(obj);
             return obj;
         }
 
@@ -145,11 +189,18 @@ namespace TBydFramework.Pool.Runtime.External
         public void Return(GameObject obj)
         {
             ThrowIfDisposed();
+            if (obj == null || !_activeObjects.Contains(obj)) return;
+
+            _stopwatch.Restart();
 
             _stack.Push(obj);
             obj.SetActive(false);
+            _activeObjects.Remove(obj);
+            OnReturn(obj);
 
-            PoolCallbackHelper.InvokeOnReturn(obj);
+            _statistics.TotalReturned++;
+            _stopwatch.Stop();
+            UpdateReturnDiagnostics();
         }
 
         /// <summary>
@@ -159,10 +210,21 @@ namespace TBydFramework.Pool.Runtime.External
         {
             ThrowIfDisposed();
             
+            foreach (var obj in _activeObjects)
+            {
+                if (obj != null)
+                {
+                    Addressables.ReleaseInstance(obj);
+                }
+            }
+            _activeObjects.Clear();
+
             while (_stack.TryPop(out var obj))
             {
                 Addressables.ReleaseInstance(obj);
             }
+
+            _statistics.Reset();
         }
 
         /// <summary>
@@ -173,14 +235,14 @@ namespace TBydFramework.Pool.Runtime.External
         {
             ThrowIfDisposed();
 
+            count = Math.Min(count, MaxSize - Count);
             for (int i = 0; i < count; i++)
             {
                 var obj = Addressables.InstantiateAsync(_key).WaitForCompletion();
-
                 _stack.Push(obj);
                 obj.SetActive(false);
-
-                PoolCallbackHelper.InvokeOnReturn(obj);
+                OnReturn(obj);
+                _statistics.TotalCreated++;
             }
         }
 
@@ -189,14 +251,68 @@ namespace TBydFramework.Pool.Runtime.External
         /// </summary>
         public void Dispose()
         {
-            ThrowIfDisposed();
+            if (_isDisposed) return;
             Clear();
             _isDisposed = true;
+        }
+
+        public PoolDiagnosticInfo GetDiagnosticInfo() => _diagnosticInfo;
+
+        public void ResetStatistics()
+        {
+            _diagnosticInfo = new PoolDiagnosticInfo();
+            _statistics.Reset();
+        }
+
+        public PoolStatistics GetStatistics()
+        {
+            _statistics.UpdateUptime();
+            return _statistics;
+        }
+
+        private void UpdateGetDiagnostics()
+        {
+            var time = _stopwatch.ElapsedMilliseconds;
+            var newDiagnostics = new PoolDiagnosticInfo
+            {
+                AverageGetTime = (_diagnosticInfo.AverageGetTime + time) * 0.5f,
+                CurrentActive = _activeObjects.Count,
+                CurrentInactive = Count,
+                PeakActive = Math.Max(_diagnosticInfo.PeakActive, _activeObjects.Count),
+                LastAccessTime = DateTime.Now
+            };
+            _diagnosticInfo = newDiagnostics;
+            PoolDiagnosticsManager.RecordDiagnostics(Name, _diagnosticInfo);
+        }
+
+        private void UpdateReturnDiagnostics()
+        {
+            var time = _stopwatch.ElapsedMilliseconds;
+            var newDiagnostics = new PoolDiagnosticInfo
+            {
+                AverageReturnTime = (_diagnosticInfo.AverageReturnTime + time) * 0.5f,
+                CurrentActive = _activeObjects.Count,
+                CurrentInactive = Count,
+                LastAccessTime = DateTime.Now,
+                PeakActive = _diagnosticInfo.PeakActive
+            };
+            _diagnosticInfo = newDiagnostics;
+            PoolDiagnosticsManager.RecordDiagnostics(Name, _diagnosticInfo);
         }
 
         private void ThrowIfDisposed()
         {
             if (_isDisposed) throw new ObjectDisposedException(GetType().Name);
+        }
+
+        private void OnRent(GameObject obj)
+        {
+            // 实现对象租用时的回调逻辑
+        }
+
+        private void OnReturn(GameObject obj)
+        {
+            // 实现对象返回时的回调逻辑
         }
     }
 }

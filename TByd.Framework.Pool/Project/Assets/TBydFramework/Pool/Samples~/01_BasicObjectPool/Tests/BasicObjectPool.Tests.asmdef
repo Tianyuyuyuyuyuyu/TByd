@@ -1,0 +1,23 @@
+{
+    "name": "TBydFramework.Pool.Samples.BasicObjectPool.Tests",
+    "rootNamespace": "TBydFramework.Pool.Samples.BasicObjectPool.Tests",
+    "references": [
+        "TBydFramework.Pool.Runtime",
+        "TBydFramework.Pool.Samples.BasicObjectPool",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+} 

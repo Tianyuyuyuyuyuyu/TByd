@@ -1,0 +1,30 @@
+{
+    "displayName": "TByd Pool Examples",
+    "description": "Examples demonstrating the usage of TByd Pool system",
+    "path": "Samples~",
+    "samples": [
+        {
+            "displayName": "Basic Object Pool",
+            "description": "Demonstrates basic usage of ObjectPool<T>",
+            "path": "01_BasicObjectPool"
+        },
+        {
+            "displayName": "GameObject Pool",
+            "description": "Shows how to use GameObjectPool with prefabs",
+            "path": "02_GameObjectPool"
+        },
+        {
+            "displayName": "Shared Pool",
+            "description": "Example of sharing pools between multiple components",
+            "path": "03_SharedPool"
+        },
+        {
+            "displayName": "Addressable Pool",
+            "description": "Demonstrates using pools with Addressable assets",
+            "path": "04_AddressablePool",
+            "dependencies": {
+                "com.unity.addressables": "1.19.19"
+            }
+        }
+    ]
+} 

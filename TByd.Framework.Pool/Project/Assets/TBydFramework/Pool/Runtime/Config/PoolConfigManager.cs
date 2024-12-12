@@ -1,83 +1,55 @@
-using UnityEngine;
 using System.Collections.Generic;
-using TBydFramework.Pool.Runtime.Diagnostics;
+using UnityEngine;
 
 namespace TBydFramework.Pool.Runtime.Config
 {
-    public class PoolConfigManager : MonoBehaviour
+    /// <summary>
+    /// 对象池配置管理器
+    /// </summary>
+    public static class PoolConfigManager
     {
-        private static PoolConfigManager _instance;
-        
-        [SerializeField] 
-        private PoolConfig _defaultConfig;
-        
-        [SerializeField] 
-        private List<PoolConfig> _environmentConfigs;
-        
-        private Dictionary<string, PoolConfig> _activeConfigs = new();
+        private static PoolSettings _settings;
+        private static readonly Dictionary<string, object> _runtimeOverrides = new();
 
-        public static PoolConfigManager Instance
+        /// <summary>
+        /// 初始化配置管理器
+        /// </summary>
+        /// <param name="settings">对象池配置</param>
+        public static void Initialize(PoolSettings settings)
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    var go = new GameObject("[PoolConfigManager]");
-                    _instance = go.AddComponent<PoolConfigManager>();
-                    DontDestroyOnLoad(go);
-                }
-                return _instance;
-            }
+            _settings = settings;
         }
 
-        private void Awake()
+        /// <summary>
+        /// 获取当前配置
+        /// </summary>
+        public static PoolSettings GetSettings() => _settings;
+
+        /// <summary>
+        /// 获取指定池的配置
+        /// </summary>
+        public static PoolSettings.PoolProfile GetPoolProfile(string key)
         {
-            if (_instance != null && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-            _instance = this;
-            
-            InitializeConfigs();
+            return _settings?.GetProfile(key);
         }
 
-        private void InitializeConfigs()
+        public static void SetRuntimeOverride<T>(string key, T value)
         {
-            if (_defaultConfig == null)
-            {
-                _defaultConfig = CreateDefaultConfig();
-            }
-            
-            foreach (var config in _environmentConfigs)
-            {
-                if (config != null)
-                {
-                    _activeConfigs[config.name] = config;
-                }
-            }
+            _runtimeOverrides[key] = value;
         }
 
-        private PoolConfig CreateDefaultConfig()
+        public static T GetSetting<T>(string key)
         {
-            var config = ScriptableObject.CreateInstance<PoolConfig>();
-            return config;
-        }
-
-        public PoolConfig GetConfig(string configName = null)
-        {
-            if (string.IsNullOrEmpty(configName) || !_activeConfigs.TryGetValue(configName, out var config))
+            if (_runtimeOverrides.TryGetValue(key, out var value) && value is T typedValue)
             {
-                return _defaultConfig;
+                return typedValue;
             }
-            return config;
+            return default;
         }
 
-        public void ApplyConfig(string configName)
+        public static void ClearRuntimeOverrides()
         {
-            var config = GetConfig(configName);
-            // 通知所有池更新配置
-            PoolDiagnosticEvents.RaisePoolOperation("ConfigChange", PoolOperationType.Maintenance);
+            _runtimeOverrides.Clear();
         }
     }
 } 

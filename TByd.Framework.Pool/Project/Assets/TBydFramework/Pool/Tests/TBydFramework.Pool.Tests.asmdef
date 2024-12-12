@@ -2,16 +2,26 @@
     "name": "TBydFramework.Pool.Tests",
     "rootNamespace": "",
     "references": [
-        "GUID:629a2661df09944a6b53782cbf041d27",
-        "GUID:0acc523941302664db1f4e527237feb3"
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "TBydFramework.Pool.Runtime",
+        "Unity.Addressables",
+        "Unity.ResourceManager",
+        "UniTask"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
-    "allowUnsafeCode": true,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

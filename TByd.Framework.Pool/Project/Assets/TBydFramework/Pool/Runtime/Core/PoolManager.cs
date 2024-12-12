@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.Concurrent;
 using TBydFramework.Pool.Runtime.Interfaces;
+using TBydFramework.Pool.Runtime.Config;
+using System.Threading.Tasks;
+using TBydFramework.Pool.Runtime.Diagnostics;
+using TBydFramework.Pool.Runtime.External;
+using Cysharp.Threading.Tasks;
+using TBydFramework.Pool.Runtime.Enums;
+using TBydFramework.Pool.Runtime.Internal;
 
 namespace TBydFramework.Pool.Runtime.Core
 {
@@ -43,7 +50,9 @@ namespace TBydFramework.Pool.Runtime.Core
 
         private readonly Dictionary<Type, string> _resourcePathMap = new();
 
-        // 添加池配置
+        private readonly Dictionary<string, AddressableGameObjectPool> _addressablePools = new();
+
+        // 添加配置
         [Serializable]
         public class PoolConfig
         {
@@ -54,6 +63,14 @@ namespace TBydFramework.Pool.Runtime.Core
         
         [SerializeField] private PoolConfig _config = new PoolConfig();
 
+        [SerializeField] private PoolSettings _settings = ScriptableObject.CreateInstance<PoolSettings>();
+
+        private PoolDiagnosticsManager _diagnosticsManager;
+
+        private bool _autoSaveEnabled;
+        private float _autoSaveInterval;
+        private float _lastSaveTime;
+
         private void Awake()
         {
             if (_instance != null && _instance != this)
@@ -62,6 +79,11 @@ namespace TBydFramework.Pool.Runtime.Core
                 return;
             }
             _instance = this;
+            
+            // 将 PoolConfig 的值同步到 PoolSettings
+            _settings.DefaultPoolSize = _config.DefaultCapacity;
+            _settings.MaxPoolSize = _config.MaxSize;
+            _settings.MaintenanceInterval = _config.CleanupInterval;
         }
 
         /// <summary>
@@ -85,8 +107,15 @@ namespace TBydFramework.Pool.Runtime.Core
         {
             if (!_gameObjectPools.TryGetValue(key, out var pool))
             {
-                pool = new GameObjectPool(prefab);
+                pool = new GameObjectPool(prefab, _settings);
                 _gameObjectPools[key] = pool;
+                
+                // 应用配置文件
+                var profile = _settings.GetProfile(key);
+                if (profile != null)
+                {
+                    ApplyPoolProfile(pool, profile);
+                }
             }
             return pool;
         }
@@ -213,6 +242,197 @@ namespace TBydFramework.Pool.Runtime.Core
         private void OnDestroy()
         {
             ClearAllPools();
+        }
+
+        private async UniTask PrewarmPoolsAsync()
+        {
+            var settings = PoolConfigManager.GetSettings();
+            if (settings == null) return;
+
+            foreach (var profile in settings.GetAllProfiles())
+            {
+                if (!profile.EnablePrewarm) continue;
+
+                try
+                {
+                    var pool = GetGameObjectPool(profile.Key, profile.Prefab);
+                    if (pool != null)
+                    {
+                        await PoolPrewarmSystem.PrewarmPoolAsync(pool, profile.InitialCapacity);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to prewarm pool {profile.Key}: {e.Message}");
+                }
+            }
+        }
+
+        private async UniTask PrewarmAddressablePoolAsync(string key, int count)
+        {
+            if (_addressablePools.TryGetValue(key, out var pool))
+            {
+                try
+                {
+                    await PoolPrewarmSystem.PrewarmPoolAsync(pool, count);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to prewarm addressable pool {key}: {e.Message}");
+                }
+            }
+        }
+
+        private void InitializeDiagnostics()
+        {
+            if (_diagnosticsManager == null)
+            {
+                var go = new GameObject("[PoolDiagnostics]");
+                go.transform.SetParent(transform);
+                _diagnosticsManager = go.AddComponent<PoolDiagnosticsManager>();
+            }
+        }
+
+        public void EnableDiagnostics(bool enable)
+        {
+            if (enable)
+            {
+                InitializeDiagnostics();
+            }
+            else if (_diagnosticsManager != null)
+            {
+                Destroy(_diagnosticsManager.gameObject);
+                _diagnosticsManager = null;
+            }
+        }
+
+        public PoolDiagnosticInfo GetPoolDiagnostics(string poolKey)
+        {
+            return PoolDiagnosticsManager.GetPoolDiagnostics(poolKey);
+        }
+
+        public IReadOnlyList<PoolDiagnosticsManager.DiagnosticEvent> GetDiagnosticEvents()
+        {
+            return PoolDiagnosticsManager.GetEventLog();
+        }
+
+        public async UniTask<AddressableGameObjectPool> GetAddressablePoolAsync(string poolName, string key)
+        {
+            if (!_addressablePools.TryGetValue(poolName, out var pool))
+            {
+                var settings = PoolConfigManager.GetSettings();
+                var profile = settings?.GetProfile(poolName);
+                int maxSize = profile?.MaxSize ?? _config.MaxSize;
+                pool = new AddressableGameObjectPool(key, maxSize);
+                _addressablePools[poolName] = pool;
+                await pool.InitializeAsync();
+            }
+            return pool;
+        }
+
+        public async UniTask<GameObject> GetAddressableAsync(string poolName, string key)
+        {
+            var pool = await GetAddressablePoolAsync(poolName, key);
+            return await pool.GetAsync();
+        }
+
+        public void ReturnAddressable(string key, GameObject obj)
+        {
+            if (_addressablePools.TryGetValue(key, out var pool))
+            {
+                pool.Return(obj);
+            }
+        }
+
+        public void EnableAutoSave(bool enable, float interval = 300f)
+        {
+            _autoSaveEnabled = enable;
+            _autoSaveInterval = interval;
+        }
+
+        private void ApplyPoolProfile(GameObjectPool pool, PoolSettings.PoolProfile profile)
+        {
+            if (profile == null || pool == null) return;
+            
+            pool.MaxSize = profile.MaxSize;
+            if (profile.EnablePrewarm)
+            {
+                pool.Prewarm(profile.PrewarmSize);
+            }
+        }
+
+        public async UniTask<bool> SavePoolStatesAsync()
+        {
+            var states = new Dictionary<string, PoolState>();
+            foreach (var pair in _gameObjectPools)
+            {
+                var profile = _settings.GetProfile(pair.Key);
+                states[pair.Key] = new PoolState
+                {
+                    Count = pair.Value.Count,
+                    MaxSize = pair.Value.MaxSize,
+                    Type = pair.Value.Type,
+                    EnablePrewarm = profile?.EnablePrewarm ?? false,
+                    PrewarmSize = profile?.PrewarmSize ?? 0
+                };
+            }
+            return await SaveStates(states);
+        }
+
+        private async UniTask<bool> SaveStates(Dictionary<string, PoolState> states)
+        {
+            try
+            {
+                // 实现保存逻辑
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to save pool states: {e.Message}");
+                return false;
+            }
+        }
+
+        private async UniTask<Dictionary<string, PoolState>> LoadStates()
+        {
+            try
+            {
+                // 实现加载逻辑
+                return new Dictionary<string, PoolState>();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to load pool states: {e.Message}");
+                return null;
+            }
+        }
+
+        public async UniTask<bool> LoadPoolStatesAsync()
+        {
+            var states = await LoadStates();
+            if (states == null) return false;
+
+            foreach (var pair in states)
+            {
+                if (_gameObjectPools.TryGetValue(pair.Key, out var pool))
+                {
+                    pool.MaxSize = pair.Value.MaxSize;
+                    if (pair.Value.EnablePrewarm)
+                    {
+                        pool.Prewarm(pair.Value.PrewarmSize);
+                    }
+                }
+            }
+            return true;
+        }
+
+        private void Update()
+        {
+            if (_autoSaveEnabled && Time.time - _lastSaveTime >= _autoSaveInterval)
+            {
+                _ = SavePoolStatesAsync();
+                _lastSaveTime = Time.time;
+            }
         }
     }
 } 

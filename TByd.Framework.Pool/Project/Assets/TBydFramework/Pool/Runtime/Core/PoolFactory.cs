@@ -47,7 +47,7 @@ namespace TBydFramework.Pool.Runtime.Core
 
         public static IPool<GameObject> CreateGameObjectPool(GameObject prefab, PoolSettings settings = null)
         {
-            return new GameObjectPool(prefab, settings);
+            return (IPool<GameObject>)new GameObjectPool(prefab, settings);
         }
 
         public static IPool<T> CreateComponentPool<T>(GameObject prefab, PoolSettings settings = null) where T : Component

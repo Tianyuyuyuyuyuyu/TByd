@@ -1,0 +1,16 @@
+{
+    "name": "TBydFramework.Pool.Samples.SharedPool",
+    "rootNamespace": "TBydFramework.Pool.Samples.SharedPool",
+    "references": [
+        "TBydFramework.Pool.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+} 

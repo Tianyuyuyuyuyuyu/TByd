@@ -1,0 +1,16 @@
+{
+    "name": "TBydFramework.Pool.Samples.BasicObjectPool",
+    "rootNamespace": "TBydFramework.Pool.Samples.BasicObjectPool",
+    "references": [
+        "TBydFramework.Pool.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+} 
