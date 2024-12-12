@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import 'package_search_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -39,8 +40,35 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: const Center(
-        child: Text('包管理功能开发中...'),
+      body: DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            Container(
+              color: Theme.of(context).primaryColor,
+              child: const TabBar(
+                tabs: [
+                  Tab(
+                    icon: Icon(Icons.search),
+                    text: '搜索包',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.settings),
+                    text: '设置',
+                  ),
+                ],
+              ),
+            ),
+            const Expanded(
+              child: TabBarView(
+                children: [
+                  PackageSearchScreen(),
+                  Center(child: Text('设置页面开发中...')),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -8,7 +8,7 @@ class ApiConstants {
   static const String whoami = '/-/whoami';
 
   // Package management endpoints
-  static const String packages = '/-/v1/search';
+  static const String search = '/-/v1/search';
   static const String packageInfo = '/-/package';
 }
 
