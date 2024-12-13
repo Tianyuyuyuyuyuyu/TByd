@@ -5,75 +5,15 @@ import '../providers/auth_provider.dart';
 
 final packageServiceProvider = Provider<PackageService>((ref) {
   final authState = ref.watch(authProvider);
+  print('PackageService created with:');
+  print('serverUrl: ${authState.auth?.serverUrl}');
+  print('token: ${authState.auth?.token != null}');
+
   return PackageService(
     serverUrl: authState.auth?.serverUrl ?? '',
     token: authState.auth?.token,
   );
 });
-
-// 搜索状态
-class SearchState {
-  final List<PackageSearchResult> results;
-  final bool isLoading;
-  final String? error;
-  final String query;
-
-  const SearchState({
-    this.results = const [],
-    this.isLoading = false,
-    this.error,
-    this.query = '',
-  });
-
-  SearchState copyWith({
-    List<PackageSearchResult>? results,
-    bool? isLoading,
-    String? error,
-    String? query,
-  }) {
-    return SearchState(
-      results: results ?? this.results,
-      isLoading: isLoading ?? this.isLoading,
-      error: error,
-      query: query ?? this.query,
-    );
-  }
-}
-
-class SearchNotifier extends StateNotifier<SearchState> {
-  final PackageService _packageService;
-
-  SearchNotifier(this._packageService) : super(const SearchState());
-
-  Future<void> search(String query) async {
-    if (!mounted) return;
-    if (query == state.query && !state.isLoading) return;
-
-    state = state.copyWith(isLoading: true, query: query, error: null);
-
-    try {
-      if (!mounted) return;
-      final results = await _packageService.searchPackages(query);
-      if (!mounted) return;
-      state = state.copyWith(
-        results: results,
-        isLoading: false,
-      );
-    } catch (e) {
-      if (!mounted) return;
-      state = state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    _packageService.dispose();
-    super.dispose();
-  }
-}
 
 // 包详情状态
 class PackageDetailsState {
@@ -154,7 +94,7 @@ class PackageDetailsNotifier extends StateNotifier<PackageDetailsState> {
 }
 
 // Providers
-final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
+final searchProvider = StateNotifierProvider<SearchNotifier, AsyncValue<List<PackageSearchResult>>>((ref) {
   final packageService = ref.watch(packageServiceProvider);
   return SearchNotifier(packageService);
 });
@@ -165,3 +105,61 @@ final packageDetailsProvider = StateNotifierProvider.family<PackageDetailsNotifi
     return PackageDetailsNotifier(packageService, packageName);
   },
 );
+
+class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>> {
+  final PackageService _packageService;
+  List<PackageSearchResult> _allPackages = [];
+  bool _isDisposed = false;
+
+  SearchNotifier(this._packageService) : super(const AsyncValue.loading()) {
+    _loadAllPackages();
+  }
+
+  Future<void> _loadAllPackages() async {
+    if (_isDisposed) return;
+
+    try {
+      print('Loading all packages');
+      final packages = await _packageService.searchPackages('');
+      if (_isDisposed) return;
+
+      _allPackages = packages;
+      state = AsyncValue.data(_allPackages);
+    } catch (error, stackTrace) {
+      print('Error loading packages: $error');
+      if (_isDisposed) return;
+      state = AsyncValue.error(error, stackTrace);
+    }
+  }
+
+  void search(String query) {
+    if (_isDisposed) return;
+
+    final searchText = query.trim().toLowerCase();
+
+    try {
+      if (searchText.isEmpty) {
+        // 如果搜索文本为空，显示所有包
+        state = AsyncValue.data(_allPackages);
+        return;
+      }
+
+      // 在本地列表中筛选匹配的包
+      final results = _allPackages.where((package) => package.name.toLowerCase().contains(searchText)).toList();
+
+      state = AsyncValue.data(results);
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error, stackTrace);
+    }
+  }
+
+  Future<void> refresh() async {
+    await _loadAllPackages();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+}

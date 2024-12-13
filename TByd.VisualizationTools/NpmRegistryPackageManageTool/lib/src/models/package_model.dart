@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Package extends Equatable {
   final String name;
+  final String displayName;
   final String version;
   final String description;
   final String author;
@@ -13,6 +14,7 @@ class Package extends Equatable {
 
   const Package({
     required this.name,
+    String? displayName,
     required this.version,
     required this.description,
     required this.author,
@@ -21,23 +23,73 @@ class Package extends Equatable {
     required this.dependencies,
     required this.keywords,
     required this.license,
-  });
+  }) : displayName = displayName ?? name;
 
   factory Package.fromJson(Map<String, dynamic> json) {
-    final timeData = json['time'] as Map<String, dynamic>?;
-    final version = json['version'] as String;
+    try {
+      final timeData = json['time'] as Map<String, dynamic>?;
+      final version = json['version']?.toString() ?? json['dist-tags']?['latest']?.toString() ?? '0.0.0';
 
-    return Package(
-      name: json['name'] as String,
-      version: version,
-      description: json['description'] as String? ?? '',
-      author: json['author'] is String ? json['author'] as String : json['author']?['name'] as String? ?? 'Unknown',
-      publishedAt: DateTime.parse(timeData?[version] ?? timeData?['modified'] ?? DateTime.now().toIso8601String()),
-      dist: Map<String, String>.from(json['dist'] as Map? ?? {}),
-      dependencies: Map<String, String>.from(json['dependencies'] as Map? ?? {}),
-      keywords: List<String>.from(json['keywords'] as List? ?? []),
-      license: json['license'] as String? ?? 'Unknown',
-    );
+      return Package(
+        name: json['name']?.toString() ?? '',
+        displayName: json['displayName']?.toString(),
+        version: version,
+        description: json['description']?.toString() ?? '',
+        author: _extractAuthor(json['author']),
+        publishedAt: _parseDateTime(timeData?[version] ?? timeData?['modified']),
+        dist: _extractDist(json['dist']),
+        dependencies: _extractDependencies(json['dependencies']),
+        keywords: _extractKeywords(json['keywords']),
+        license: json['license']?.toString() ?? 'Unknown',
+      );
+    } catch (e) {
+      print('解析包详情时出错: $e');
+      rethrow;
+    }
+  }
+
+  static String _extractAuthor(dynamic author) {
+    if (author == null) return 'Unknown';
+    if (author is String) return author;
+    if (author is Map) return author['name']?.toString() ?? 'Unknown';
+    return 'Unknown';
+  }
+
+  static DateTime _parseDateTime(dynamic dateStr) {
+    if (dateStr == null) return DateTime.now();
+    try {
+      return DateTime.parse(dateStr.toString());
+    } catch (e) {
+      return DateTime.now();
+    }
+  }
+
+  static Map<String, String> _extractDist(dynamic dist) {
+    if (dist == null) return {};
+    if (dist is Map) {
+      return Map<String, String>.from(
+        dist.map((key, value) => MapEntry(key.toString(), value.toString())),
+      );
+    }
+    return {};
+  }
+
+  static Map<String, String> _extractDependencies(dynamic deps) {
+    if (deps == null) return {};
+    if (deps is Map) {
+      return Map<String, String>.from(
+        deps.map((key, value) => MapEntry(key.toString(), value.toString())),
+      );
+    }
+    return {};
+  }
+
+  static List<String> _extractKeywords(dynamic keywords) {
+    if (keywords == null) return [];
+    if (keywords is List) {
+      return keywords.map((k) => k.toString()).toList();
+    }
+    return [];
   }
 
   Map<String, dynamic> toJson() {
@@ -90,6 +142,7 @@ class PackageVersion extends Equatable {
 
 class PackageSearchResult extends Equatable {
   final String name;
+  final String displayName;
   final String version;
   final String description;
   final String author;
@@ -97,20 +150,33 @@ class PackageSearchResult extends Equatable {
 
   const PackageSearchResult({
     required this.name,
+    String? displayName,
     required this.version,
     required this.description,
     required this.author,
     required this.lastModified,
-  });
+  }) : displayName = displayName ?? name;
 
   factory PackageSearchResult.fromJson(Map<String, dynamic> json) {
+    final time = json['time'] as Map<String, dynamic>?;
+    final latest = json['dist-tags']?['latest'] as String?;
+    final versions = json['versions'] as Map<String, dynamic>?;
+    final latestVersion = versions?[latest ?? ''] as Map<String, dynamic>?;
+
     return PackageSearchResult(
       name: json['name'] as String,
-      version: json['version'] as String,
-      description: json['description'] as String? ?? '',
-      author: json['author'] as String? ?? 'Unknown',
-      lastModified: DateTime.parse(json['lastModified'] as String),
+      version: latest ?? '0.0.0',
+      description: latestVersion?['description'] as String? ?? json['description'] as String? ?? '',
+      author: _extractAuthor(latestVersion?['author'] ?? json['author']),
+      lastModified: DateTime.parse(time?['modified'] as String? ?? DateTime.now().toIso8601String()),
     );
+  }
+
+  static String _extractAuthor(dynamic author) {
+    if (author == null) return 'Unknown';
+    if (author is String) return author;
+    if (author is Map) return author['name'] as String? ?? 'Unknown';
+    return 'Unknown';
   }
 
   Map<String, dynamic> toJson() {

@@ -1,65 +1,143 @@
 {
     "appTitle": "NPM 仓库管理工具",
     "@appTitle": {
-        "description": "应用程序标题"
-    },
-    "welcome": "欢迎使用 NPM Registry 管理工具",
-    "@welcome": {
-        "description": "欢迎消息"
-    },
-    "loginTitle": "登录",
-    "@loginTitle": {
-        "description": "登录页面标题"
-    },
-    "serverAddress": "服务器地址",
-    "@serverAddress": {
-        "description": "服务器地址输入框标签"
-    },
-    "username": "用户名",
-    "@username": {
-        "description": "用户名输入框标签"
-    },
-    "password": "密码",
-    "@password": {
-        "description": "密码输入框标签"
-    },
-    "rememberMe": "记住我",
-    "@rememberMe": {
-        "description": "记住登录信息选项"
+        "description": "The title of the application"
     },
     "login": "登录",
     "@login": {
-        "description": "登录按钮文本"
+        "description": "Login button text"
     },
-    "loginLoading": "正在登录...",
-    "@loginLoading": {
-        "description": "登录中状态文本"
+    "username": "用户名",
+    "@username": {
+        "description": "Username field label"
     },
-    "loginFailed": "登录失败",
-    "@loginFailed": {
-        "description": "登录失败消息"
+    "password": "密码",
+    "@password": {
+        "description": "Password field label"
+    },
+    "serverAddress": "服务器地址",
+    "@serverAddress": {
+        "description": "Server address field label"
+    },
+    "rememberMe": "记住我",
+    "@rememberMe": {
+        "description": "Remember me checkbox label"
     },
     "loginSuccess": "登录成功",
     "@loginSuccess": {
-        "description": "登录成功消息"
-    },
-    "welcomeBack": "欢迎回来，{username}",
-    "@welcomeBack": {
-        "description": "欢迎回来消息",
-        "placeholders": {
-            "username": {
-                "type": "String",
-                "example": "tianyu"
-            }
-        }
+        "description": "Login success message"
     },
     "logout": "退出登录",
     "@logout": {
-        "description": "退出登录按钮文本"
+        "description": "Logout button text"
     },
-    "required": "请输入{field}",
+    "language": "语言",
+    "@language": {
+        "description": "Language settings button tooltip"
+    },
+    "searchPackages": "搜索包",
+    "@searchPackages": {
+        "description": "Search packages tab label"
+    },
+    "settings": "设置",
+    "@settings": {
+        "description": "Settings tab label"
+    },
+    "settingsPageUnderConstruction": "设置页面正在建设中...",
+    "@settingsPageUnderConstruction": {
+        "description": "Settings page under construction message"
+    },
+    "searchPlaceholder": "输入包名搜索",
+    "@searchPlaceholder": {
+        "description": "Search input placeholder"
+    },
+    "noPackagesFound": "未找到包",
+    "@noPackagesFound": {
+        "description": "No packages found message"
+    },
+    "description": "描述",
+    "@description": {
+        "description": "Description label"
+    },
+    "author": "作者",
+    "@author": {
+        "description": "Author label"
+    },
+    "lastModified": "最后修改",
+    "@lastModified": {
+        "description": "Last modified label"
+    },
+    "loading": "加载中...",
+    "@loading": {
+        "description": "Loading state text"
+    },
+    "showPassword": "显示密码",
+    "@showPassword": {
+        "description": "Show password button tooltip"
+    },
+    "hidePassword": "隐藏密码",
+    "@hidePassword": {
+        "description": "Hide password button tooltip"
+    },
+    "manualServerInput": "手动输入服务器地址",
+    "@manualServerInput": {
+        "description": "Manual server input option"
+    },
+    "recentLogins": "最近登录",
+    "@recentLogins": {
+        "description": "Recent logins title"
+    },
+    "lastLoginTime": "上次登录：{time}",
+    "@lastLoginTime": {
+        "description": "Last login time",
+        "placeholders": {
+            "time": {
+                "type": "String",
+                "example": "2023-12-13 14:30"
+            }
+        }
+    },
+    "quickLogin": "快速登录",
+    "@quickLogin": {
+        "description": "Quick login button tooltip"
+    },
+    "delete": "删除",
+    "@delete": {
+        "description": "Delete button tooltip"
+    },
+    "confirmDelete": "确认删除",
+    "@confirmDelete": {
+        "description": "Confirm delete dialog title"
+    },
+    "confirmDeleteMessage": "确定要删除 {username} 在 {server} 的登录记录吗？",
+    "@confirmDeleteMessage": {
+        "description": "Confirm delete dialog content",
+        "placeholders": {
+            "username": {
+                "type": "String",
+                "example": "admin"
+            },
+            "server": {
+                "type": "String",
+                "example": "localhost:4873"
+            }
+        }
+    },
+    "home": "主页",
+    "@home": {
+        "description": "Home navigation label"
+    },
+    "loginTitle": "登录",
+    "@loginTitle": {
+        "description": "Login page title"
+    },
+    "loginLoading": "正在登录...",
+    "@loginLoading": {
+        "description": "Login in progress text"
+    },
+    "required": "{field}不能为空",
     "@required": {
-        "description": "必填字段验证消息",
+        "description": "Required field validation message",
         "placeholders": {
             "field": {
                 "type": "String",
@@ -67,101 +145,49 @@
             }
         }
     },
-    "invalidServerUrl": "服务器地址格式无效，请输入正确的地址（例如：120.26.201.54:1998 或 http://120.26.201.54:1998）",
+    "invalidServerUrl": "服务器地址格式无效，请输入正确的地址（例如：localhost:4873）",
     "@invalidServerUrl": {
-        "description": "无效的服务器地址错误消息"
+        "description": "Invalid server URL message"
     },
-    "invalidCredentials": "用户名或密码错误",
-    "@invalidCredentials": {
-        "description": "无效的凭据错误消息"
+    "cancel": "取消",
+    "@cancel": {
+        "description": "Cancel button text"
     },
-    "networkError": "网络连接错误，请检查网络连接后重试",
-    "@networkError": {
-        "description": "网络错误消息"
-    },
-    "serverError": "服务器错误，请稍后重试",
-    "@serverError": {
-        "description": "服务器错误消息"
-    },
-    "language": "语言",
-    "@language": {
-        "description": "语言设置选项"
-    },
-    "searchPackages": "搜索包",
-    "@searchPackages": {
-        "description": "搜索包标签"
-    },
-    "settings": "设置",
-    "@settings": {
-        "description": "设置页面标题"
-    },
-    "settingsPageUnderConstruction": "设置页面开发中...",
-    "@settingsPageUnderConstruction": {
-        "description": "设置页面开发中提示"
-    },
-    "noPackagesFound": "未找到相关包",
-    "@noPackagesFound": {
-        "description": "没有找到包的提示"
-    },
-    "searchPlaceholder": "搜索包名...",
-    "@searchPlaceholder": {
-        "description": "搜索输入框占位符"
-    },
-    "packageDetails": "包详情",
-    "@packageDetails": {
-        "description": "包详情页面标题"
+    "confirm": "确认",
+    "@confirm": {
+        "description": "Confirm button text"
     },
     "version": "版本",
     "@version": {
-        "description": "版本标签"
-    },
-    "author": "作者",
-    "@author": {
-        "description": "作者标签"
-    },
-    "lastModified": "最后修改时间",
-    "@lastModified": {
-        "description": "最后修改时间标签"
-    },
-    "description": "描述",
-    "@description": {
-        "description": "描述标签"
-    },
-    "dependencies": "依赖",
-    "@dependencies": {
-        "description": "依赖标签"
-    },
-    "noDependencies": "无依赖",
-    "@noDependencies": {
-        "description": "无依赖提示"
+        "description": "Version label"
     },
     "license": "许可证",
     "@license": {
-        "description": "许可证标签"
+        "description": "License label"
     },
     "keywords": "关键词",
     "@keywords": {
-        "description": "关键词标签"
+        "description": "Keywords label"
     },
     "noKeywords": "无关键词",
     "@noKeywords": {
-        "description": "无关键词提示"
+        "description": "No keywords message"
     },
     "unpublish": "取消发布",
     "@unpublish": {
-        "description": "取消发布按钮文本"
+        "description": "Unpublish button text"
     },
     "deprecate": "标记废弃",
     "@deprecate": {
-        "description": "标记废弃按钮文本"
+        "description": "Deprecate button text"
     },
     "confirmUnpublish": "确认取消发布",
     "@confirmUnpublish": {
-        "description": "确认取消发布对话框标题"
+        "description": "Confirm unpublish dialog title"
     },
     "confirmUnpublishMessage": "确定要取消发布 {package} {version} 吗？此操作不可撤销。",
     "@confirmUnpublishMessage": {
-        "description": "确认取消发布对话框内容",
+        "description": "Confirm unpublish dialog content",
         "placeholders": {
             "package": {
                 "type": "String",
@@ -175,82 +201,22 @@
     },
     "deprecateMessage": "废弃原因",
     "@deprecateMessage": {
-        "description": "废弃原因输入框标签"
+        "description": "Deprecation message input label"
     },
     "deprecateMessagePlaceholder": "请输入废弃原因...",
     "@deprecateMessagePlaceholder": {
-        "description": "废弃原因输入框占位符"
+        "description": "Deprecation message input placeholder"
     },
-    "confirm": "确认",
-    "@confirm": {
-        "description": "确认按钮文本"
+    "packages": "包管理",
+    "@packages": {
+        "description": "Packages navigation label"
     },
-    "cancel": "取消",
-    "@cancel": {
-        "description": "取消按钮文本"
+    "dependencies": "依赖",
+    "@dependencies": {
+        "description": "Dependencies label"
     },
-    "success": "成功",
-    "@success": {
-        "description": "成功提示"
-    },
-    "error": "错误",
-    "@error": {
-        "description": "错误提示"
-    },
-    "loading": "加载中...",
-    "@loading": {
-        "description": "加载状态文本"
-    },
-    "showPassword": "显示密码",
-    "@showPassword": {
-        "description": "显示密码按钮提示"
-    },
-    "hidePassword": "隐藏密码",
-    "@hidePassword": {
-        "description": "隐藏密码按钮提示"
-    },
-    "manualServerInput": "手动输入服务器地址",
-    "@manualServerInput": {
-        "description": "手动输入服务器地址选项"
-    },
-    "recentLogins": "最近登录",
-    "@recentLogins": {
-        "description": "最近登录记录标题"
-    },
-    "lastLoginTime": "上次登录：{time}",
-    "@lastLoginTime": {
-        "description": "上次登录时间",
-        "placeholders": {
-            "time": {
-                "type": "String",
-                "example": "2023-12-13 14:30"
-            }
-        }
-    },
-    "quickLogin": "快速登录",
-    "@quickLogin": {
-        "description": "快速登录按钮提示"
-    },
-    "delete": "删除",
-    "@delete": {
-        "description": "删除按钮提示"
-    },
-    "confirmDelete": "确认删除",
-    "@confirmDelete": {
-        "description": "确认删除对话框标题"
-    },
-    "confirmDeleteMessage": "确定要删除 {username} 在 {server} 的登录记录吗？",
-    "@confirmDeleteMessage": {
-        "description": "确认删除对话框内容",
-        "placeholders": {
-            "username": {
-                "type": "String",
-                "example": "admin"
-            },
-            "server": {
-                "type": "String",
-                "example": "localhost:4873"
-            }
-        }
+    "noDependencies": "无依赖",
+    "@noDependencies": {
+        "description": "No dependencies message"
     }
 } 

@@ -73,7 +73,7 @@ class CustomTextField extends StatelessWidget {
           ),
         ),
         filled: true,
-        fillColor: enabled ? theme.colorScheme.surface : theme.colorScheme.surfaceVariant,
+        fillColor: enabled ? theme.colorScheme.surface : theme.colorScheme.surfaceContainerHighest,
       ),
     );
   }

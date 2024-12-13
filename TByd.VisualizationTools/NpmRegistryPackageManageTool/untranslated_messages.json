@@ -1,1 +1,20 @@
-{}
+{
+  "zh": [
+    "packageInstallation",
+    "packageRepository",
+    "packageLatestDistribution",
+    "packageAuthor",
+    "packageContributors",
+    "packageLicense",
+    "packageHomepage",
+    "packageDownload",
+    "packageIssues",
+    "readmeTab",
+    "dependenciesTab",
+    "versionsTab",
+    "uplinksTab",
+    "noReadme",
+    "noVersions",
+    "noUplinks"
+  ]
+}

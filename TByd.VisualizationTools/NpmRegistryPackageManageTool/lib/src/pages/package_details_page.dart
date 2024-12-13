@@ -1,155 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import '../models/package_model.dart';
 import '../providers/package_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+// 暂时注释掉 url_launcher 的导入，直到包安装完成
+// import 'package:url_launcher/url_launcher.dart';
 
 class PackageDetailsPage extends ConsumerWidget {
   final String packageName;
-  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd HH:mm');
 
-  PackageDetailsPage({
+  const PackageDetailsPage({
     super.key,
     required this.packageName,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+    final packageDetails = ref.watch(packageDetailsProvider(packageName));
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(packageName),
-      ),
-      body: Consumer(
-        builder: (context, ref, child) {
-          final packageDetails = ref.watch(packageDetailsProvider(packageName));
-
-          if (packageDetails.error != null) {
-            return Center(
-              child: Text(
-                packageDetails.error!,
-                style: TextStyle(color: theme.colorScheme.error),
-              ),
-            );
-          }
-
-          if (packageDetails.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (packageDetails.package == null) {
-            return const Center(
-              child: Text('Package not found'),
-            );
-          }
-
-          final package = packageDetails.package!;
-
-          return SingleChildScrollView(
+    return DefaultTabController(
+      length: 5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 包标题和版本信息
+          Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSection(
-                  title: l10n.description,
-                  content: package.description,
-                  theme: theme,
+                // 显示包名
+                Text(
+                  packageName,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                const SizedBox(height: 16.0),
-                _buildInfoRow(
-                  icon: Icons.person_outline,
-                  label: l10n.author,
-                  value: package.author,
-                  theme: theme,
+                if (packageDetails.package != null) ...[
+                  const SizedBox(height: 4),
+                  // 显示 displayName
+                  Text(
+                    packageDetails.package!.displayName,
+                    style: theme.textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    packageDetails.package!.description,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Latest v${packageDetails.package!.version} · Published ${_formatDate(packageDetails.package!.publishedAt)}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          // 操作按钮
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              children: [
+                _ActionButton(
+                  icon: Icons.home,
+                  label: 'Homepage',
+                  onPressed: () {},
                 ),
-                _buildInfoRow(
-                  icon: Icons.access_time,
-                  label: l10n.lastModified,
-                  value: _dateFormat.format(package.publishedAt),
-                  theme: theme,
+                const SizedBox(width: 8),
+                _ActionButton(
+                  icon: Icons.cloud_download,
+                  label: 'Download',
+                  onPressed: () {},
                 ),
-                _buildInfoRow(
-                  icon: Icons.verified_user_outlined,
-                  label: l10n.license,
-                  value: package.license,
-                  theme: theme,
+                const SizedBox(width: 8),
+                _ActionButton(
+                  icon: Icons.code,
+                  label: 'Repository',
+                  onPressed: () {},
                 ),
-                const SizedBox(height: 16.0),
-                _buildSection(
-                  title: l10n.keywords,
-                  content: package.keywords.isEmpty ? l10n.noKeywords : package.keywords.join(', '),
-                  theme: theme,
-                ),
-                const SizedBox(height: 16.0),
-                _buildVersionsList(
-                  versions: packageDetails.versions,
-                  theme: theme,
-                  l10n: l10n,
-                  ref: ref,
-                  packageName: packageName,
-                ),
-                const SizedBox(height: 16.0),
-                _buildDependenciesList(
-                  dependencies: package.dependencies,
-                  theme: theme,
-                  l10n: l10n,
+                const SizedBox(width: 8),
+                _ActionButton(
+                  icon: Icons.bug_report,
+                  label: 'Issues',
+                  onPressed: () {},
                 ),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildSection({
-    required String title,
-    required String content,
-    required ThemeData theme,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: theme.textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8.0),
-        Text(
-          content,
-          style: theme.textTheme.bodyMedium,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow({
-    required IconData icon,
-    required String label,
-    required String value,
-    required ThemeData theme,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        children: [
-          Icon(icon, size: 20.0),
-          const SizedBox(width: 8.0),
-          Text(
-            '$label: ',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+          ),
+          const SizedBox(height: 16),
+          // 标签栏
+          TabBar(
+            tabs: [
+              Tab(text: l10n.readmeTab),
+              Tab(text: l10n.dependenciesTab),
+              Tab(text: l10n.versionsTab),
+              Tab(text: l10n.uplinksTab),
+              Tab(text: l10n.packageInstallation),
+            ],
           ),
           Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.bodyMedium,
+            child: TabBarView(
+              children: [
+                _ReadmeTab(packageDetails: packageDetails),
+                _DependenciesTab(packageDetails: packageDetails),
+                _VersionsTab(packageDetails: packageDetails),
+                const _UplinksTab(),
+                // 添加 Installation 标签页
+                if (packageDetails.package != null)
+                  InstallationSection(
+                    packageName: packageDetails.package!.name,
+                    version: packageDetails.package!.version,
+                  )
+                else
+                  const Center(child: CircularProgressIndicator()),
+              ],
             ),
           ),
         ],
@@ -157,150 +126,210 @@ class PackageDetailsPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildVersionsList({
-    required List<PackageVersion> versions,
-    required ThemeData theme,
-    required AppLocalizations l10n,
-    required WidgetRef ref,
-    required String packageName,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.version,
-          style: theme.textTheme.titleMedium,
-        ),
-        const SizedBox(height: 8.0),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: versions.length,
-          itemBuilder: (context, index) {
-            final version = versions[index];
-            return Card(
-              child: ListTile(
-                title: Text('v${version.version}'),
-                subtitle: Text(
-                  _dateFormat.format(version.publishedAt),
-                ),
-                trailing: PopupMenuButton<String>(
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'unpublish',
-                      child: Text(l10n.unpublish),
-                    ),
-                    PopupMenuItem(
-                      value: 'deprecate',
-                      child: Text(l10n.deprecate),
-                    ),
-                  ],
-                  onSelected: (value) async {
-                    if (value == 'unpublish') {
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(l10n.confirmUnpublish),
-                          content: Text(
-                            l10n.confirmUnpublishMessage(
-                              packageName,
-                              version.version,
-                            ),
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: Text(l10n.cancel),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: Text(l10n.confirm),
-                            ),
-                          ],
-                        ),
-                      );
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
 
-                      if (confirmed == true) {
-                        await ref.read(packageDetailsProvider(packageName).notifier).unpublishVersion(version.version);
-                      }
-                    } else if (value == 'deprecate') {
-                      final message = await showDialog<String>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text(l10n.deprecate),
-                          content: TextField(
-                            decoration: InputDecoration(
-                              hintText: l10n.deprecateMessagePlaceholder,
-                              labelText: l10n.deprecateMessage,
-                            ),
-                            maxLines: 3,
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(l10n.cancel),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(
-                                context,
-                                (context as Element).findAncestorStateOfType<FormFieldState<String>>()?.value,
-                              ),
-                              child: Text(l10n.confirm),
-                            ),
-                          ],
-                        ),
-                      );
+    if (difference.inDays < 1) {
+      return 'today';
+    } else if (difference.inDays < 30) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months months ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years years ago';
+    }
+  }
+}
 
-                      if (message != null && message.isNotEmpty) {
-                        await ref
-                            .read(packageDetailsProvider(packageName).notifier)
-                            .deprecateVersion(version.version, message);
-                      }
-                    }
-                  },
-                ),
-              ),
-            );
-          },
-        ),
-      ],
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: Icon(icon, size: 18),
+      label: Text(label),
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+    );
+  }
+}
+
+// 标签页内容组件
+class _ReadmeTab extends StatelessWidget {
+  final PackageDetailsState packageDetails;
+
+  const _ReadmeTab({required this.packageDetails});
+
+  @override
+  Widget build(BuildContext context) {
+    if (packageDetails.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (packageDetails.error != null) {
+      return Center(child: Text(packageDetails.error!));
+    }
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Text(packageDetails.package?.description ?? ''),
+    );
+  }
+}
+
+class _DependenciesTab extends StatelessWidget {
+  final PackageDetailsState packageDetails;
+
+  const _DependenciesTab({required this.packageDetails});
+
+  @override
+  Widget build(BuildContext context) {
+    if (packageDetails.package == null) {
+      return const Center(child: Text('No dependencies information available'));
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: packageDetails.package!.dependencies.length,
+      itemBuilder: (context, index) {
+        final entry = packageDetails.package!.dependencies.entries.elementAt(index);
+        return ListTile(
+          title: Text(entry.key),
+          subtitle: Text(entry.value),
+        );
+      },
+    );
+  }
+}
+
+class _VersionsTab extends StatelessWidget {
+  final PackageDetailsState packageDetails;
+
+  const _VersionsTab({required this.packageDetails});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: packageDetails.versions.length,
+      itemBuilder: (context, index) {
+        final version = packageDetails.versions[index];
+        return ListTile(
+          title: Text('v${version.version}'),
+          subtitle: Text(_formatDate(version.publishedAt)),
+        );
+      },
     );
   }
 
-  Widget _buildDependenciesList({
-    required Map<String, String> dependencies,
-    required ThemeData theme,
-    required AppLocalizations l10n,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.dependencies,
-          style: theme.textTheme.titleMedium,
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+}
+
+class _UplinksTab extends StatelessWidget {
+  const _UplinksTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(child: Text('No uplinks information available'));
+  }
+}
+
+class InstallationSection extends StatelessWidget {
+  final String packageName;
+  final String version;
+
+  const InstallationSection({
+    super.key,
+    required this.packageName,
+    required this.version,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+
+    return SingleChildScrollView(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _InstallCommand(
+              icon: 'assets/images/npm.svg',
+              label: 'npm',
+              command: 'npm install $packageName@$version',
+            ),
+            const Divider(height: 1),
+            _InstallCommand(
+              icon: 'assets/images/yarn.svg',
+              label: 'yarn',
+              command: 'yarn add $packageName@$version',
+            ),
+            const Divider(height: 1),
+            _InstallCommand(
+              icon: 'assets/images/pnpm.svg',
+              label: 'pnpm',
+              command: 'pnpm install $packageName@$version',
+            ),
+          ],
         ),
-        const SizedBox(height: 8.0),
-        if (dependencies.isEmpty)
-          Text(
-            l10n.noDependencies,
-            style: theme.textTheme.bodyMedium,
-          )
-        else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: dependencies.length,
-            itemBuilder: (context, index) {
-              final entry = dependencies.entries.elementAt(index);
-              return Card(
-                child: ListTile(
-                  title: Text(entry.key),
-                  subtitle: Text(entry.value),
-                ),
-              );
-            },
+      ),
+    );
+  }
+}
+
+class _InstallCommand extends StatelessWidget {
+  final String icon;
+  final String label;
+  final String command;
+
+  const _InstallCommand({
+    required this.icon,
+    required this.label,
+    required this.command,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SizedBox(
+        width: 24,
+        height: 24,
+        child: SvgPicture.asset(icon),
+      ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(command),
           ),
-      ],
+          IconButton(
+            icon: const Icon(Icons.copy, size: 20),
+            onPressed: () {
+              // 复制命令到剪贴板
+              // TODO: 添加 url_launcher 包后实现
+            },
+            tooltip: 'Copy to clipboard',
+          ),
+        ],
+      ),
     );
   }
 }

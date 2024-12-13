@@ -20,6 +20,8 @@ dependencies:
   path: ^1.8.3
   equatable: ^2.0.5
   encrypt: ^5.0.1
+  url_launcher: ^6.2.4
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:
@@ -29,3 +31,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - assets/images/npm.svg
+    - assets/images/yarn.svg
+    - assets/images/pnpm.svg

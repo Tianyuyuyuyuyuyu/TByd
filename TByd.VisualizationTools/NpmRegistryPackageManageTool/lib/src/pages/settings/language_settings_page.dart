@@ -8,7 +8,7 @@ class LanguageSettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final currentLocale = ref.watch(localeProvider);
     final localeNotifier = ref.read(localeNotifierProvider.notifier);
 
