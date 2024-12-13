@@ -94,7 +94,6 @@ class PackageSearchResult extends Equatable {
   final String description;
   final String author;
   final DateTime lastModified;
-  final int downloadCount;
 
   const PackageSearchResult({
     required this.name,
@@ -102,20 +101,26 @@ class PackageSearchResult extends Equatable {
     required this.description,
     required this.author,
     required this.lastModified,
-    required this.downloadCount,
   });
 
   factory PackageSearchResult.fromJson(Map<String, dynamic> json) {
-    final timeData = json['time'] as Map<String, dynamic>?;
-
     return PackageSearchResult(
       name: json['name'] as String,
       version: json['version'] as String,
       description: json['description'] as String? ?? '',
-      author: json['author'] is String ? json['author'] as String : json['author']?['name'] as String? ?? 'Unknown',
-      lastModified: DateTime.parse(timeData?['modified'] ?? DateTime.now().toIso8601String()),
-      downloadCount: json['downloadCount'] as int? ?? 0,
+      author: json['author'] as String? ?? 'Unknown',
+      lastModified: DateTime.parse(json['lastModified'] as String),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'version': version,
+      'description': description,
+      'author': author,
+      'lastModified': lastModified.toIso8601String(),
+    };
   }
 
   @override

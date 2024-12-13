@@ -4,15 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/package_provider.dart';
 import '../models/package_model.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package_details_page.dart';
 
-class PackageSearchScreen extends ConsumerStatefulWidget {
-  const PackageSearchScreen({super.key});
+class PackageSearchPage extends ConsumerStatefulWidget {
+  const PackageSearchPage({super.key});
 
   @override
-  ConsumerState<PackageSearchScreen> createState() => _PackageSearchScreenState();
+  ConsumerState<PackageSearchPage> createState() => _PackageSearchPageState();
 }
 
-class _PackageSearchScreenState extends ConsumerState<PackageSearchScreen> {
+class _PackageSearchPageState extends ConsumerState<PackageSearchPage> {
   final _searchController = TextEditingController();
   final _debouncer = Debouncer(milliseconds: 300);
 
@@ -25,18 +27,26 @@ class _PackageSearchScreenState extends ConsumerState<PackageSearchScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _debouncer._timer?.cancel();
     super.dispose();
   }
 
   void _onSearchChanged(String query) {
+    if (!mounted) return;
     _debouncer.run(() {
-      ref.read(searchProvider.notifier).search(query);
+      if (!mounted) return;
+      final notifier = ref.read(searchProvider.notifier);
+      if (notifier.mounted) {
+        notifier.search(query);
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final searchState = ref.watch(searchProvider);
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
 
     return Column(
       children: [
@@ -45,7 +55,7 @@ class _PackageSearchScreenState extends ConsumerState<PackageSearchScreen> {
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: '搜索包名...',
+              hintText: l10n.searchPlaceholder,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchController.text.isNotEmpty
                   ? IconButton(
@@ -58,7 +68,7 @@ class _PackageSearchScreenState extends ConsumerState<PackageSearchScreen> {
                   : null,
               border: const OutlineInputBorder(),
               filled: true,
-              fillColor: Theme.of(context).colorScheme.surface,
+              fillColor: theme.colorScheme.surface,
             ),
             onChanged: _onSearchChanged,
           ),
@@ -68,7 +78,7 @@ class _PackageSearchScreenState extends ConsumerState<PackageSearchScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               searchState.error!,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: TextStyle(color: theme.colorScheme.error),
             ),
           )
         else if (searchState.isLoading && searchState.results.isEmpty)
@@ -78,29 +88,33 @@ class _PackageSearchScreenState extends ConsumerState<PackageSearchScreen> {
             ),
           )
         else if (searchState.results.isEmpty && searchState.query.isNotEmpty)
-          const Expanded(
+          Expanded(
             child: Center(
-              child: Text('未找到相关包'),
+              child: Text(l10n.noPackagesFound),
             ),
           )
         else
           Expanded(
-            child: Stack(
-              children: [
-                ListView.builder(
-                  itemCount: searchState.results.length,
-                  itemBuilder: (context, index) {
-                    final package = searchState.results[index];
-                    return PackageListItem(package: package);
+            child: ListView.builder(
+              itemCount: searchState.results.length,
+              itemBuilder: (context, index) {
+                final package = searchState.results[index];
+                return ListTile(
+                  title: Text(package.name),
+                  subtitle: Text(package.description),
+                  trailing: Text(package.version),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PackageDetailsPage(
+                          packageName: package.name,
+                        ),
+                      ),
+                    );
                   },
-                ),
-                if (searchState.isLoading)
-                  const Positioned(
-                    top: 8,
-                    right: 16,
-                    child: CircularProgressIndicator(),
-                  ),
-              ],
+                );
+              },
             ),
           ),
       ],
@@ -125,7 +139,14 @@ class PackageListItem extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to package details
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PackageDetailsPage(
+                packageName: package.name,
+              ),
+            ),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),

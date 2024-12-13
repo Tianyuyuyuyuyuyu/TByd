@@ -1,12 +1,6 @@
 {
-    "dart.flutterSdkPath": ".fvm/flutter_sdk",
+    "dart.flutterSdkPath": "C:\\src\\flutter",
     "dart.projectSearchDepth": 5,
-    "search.exclude": {
-        "**/.fvm": true
-    },
-    "files.watcherExclude": {
-        "**/.fvm": true
-    },
     "dart.lineLength": 120,
     "[dart]": {
         "editor.rulers": [

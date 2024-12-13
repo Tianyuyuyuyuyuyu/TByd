@@ -1,35 +1,40 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/package_model.dart';
 import '../services/package_service.dart';
+import '../providers/auth_provider.dart';
 
 final packageServiceProvider = Provider<PackageService>((ref) {
-  return PackageService();
+  final authState = ref.watch(authProvider);
+  return PackageService(
+    serverUrl: authState.auth?.serverUrl ?? '',
+    token: authState.auth?.token,
+  );
 });
 
 // 搜索状态
 class SearchState {
+  final List<PackageSearchResult> results;
   final bool isLoading;
   final String? error;
-  final List<PackageSearchResult> results;
   final String query;
 
   const SearchState({
+    this.results = const [],
     this.isLoading = false,
     this.error,
-    this.results = const [],
     this.query = '',
   });
 
   SearchState copyWith({
+    List<PackageSearchResult>? results,
     bool? isLoading,
     String? error,
-    List<PackageSearchResult>? results,
     String? query,
   }) {
     return SearchState(
+      results: results ?? this.results,
       isLoading: isLoading ?? this.isLoading,
       error: error,
-      results: results ?? this.results,
       query: query ?? this.query,
     );
   }
@@ -41,19 +46,32 @@ class SearchNotifier extends StateNotifier<SearchState> {
   SearchNotifier(this._packageService) : super(const SearchState());
 
   Future<void> search(String query) async {
-    if (query.isEmpty) {
-      state = const SearchState();
-      return;
-    }
+    if (!mounted) return;
+    if (query == state.query && !state.isLoading) return;
 
-    state = SearchState(isLoading: true, query: query);
+    state = state.copyWith(isLoading: true, query: query, error: null);
 
     try {
+      if (!mounted) return;
       final results = await _packageService.searchPackages(query);
-      state = SearchState(results: results, query: query);
+      if (!mounted) return;
+      state = state.copyWith(
+        results: results,
+        isLoading: false,
+      );
     } catch (e) {
-      state = SearchState(error: e.toString(), query: query);
+      if (!mounted) return;
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
     }
+  }
+
+  @override
+  void dispose() {
+    _packageService.dispose();
+    super.dispose();
   }
 }
 
@@ -141,8 +159,9 @@ final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) 
   return SearchNotifier(packageService);
 });
 
-final packageDetailsProvider =
-    StateNotifierProvider.family<PackageDetailsNotifier, PackageDetailsState, String>((ref, packageName) {
-  final packageService = ref.watch(packageServiceProvider);
-  return PackageDetailsNotifier(packageService, packageName);
-});
+final packageDetailsProvider = StateNotifierProvider.family<PackageDetailsNotifier, PackageDetailsState, String>(
+  (ref, packageName) {
+    final packageService = ref.watch(packageServiceProvider);
+    return PackageDetailsNotifier(packageService, packageName);
+  },
+);

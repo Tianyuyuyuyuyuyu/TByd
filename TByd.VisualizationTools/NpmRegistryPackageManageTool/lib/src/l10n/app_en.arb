@@ -1,10 +1,256 @@
 {
     "appTitle": "NPM Registry Manager",
     "@appTitle": {
-        "description": "The title of the application"
+        "description": "Application title"
     },
     "welcome": "Welcome to NPM Registry Manager",
     "@welcome": {
-        "description": "Welcome message on the home page"
+        "description": "Welcome message"
+    },
+    "loginTitle": "Login",
+    "@loginTitle": {
+        "description": "Login page title"
+    },
+    "serverAddress": "Server Address",
+    "@serverAddress": {
+        "description": "Server address input label"
+    },
+    "username": "Username",
+    "@username": {
+        "description": "Username input label"
+    },
+    "password": "Password",
+    "@password": {
+        "description": "Password input label"
+    },
+    "rememberMe": "Remember Me",
+    "@rememberMe": {
+        "description": "Remember login info option"
+    },
+    "login": "Login",
+    "@login": {
+        "description": "Login button text"
+    },
+    "loginLoading": "Logging in...",
+    "@loginLoading": {
+        "description": "Login in progress text"
+    },
+    "loginFailed": "Login Failed",
+    "@loginFailed": {
+        "description": "Login failed message"
+    },
+    "loginSuccess": "Login Successful",
+    "@loginSuccess": {
+        "description": "Login success message"
+    },
+    "welcomeBack": "Welcome back, {username}",
+    "@welcomeBack": {
+        "description": "Welcome back message",
+        "placeholders": {
+            "username": {
+                "type": "String",
+                "example": "tianyu"
+            }
+        }
+    },
+    "logout": "Logout",
+    "@logout": {
+        "description": "Logout button text"
+    },
+    "required": "{field} is required",
+    "@required": {
+        "description": "Required field validation message",
+        "placeholders": {
+            "field": {
+                "type": "String",
+                "example": "Username"
+            }
+        }
+    },
+    "invalidServerUrl": "Invalid server address format. Please enter a valid address (e.g., 120.26.201.54:1998 or http://120.26.201.54:1998)",
+    "@invalidServerUrl": {
+        "description": "Invalid server address error message"
+    },
+    "invalidCredentials": "Invalid username or password",
+    "@invalidCredentials": {
+        "description": "Invalid credentials error message"
+    },
+    "networkError": "Network connection error. Please check your network and try again",
+    "@networkError": {
+        "description": "Network error message"
+    },
+    "serverError": "Server error. Please try again later",
+    "@serverError": {
+        "description": "Server error message"
+    },
+    "language": "Language",
+    "@language": {
+        "description": "Language setting option"
+    },
+    "searchPackages": "Search Packages",
+    "@searchPackages": {
+        "description": "Search packages label"
+    },
+    "settings": "Settings",
+    "@settings": {
+        "description": "Settings page title"
+    },
+    "settingsPageUnderConstruction": "Settings page under construction...",
+    "@settingsPageUnderConstruction": {
+        "description": "Settings page under construction message"
+    },
+    "noPackagesFound": "No packages found",
+    "@noPackagesFound": {
+        "description": "No packages found message"
+    },
+    "searchPlaceholder": "Search package name...",
+    "@searchPlaceholder": {
+        "description": "Search input placeholder"
+    },
+    "packageDetails": "Package Details",
+    "@packageDetails": {
+        "description": "Package details page title"
+    },
+    "version": "Version",
+    "@version": {
+        "description": "Version label"
+    },
+    "author": "Author",
+    "@author": {
+        "description": "Author label"
+    },
+    "lastModified": "Last Modified",
+    "@lastModified": {
+        "description": "Last modified label"
+    },
+    "description": "Description",
+    "@description": {
+        "description": "Description label"
+    },
+    "dependencies": "Dependencies",
+    "@dependencies": {
+        "description": "Dependencies label"
+    },
+    "noDependencies": "No dependencies",
+    "@noDependencies": {
+        "description": "No dependencies message"
+    },
+    "license": "License",
+    "@license": {
+        "description": "License label"
+    },
+    "keywords": "Keywords",
+    "@keywords": {
+        "description": "Keywords label"
+    },
+    "noKeywords": "No keywords",
+    "@noKeywords": {
+        "description": "No keywords message"
+    },
+    "unpublish": "Unpublish",
+    "@unpublish": {
+        "description": "Unpublish button text"
+    },
+    "deprecate": "Deprecate",
+    "@deprecate": {
+        "description": "Deprecate button text"
+    },
+    "confirmUnpublish": "Confirm Unpublish",
+    "@confirmUnpublish": {
+        "description": "Confirm unpublish dialog title"
+    },
+    "confirmUnpublishMessage": "Are you sure you want to unpublish {package} {version}? This action cannot be undone.",
+    "@confirmUnpublishMessage": {
+        "description": "Confirm unpublish dialog content",
+        "placeholders": {
+            "package": {
+                "type": "String",
+                "example": "my-package"
+            },
+            "version": {
+                "type": "String",
+                "example": "1.0.0"
+            }
+        }
+    },
+    "deprecateMessage": "Deprecation Message",
+    "@deprecateMessage": {
+        "description": "Deprecation message input label"
+    },
+    "deprecateMessagePlaceholder": "Enter deprecation message...",
+    "@deprecateMessagePlaceholder": {
+        "description": "Deprecation message input placeholder"
+    },
+    "confirm": "Confirm",
+    "@confirm": {
+        "description": "Confirm button text"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+        "description": "Cancel button text"
+    },
+    "success": "Success",
+    "@success": {
+        "description": "Success message"
+    },
+    "error": "Error",
+    "@error": {
+        "description": "Error message"
+    },
+    "loading": "Loading...",
+    "@loading": {
+        "description": "Loading state text"
+    },
+    "showPassword": "Show Password",
+    "@showPassword": {
+        "description": "Show password button tooltip"
+    },
+    "hidePassword": "Hide Password",
+    "@hidePassword": {
+        "description": "Hide password button tooltip"
+    },
+    "manualServerInput": "Enter Server Address Manually",
+    "@manualServerInput": {
+        "description": "Manual server input option"
+    },
+    "recentLogins": "Recent Logins",
+    "@recentLogins": {
+        "description": "Recent logins title"
+    },
+    "lastLoginTime": "Last login: {time}",
+    "@lastLoginTime": {
+        "description": "Last login time",
+        "placeholders": {
+            "time": {
+                "type": "String",
+                "example": "2023-12-13 14:30"
+            }
+        }
+    },
+    "quickLogin": "Quick Login",
+    "@quickLogin": {
+        "description": "Quick login button tooltip"
+    },
+    "delete": "Delete",
+    "@delete": {
+        "description": "Delete button tooltip"
+    },
+    "confirmDelete": "Confirm Delete",
+    "@confirmDelete": {
+        "description": "Confirm delete dialog title"
+    },
+    "confirmDeleteMessage": "Are you sure you want to delete {username}'s login record for {server}?",
+    "@confirmDeleteMessage": {
+        "description": "Confirm delete dialog content",
+        "placeholders": {
+            "username": {
+                "type": "String",
+                "example": "admin"
+            },
+            "server": {
+                "type": "String",
+                "example": "localhost:4873"
+            }
+        }
     }
 } 
