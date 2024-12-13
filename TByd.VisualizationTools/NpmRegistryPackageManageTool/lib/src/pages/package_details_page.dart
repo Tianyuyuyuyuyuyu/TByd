@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/package_provider.dart';
+import '../providers/npm_package_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/package_settings_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class PackageDetailsPage extends ConsumerWidget {
   final String packageName;
@@ -218,9 +221,18 @@ class PackageDetailsPage extends ConsumerWidget {
                   ),
                 const SizedBox(width: 8),
                 _ActionButton(
-                  icon: Icons.code,
-                  label: 'Repository',
-                  onPressed: () {},
+                  icon: Icons.data_object,
+                  label: 'Raw',
+                  onPressed: packageDetails.package != null
+                      ? () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => _RawManifestDialog(
+                              packageDetails: packageDetails,
+                            ),
+                          );
+                        }
+                      : null,
                 ),
               ],
             ),
@@ -311,13 +323,13 @@ class _ActionButton extends StatelessWidget {
 }
 
 // 标签页内容组件
-class _ReadmeTab extends StatelessWidget {
+class _ReadmeTab extends ConsumerWidget {
   final PackageDetailsState packageDetails;
 
   const _ReadmeTab({required this.packageDetails});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (packageDetails.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -326,9 +338,87 @@ class _ReadmeTab extends StatelessWidget {
       return Center(child: Text(packageDetails.error!));
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Text(packageDetails.package?.description ?? ''),
+    if (packageDetails.package == null) {
+      return const Center(child: Text('Package information not available'));
+    }
+
+    final readmeAsync = ref.watch(readmeProvider(packageDetails.package!.name));
+
+    return readmeAsync.when(
+      data: (content) => SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (content.isEmpty)
+              const Center(child: Text('No README available'))
+            else
+              MarkdownBody(
+                data: content,
+                selectable: true,
+                styleSheet: MarkdownStyleSheet(
+                  h1: Theme.of(context).textTheme.headlineMedium,
+                  h2: Theme.of(context).textTheme.headlineSmall,
+                  h3: Theme.of(context).textTheme.titleLarge,
+                  h4: Theme.of(context).textTheme.titleMedium,
+                  h5: Theme.of(context).textTheme.titleSmall,
+                  h6: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                  p: Theme.of(context).textTheme.bodyMedium,
+                  code: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontFamily: 'monospace',
+                        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                      ),
+                  blockquote: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontStyle: FontStyle.italic,
+                      ),
+                  blockquoteDecoration: BoxDecoration(
+                    border: Border(
+                      left: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 4,
+                      ),
+                    ),
+                  ),
+                ),
+                onTapLink: (text, href, title) async {
+                  if (href != null) {
+                    final uri = Uri.parse(href);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    }
+                  }
+                },
+              ),
+          ],
+        ),
+      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.error_outline,
+              size: 48,
+              color: Colors.red,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading README:\n$error',
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.red),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                ref.refresh(readmeProvider(packageDetails.package!.name));
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -572,6 +662,260 @@ class InstallationSection extends ConsumerWidget {
               label: 'pnpm',
               packageName: packageName,
               version: version,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 添加 JsonTreeNode 组件
+class _JsonTreeNode extends StatefulWidget {
+  final dynamic data;
+  final String nodeName;
+  final bool isRoot;
+
+  const _JsonTreeNode({
+    super.key,
+    required this.data,
+    required this.nodeName,
+    this.isRoot = false,
+  });
+
+  @override
+  State<_JsonTreeNode> createState() => _JsonTreeNodeState();
+}
+
+class _JsonTreeNodeState extends State<_JsonTreeNode> {
+  late bool _isExpanded;
+
+  @override
+  void initState() {
+    super.initState();
+    _isExpanded = widget.isRoot; // 根节点默认展开，其他节点默认折叠
+  }
+
+  String _getItemCount(dynamic data) {
+    if (data is Map) {
+      return '${data.length} items';
+    } else if (data is List) {
+      return '${data.length} items';
+    }
+    return '';
+  }
+
+  Widget _buildExpandIcon() {
+    return SizedBox(
+      width: 12,
+      height: 12,
+      child: Icon(
+        _isExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right,
+        size: 12,
+      ),
+    );
+  }
+
+  Widget _buildValue(dynamic value) {
+    if (value is Map || value is List) {
+      final itemCount = _getItemCount(value);
+      final isMap = value is Map;
+      return Row(
+        children: [
+          Text(
+            isMap ? '{' : '[',
+            style: const TextStyle(color: Colors.grey),
+          ),
+          if (itemCount.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Text(
+                itemCount,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          if (!_isExpanded)
+            Text(
+              isMap ? ' ... }' : ' ... ]',
+              style: const TextStyle(color: Colors.grey),
+            ),
+        ],
+      );
+    } else if (value is String) {
+      return Text(
+        '"$value"',
+        style: const TextStyle(color: Colors.green),
+        overflow: TextOverflow.ellipsis,
+      );
+    } else {
+      return Text(
+        value.toString(),
+        style: const TextStyle(color: Colors.blue),
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isExpandable = widget.data is Map || widget.data is List;
+    final isMap = widget.data is Map;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: isExpandable
+              ? () {
+                  setState(() {
+                    _isExpanded = !_isExpanded;
+                  });
+                }
+              : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (isExpandable) _buildExpandIcon() else const SizedBox(width: 12),
+                if (!widget.isRoot) ...[
+                  Text(
+                    '"${widget.nodeName}"',
+                    style: const TextStyle(color: Colors.purple),
+                  ),
+                  const Text(': '),
+                ],
+                Expanded(
+                  child: DefaultTextStyle(
+                    style: DefaultTextStyle.of(context).style.copyWith(
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                    child: _buildValue(widget.data),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_isExpanded && isExpandable)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.data is Map)
+                      ...((widget.data as Map).entries.map((entry) {
+                        return _JsonTreeNode(
+                          nodeName: entry.key.toString(),
+                          data: entry.value,
+                        );
+                      }))
+                    else if (widget.data is List)
+                      ...((widget.data as List).asMap().entries.map((entry) {
+                        return _JsonTreeNode(
+                          nodeName: entry.key.toString(),
+                          data: entry.value,
+                        );
+                      })),
+                  ],
+                ),
+              ),
+              if (!widget.isRoot) // 只在非根节点显示闭合括号
+                Text(
+                  isMap ? '}' : ']',
+                  style: const TextStyle(color: Colors.grey),
+                ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+// 修改 _RawManifestDialog
+class _RawManifestDialog extends StatelessWidget {
+  final PackageDetailsState packageDetails;
+
+  const _RawManifestDialog({
+    required this.packageDetails,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Dialog(
+      child: Container(
+        width: 800,
+        height: 600,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Raw Manifest',
+                  style: theme.textTheme.titleLarge,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: packageDetails.rawManifest != null
+                    ? SingleChildScrollView(
+                        child: _JsonTreeNode(
+                          data: json.decode(packageDetails.rawManifest!),
+                          nodeName: 'root',
+                          isRoot: true,
+                        ),
+                      )
+                    : const Center(
+                        child: Text('No manifest data available'),
+                      ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton.icon(
+                  icon: const Icon(Icons.copy, size: 18),
+                  label: const Text('Copy'),
+                  onPressed: packageDetails.rawManifest != null
+                      ? () {
+                          Clipboard.setData(
+                            ClipboardData(
+                              text: packageDetails.rawManifest!,
+                            ),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Raw manifest copied to clipboard'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      : null,
+                ),
+              ],
             ),
           ],
         ),

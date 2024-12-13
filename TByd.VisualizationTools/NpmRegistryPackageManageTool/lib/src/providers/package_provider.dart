@@ -21,12 +21,14 @@ class PackageDetailsState {
   final String? error;
   final Package? package;
   final List<PackageVersion> versions;
+  final String? rawManifest;
 
   const PackageDetailsState({
     this.isLoading = false,
     this.error,
     this.package,
     this.versions = const [],
+    this.rawManifest,
   });
 
   PackageDetailsState copyWith({
@@ -34,12 +36,14 @@ class PackageDetailsState {
     String? error,
     Package? package,
     List<PackageVersion>? versions,
+    String? rawManifest,
   }) {
     return PackageDetailsState(
       isLoading: isLoading ?? this.isLoading,
       error: error,
       package: package ?? this.package,
       versions: versions ?? this.versions,
+      rawManifest: rawManifest ?? this.rawManifest,
     );
   }
 }
@@ -62,7 +66,13 @@ class PackageDetailsNotifier extends StateNotifier<PackageDetailsState> {
       if (_isDisposed) return;
       final versions = await _packageService.getPackageVersions(packageName);
       if (_isDisposed) return;
-      state = PackageDetailsState(package: package, versions: versions);
+      final rawManifest = await _packageService.getRawManifest(packageName);
+      if (_isDisposed) return;
+      state = PackageDetailsState(
+        package: package,
+        versions: versions,
+        rawManifest: rawManifest,
+      );
     } catch (e) {
       if (_isDisposed) return;
       state = PackageDetailsState(error: e.toString());

@@ -20,8 +20,11 @@ dependencies:
   path: ^1.8.3
   equatable: ^2.0.5
   encrypt: ^5.0.1
-  url_launcher: ^6.2.4
+  url_launcher: ^6.3.1
   flutter_svg: ^2.0.9
+  archive: ^4.0.1
+  flutter_markdown: ^0.7.4+3
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_test:

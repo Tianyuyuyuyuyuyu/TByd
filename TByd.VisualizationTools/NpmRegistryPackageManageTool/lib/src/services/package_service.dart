@@ -130,7 +130,7 @@ class PackageService {
         // 解析包名
         name = data['name']?.toString() ?? '';
 
-        // 解析显示名称 - 从包的最新版本中获取
+        // 解析显示名称 - 从包的最新版本中获
         if (data['versions'] is Map) {
           final versions = data['versions'] as Map;
           final latestVersion = data['dist-tags']?['latest']?.toString();
@@ -262,7 +262,7 @@ class PackageService {
         throw Exception('搜索包失败: ${response.statusCode}');
       }
     } catch (e) {
-      print('备用搜索请求出错: $e');
+      print('备用搜索请求��错: $e');
       if (e.toString().contains('timeout')) {
         throw Exception('搜索请求超时，请稍后重试');
       }
@@ -430,9 +430,54 @@ class PackageService {
   }
 
   Map<String, String> _getHeaders() {
-    return {
+    final headers = <String, String>{
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
     };
+
+    if (token != null && token!.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    return headers;
+  }
+
+  Future<String> getRawManifest(String packageName) async {
+    if (serverUrl.isEmpty) {
+      throw Exception('Server URL is not set');
+    }
+
+    final uri = Uri.parse('$serverUrl/$packageName');
+
+    try {
+      final response = await client.get(uri, headers: _getHeaders());
+
+      if (response.statusCode == 200) {
+        // 解析 JSON 数据
+        final dynamic jsonData = json.decode(response.body);
+
+        // 移除顶层的 readme 字段
+        if (jsonData is Map) {
+          jsonData.remove('readme');
+
+          // 移除版本中的 readme 字段
+          final versions = jsonData['versions'];
+          if (versions is Map) {
+            for (final version in versions.values) {
+              if (version is Map) {
+                version.remove('readme');
+              }
+            }
+          }
+        }
+
+        // 格式化 JSON 以便于阅读
+        return const JsonEncoder.withIndent('  ').convert(jsonData);
+      } else {
+        throw Exception('Failed to get raw manifest: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to get raw manifest: $e');
+    }
   }
 }
