@@ -11,6 +11,9 @@ class Package extends Equatable {
   final Map<String, String> dependencies;
   final List<String> keywords;
   final String license;
+  final String? repository;
+  final String? homepage;
+  final String? bugsUrl;
 
   const Package({
     required this.name,
@@ -23,24 +26,66 @@ class Package extends Equatable {
     required this.dependencies,
     required this.keywords,
     required this.license,
+    this.repository,
+    this.homepage,
+    this.bugsUrl,
   }) : displayName = displayName ?? name;
 
   factory Package.fromJson(Map<String, dynamic> json) {
     try {
       final timeData = json['time'] as Map<String, dynamic>?;
       final version = json['version']?.toString() ?? json['dist-tags']?['latest']?.toString() ?? '0.0.0';
+      final versions = json['versions'] as Map<String, dynamic>?;
+      final versionData = versions?[version] as Map<String, dynamic>?;
+
+      // 解析仓库地址
+      String? repositoryUrl;
+      final repository = versionData?['repository'] ?? json['repository'];
+      if (repository != null) {
+        if (repository is String) {
+          repositoryUrl = repository;
+        } else if (repository is Map) {
+          repositoryUrl = repository['url']?.toString();
+        }
+      }
+
+      // 清理仓库地址
+      if (repositoryUrl != null) {
+        repositoryUrl = repositoryUrl
+            .replaceAll(RegExp(r'^git\+'), '')
+            .replaceAll(RegExp(r'\.git$'), '')
+            .replaceAll('git://', 'https://')
+            .replaceAll('ssh://git@', 'https://');
+      }
+
+      // 获取 homepage 地址
+      String? homepageUrl = versionData?['homepage']?.toString() ?? json['homepage']?.toString();
+
+      // 解析 bugs URL
+      String? bugsUrl;
+      final bugs = versionData?['bugs'] ?? json['bugs'];
+      if (bugs != null) {
+        if (bugs is String) {
+          bugsUrl = bugs;
+        } else if (bugs is Map) {
+          bugsUrl = bugs['url']?.toString();
+        }
+      }
 
       return Package(
         name: json['name']?.toString() ?? '',
-        displayName: json['displayName']?.toString(),
+        displayName: versionData?['displayName']?.toString() ?? json['displayName']?.toString(),
         version: version,
-        description: json['description']?.toString() ?? '',
-        author: _extractAuthor(json['author']),
+        description: versionData?['description']?.toString() ?? json['description']?.toString() ?? '',
+        author: _extractAuthor(versionData?['author'] ?? json['author']),
         publishedAt: _parseDateTime(timeData?[version] ?? timeData?['modified']),
-        dist: _extractDist(json['dist']),
-        dependencies: _extractDependencies(json['dependencies']),
-        keywords: _extractKeywords(json['keywords']),
-        license: json['license']?.toString() ?? 'Unknown',
+        dist: _extractDist(versionData?['dist'] ?? json['dist']),
+        dependencies: _extractDependencies(versionData?['dependencies'] ?? json['dependencies']),
+        keywords: _extractKeywords(versionData?['keywords'] ?? json['keywords']),
+        license: versionData?['license']?.toString() ?? json['license']?.toString() ?? 'Unknown',
+        repository: repositoryUrl,
+        homepage: homepageUrl,
+        bugsUrl: bugsUrl,
       );
     } catch (e) {
       print('解析包详情时出错: $e');
@@ -103,11 +148,13 @@ class Package extends Equatable {
       'dependencies': dependencies,
       'keywords': keywords,
       'license': license,
+      'repository': repository,
+      'homepage': homepage,
     };
   }
 
   @override
-  List<Object?> get props => [name, version];
+  List<Object?> get props => [name, version, repository];
 }
 
 class PackageVersion extends Equatable {

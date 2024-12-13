@@ -16,9 +16,7 @@ class PackageService {
   }) : _client = client ?? http.Client();
 
   http.Client get client {
-    if (_client == null) {
-      _client = http.Client();
-    }
+    _client ??= http.Client();
     return _client!;
   }
 

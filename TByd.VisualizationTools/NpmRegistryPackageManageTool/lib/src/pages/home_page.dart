@@ -149,7 +149,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           // 右侧内容区域
           Expanded(
             child: Container(
-              color: theme.colorScheme.background,
+              color: theme.colorScheme.surface,
               child: _buildContent(),
             ),
           ),

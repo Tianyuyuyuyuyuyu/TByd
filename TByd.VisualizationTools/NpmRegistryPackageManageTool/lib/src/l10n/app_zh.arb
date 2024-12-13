@@ -1,5 +1,5 @@
 {
-    "appTitle": "NPM 仓库管理工具",
+    "appTitle": "NPM 仓库管理器",
     "@appTitle": {
         "description": "The title of the application"
     },
@@ -218,5 +218,13 @@
     "noDependencies": "无依赖",
     "@noDependencies": {
         "description": "No dependencies message"
+    },
+    "copyRepositoryUrl": "复制仓库地址",
+    "@copyRepositoryUrl": {
+        "description": "Tooltip for copy repository URL button"
+    },
+    "repositoryUrlCopied": "仓库地址已复制到剪贴板",
+    "@repositoryUrlCopied": {
+        "description": "Message shown when repository URL is copied"
     }
 } 

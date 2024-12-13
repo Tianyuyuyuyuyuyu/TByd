@@ -47,30 +47,38 @@ class PackageDetailsState {
 class PackageDetailsNotifier extends StateNotifier<PackageDetailsState> {
   final PackageService _packageService;
   final String packageName;
+  bool _isDisposed = false;
 
   PackageDetailsNotifier(this._packageService, this.packageName) : super(const PackageDetailsState()) {
     loadPackageDetails();
   }
 
   Future<void> loadPackageDetails() async {
+    if (_isDisposed) return;
     state = state.copyWith(isLoading: true);
 
     try {
       final package = await _packageService.getPackageDetails(packageName);
+      if (_isDisposed) return;
       final versions = await _packageService.getPackageVersions(packageName);
+      if (_isDisposed) return;
       state = PackageDetailsState(package: package, versions: versions);
     } catch (e) {
+      if (_isDisposed) return;
       state = PackageDetailsState(error: e.toString());
     }
   }
 
   Future<void> unpublishVersion(String version) async {
+    if (_isDisposed) return;
     state = state.copyWith(isLoading: true);
 
     try {
       await _packageService.unpublishPackage(packageName, version);
-      await loadPackageDetails(); // 重新加载包详情
+      if (_isDisposed) return;
+      await loadPackageDetails();
     } catch (e) {
+      if (_isDisposed) return;
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
@@ -79,17 +87,26 @@ class PackageDetailsNotifier extends StateNotifier<PackageDetailsState> {
   }
 
   Future<void> deprecateVersion(String version, String message) async {
+    if (_isDisposed) return;
     state = state.copyWith(isLoading: true);
 
     try {
       await _packageService.deprecatePackage(packageName, version, message);
-      await loadPackageDetails(); // 重新加载包详情
+      if (_isDisposed) return;
+      await loadPackageDetails();
     } catch (e) {
+      if (_isDisposed) return;
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
   }
 }
 

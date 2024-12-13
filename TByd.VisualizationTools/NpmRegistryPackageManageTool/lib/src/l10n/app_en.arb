@@ -235,5 +235,13 @@
     "noReadme": "No README available",
     "noDependencies": "No dependencies",
     "noVersions": "No versions available",
-    "noUplinks": "No uplinks information available"
+    "noUplinks": "No uplinks information available",
+    "copyRepositoryUrl": "Copy repository URL",
+    "@copyRepositoryUrl": {
+        "description": "Tooltip for copy repository URL button"
+    },
+    "repositoryUrlCopied": "Repository URL copied to clipboard",
+    "@repositoryUrlCopied": {
+        "description": "Message shown when repository URL is copied"
+    }
 } 

@@ -35,3 +35,4 @@ flutter:
     - assets/images/npm.svg
     - assets/images/yarn.svg
     - assets/images/pnpm.svg
+    - assets/images/git.svg
