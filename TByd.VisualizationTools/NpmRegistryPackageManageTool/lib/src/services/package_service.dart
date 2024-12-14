@@ -262,7 +262,7 @@ class PackageService {
         throw Exception('搜索包失败: ${response.statusCode}');
       }
     } catch (e) {
-      print('备用搜索请求��错: $e');
+      print('备用搜索请求出错: $e');
       if (e.toString().contains('timeout')) {
         throw Exception('搜索请求超时，请稍后重试');
       }
@@ -466,8 +466,18 @@ class PackageService {
             for (final version in versions.values) {
               if (version is Map) {
                 version.remove('readme');
+
+                // 将 Installation 转换为大写
+                if (version['installation'] != null) {
+                  version['INSTALLATION'] = version.remove('installation');
+                }
               }
             }
+          }
+
+          // 处理顶层的 Installation
+          if (jsonData['installation'] != null) {
+            jsonData['INSTALLATION'] = jsonData.remove('installation');
           }
         }
 

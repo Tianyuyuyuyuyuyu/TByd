@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/npm_package_service.dart';
-import '../providers/app_config_provider.dart';
 import '../providers/auth_provider.dart';
 
 final npmPackageServiceProvider = Provider<NpmPackageService>((ref) {

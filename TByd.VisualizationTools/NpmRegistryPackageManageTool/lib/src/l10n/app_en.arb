@@ -219,7 +219,7 @@
     "@noDependencies": {
         "description": "No dependencies message"
     },
-    "packageInstallation": "Installation",
+    "packageInstallation": "INSTALLATION",
     "packageRepository": "Repository",
     "packageLatestDistribution": "Latest Distribution",
     "packageAuthor": "Author",

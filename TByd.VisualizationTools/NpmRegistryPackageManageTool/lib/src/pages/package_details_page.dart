@@ -24,248 +24,251 @@ class PackageDetailsPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final packageDetails = ref.watch(packageDetailsProvider(packageName));
 
-    return DefaultTabController(
-      length: 5,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 包标题和版本信息
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (packageDetails.package != null) ...[
-                  // 显示包名
-                  Text(
-                    packageName,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+    return Material(
+      color: theme.colorScheme.surface,
+      child: DefaultTabController(
+        length: 5,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 包标题和版本信息
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (packageDetails.package != null) ...[
+                    // 显示包名
+                    Text(
+                      packageName,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  // 显示 displayName
-                  Text(
-                    packageDetails.package!.displayName,
-                    style: theme.textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    packageDetails.package!.description,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Latest v${packageDetails.package!.version} · Published ${_formatDate(packageDetails.package!.publishedAt)}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                    const SizedBox(height: 4),
+                    // 显示 displayName
+                    Text(
+                      packageDetails.package!.displayName,
+                      style: theme.textTheme.headlineMedium,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  // 添加仓库链接区域
-                  if (packageDetails.package?.repository != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: theme.dividerColor.withOpacity(0.1),
+                    const SizedBox(height: 8),
+                    Text(
+                      packageDetails.package!.description,
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Latest v${packageDetails.package!.version} · Published ${_formatDate(packageDetails.package!.publishedAt)}',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // 添加仓库链接区域
+                    if (packageDetails.package?.repository != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: theme.dividerColor.withOpacity(0.1),
+                            ),
                           ),
                         ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: FutureBuilder<String>(
-                              future: rootBundle.loadString('assets/images/git.svg'),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasError) {
-                                  debugPrint('Git SVG 加载失败: ${snapshot.error}');
-                                  return const Icon(Icons.code, size: 16);
-                                }
-                                if (!snapshot.hasData) {
-                                  return const SizedBox(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: FutureBuilder<String>(
+                                future: rootBundle.loadString('assets/images/git.svg'),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    debugPrint('Git SVG 加载失败: ${snapshot.error}');
+                                    return const Icon(Icons.code, size: 16);
+                                  }
+                                  if (!snapshot.hasData) {
+                                    return const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  }
+                                  return SvgPicture.string(
+                                    snapshot.data!,
                                     width: 16,
                                     height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
+                                    fit: BoxFit.contain,
                                   );
-                                }
-                                return SvgPicture.string(
-                                  snapshot.data!,
-                                  width: 16,
-                                  height: 16,
-                                  fit: BoxFit.contain,
-                                );
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                final url = Uri.parse(packageDetails.package!.repository!);
-                                if (await canLaunchUrl(url)) {
-                                  await launchUrl(url);
-                                }
-                              },
-                              child: Text(
-                                packageDetails.package!.repository!,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                  height: 1.2,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                },
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 4),
-                          SizedBox(
-                            width: 32,
-                            height: 32,
-                            child: IconButton(
-                              icon: const Icon(Icons.copy, size: 16),
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(
-                                    text: packageDetails.package!.repository!,
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () async {
+                                  final url = Uri.parse(packageDetails.package!.repository!);
+                                  if (await canLaunchUrl(url)) {
+                                    await launchUrl(url);
+                                  }
+                                },
+                                child: Text(
+                                  packageDetails.package!.repository!,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    height: 1.2,
                                   ),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(l10n.repositoryUrlCopied),
-                                    duration: const Duration(seconds: 2),
-                                  ),
-                                );
-                              },
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              splashRadius: 16,
-                              tooltip: l10n.copyRepositoryUrl,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 4),
+                            SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: IconButton(
+                                icon: const Icon(Icons.copy, size: 16),
+                                onPressed: () {
+                                  Clipboard.setData(
+                                    ClipboardData(
+                                      text: packageDetails.package!.repository!,
+                                    ),
+                                  );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(l10n.repositoryUrlCopied),
+                                      duration: const Duration(seconds: 2),
+                                    ),
+                                  );
+                                },
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                splashRadius: 16,
+                                tooltip: l10n.copyRepositoryUrl,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-          // 操作按钮
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                if (packageDetails.package?.homepage != null)
-                  _ActionButton(
-                    icon: Icons.home,
-                    label: 'Homepage',
-                    onPressed: () async {
-                      final url = Uri.parse(packageDetails.package!.homepage!);
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
-                      }
-                    },
-                  )
-                else
-                  _ActionButton(
-                    icon: Icons.home,
-                    label: 'Homepage',
-                    onPressed: null,
-                  ),
-                const SizedBox(width: 8),
-                if (packageDetails.package?.bugsUrl != null)
-                  _ActionButton(
-                    icon: Icons.bug_report,
-                    label: 'Issues',
-                    onPressed: () async {
-                      final url = Uri.parse(packageDetails.package!.bugsUrl!);
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
-                      }
-                    },
-                  )
-                else
-                  _ActionButton(
-                    icon: Icons.bug_report,
-                    label: 'Issues',
-                    onPressed: null,
-                  ),
-                const SizedBox(width: 8),
-                if (packageDetails.package?.dist['tarball'] != null)
-                  _ActionButton(
-                    icon: Icons.cloud_download,
-                    label: 'Download',
-                    onPressed: () async {
-                      final url = Uri.parse(packageDetails.package!.dist['tarball']!);
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(
-                          url,
-                          mode: LaunchMode.externalApplication,
-                        );
-                      }
-                    },
-                  )
-                else
-                  _ActionButton(
-                    icon: Icons.cloud_download,
-                    label: 'Download',
-                    onPressed: null,
-                  ),
-                const SizedBox(width: 8),
-                _ActionButton(
-                  icon: Icons.data_object,
-                  label: 'Raw',
-                  onPressed: packageDetails.package != null
-                      ? () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => _RawManifestDialog(
-                              packageDetails: packageDetails,
-                            ),
+            // 操作按钮
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  if (packageDetails.package?.homepage != null)
+                    _ActionButton(
+                      icon: Icons.home,
+                      label: 'Homepage',
+                      onPressed: () async {
+                        final url = Uri.parse(packageDetails.package!.homepage!);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        }
+                      },
+                    )
+                  else
+                    const _ActionButton(
+                      icon: Icons.home,
+                      label: 'Homepage',
+                      onPressed: null,
+                    ),
+                  const SizedBox(width: 8),
+                  if (packageDetails.package?.bugsUrl != null)
+                    _ActionButton(
+                      icon: Icons.bug_report,
+                      label: 'Issues',
+                      onPressed: () async {
+                        final url = Uri.parse(packageDetails.package!.bugsUrl!);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url);
+                        }
+                      },
+                    )
+                  else
+                    const _ActionButton(
+                      icon: Icons.bug_report,
+                      label: 'Issues',
+                      onPressed: null,
+                    ),
+                  const SizedBox(width: 8),
+                  if (packageDetails.package?.dist['tarball'] != null)
+                    _ActionButton(
+                      icon: Icons.cloud_download,
+                      label: 'Download',
+                      onPressed: () async {
+                        final url = Uri.parse(packageDetails.package!.dist['tarball']!);
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
                           );
                         }
-                      : null,
-                ),
+                      },
+                    )
+                  else
+                    const _ActionButton(
+                      icon: Icons.cloud_download,
+                      label: 'Download',
+                      onPressed: null,
+                    ),
+                  const SizedBox(width: 8),
+                  _ActionButton(
+                    icon: Icons.data_object,
+                    label: 'Raw',
+                    onPressed: packageDetails.package != null
+                        ? () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => _RawManifestDialog(
+                                packageDetails: packageDetails,
+                              ),
+                            );
+                          }
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            // 标签栏
+            TabBar(
+              tabs: [
+                Tab(text: l10n.readmeTab),
+                Tab(text: l10n.dependenciesTab),
+                Tab(text: l10n.versionsTab),
+                Tab(text: l10n.uplinksTab),
+                Tab(text: l10n.packageInstallation),
               ],
             ),
-          ),
-          const SizedBox(height: 8),
-          // 标签栏
-          TabBar(
-            tabs: [
-              Tab(text: l10n.readmeTab),
-              Tab(text: l10n.dependenciesTab),
-              Tab(text: l10n.versionsTab),
-              Tab(text: l10n.uplinksTab),
-              Tab(text: l10n.packageInstallation),
-            ],
-          ),
-          Expanded(
-            child: TabBarView(
-              children: [
-                _ReadmeTab(packageDetails: packageDetails),
-                _DependenciesTab(packageDetails: packageDetails),
-                _VersionsTab(packageDetails: packageDetails),
-                const _UplinksTab(),
-                if (packageDetails.package != null)
-                  InstallationSection(
-                    packageName: packageDetails.package!.name,
-                    version: packageDetails.package!.version,
-                  )
-                else
-                  const Center(child: CircularProgressIndicator()),
-              ],
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _ReadmeTab(packageDetails: packageDetails),
+                  _DependenciesTab(packageDetails: packageDetails),
+                  _VersionsTab(packageDetails: packageDetails),
+                  const _UplinksTab(),
+                  if (packageDetails.package != null)
+                    InstallationSection(
+                      packageName: packageDetails.package!.name,
+                      version: packageDetails.package!.version,
+                    )
+                  else
+                    const Center(child: CircularProgressIndicator()),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -315,7 +318,7 @@ class _ActionButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         minimumSize: const Size(0, 32),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        disabledBackgroundColor: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        disabledBackgroundColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
         disabledForegroundColor: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
       ),
     );
@@ -366,7 +369,7 @@ class _ReadmeTab extends ConsumerWidget {
                   p: Theme.of(context).textTheme.bodyMedium,
                   code: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         fontFamily: 'monospace',
-                        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       ),
                   blockquote: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -430,18 +433,104 @@ class _DependenciesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (packageDetails.package == null) {
       return const Center(child: Text('No dependencies information available'));
     }
 
-    return ListView.builder(
+    final dependencies = packageDetails.package!.dependencies;
+    if (dependencies.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.inventory_2_outlined,
+              size: 48,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No Dependencies',
+              style: theme.textTheme.titleMedium,
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.separated(
       padding: const EdgeInsets.all(16),
-      itemCount: packageDetails.package!.dependencies.length,
+      itemCount: dependencies.length,
+      separatorBuilder: (context, index) => const Divider(height: 1),
       itemBuilder: (context, index) {
-        final entry = packageDetails.package!.dependencies.entries.elementAt(index);
+        final entry = dependencies.entries.elementAt(index);
+        final packageName = entry.key;
+        final version = entry.value;
+
         return ListTile(
-          title: Text(entry.key),
-          subtitle: Text(entry.value),
+          title: Row(
+            children: [
+              Text(
+                packageName,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  version,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.open_in_new),
+                tooltip: 'Open in browser',
+                onPressed: () async {
+                  final url = Uri.parse('https://www.npmjs.com/package/$packageName');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.content_copy),
+                tooltip: 'Copy package name',
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: packageName));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Package name copied to clipboard'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+          onTap: () async {
+            final url = Uri.parse('https://www.npmjs.com/package/$packageName');
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            }
+          },
         );
       },
     );
@@ -455,22 +544,121 @@ class _VersionsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    final theme = Theme.of(context);
+
+    return ListView(
       padding: const EdgeInsets.all(16),
-      itemCount: packageDetails.versions.length,
-      itemBuilder: (context, index) {
-        final version = packageDetails.versions[index];
-        return ListTile(
-          title: Text('v${version.version}'),
-          subtitle: Text(_formatDate(version.publishedAt)),
-        );
-      },
+      children: [
+        // Current Tags section
+        Text(
+          'Current Tags',
+          style: theme.textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        _buildVersionRow(
+          context: context,
+          title: 'latest',
+          version: packageDetails.package?.version ?? '',
+        ),
+        const SizedBox(height: 16),
+
+        // Version History section
+        Text(
+          'Version History',
+          style: theme.textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        ...packageDetails.versions
+            .map((version) => _buildVersionRow(
+                  context: context,
+                  title: version.version,
+                  trailing: _formatTimeAgo(version.publishedAt),
+                ))
+            .toList(),
+      ],
     );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  Widget _buildVersionRow({
+    required BuildContext context,
+    required String title,
+    String? version,
+    String? trailing,
+  }) {
+    final theme = Theme.of(context);
+    final rightText = version ?? trailing ?? '';
+
+    return Container(
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children: [
+          Text(title),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: CustomPaint(
+                painter: DottedLinePainter(color: theme.colorScheme.outline.withOpacity(0.5)),
+              ),
+            ),
+          ),
+          Text(
+            rightText,
+            style: version != null
+                ? TextStyle(color: theme.colorScheme.primary)
+                : theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+          ),
+        ],
+      ),
+    );
   }
+
+  String _formatTimeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays < 30) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months months ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years years ago';
+    }
+  }
+}
+
+class DottedLinePainter extends CustomPainter {
+  final Color color;
+
+  DottedLinePainter({required this.color});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 1;
+
+    const dashWidth = 4;
+    const dashSpace = 4;
+    double startX = 0;
+    final y = size.height / 2;
+
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, y),
+        Offset(startX + dashWidth, y),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(DottedLinePainter oldDelegate) => color != oldDelegate.color;
 }
 
 class _UplinksTab extends StatelessWidget {
@@ -677,7 +865,6 @@ class _JsonTreeNode extends StatefulWidget {
   final bool isRoot;
 
   const _JsonTreeNode({
-    super.key,
     required this.data,
     required this.nodeName,
     this.isRoot = false,
@@ -876,7 +1063,7 @@ class _RawManifestDialog extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: packageDetails.rawManifest != null
