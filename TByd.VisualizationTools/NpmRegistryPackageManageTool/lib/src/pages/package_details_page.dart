@@ -526,9 +526,9 @@ class _DependenciesTab extends StatelessWidget {
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: packageName));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Package name copied to clipboard'),
-                      duration: const Duration(seconds: 2),
+                      duration: Duration(seconds: 2),
                     ),
                   );
                 },

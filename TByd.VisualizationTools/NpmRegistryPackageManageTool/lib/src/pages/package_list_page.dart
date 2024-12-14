@@ -64,6 +64,20 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                   hintText: l10n.searchPlaceholder,
                 ),
               ),
+              // 包操作按钮
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.settings),
+                    label: const Text('包操作'),
+                    onPressed: () {
+                      // TODO: 实现包操作逻辑
+                    },
+                  ),
+                ),
+              ),
               // 包列表
               Expanded(
                 child: searchState.when(

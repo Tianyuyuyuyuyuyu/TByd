@@ -123,13 +123,13 @@ class ReadmePage extends ConsumerWidget {
                             // 代码样式
                             code: GoogleFonts.firaCode(
                               textStyle: theme.textTheme.bodyMedium?.copyWith(
-                                backgroundColor: theme.colorScheme.surfaceVariant,
+                                backgroundColor: theme.colorScheme.surfaceContainerHighest,
                                 height: 1.5,
                               ),
                             ),
                             codeblockPadding: const EdgeInsets.all(16),
                             codeblockDecoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceVariant,
+                              color: theme.colorScheme.surfaceContainerHighest,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             // 引用样式

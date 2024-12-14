@@ -15,6 +15,7 @@ import '../providers/auth_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'login_page.dart';
 import 'package_list_page.dart';
+import 'package_operations_page.dart';
 
 /// 主页组件
 ///
@@ -155,10 +156,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       _buildNavButton(
                         context: context,
+                        icon: Icons.build_outlined,
+                        selectedIcon: Icons.build,
+                        label: '包操作',
+                        index: 1,
+                      ),
+                      _buildNavButton(
+                        context: context,
                         icon: Icons.settings_outlined,
                         selectedIcon: Icons.settings,
                         label: l10n.settings,
-                        index: 1,
+                        index: 2,
                       ),
                     ],
                   ),
@@ -233,6 +241,8 @@ class _HomePageState extends ConsumerState<HomePage> {
       case 0:
         return const PackageListPage();
       case 1:
+        return const PackageOperationsPage();
+      case 2:
         return const Center(
           child: Text('设置页面'),
         );

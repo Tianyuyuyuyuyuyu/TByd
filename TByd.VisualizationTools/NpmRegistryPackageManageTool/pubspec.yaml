@@ -25,6 +25,7 @@ dependencies:
   archive: ^4.0.1
   flutter_markdown: ^0.7.4+3
   google_fonts: ^6.2.1
+  file_picker: ^6.1.1
 
 dev_dependencies:
   flutter_test:
