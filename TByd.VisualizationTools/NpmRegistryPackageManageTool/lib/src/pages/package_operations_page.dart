@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../widgets/package_settings_form.dart';
+import '../models/unity_package_config.dart';
+import '../providers/package_settings_provider.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:path/path.dart' as path;
 
 /// 包操作页面
 ///
@@ -25,6 +31,17 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    // 恢复上次的项目路径
+    Future.microtask(() {
+      final savedState = ref.read(packageSettingsProvider);
+      if (savedState.currentProjectPath != null) {
+        setState(() {
+          _selectedFolderPath = savedState.currentProjectPath;
+        });
+        _loadPackageConfig(savedState.currentProjectPath!);
+      }
+    });
   }
 
   @override
@@ -42,6 +59,10 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
       setState(() {
         _selectedFolderPath = folderPath;
       });
+
+      // 尝试读取package.json
+      await _loadPackageConfig(folderPath);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -54,9 +75,72 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
     }
   }
 
+  Future<void> _loadPackageConfig(String folderPath) async {
+    final packageJsonFile = File(path.join(folderPath, 'package.json'));
+    if (await packageJsonFile.exists()) {
+      try {
+        final jsonContent = await packageJsonFile.readAsString();
+        final jsonData = json.decode(jsonContent);
+        final config = UnityPackageConfig.fromJson(jsonData);
+
+        // 设置provider的配置和当前项目
+        ref.read(packageSettingsProvider.notifier).setCurrentProject(
+              folderPath,
+              initialConfig: config,
+            );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('读取package.json失败: ${e.toString()}'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _savePackageConfig(UnityPackageConfig config) async {
+    if (_selectedFolderPath == null) return;
+
+    final packageJsonFile = File(path.join(_selectedFolderPath!, 'package.json'));
+    try {
+      final jsonContent = const JsonEncoder.withIndent('  ').convert(config.toJson());
+      await packageJsonFile.writeAsString(jsonContent);
+
+      // 更新provider的配置
+      ref.read(packageSettingsProvider.notifier).updateConfig(
+            config,
+            projectPath: _selectedFolderPath,
+          );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('配置已保存'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('保存配置失败: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final savedState = ref.watch(packageSettingsProvider);
+    final currentConfig = savedState.config;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -135,13 +219,9 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
                 controller: _tabController,
                 children: [
                   // 发布设置页签内容
-                  Card(
-                    child: Center(
-                      child: Text(
-                        '发布设置内容区域',
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ),
+                  PackageSettingsForm(
+                    initialConfig: currentConfig,
+                    onConfigChanged: _savePackageConfig,
                   ),
                   // README 页签内容
                   Card(

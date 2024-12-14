@@ -1,12 +1,11 @@
 {
   "name": "com.tbyd.pool",
-  "version": "0.0.2",
   "displayName": "TByd Pool",
-  "description": "A high-performance object pooling system for Unity",
+  "version": "0.0.2",
   "unity": "2021.3",
-  "dependencies": {
-    "com.unity.addressables": "1.19.19"
-  },
+  "unityRelease": "",
+  "description": "A high-performance object pooling system for Unity",
+  "license": "MIT",
   "keywords": [
     "pool",
     "object pooling",
@@ -14,8 +13,21 @@
   ],
   "author": {
     "name": "TByd",
-    "email": "your-email@example.com",
-    "url": "https://your-website.com"
+    "email": "your-email@example.com"
+  },
+  "contributors": [],
+  "category": "",
+  "homepage": "",
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "com.unity.addressables": "1.19.19"
   },
   "samples": [
     {
@@ -36,10 +48,7 @@
     {
       "displayName": "Addressable Pool",
       "description": "Demonstrates using pools with Addressable assets",
-      "path": "Samples~/04_AddressablePool",
-      "dependencies": {
-        "com.unity.addressables": "1.19.19"
-      }
+      "path": "Samples~/04_AddressablePool"
     }
   ]
 }
