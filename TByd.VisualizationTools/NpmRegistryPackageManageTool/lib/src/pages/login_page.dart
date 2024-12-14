@@ -90,7 +90,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() {
       _servers = history.servers;
       if (_servers.isNotEmpty) {
-        // 按最后使用时间排序，选择最近使用��服务器
+        // 按最后使用时间排序，选择最近使用���务器
         _servers.sort((a, b) => b.lastUsed.compareTo(a.lastUsed));
         _selectedServer = _servers.first;
         _serverController.text = _selectedServer!.serverUrl;
@@ -312,193 +312,211 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.loginTitle),
-        actions: [
-          if (_servers.isNotEmpty)
-            IconButton(
-              icon: Icon(_isManualInput ? Icons.list : Icons.edit),
-              onPressed: _isManualInput ? _switchToServerList : _switchToManualInput,
-              tooltip: _isManualInput ? l10n.recentLogins : l10n.manualServerInput,
-            ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_isManualInput)
-                    CustomTextField(
-                      controller: _serverController,
-                      label: l10n.serverAddress,
-                      prefixIcon: Icons.dns,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l10n.required(l10n.serverAddress);
-                        }
-                        final uri = Uri.tryParse(value);
-                        if (uri == null) {
-                          return l10n.invalidServerUrl;
-                        }
-                        return null;
-                      },
-                    )
-                  else
-                    DropdownButtonFormField<String>(
-                      value: _serverController.text.isEmpty ? null : _serverController.text,
-                      decoration: InputDecoration(
-                        labelText: l10n.serverAddress,
-                        prefixIcon: const Icon(Icons.dns),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        filled: true,
-                        fillColor: theme.colorScheme.surface,
-                      ),
-                      items: _servers.map((server) {
-                        return DropdownMenuItem(
-                          value: server.serverUrl,
-                          child: Text(
-                            server.serverName,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: _handleServerChange,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l10n.required(l10n.serverAddress);
-                        }
-                        return null;
-                      },
-                      style: theme.textTheme.bodyLarge,
-                      icon: const Icon(Icons.arrow_drop_down),
-                      isExpanded: true,
-                    ),
-                  const SizedBox(height: 16.0),
-                  CustomTextField(
-                    controller: _usernameController,
-                    label: l10n.username,
-                    prefixIcon: Icons.person,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return l10n.required(l10n.username);
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16.0),
-                  CustomTextField(
-                    controller: _passwordController,
-                    label: l10n.password,
-                    prefixIcon: Icons.lock,
-                    obscureText: !_isPasswordVisible,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return l10n.required(l10n.password);
-                      }
-                      return null;
-                    },
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                      tooltip: _isPasswordVisible ? l10n.hidePassword : l10n.showPassword,
-                    ),
-                  ),
-                  const SizedBox(height: 16.0),
-                  Row(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        onChanged: (value) {
-                          setState(() {
-                            _rememberMe = value ?? false;
-                          });
+                      Text(
+                        'TByd Npm',
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32.0),
+                      if (_isManualInput)
+                        CustomTextField(
+                          controller: _serverController,
+                          label: l10n.serverAddress,
+                          prefixIcon: Icons.dns,
+                          suffixIcon: _servers.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.list),
+                                  onPressed: _switchToServerList,
+                                  tooltip: l10n.recentLogins,
+                                )
+                              : null,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return l10n.required(l10n.serverAddress);
+                            }
+                            final uri = Uri.tryParse(value);
+                            if (uri == null) {
+                              return l10n.invalidServerUrl;
+                            }
+                            return null;
+                          },
+                        )
+                      else
+                        DropdownButtonFormField<String>(
+                          value: _serverController.text.isEmpty ? null : _serverController.text,
+                          decoration: InputDecoration(
+                            labelText: l10n.serverAddress,
+                            prefixIcon: const Icon(Icons.dns),
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: _switchToManualInput,
+                              tooltip: l10n.manualServerInput,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            filled: true,
+                            fillColor: theme.colorScheme.surface,
+                          ),
+                          items: _servers.map((server) {
+                            return DropdownMenuItem(
+                              value: server.serverUrl,
+                              child: Text(
+                                server.serverName,
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: _handleServerChange,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return l10n.required(l10n.serverAddress);
+                            }
+                            return null;
+                          },
+                          style: theme.textTheme.bodyLarge,
+                          icon: const Icon(Icons.arrow_drop_down),
+                          isExpanded: true,
+                        ),
+                      const SizedBox(height: 16.0),
+                      CustomTextField(
+                        controller: _usernameController,
+                        label: l10n.username,
+                        prefixIcon: Icons.person,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return l10n.required(l10n.username);
+                          }
+                          return null;
                         },
                       ),
-                      Text(l10n.rememberMe),
-                    ],
-                  ),
-                  const SizedBox(height: 16.0),
-                  ElevatedButton(
-                    onPressed: authState.isLoading ? null : _handleLogin,
-                    child: Text(authState.isLoading ? l10n.loginLoading : l10n.login),
-                  ),
-                ],
-              ),
-            ),
-            if (_servers.isNotEmpty) ...[
-              const SizedBox(height: 32.0),
-              Text(
-                l10n.recentLogins,
-                style: theme.textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8.0),
-              ..._servers.map((server) {
-                return ExpansionTile(
-                  title: Text(server.serverName),
-                  subtitle: Text(server.serverUrl),
-                  initiallyExpanded: server == _selectedServer,
-                  children: server.users.map((user) {
-                    final color = Colors.primaries[user.username.hashCode % Colors.primaries.length];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: color.withOpacity(0.2),
-                        child: Text(
-                          user.username[0].toUpperCase(),
-                          style: TextStyle(
-                            color: color,
-                            fontWeight: FontWeight.bold,
+                      const SizedBox(height: 16.0),
+                      CustomTextField(
+                        controller: _passwordController,
+                        label: l10n.password,
+                        prefixIcon: Icons.lock,
+                        obscureText: !_isPasswordVisible,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return l10n.required(l10n.password);
+                          }
+                          return null;
+                        },
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
                           ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
+                          tooltip: _isPasswordVisible ? l10n.hidePassword : l10n.showPassword,
                         ),
                       ),
-                      title: Text(user.username),
-                      subtitle: Text(
-                        l10n.lastLoginTime(
-                          user.lastLogin.toLocal().toString(),
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+                      const SizedBox(height: 16.0),
+                      Row(
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => _handleDeleteHistory(server, user),
-                            tooltip: l10n.delete,
+                          Checkbox(
+                            value: _rememberMe,
+                            onChanged: (value) {
+                              setState(() {
+                                _rememberMe = value ?? false;
+                              });
+                            },
                           ),
-                          if (user.rememberPassword && user.savedPassword != null)
-                            IconButton(
-                              icon: const Icon(Icons.login),
-                              onPressed: () => _handleQuickLogin(server, user),
-                              tooltip: l10n.quickLogin,
-                            ),
+                          Text(l10n.rememberMe),
                         ],
                       ),
-                      onTap: () {
-                        setState(() {
-                          _selectedServer = server;
-                          _serverController.text = server.serverUrl;
-                          _usernameController.text = user.username;
-                          _passwordController.clear();
-                          _rememberMe = false;
-                        });
-                      },
+                      const SizedBox(height: 16.0),
+                      ElevatedButton(
+                        onPressed: authState.isLoading ? null : _handleLogin,
+                        child: Text(authState.isLoading ? l10n.loginLoading : l10n.login),
+                      ),
+                    ],
+                  ),
+                ),
+                if (_servers.isNotEmpty) ...[
+                  const SizedBox(height: 32.0),
+                  Text(
+                    l10n.recentLogins,
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8.0),
+                  ..._servers.map((server) {
+                    return ExpansionTile(
+                      title: Text(server.serverName),
+                      subtitle: Text(server.serverUrl),
+                      initiallyExpanded: server == _selectedServer,
+                      children: server.users.map((user) {
+                        final color = Colors.primaries[user.username.hashCode % Colors.primaries.length];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: color.withOpacity(0.2),
+                            child: Text(
+                              user.username[0].toUpperCase(),
+                              style: TextStyle(
+                                color: color,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          title: Text(user.username),
+                          subtitle: Text(
+                            l10n.lastLoginTime(
+                              user.lastLogin.toLocal().toString(),
+                            ),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                onPressed: () => _handleDeleteHistory(server, user),
+                                tooltip: l10n.delete,
+                              ),
+                              if (user.rememberPassword && user.savedPassword != null)
+                                IconButton(
+                                  icon: const Icon(Icons.login),
+                                  onPressed: () => _handleQuickLogin(server, user),
+                                  tooltip: l10n.quickLogin,
+                                ),
+                            ],
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _selectedServer = server;
+                              _serverController.text = server.serverUrl;
+                              _usernameController.text = user.username;
+                              _passwordController.clear();
+                              _rememberMe = false;
+                            });
+                          },
+                        );
+                      }).toList(),
                     );
                   }).toList(),
-                );
-              }).toList(),
-            ],
-          ],
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );
