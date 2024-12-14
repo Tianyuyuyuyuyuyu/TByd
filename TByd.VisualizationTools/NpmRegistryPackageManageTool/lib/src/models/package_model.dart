@@ -1,20 +1,81 @@
+/// NPM Registry Manager - NPM包数据模型
+///
+/// 该文件定义了NPM包相关的数据结构，包括：
+/// - 包的基本信息
+/// - 版本信息
+/// - 搜索结果
+/// - 依赖关系
+///
+/// 作者: TByd Team
+/// 创建日期: 2024-12-14
+
 import 'package:equatable/equatable.dart';
 
+/// NPM包类
+///
+/// 存储和管理NPM包的完整信息，包括：
+/// - 基本信息（名称、版本等）
+/// - 发布信息
+/// - 依赖关系
+/// - 分发信息
 class Package extends Equatable {
+  /// 包名
   final String name;
+
+  /// 显示名称
   final String displayName;
+
+  /// 版本号
   final String version;
+
+  /// 包描述
   final String description;
+
+  /// 作者
   final String author;
+
+  /// 发布时间
   final DateTime publishedAt;
+
+  /// 分发信息（如tarball URL等）
   final Map<String, String> dist;
+
+  /// 依赖包列表
   final Map<String, String> dependencies;
+
+  /// 关键词列表
   final List<String> keywords;
+
+  /// 许可证
   final String license;
+
+  /// 代码仓库地址
   final String? repository;
+
+  /// 主页地址
   final String? homepage;
+
+  /// Bug追踪地址
   final String? bugsUrl;
 
+  /// 构造函数
+  ///
+  /// 创建一个新的包实例
+  ///
+  /// 参数：
+  /// - [name] 包名
+  /// - [displayName] 显示名称（可选）
+  /// - [version] 版本号
+  /// - [description] 描述
+  /// - [author] 作者
+  /// - [publishedAt] 发布时间
+  /// - [dist] 分发信息
+  /// - [dependencies] 依赖关系
+  /// - [keywords] 关键词
+  /// - [license] 许可证
+  /// - [repository] 仓库地址
+  /// - [homepage] 主页
+  /// - [bugsUrl] Bug追踪
   const Package({
     required this.name,
     String? displayName,
@@ -31,6 +92,10 @@ class Package extends Equatable {
     this.bugsUrl,
   }) : displayName = displayName ?? name;
 
+  /// 从JSON创建实例
+  ///
+  /// 工厂构造函数，用于从NPM仓库返回的JSON数据创建Package实例
+  /// 处理各种可能的数据格式和缺失字段
   factory Package.fromJson(Map<String, dynamic> json) {
     try {
       final timeData = json['time'] as Map<String, dynamic>?;
@@ -93,6 +158,9 @@ class Package extends Equatable {
     }
   }
 
+  /// 提取作者信息
+  ///
+  /// 从不同格式的作者数据中提取作者名称
   static String _extractAuthor(dynamic author) {
     if (author == null) return 'Unknown';
     if (author is String) return author;
@@ -100,6 +168,9 @@ class Package extends Equatable {
     return 'Unknown';
   }
 
+  /// 解析日期时间
+  ///
+  /// 将字符串格式的日期时间转换为DateTime对象
   static DateTime _parseDateTime(dynamic dateStr) {
     if (dateStr == null) return DateTime.now();
     try {
@@ -109,6 +180,9 @@ class Package extends Equatable {
     }
   }
 
+  /// 提取分发信息
+  ///
+  /// 从JSON数据中提取包的分发信息
   static Map<String, String> _extractDist(dynamic dist) {
     if (dist == null) return {};
     if (dist is Map) {
@@ -119,6 +193,9 @@ class Package extends Equatable {
     return {};
   }
 
+  /// 提取依赖关系
+  ///
+  /// 从JSON数据中提取包的依赖关系
   static Map<String, String> _extractDependencies(dynamic deps) {
     if (deps == null) return {};
     if (deps is Map) {
@@ -129,6 +206,9 @@ class Package extends Equatable {
     return {};
   }
 
+  /// 提取关键词
+  ///
+  /// 从JSON数据中提取包的关键词列表
   static List<String> _extractKeywords(dynamic keywords) {
     if (keywords == null) return [];
     if (keywords is List) {
@@ -137,6 +217,9 @@ class Package extends Equatable {
     return [];
   }
 
+  /// 转换为JSON
+  ///
+  /// 将包信息转换为可序列化的Map结构
   Map<String, dynamic> toJson() {
     return {
       'name': name,
@@ -153,16 +236,32 @@ class Package extends Equatable {
     };
   }
 
+  /// 获取用于相等性比较的属性列表
   @override
   List<Object?> get props => [name, version, repository];
 }
 
+/// 包版本类
+///
+/// 存储特定版本的包信息，包括：
+/// - 版本号
+/// - 发布时间
+/// - 分发信息
+/// - 依赖关系
 class PackageVersion extends Equatable {
+  /// 版本号
   final String version;
+
+  /// 发布时间
   final DateTime publishedAt;
+
+  /// 分发信息
   final Map<String, String> dist;
+
+  /// 依赖关系
   final Map<String, String> dependencies;
 
+  /// 构造函数
   const PackageVersion({
     required this.version,
     required this.publishedAt,
@@ -170,6 +269,7 @@ class PackageVersion extends Equatable {
     required this.dependencies,
   });
 
+  /// 从JSON创建实例
   factory PackageVersion.fromJson(Map<String, dynamic> json, String version) {
     final timeData = json['time'] as Map<String, dynamic>?;
     final versionsData = json['versions'] as Map<String, dynamic>?;
@@ -183,18 +283,37 @@ class PackageVersion extends Equatable {
     );
   }
 
+  /// 获取用于相等性比较的属性列表
   @override
   List<Object?> get props => [version];
 }
 
+/// 包搜索结果类
+///
+/// 存储包搜索结果的简要信息，包括：
+/// - 基本信息
+/// - 最新版本
+/// - 最后修改时间
 class PackageSearchResult extends Equatable {
+  /// 包名
   final String name;
+
+  /// 显示名称
   final String displayName;
+
+  /// 版本号
   final String version;
+
+  /// 描述
   final String description;
+
+  /// 作者
   final String author;
+
+  /// 最后修改时间
   final DateTime lastModified;
 
+  /// 构造函数
   const PackageSearchResult({
     required this.name,
     String? displayName,
@@ -204,6 +323,7 @@ class PackageSearchResult extends Equatable {
     required this.lastModified,
   }) : displayName = displayName ?? name;
 
+  /// 从JSON创建实例
   factory PackageSearchResult.fromJson(Map<String, dynamic> json) {
     final time = json['time'] as Map<String, dynamic>?;
     final latest = json['dist-tags']?['latest'] as String?;
@@ -219,6 +339,7 @@ class PackageSearchResult extends Equatable {
     );
   }
 
+  /// 提取作者信息
   static String _extractAuthor(dynamic author) {
     if (author == null) return 'Unknown';
     if (author is String) return author;
@@ -226,6 +347,7 @@ class PackageSearchResult extends Equatable {
     return 'Unknown';
   }
 
+  /// 转换为JSON
   Map<String, dynamic> toJson() {
     return {
       'name': name,
@@ -236,6 +358,7 @@ class PackageSearchResult extends Equatable {
     };
   }
 
+  /// 获取用于相等性比较的属性列表
   @override
   List<Object?> get props => [name, version];
 }

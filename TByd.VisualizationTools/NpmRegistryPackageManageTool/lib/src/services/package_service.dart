@@ -4,22 +4,40 @@ import 'package:http/http.dart' as http;
 import '../models/package_model.dart';
 import '../utils/constants.dart';
 
+/// 包管理服务类，负责与 Verdaccio NPM 仓库进行交互
+/// 提供包的搜索、详情获取、版本管理等核心功能
 class PackageService {
+  /// Verdaccio 服务器的基础 URL
   final String serverUrl;
+
+  /// 用于身份验证的 JWT token
   final String? token;
+
+  /// HTTP 客户端实例，用于发送网络请求
+  /// 可以在测试时注入模拟客户端
   http.Client? _client;
 
+  /// 构造函数
+  /// [serverUrl] - Verdaccio 服务器地址
+  /// [token] - 可选的身份验证令牌
+  /// [client] - 可选的 HTTP 客户端实例，用于依赖注入和测试
   PackageService({
     required this.serverUrl,
     this.token,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
+  /// 获取或创建 HTTP 客户端实例
+  /// 确保客户端实例的懒加载初始化
   http.Client get client {
     _client ??= http.Client();
     return _client!;
   }
 
+  /// 搜索包
+  /// [query] - 搜索关键词
+  /// 返回匹配的包列表
+  /// 抛出异常：当服务器无响应或请求失败时
   Future<List<PackageSearchResult>> searchPackages(String query) async {
     if (serverUrl.isEmpty) {
       throw Exception('Server URL is not set');
@@ -65,11 +83,17 @@ class PackageService {
     }
   }
 
+  /// 释放资源
+  /// 关闭 HTTP 客户端连接
   void dispose() {
     _client?.close();
     _client = null;
   }
 
+  /// 解析搜索结果
+  /// [body] - API 响应体
+  /// [searchText] - 搜索关键词
+  /// 返回解析后的包搜索结果列表
   Future<List<PackageSearchResult>> _parseSearchResults(String body, String searchText) async {
     final data = json.decode(body);
     final results = <PackageSearchResult>[];
@@ -106,6 +130,10 @@ class PackageService {
     }
   }
 
+  /// 从 API 响应创建搜索结果对象
+  /// [data] - API 返回的原始数据
+  /// 返回格式化的 PackageSearchResult 对象
+  /// 抛出异常：当数据格式不符合预期时
   PackageSearchResult _createSearchResult(dynamic data) {
     if (data is String) {
       return PackageSearchResult(
@@ -201,6 +229,9 @@ class PackageService {
     throw Exception('不支持的数据格式');
   }
 
+  /// 备用搜索方法
+  /// 当主搜索方法未返回结果时使用
+  /// [query] - 搜索关键词
   Future<List<PackageSearchResult>> _searchPackagesAlternative(String query) async {
     print('使用备用搜索方法');
     final searchText = query.trim().toLowerCase();
@@ -270,6 +301,9 @@ class PackageService {
     }
   }
 
+  /// 检查包名是否匹配搜索文本
+  /// [packageName] - 包名
+  /// [searchText] - 搜索关键词
   bool _matchesPackageName(String packageName, String searchText) {
     if (searchText.isEmpty) {
       return true;
@@ -282,6 +316,10 @@ class PackageService {
     return name.contains(search);
   }
 
+  /// 按相关性对搜索结果排序
+  /// [results] - 待排序的结果列表
+  /// [searchText] - 搜索关键词
+  /// 返回排序后的结果（最多50个）
   List<PackageSearchResult> _sortByRelevance(List<PackageSearchResult> results, String searchText) {
     results.sort((a, b) {
       final aName = a.name.toLowerCase(); // 使用 name 而不是 displayName 进行排序
@@ -302,6 +340,10 @@ class PackageService {
     return results.take(50).toList();
   }
 
+  /// 获取包的详细信息
+  /// [packageName] - 包名
+  /// 返回包的完整信息
+  /// 抛出异常：当获取失败时
   Future<Package> getPackageDetails(String packageName) async {
     if (serverUrl.isEmpty) {
       throw Exception('Server URL is not set');
@@ -343,6 +385,9 @@ class PackageService {
     }
   }
 
+  /// 获取包的版本历史
+  /// [packageName] - 包名
+  /// 返回按时间倒序排列的版本列表
   Future<List<PackageVersion>> getPackageVersions(String packageName) async {
     if (serverUrl.isEmpty) {
       throw Exception('Server URL is not set');
@@ -369,6 +414,10 @@ class PackageService {
     }
   }
 
+  /// 下架指定版本的包
+  /// [packageName] - 包名
+  /// [version] - 版本号
+  /// 抛出异常：当操作失败或未授权时
   Future<void> unpublishPackage(String packageName, String version) async {
     if (serverUrl.isEmpty) {
       throw Exception('Server URL is not set');
@@ -399,6 +448,10 @@ class PackageService {
     }
   }
 
+  /// 将包标记为已弃用
+  /// [packageName] - 包名
+  /// [version] - 版本号
+  /// [message] - 弃用说明
   Future<void> deprecatePackage(String packageName, String version, String message) async {
     if (serverUrl.isEmpty) {
       throw Exception('Server URL is not set');
@@ -429,6 +482,9 @@ class PackageService {
     }
   }
 
+  /// 构造请求头
+  /// 添加认证信息和内容类型
+  /// 返回包含必要头信息的 Map
   Map<String, String> _getHeaders() {
     final headers = <String, String>{
       'Accept': 'application/json',
@@ -442,6 +498,9 @@ class PackageService {
     return headers;
   }
 
+  /// 获取包的原始清单数据
+  /// [packageName] - 包名
+  /// 返回格式化的 JSON 字符串
   Future<String> getRawManifest(String packageName) async {
     if (serverUrl.isEmpty) {
       throw Exception('Server URL is not set');

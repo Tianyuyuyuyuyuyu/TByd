@@ -1,25 +1,74 @@
+/// NPM Registry Manager - NPM包服务
+///
+/// 该文件提供NPM包相关的服务功能，包括：
+/// - 包信息获取
+/// - README文档管理
+/// - 缓存控制
+/// - 错误处理
+///
+/// 作者: TByd Team
+/// 创建日期: 2024-12-14
+
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 
+/// NPM包服务类
+///
+/// 提供NPM包相关的操作功能，包括：
+/// - 获取包信息
+/// - 管理README文档
+/// - 处理认证
+/// - 缓存控制
 class NpmPackageService {
+  /// NPM仓库基础URL
   final String baseUrl;
+
+  /// 认证令牌
   final String? token;
+
+  /// HTTP客户端
   final http.Client _client;
+
+  /// README缓存
   final Map<String, String> _readmeCache = {};
 
+  /// 构造函数
+  ///
+  /// 初始化NPM包服务
+  ///
+  /// 参数：
+  /// - [baseUrl] NPM仓库的基础URL
+  /// - [token] 认证令牌（可选）
+  /// - [client] HTTP客户端（可选）
   NpmPackageService({
     required this.baseUrl,
     this.token,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
+  /// 获取HTTP请求头
+  ///
+  /// 根据是否有认证令牌返回适当的请求头
   Map<String, String> get _headers => {
         'Accept': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
       };
 
-  /// 获取包的 README 内容
+  /// 获取包的README内容
+  ///
+  /// 从NPM仓库获取指定包的README文档
+  /// 实现了多级缓存和回退机制
+  ///
+  /// 参数：
+  /// - [packageName] 包名
+  ///
+  /// 返回：
+  /// 包的README内容
+  ///
+  /// 异常：
+  /// - ArgumentError 如果包名为空
+  /// - Exception 如果获取失败
   Future<String> fetchReadme(String packageName) async {
     if (packageName.isEmpty) {
       throw ArgumentError('Package name cannot be empty');
@@ -114,16 +163,33 @@ class NpmPackageService {
     }
   }
 
+  /// 验证README内容
+  ///
+  /// 检查README内容是否有效
+  /// [readme] README内容
   bool _isValidReadme(String? readme) {
     return readme != null && readme.trim().isNotEmpty;
   }
 
+  /// 缓存并返回README
+  ///
+  /// 将README内容保存到缓存并返回
+  ///
+  /// 参数：
+  /// - [packageName] 包名
+  /// - [readme] README内容
   String _cacheAndReturn(String packageName, String readme) {
     _readmeCache[packageName] = readme;
     developer.log('Cached README for $packageName (length: ${readme.length})');
     return readme;
   }
 
+  /// 提取作者信息
+  ///
+  /// 从不同格式的作者数据中提取作者名称
+  ///
+  /// 参数：
+  /// - [author] 作者数据
   String _extractAuthor(dynamic author) {
     if (author == null) return '未知';
     if (author is String) return author;
@@ -131,18 +197,26 @@ class NpmPackageService {
     return '未知';
   }
 
-  /// 清除指定包的 README 缓存
+  /// 清除指定包的缓存
+  ///
+  /// 从缓存中移除指定包的README
+  /// [packageName] 要清除缓存的包名
   void clearCache(String packageName) {
     _readmeCache.remove(packageName);
     developer.log('Cleared cache for package: $packageName');
   }
 
   /// 清除所有缓存
+  ///
+  /// 清空README缓存
   void clearAllCache() {
     _readmeCache.clear();
     developer.log('Cleared all cache');
   }
 
+  /// 释放资源
+  ///
+  /// 清理缓存并关闭HTTP客户端
   void dispose() {
     _readmeCache.clear();
     _client.close();

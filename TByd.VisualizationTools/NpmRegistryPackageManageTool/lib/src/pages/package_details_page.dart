@@ -10,13 +10,39 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+/// 包详情页面
+/// 显示 NPM 包的完整信息，包括版本历史、依赖关系等
 class PackageDetailsPage extends ConsumerWidget {
+  /// 包名
   final String packageName;
 
   const PackageDetailsPage({
     super.key,
     required this.packageName,
   });
+
+  /// 格式化日期为相对时间描述
+  /// 如："2 days ago", "3 months ago", "1 year ago"
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays < 1) {
+      return 'today';
+    }
+
+    if (difference.inDays < 30) {
+      return '${difference.inDays} days ago';
+    }
+
+    if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months months ago';
+    }
+
+    final years = (difference.inDays / 365).floor();
+    return '$years years ago';
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -272,29 +298,10 @@ class PackageDetailsPage extends ConsumerWidget {
       ),
     );
   }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays < 1) {
-      return 'today';
-    }
-
-    if (difference.inDays < 30) {
-      return '${difference.inDays} days ago';
-    }
-
-    if (difference.inDays < 365) {
-      final months = (difference.inDays / 30).floor();
-      return '$months months ago';
-    }
-
-    final years = (difference.inDays / 365).floor();
-    return '$years years ago';
-  }
 }
 
+/// 操作按钮组件
+/// 用于显示主要操作，如主页、问题追踪、下载等
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -325,7 +332,8 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
-// 标签页内容组件
+/// README 标签页内容
+/// 显示包的 README 文档，支持 Markdown 渲染
 class _ReadmeTab extends ConsumerWidget {
   final PackageDetailsState packageDetails;
 
@@ -426,6 +434,8 @@ class _ReadmeTab extends ConsumerWidget {
   }
 }
 
+/// 依赖关系标签页
+/// 显示包的依赖项列表，支持跳转到依赖包
 class _DependenciesTab extends StatelessWidget {
   final PackageDetailsState packageDetails;
 
@@ -537,6 +547,8 @@ class _DependenciesTab extends StatelessWidget {
   }
 }
 
+/// 版本历史标签页
+/// 显示包的所有版本和发布时间
 class _VersionsTab extends StatelessWidget {
   final PackageDetailsState packageDetails;
 
@@ -631,6 +643,8 @@ class _VersionsTab extends StatelessWidget {
   }
 }
 
+/// 虚线绘制器
+/// 用于在版本历史中绘制版本号和时间之间的连接线
 class DottedLinePainter extends CustomPainter {
   final Color color;
 
@@ -661,6 +675,8 @@ class DottedLinePainter extends CustomPainter {
   bool shouldRepaint(DottedLinePainter oldDelegate) => color != oldDelegate.color;
 }
 
+/// 上游链接标签页
+/// 显示包的上游仓库信息
 class _UplinksTab extends StatelessWidget {
   const _UplinksTab();
 
@@ -670,10 +686,19 @@ class _UplinksTab extends StatelessWidget {
   }
 }
 
+/// 安装命令组件
+/// 显示 npm、yarn、pnpm 等包管理器的安装命令
 class _InstallCommand extends ConsumerWidget {
+  /// 包管理器图标
   final String icon;
+
+  /// 包管理器名称
   final String label;
+
+  /// 包名
   final String packageName;
+
+  /// 版本号
   final String version;
 
   const _InstallCommand({
@@ -785,6 +810,8 @@ class _InstallCommand extends ConsumerWidget {
   }
 }
 
+/// 安装部分组件
+/// 集成所有包管理器的安装命令和设置
 class InstallationSection extends ConsumerWidget {
   final String packageName;
   final String version;
@@ -858,10 +885,16 @@ class InstallationSection extends ConsumerWidget {
   }
 }
 
-// 添加 JsonTreeNode 组件
+/// JSON 树节点组件
+/// 用于显示包的原始清单数据，支持折叠/展开
 class _JsonTreeNode extends StatefulWidget {
+  /// 节点数据
   final dynamic data;
+
+  /// 节点名称
   final String nodeName;
+
+  /// 是否为根节点
   final bool isRoot;
 
   const _JsonTreeNode({
@@ -1025,8 +1058,10 @@ class _JsonTreeNodeState extends State<_JsonTreeNode> {
   }
 }
 
-// 修改 _RawManifestDialog
+/// 原始清单对话框
+/// 显示包的完整 JSON 清单数据
 class _RawManifestDialog extends StatelessWidget {
+  /// 包详情状态
   final PackageDetailsState packageDetails;
 
   const _RawManifestDialog({

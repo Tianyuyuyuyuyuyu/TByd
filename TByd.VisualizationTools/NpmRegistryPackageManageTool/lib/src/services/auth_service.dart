@@ -1,3 +1,15 @@
+/// NPM Registry Manager - 认证服务
+///
+/// 该文件提供NPM仓库的认证相关功能，包括：
+/// - 用户登录认证
+/// - 用户注册
+/// - 会话管理
+/// - 令牌验证
+/// - 安全限制
+///
+/// 作者: TByd Team
+/// 创建日期: 2024-12-14
+
 import 'dart:convert';
 import 'dart:math';
 import 'package:http/http.dart' as http;
@@ -10,27 +22,64 @@ import 'storage_service.dart';
 import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 
+/// 认证异常类
+///
+/// 用于处理认证过程中的各种错误情况
+/// 包含错误消息和错误代码
 class AuthenticationException implements Exception {
+  /// 错误消息
   final String message;
+
+  /// 错误代码
   final String code;
 
+  /// 构造函数
   AuthenticationException(this.message, this.code);
 
   @override
   String toString() => message;
 }
 
+/// 认证服务类
+///
+/// 提供完整的NPM仓库认证功能，包括：
+/// - 用户认证
+/// - 会话管理
+/// - 安全限制
+/// - 令牌管理
 class AuthService {
+  /// 会话前缀
   static const _sessionPrefix = 'session_';
+
+  /// 令牌前缀
   static const _tokenPrefix = 'token_';
+
+  /// 安全随机数生成器
   static final _random = Random.secure();
 
+  /// HTTP客户端
   final http.Client _client;
+
+  /// 登录历史服务
   final LoginHistoryService _historyService;
+
+  /// 加密服务
   final EncryptionService _encryptionService;
+
+  /// 登录尝试次数记录
   final Map<String, int> _loginAttempts = {};
+
+  /// 账户锁定时间记录
   final Map<String, DateTime> _lockoutTimes = {};
 
+  /// 构造函数
+  ///
+  /// 初始化认证服务的必要组件
+  ///
+  /// 参数：
+  /// - [client] HTTP客户端，可选
+  /// - [encryptionService] 加密服务，可选
+  /// - [prefs] SharedPreferences实例，必需
   AuthService({
     http.Client? client,
     EncryptionService? encryptionService,
@@ -41,12 +90,25 @@ class AuthService {
     _init();
   }
 
+  /// 初始化服务
+  ///
+  /// 执行必要的初始化操作：
+  /// - 初始化加密服务
+  /// - 清理过期会话
   Future<void> _init() async {
     await _encryptionService.init();
     await _cleanupExpiredSessions();
   }
 
   /// 检查登录尝试次数
+  ///
+  /// 实现登录限制功能：
+  /// - 检查是否超过最大尝试次数
+  /// - 检查是否在锁定期内
+  /// - 管理锁定状态
+  ///
+  /// [username] 要检查的用户名
+  /// 返回是否允许继续尝试登录
   bool _checkLoginAttempts(String username) {
     final attempts = _loginAttempts[username] ?? 0;
     final lockoutTime = _lockoutTimes[username];
@@ -71,18 +133,29 @@ class AuthService {
   }
 
   /// 记录登录失败
+  ///
+  /// 增加指定用户的登录失败计数
+  /// [username] 失败登录的用户名
   void _recordLoginFailure(String username) {
     final attempts = _loginAttempts[username] ?? 0;
     _loginAttempts[username] = attempts + 1;
   }
 
   /// 重置登录尝试
+  ///
+  /// 清除指定用户的登录尝试记录和锁定状态
+  /// [username] 要重置的用户名
   void _resetLoginAttempts(String username) {
     _loginAttempts.remove(username);
     _lockoutTimes.remove(username);
   }
 
   /// 清理过期会话
+  ///
+  /// 定期清理系统中的过期会话数据：
+  /// - 检查所有会话的过期时间
+  /// - 删除过期的会话数据
+  /// - 清理相关的令牌信息
   Future<void> _cleanupExpiredSessions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -110,6 +183,22 @@ class AuthService {
     }
   }
 
+  /// 用户登录
+  ///
+  /// 处理用户登录请求：
+  /// - 验证用户凭据
+  /// - 处理服务器响应
+  /// - 管理认证状态
+  /// - 处理错误情况
+  ///
+  /// 参数：
+  /// - [serverUrl] NPM仓库服务器地址
+  /// - [username] 用户名
+  /// - [password] 密码
+  ///
+  /// 返回：
+  /// 成功时返回 [AuthModel] 实例
+  /// 失败时抛出 [AuthenticationException]
   Future<AuthModel> login(
     String serverUrl,
     String username,
@@ -237,7 +326,7 @@ class AuthService {
           );
         default:
           throw AuthenticationException(
-            errorData['message'] ?? '登录失败：${loginResponse.statusCode}',
+            errorData['message'] ?? '��录失败：${loginResponse.statusCode}',
             'AUTH999',
           );
       }
@@ -248,7 +337,10 @@ class AuthService {
         throw AuthenticationException('无法连接到服务器', 'NET001');
       }
 
-      throw AuthenticationException('登录时发生错误：${e.toString()}', 'SYS001');
+      throw AuthenticationException(
+        '登录过程中发生错误：${e.toString()}',
+        'SYS001',
+      );
     }
   }
 

@@ -1,3 +1,14 @@
+/// NPM Registry Manager - 登录页面
+///
+/// 该文件实现了用户登录界面，包括：
+/// - 服务器选择/输入
+/// - 用户认证
+/// - 快速登录
+/// - 登录历史管理
+///
+/// 作者: TByd Team
+/// 创建日期: 2024-12-14
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
@@ -6,6 +17,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/login_history_model.dart';
 import 'home_page.dart';
 
+/// 登录页面组件
+///
+/// 提供用户登录界面，支持：
+/// - 手动输入服务器地址
+/// - 选择历史登录服务器
+/// - 记住登录信息
+/// - 快速登录功能
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
@@ -13,15 +31,39 @@ class LoginPage extends ConsumerStatefulWidget {
   ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
+/// 登录页面状态类
+///
+/// 管理登录页面的状态和行为，包括：
+/// - 表单验证
+/// - 服务器选择
+/// - 用户认证
+/// - 历史记录管理
 class _LoginPageState extends ConsumerState<LoginPage> {
+  /// 表单键，用于验证
   final _formKey = GlobalKey<FormState>();
+
+  /// 服务器地址输入控制器
   final _serverController = TextEditingController();
+
+  /// 用户名输入控制器
   final _usernameController = TextEditingController();
+
+  /// 密码输入控制器
   final _passwordController = TextEditingController();
+
+  /// 是否记住登录信息
   bool _rememberMe = false;
+
+  /// 是否显示密码
   bool _isPasswordVisible = false;
+
+  /// 是否使用手动输入模式
   bool _isManualInput = false;
+
+  /// 历史服务器列表
   List<ServerHistory> _servers = [];
+
+  /// 当前选中的服务器
   ServerHistory? _selectedServer;
 
   @override
@@ -30,6 +72,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _loadServers();
   }
 
+  /// 清除用户输入
+  ///
+  /// 清空用户名、密码等输入信息
   void _clearUserInputs() {
     _usernameController.clear();
     _passwordController.clear();
@@ -37,12 +82,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     _isPasswordVisible = false;
   }
 
+  /// 加载服务器历史记录
+  ///
+  /// 从存储中读取历史登录的服务器信息
   Future<void> _loadServers() async {
     final history = await ref.read(loginHistoryServiceProvider).getHistory();
     setState(() {
       _servers = history.servers;
       if (_servers.isNotEmpty) {
-        // 按最后使用时间排序，选择最近使用的服务器
+        // 按最后使用时间排序，选择最近使用��服务器
         _servers.sort((a, b) => b.lastUsed.compareTo(a.lastUsed));
         _selectedServer = _servers.first;
         _serverController.text = _selectedServer!.serverUrl;
@@ -54,6 +102,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
   }
 
+  /// 处理服务器变更
+  ///
+  /// 当用户选择不同的服务器时更新界面
+  /// [serverUrl] 新选择的服务器地址
   void _handleServerChange(String? serverUrl) {
     if (serverUrl == null) return;
 
@@ -73,6 +125,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
   }
 
+  /// 切换到手动输入模式
+  ///
+  /// 清空所有输入并允许用户手动输入服务器地址
   void _switchToManualInput() {
     setState(() {
       _isManualInput = true;
@@ -82,6 +137,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     });
   }
 
+  /// 切换到服务器列表模式
+  ///
+  /// 显示历史登录的服务器列表供用户选择
   void _switchToServerList() {
     if (_servers.isEmpty) return;
 
@@ -106,6 +164,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
+  /// 处理登录请求
+  ///
+  /// 验证输入并尝试登录，成功后跳转到主页
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -142,6 +203,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  /// 处理快速登录
+  ///
+  /// 使用保存的用户信息快速登录
+  /// [server] 服务器信息
+  /// [user] 用户信息
   Future<void> _handleQuickLogin(ServerHistory server, UserHistory user) async {
     if (!mounted) return;
 
@@ -199,6 +265,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  /// 处理删除历史记录
+  ///
+  /// 删除指定服务器上的用户登录历史
+  /// [server] 服务器信息
+  /// [user] 用户信息
   Future<void> _handleDeleteHistory(ServerHistory server, UserHistory user) async {
     final confirmed = await showDialog<bool>(
       context: context,

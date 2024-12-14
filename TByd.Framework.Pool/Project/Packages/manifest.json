@@ -53,7 +53,8 @@
       "name": "npmjs",
       "url": "http://120.26.201.54:1998",
       "scopes": [
-        "com.r1ch"
+        "com.r1ch",
+        "com.tbyd"
       ]
     },
     {
