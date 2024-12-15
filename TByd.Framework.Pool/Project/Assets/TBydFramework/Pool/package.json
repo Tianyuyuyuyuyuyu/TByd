@@ -1,7 +1,7 @@
 {
-  "name": "com.tbyd.pool",
+  "name": "com.r1ch.tbyd-framework-pool",
   "displayName": "TByd Pool",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "unity": "2021.3",
   "unityRelease": "8f1",
   "description": "A high-performance object pooling system for Unity",
@@ -21,14 +21,14 @@
       "email": "hua@gmail.com"
     }
   ],
-  "category": "",
-  "homepage": "",
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Framework.Pool/Project",
   "repository": {
-    "type": "",
-    "url": ""
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Framework.Pool/Project/Assets/TBydFramework/Pool"
   },
   "bugs": {
-    "url": ""
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
   },
   "relatedPackages": {},
   "dependencies": {
