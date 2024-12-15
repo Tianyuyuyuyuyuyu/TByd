@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/keywords_provider.dart';
 
 /// Keywords 选择器组件
-class KeywordsSelector extends ConsumerWidget {
+class KeywordsSelector extends ConsumerStatefulWidget {
   /// 当前选中的 keywords
   final List<String> selectedKeywords;
 
@@ -27,21 +27,42 @@ class KeywordsSelector extends ConsumerWidget {
     required this.onKeywordsChanged,
   });
 
+  @override
+  ConsumerState<KeywordsSelector> createState() => _KeywordsSelectorState();
+}
+
+class _KeywordsSelectorState extends ConsumerState<KeywordsSelector> {
+  /// 新关键字输入控制器
+  late final TextEditingController _newKeywordController;
+
+  @override
+  void initState() {
+    super.initState();
+    _newKeywordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _newKeywordController.dispose();
+    super.dispose();
+  }
+
   /// 添加关键词
   void _addKeyword(String keyword) {
-    if (keyword.isEmpty || selectedKeywords.contains(keyword)) return;
-    final updatedKeywords = List<String>.from(selectedKeywords)..add(keyword);
-    onKeywordsChanged(updatedKeywords);
+    if (keyword.isEmpty || widget.selectedKeywords.contains(keyword)) return;
+    final updatedKeywords = List<String>.from(widget.selectedKeywords)..add(keyword);
+    widget.onKeywordsChanged(updatedKeywords);
+    _newKeywordController.clear();
   }
 
   /// 移除关键词
   void _removeKeyword(String keyword) {
-    final updatedKeywords = List<String>.from(selectedKeywords)..remove(keyword);
-    onKeywordsChanged(updatedKeywords);
+    final updatedKeywords = List<String>.from(widget.selectedKeywords)..remove(keyword);
+    widget.onKeywordsChanged(updatedKeywords);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final keywordsState = ref.watch(keywordsProvider);
 
@@ -51,11 +72,11 @@ class KeywordsSelector extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 已选择的 keywords 显示区域
-          if (selectedKeywords.isNotEmpty)
+          if (widget.selectedKeywords.isNotEmpty)
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: selectedKeywords.map((keyword) {
+              children: widget.selectedKeywords.map((keyword) {
                 return Chip(
                   label: Text(keyword),
                   deleteIcon: const Icon(Icons.close, size: 18),
@@ -83,7 +104,7 @@ class KeywordsSelector extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 已选择的 keywords 显示区域
-          if (selectedKeywords.isNotEmpty)
+          if (widget.selectedKeywords.isNotEmpty)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -105,7 +126,7 @@ class KeywordsSelector extends ConsumerWidget {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: selectedKeywords.map((keyword) {
+                    children: widget.selectedKeywords.map((keyword) {
                       return Chip(
                         label: Text(keyword),
                         deleteIcon: const Icon(Icons.close, size: 18),
@@ -120,6 +141,52 @@ class KeywordsSelector extends ConsumerWidget {
                 ],
               ),
             ),
+
+          // 新增关键字区域
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: theme.dividerColor),
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _newKeywordController,
+                    decoration: InputDecoration(
+                      labelText: '新增关键字',
+                      hintText: '输入新的关键字，按回车或点击添加按钮',
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    onFieldSubmitted: (value) {
+                      if (value.trim().isNotEmpty) {
+                        _addKeyword(value.trim());
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    if (_newKeywordController.text.trim().isNotEmpty) {
+                      _addKeyword(_newKeywordController.text.trim());
+                    }
+                  },
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text('添加'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ],
+            ),
+          ),
 
           // 可用的 keywords 显示区域
           Container(
@@ -140,7 +207,7 @@ class KeywordsSelector extends ConsumerWidget {
                     runSpacing: 8,
                     children: (() {
                       final sortedKeywords =
-                          keywordsState.allKeywords.where((k) => !selectedKeywords.contains(k)).toList()..sort();
+                          keywordsState.allKeywords.where((k) => !widget.selectedKeywords.contains(k)).toList()..sort();
                       return sortedKeywords
                           .map((keyword) => ActionChip(
                                 label: Text(keyword),

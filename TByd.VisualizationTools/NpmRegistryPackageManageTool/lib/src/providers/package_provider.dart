@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/package_model.dart';
 import '../services/package_service.dart';
 import '../providers/auth_provider.dart';
+import '../providers/keywords_provider.dart';
 
 /// 包服务提供者
 ///
@@ -184,11 +185,14 @@ class PackageDetailsNotifier extends StateNotifier<PackageDetailsState> {
 
 /// 搜索状态提供者
 ///
-/// 提供包搜索功能和结果管理
-final searchProvider = StateNotifierProvider<SearchNotifier, AsyncValue<List<PackageSearchResult>>>((ref) {
-  final packageService = ref.watch(packageServiceProvider);
-  return SearchNotifier(packageService);
-});
+/// 提供包搜索功能的状态管理
+final searchProvider = StateNotifierProvider<SearchNotifier, AsyncValue<List<PackageSearchResult>>>(
+  (ref) {
+    final packageService = ref.watch(packageServiceProvider);
+    final keywordsNotifier = ref.watch(keywordsProvider.notifier);
+    return SearchNotifier(packageService, keywordsNotifier);
+  },
+);
 
 /// 包详情状态提供者
 ///
@@ -208,13 +212,14 @@ final packageDetailsProvider = StateNotifierProvider.family<PackageDetailsNotifi
 /// - 结果刷新
 class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>> {
   final PackageService _packageService;
+  final KeywordsNotifier _keywordsNotifier;
   List<PackageSearchResult> _allPackages = [];
   bool _isDisposed = false;
 
   /// 构造函数
   ///
   /// 初始化状态并加载所有包列表
-  SearchNotifier(this._packageService) : super(const AsyncValue.loading()) {
+  SearchNotifier(this._packageService, this._keywordsNotifier) : super(const AsyncValue.loading()) {
     _loadAllPackages();
   }
 
@@ -231,6 +236,13 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
 
       _allPackages = packages;
       state = AsyncValue.data(_allPackages);
+
+      // 收集所有关键字
+      final allKeywords = <String>{};
+      for (final package in packages) {
+        allKeywords.addAll(package.keywords);
+      }
+      _keywordsNotifier.addKeywords(allKeywords);
     } catch (error, stackTrace) {
       print('Error loading packages: $error');
       if (_isDisposed) return;

@@ -10,7 +10,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/package_service.dart';
-import '../providers/package_provider.dart';
+import '../providers/auth_provider.dart';
 
 /// Keywords 状态类
 ///
@@ -130,6 +130,26 @@ class KeywordsNotifier extends StateNotifier<KeywordsState> {
     return state.allKeywords.where((keyword) => keyword.toLowerCase().contains(searchText)).toList()..sort();
   }
 
+  /// 更新关键字列表
+  ///
+  /// 直接��加新的关键字到列表中
+  /// [keywords] - 要添加的关键字列表
+  void addKeywords(Iterable<String> keywords) {
+    if (!_mounted) return;
+
+    final newKeywords = Set<String>.from(state.allKeywords)..addAll(keywords);
+    final newFrequency = Map<String, int>.from(state.keywordFrequency);
+
+    for (final keyword in keywords) {
+      newFrequency[keyword] = (newFrequency[keyword] ?? 0) + 1;
+    }
+
+    state = KeywordsState(
+      allKeywords: newKeywords,
+      keywordFrequency: newFrequency,
+    );
+  }
+
   @override
   void dispose() {
     _mounted = false;
@@ -139,6 +159,10 @@ class KeywordsNotifier extends StateNotifier<KeywordsState> {
 
 /// Keywords 状态提供者
 final keywordsProvider = StateNotifierProvider<KeywordsNotifier, KeywordsState>((ref) {
-  final packageService = ref.watch(packageServiceProvider);
+  final authState = ref.watch(authProvider);
+  final packageService = PackageService(
+    serverUrl: authState.auth?.serverUrl ?? '',
+    token: authState.auth?.token,
+  );
   return KeywordsNotifier(packageService);
 });
