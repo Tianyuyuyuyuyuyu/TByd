@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/unity_package_config.dart';
 import '../providers/package_settings_provider.dart';
+import 'unity_version_selector.dart';
 
 /// 包设置表单组件
 class PackageSettingsForm extends ConsumerStatefulWidget {
@@ -262,7 +263,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return '请输入包名称';
+                              return '请输入包名';
                             }
                             return null;
                           },
@@ -275,7 +276,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                           controller: _displayNameController,
                           decoration: const InputDecoration(
                             labelText: 'displayName',
-                            hintText: '显示名称',
+                            hintText: 'Package Display Name',
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                           ),
@@ -301,9 +302,6 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                             if (value == null || value.isEmpty) {
                               return '请输入版本号';
                             }
-                            if (!RegExp(r'^\d+\.\d+\.\d+$').hasMatch(value)) {
-                              return '请输入有效的版本号';
-                            }
                             return null;
                           },
                         ),
@@ -311,58 +309,35 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  // 第二行：unity, unityRelease, license
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: TextFormField(
-                          controller: _unityVersionController,
-                          decoration: const InputDecoration(
-                            labelText: 'unity',
-                            hintText: '2021.3',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return '请输入Unity版本';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _unityReleaseController,
-                          decoration: const InputDecoration(
-                            labelText: 'unityRelease',
-                            hintText: '8f1',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _licenseController,
-                          decoration: const InputDecoration(
-                            labelText: 'license',
-                            hintText: 'MIT',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return '请输入许可证';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
+                  // Unity版本选择器
+                  UnityVersionSelector(
+                    initialVersion: _unityVersionController.text,
+                    initialRelease: _unityReleaseController.text,
+                    onVersionChanged: (version) {
+                      _unityVersionController.text = version;
+                      _debouncedUpdateConfig();
+                    },
+                    onReleaseChanged: (release) {
+                      _unityReleaseController.text = release ?? '';
+                      _debouncedUpdateConfig();
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  // 许可证
+                  TextFormField(
+                    controller: _licenseController,
+                    decoration: const InputDecoration(
+                      labelText: 'license',
+                      hintText: 'MIT',
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return '请输入许可证';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   // 描述
@@ -393,7 +368,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  // ���者信息
+                  // 作者信息
                   Row(
                     children: [
                       Expanded(
@@ -471,7 +446,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // ��页
+                  // 主页
                   TextFormField(
                     controller: _homepageController,
                     decoration: const InputDecoration(

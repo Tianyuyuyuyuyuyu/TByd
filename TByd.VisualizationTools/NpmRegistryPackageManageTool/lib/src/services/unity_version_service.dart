@@ -23,6 +23,12 @@ class UnityVersionService {
   /// HTTP 客户端
   final http.Client _client = http.Client();
 
+  /// 版本信息缓存
+  List<UnityVersion>? _cachedVersions;
+
+  /// 是否正在加载
+  bool _isLoading = false;
+
   /// 确保调试输出目录存在
   Future<void> _ensureDebugOutputDir() async {
     final directory = Directory(_debugOutputDir);
@@ -39,36 +45,55 @@ class UnityVersionService {
     await _ensureDebugOutputDir();
     final file = File('$_debugOutputDir/$fileName');
     await file.writeAsString(content);
-    print('已保存调试文件到 ${file.path}');
   }
 
   /// 获取版本列表
   Future<List<UnityVersion>> fetchVersions() async {
+    // 如果正在加载，等待加载完成
+    if (_isLoading) {
+      while (_isLoading) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+      return _cachedVersions ?? [];
+    }
+
+    // 如果已有缓存，直接返回
+    if (_cachedVersions != null) {
+      return _cachedVersions!;
+    }
+
+    _isLoading = true;
     try {
+      print('开始获取Unity版本信息...');
       final List<UnityVersion> allVersions = [];
 
-      // 首先获取可用的版本系列
       final versionSeries = await _fetchVersionSeries();
-      print('找到以下版本系列: ${versionSeries.join(', ')}');
 
-      // 获取每个版本系列的版本
       for (final series in versionSeries) {
         try {
-          print('获取 Unity $series 系列的版本');
           final versions = await _fetchVersionsFromPage(series);
           allVersions.addAll(versions);
         } catch (e) {
-          print('获取 Unity $series 系列版本时出错: $e');
           continue;
         }
       }
 
-      // 按版本号排序（降序）
       allVersions.sort((a, b) => _compareVersions(b.version, a.version));
+      print('成功获取 ${allVersions.length} 个Unity版本信息');
+
+      // 保存到缓存
+      _cachedVersions = allVersions;
       return allVersions;
     } catch (e) {
       throw Exception('获取Unity版本信息失败: $e');
+    } finally {
+      _isLoading = false;
     }
+  }
+
+  /// 清除缓存
+  void clearCache() {
+    _cachedVersions = null;
   }
 
   /// 获取可用的版本系列
@@ -97,11 +122,8 @@ class UnityVersionService {
       }
 
       final content = response.body;
-
-      // 保存响应内容以供调试
       await _saveDebugFile('unity_versions_page.html', content);
 
-      // 查找包含版本信息的 script
       final scriptPattern = RegExp(r'window\.__props__\s*=\s*({[\s\S]*?});[\s\n]*</script>', multiLine: true);
       final match = scriptPattern.firstMatch(content);
 
@@ -123,28 +145,24 @@ class UnityVersionService {
 
       final majors = mainData['majors'] as List<dynamic>;
       final versions = majors.map((m) => m.toString()).where((version) {
-        // 过滤掉 3、4、5 版本
         final versionNumber = int.tryParse(version);
         if (versionNumber != null) {
           return versionNumber > 5;
         }
-        // 对于非数字版本（如 "2023"），保留
         return true;
       }).toList();
 
       return versions;
     } catch (e) {
-      print('获取版本系列时出错: $e');
-      // 返回默认的版本系列列表作为备选，不包含 3、4、5 版本
       return [
-        '6000', // Unity 6.0
-        '2023', // Unity 2023
-        '2022', // Unity 2022
-        '2021', // Unity 2021
-        '2020', // Unity 2020
-        '2019', // Unity 2019
-        '2018', // Unity 2018
-        '2017', // Unity 2017
+        '6000',
+        '2023',
+        '2022',
+        '2021',
+        '2020',
+        '2019',
+        '2018',
+        '2017',
       ];
     }
   }
@@ -157,8 +175,6 @@ class UnityVersionService {
     while (retryCount < _maxRetries) {
       try {
         final url = '$_baseUrl/lts/$major';
-        print('发送请求到 $url');
-
         final response = await _client.get(
           Uri.parse(url),
           headers: {
@@ -178,10 +194,7 @@ class UnityVersionService {
           },
         ).timeout(_timeout);
 
-        print('收到响应，状态码: ${response.statusCode}');
-
         if (response.statusCode == 404) {
-          print('版本系列 $major 的页面���存在，跳过');
           return [];
         }
 
@@ -189,27 +202,19 @@ class UnityVersionService {
           throw HttpException('HTTP ${response.statusCode}');
         }
 
-        // 从页面内容中提取 JSON 数据
         final content = response.body;
-
-        // 保存响应内容以供调试
         final debugFileName = 'unity_${major}_page.html';
         await _saveDebugFile(debugFileName, content);
 
         String? jsonStr;
-
-        // 查找包含版本信息的 script
         final scriptPattern = RegExp(r'window\.__props__\s*=\s*({[\s\S]*?});[\s\n]*</script>', multiLine: true);
         final match = scriptPattern.firstMatch(content);
 
         if (match != null) {
           jsonStr = match.group(1);
-          print('找到完整的 JSON 数据');
         } else {
-          // 备用方案：查找所有 script 标签
           final allScriptsPattern = RegExp(r'<script[^>]*>([\s\S]*?)</script>', multiLine: true);
           final scripts = allScriptsPattern.allMatches(content);
-          print('找到 ${scripts.length} 个 script 标签');
 
           for (var scriptMatch in scripts) {
             final scriptContent = scriptMatch.group(1) ?? '';
@@ -217,7 +222,6 @@ class UnityVersionService {
               final propsMatch = RegExp(r'window\.__props__\s*=\s*({[\s\S]*?});').firstMatch(scriptContent);
               if (propsMatch != null) {
                 jsonStr = propsMatch.group(1);
-                print('在 script 标签中找到 JSON 数据');
                 break;
               }
             }
@@ -228,38 +232,23 @@ class UnityVersionService {
           throw Exception('未找到版本数据');
         }
 
-        // 解析 JSON 数据
         final Map<String, dynamic> data = json.decode(jsonStr);
-        print('JSON 数据的顶层键: ${data.keys.join(', ')}');
 
-        // 检查 data 字段
         if (data.containsKey('data')) {
           final mainData = data['data'] as Map<String, dynamic>;
-          print('data 字段的键: ${mainData.keys.join(', ')}');
 
-          // 直接检查 releases 字段
           if (mainData.containsKey('releases')) {
             final releases = mainData['releases'];
-            print('releases 的类型: ${releases.runtimeType}');
 
             if (releases is List) {
-              print('找到 ${releases.length} 个版本');
-
               final List<UnityVersion> versions = [];
               for (var release in releases) {
                 try {
                   if (release is Map<String, dynamic>) {
-                    print('处理版本数据: ${release['title']} (${release['releaseType']})');
-
                     final version = release['title'] as String?;
                     final releaseType = release['releaseType'] as String?;
                     final isLts = releaseType?.toLowerCase() == 'lts';
                     final downloadWin = release['downloadWin'] as Map<String, dynamic>?;
-
-                    if (downloadWin != null) {
-                      print('下载信息键: ${downloadWin.keys.join(', ')}');
-                    }
-
                     final downloadUrl = downloadWin?['unityEditor64'] as String?;
 
                     if (version != null && version.isNotEmpty && downloadUrl != null) {
@@ -269,40 +258,25 @@ class UnityVersionService {
                         versionType: releaseType?.toLowerCase() ?? 'official',
                         downloadUrl: {'unityhub': downloadUrl},
                       ));
-                      print('成功添加版本 $version');
-                    } else {
-                      print('跳过版本，原因：version=${version != null}, downloadUrl=${downloadUrl != null}');
                     }
-                  } else {
-                    print('release 不是 Map 类型: ${release.runtimeType}');
                   }
                 } catch (e) {
-                  print('解析版本信息时出错: $e');
                   continue;
                 }
               }
 
               if (versions.isNotEmpty) {
-                print('成功获取 ${versions.length} 个 Unity $major 版本信息');
                 return versions;
               }
-            } else {
-              print('releases 不是列表类型');
             }
-          } else {
-            print('data 中没有 releases 键');
           }
-        } else {
-          print('未找到 data 字段');
         }
 
         throw Exception('未找到任何Unity $major 版本信息');
       } catch (e) {
         lastException = _handleException(e);
-        print('获取版本信息失败 (尝试 ${retryCount + 1}/${_maxRetries}): $e');
         retryCount++;
         if (retryCount < _maxRetries) {
-          print('等待 ${retryCount * 2} 秒后重试...');
           await Future.delayed(Duration(seconds: retryCount * 2));
         }
       }
@@ -316,14 +290,12 @@ class UnityVersionService {
     final v1Parts = version1.split('.');
     final v2Parts = version2.split('.');
 
-    // 首先比较主版本号（如 6000、2022 等）
     final v1Major = _extractNumber(v1Parts[0]);
     final v2Major = _extractNumber(v2Parts[0]);
     if (v1Major != v2Major) {
       return v1Major.compareTo(v2Major);
     }
 
-    // 然后比较其他版本号部分
     for (var i = 1; i < math.min(v1Parts.length, v2Parts.length); i++) {
       final v1Part = _extractNumber(v1Parts[i]);
       final v2Part = _extractNumber(v2Parts[i]);
@@ -360,6 +332,7 @@ class UnityVersionService {
 
   /// 释放资源
   void dispose() {
+    _cachedVersions = null;
     _client.close();
   }
 }
