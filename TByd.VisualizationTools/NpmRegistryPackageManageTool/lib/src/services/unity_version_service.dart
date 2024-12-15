@@ -122,10 +122,20 @@ class UnityVersionService {
       }
 
       final majors = mainData['majors'] as List<dynamic>;
-      return majors.map((m) => m.toString()).toList();
+      final versions = majors.map((m) => m.toString()).where((version) {
+        // 过滤掉 3、4、5 版本
+        final versionNumber = int.tryParse(version);
+        if (versionNumber != null) {
+          return versionNumber > 5;
+        }
+        // 对于非数字版本（如 "2023"），保留
+        return true;
+      }).toList();
+
+      return versions;
     } catch (e) {
       print('获取版本系列时出错: $e');
-      // 返回默认的版本系列列表作为备选
+      // 返回默认的版本系列列表作为备选，不包含 3、4、5 版本
       return [
         '6000', // Unity 6.0
         '2023', // Unity 2023
@@ -135,7 +145,6 @@ class UnityVersionService {
         '2019', // Unity 2019
         '2018', // Unity 2018
         '2017', // Unity 2017
-        '5', // Unity 5
       ];
     }
   }
@@ -172,7 +181,7 @@ class UnityVersionService {
         print('收到响应，状态码: ${response.statusCode}');
 
         if (response.statusCode == 404) {
-          print('版本系列 $major 的页面不存在，跳过');
+          print('版本系列 $major 的页面���存在，跳过');
           return [];
         }
 

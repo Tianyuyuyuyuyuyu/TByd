@@ -13,6 +13,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/auth_model.dart';
 import '../services/auth_service.dart';
 import '../services/login_history_service.dart';
+import '../utils/storage_keys.dart';
+import 'login_history_provider.dart';
+import 'unity_version_provider.dart';
 import 'locale_provider.dart';
 import 'encryption_provider.dart';
 
@@ -89,7 +92,7 @@ class AuthState {
 
 /// 认证状态管理器
 ///
-/// 负责处理所有认证相关的业务逻辑，包括：
+/// 负责处理所有认证相关的业务逻辑，括：
 /// - 用户登录
 /// - 用户登出
 /// - 认证状态检查
@@ -97,8 +100,9 @@ class AuthState {
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthService _authService;
   final LoginHistoryService _historyService;
+  final Ref _ref;
 
-  AuthNotifier(this._authService, this._historyService) : super(const AuthState());
+  AuthNotifier(this._authService, this._historyService, this._ref) : super(const AuthState());
 
   /// 设置认证模型
   ///
@@ -155,6 +159,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         isLoading: false,
         auth: auth,
       );
+
+      // 登录成功后立即获取 Unity 版本信息
+      _ref.read(unityVersionProvider.notifier).loadVersions();
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -204,7 +211,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 检查认证状态
   ///
   /// 验证当前的认证令牌是否有效
-  /// 如果令牌无效，则重置认证状态
+  /// 如果令牌无效，则重置认证状��
   Future<void> checkAuth() async {
     if (!state.isAuthenticated || state.auth == null) return;
 
@@ -235,5 +242,5 @@ class AuthNotifier extends StateNotifier<AuthState> {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   final historyService = ref.watch(loginHistoryServiceProvider);
-  return AuthNotifier(authService, historyService);
+  return AuthNotifier(authService, historyService, ref);
 });
