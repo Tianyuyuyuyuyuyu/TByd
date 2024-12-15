@@ -27,8 +27,8 @@ class PackageSettingsForm extends ConsumerStatefulWidget {
 
 class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
   final _formKey = GlobalKey<FormState>();
-  Timer? _debounceTimer;
   UnityPackageConfig? _lastConfig;
+  bool _isDirty = false;
 
   late final TextEditingController _nameController;
   late final TextEditingController _versionController;
@@ -75,20 +75,20 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
   }
 
   void _initializeControllers() {
-    _nameController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _versionController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _displayNameController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _descriptionController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _unityVersionController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _unityReleaseController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _customLicenseController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _authorNameController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _authorEmailController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _categoryController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _homepageController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _repositoryTypeController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _repositoryUrlController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _bugsUrlController = TextEditingController()..addListener(_debouncedUpdateConfig);
+    _nameController = TextEditingController()..addListener(_markAsDirty);
+    _versionController = TextEditingController()..addListener(_markAsDirty);
+    _displayNameController = TextEditingController()..addListener(_markAsDirty);
+    _descriptionController = TextEditingController()..addListener(_markAsDirty);
+    _unityVersionController = TextEditingController()..addListener(_markAsDirty);
+    _unityReleaseController = TextEditingController()..addListener(_markAsDirty);
+    _customLicenseController = TextEditingController()..addListener(_markAsDirty);
+    _authorNameController = TextEditingController()..addListener(_markAsDirty);
+    _authorEmailController = TextEditingController()..addListener(_markAsDirty);
+    _categoryController = TextEditingController()..addListener(_markAsDirty);
+    _homepageController = TextEditingController()..addListener(_markAsDirty);
+    _repositoryTypeController = TextEditingController()..addListener(_markAsDirty);
+    _repositoryUrlController = TextEditingController()..addListener(_markAsDirty);
+    _bugsUrlController = TextEditingController()..addListener(_markAsDirty);
     _keywords = [];
     _dependencies = {};
     _contributors = [];
@@ -112,27 +112,10 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _repositoryTypeController.dispose();
     _repositoryUrlController.dispose();
     _bugsUrlController.dispose();
-    _debounceTimer?.cancel();
     super.dispose();
   }
 
   void _updateFormFromConfig(UnityPackageConfig config) {
-    // 暂时移除监听器
-    _nameController.removeListener(_debouncedUpdateConfig);
-    _versionController.removeListener(_debouncedUpdateConfig);
-    _displayNameController.removeListener(_debouncedUpdateConfig);
-    _descriptionController.removeListener(_debouncedUpdateConfig);
-    _unityVersionController.removeListener(_debouncedUpdateConfig);
-    _unityReleaseController.removeListener(_debouncedUpdateConfig);
-    _customLicenseController.removeListener(_debouncedUpdateConfig);
-    _authorNameController.removeListener(_debouncedUpdateConfig);
-    _authorEmailController.removeListener(_debouncedUpdateConfig);
-    _categoryController.removeListener(_debouncedUpdateConfig);
-    _homepageController.removeListener(_debouncedUpdateConfig);
-    _repositoryTypeController.removeListener(_debouncedUpdateConfig);
-    _repositoryUrlController.removeListener(_debouncedUpdateConfig);
-    _bugsUrlController.removeListener(_debouncedUpdateConfig);
-
     // 更新控制器值
     _nameController.text = config.name;
     _versionController.text = config.version;
@@ -149,22 +132,6 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _repositoryUrlController.text = config.repository.url ?? '';
     _bugsUrlController.text = config.bugs.url ?? '';
 
-    // 重新添加监听器
-    _nameController.addListener(_debouncedUpdateConfig);
-    _versionController.addListener(_debouncedUpdateConfig);
-    _displayNameController.addListener(_debouncedUpdateConfig);
-    _descriptionController.addListener(_debouncedUpdateConfig);
-    _unityVersionController.addListener(_debouncedUpdateConfig);
-    _unityReleaseController.addListener(_debouncedUpdateConfig);
-    _customLicenseController.addListener(_debouncedUpdateConfig);
-    _authorNameController.addListener(_debouncedUpdateConfig);
-    _authorEmailController.addListener(_debouncedUpdateConfig);
-    _categoryController.addListener(_debouncedUpdateConfig);
-    _homepageController.addListener(_debouncedUpdateConfig);
-    _repositoryTypeController.addListener(_debouncedUpdateConfig);
-    _repositoryUrlController.addListener(_debouncedUpdateConfig);
-    _bugsUrlController.addListener(_debouncedUpdateConfig);
-
     setState(() {
       _keywords = List.from(config.keywords ?? []);
       _dependencies = Map.from(config.dependencies ?? {});
@@ -175,19 +142,32 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
       if (_selectedLicenseType == LicenseType.custom) {
         _customLicenseController.text = config.license;
       }
+      _isDirty = false;
     });
 
     _lastConfig = config;
     _isInitialized = true;
   }
 
-  void _debouncedUpdateConfig() {
-    if (!_isInitialized) return;
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 500), _updateConfig);
+  void _markAsDirty() {
+    if (_isInitialized && !_isDirty && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _isDirty = true;
+          });
+        }
+      });
+    }
   }
 
-  void _updateConfig() {
+  void _handleValueChanged() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _markAsDirty();
+    });
+  }
+
+  Future<void> _saveConfig() async {
     if (_formKey.currentState?.validate() ?? false) {
       final config = UnityPackageConfig(
         name: _nameController.text,
@@ -219,12 +199,21 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
         relatedPackages: _relatedPackages,
       );
 
-      Future.microtask(() {
-        if (mounted) {
-          ref.read(packageSettingsProvider.notifier).updateConfig(config);
-          widget.onConfigChanged?.call(config);
-        }
-      });
+      if (mounted) {
+        ref.read(packageSettingsProvider.notifier).updateConfig(config);
+        widget.onConfigChanged?.call(config);
+        setState(() {
+          _isDirty = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('配置已保存'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 
@@ -243,415 +232,449 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
       });
     }
 
-    return Form(
-      key: _formKey,
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          Card(
-            margin: EdgeInsets.zero,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 第一行：name, displayName, version
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: TextFormField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'name',
-                            hintText: 'com.company.package-name',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return '请输入包名';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        flex: 2,
-                        child: TextFormField(
-                          controller: _displayNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'displayName',
-                            hintText: 'Package Display Name',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return '请输入显示名称';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _versionController,
-                          decoration: const InputDecoration(
-                            labelText: 'version',
-                            hintText: '1.0.0',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return '请输入版本号';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // Unity版本选择器
-                  UnityVersionSelector(
-                    initialVersion: _unityVersionController.text,
-                    initialRelease: _unityReleaseController.text,
-                    onVersionChanged: (version) {
-                      _unityVersionController.text = version;
-                      _debouncedUpdateConfig();
-                    },
-                    onReleaseChanged: (release) {
-                      _unityReleaseController.text = release ?? '';
-                      _debouncedUpdateConfig();
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  // 许可证选择
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<LicenseType>(
-                          value: _selectedLicenseType,
-                          decoration: const InputDecoration(
-                            labelText: 'license',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                          items: LicenseType.values.map((type) {
-                            return DropdownMenuItem(
-                              value: type,
-                              child: Text(type.displayName),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedLicenseType = value;
-                                if (value != LicenseType.custom) {
-                                  _customLicenseController.text = value.standardName;
-                                }
-                              });
-                              _debouncedUpdateConfig();
-                            }
-                          },
-                          validator: (value) {
-                            if (value == LicenseType.custom && _customLicenseController.text.isEmpty) {
-                              return '请输入自定义许可证';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      if (_selectedLicenseType == LicenseType.custom) ...[
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _customLicenseController,
-                            decoration: const InputDecoration(
-                              labelText: 'custom license',
-                              hintText: '输入自定义许可证名称',
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return '请输入自定义许可证';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // 描述
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'description',
-                      hintText: '的简要描述',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    maxLines: null,
-                  ),
-                  const SizedBox(height: 16),
-                  // 关键字
-                  Column(
+    return Stack(
+      children: [
+        Form(
+          key: _formKey,
+          onChanged: _handleValueChanged,
+          child: ListView(
+            padding: const EdgeInsets.only(bottom: 80),
+            children: [
+              Card(
+                margin: EdgeInsets.zero,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'keywords',
-                        style: theme.textTheme.labelLarge,
+                      // 第一行：name, displayName, version
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: TextFormField(
+                              controller: _nameController,
+                              decoration: const InputDecoration(
+                                labelText: 'name',
+                                hintText: 'com.company.package-name',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '请输入包名';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 2,
+                            child: TextFormField(
+                              controller: _displayNameController,
+                              decoration: const InputDecoration(
+                                labelText: 'displayName',
+                                hintText: 'Package Display Name',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '请输入显示名称';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _versionController,
+                              decoration: const InputDecoration(
+                                labelText: 'version',
+                                hintText: '1.0.0',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '请输入版本号';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      KeywordsSelector(
-                        selectedKeywords: _keywords,
-                        onKeywordsChanged: (keywords) {
+                      const SizedBox(height: 16),
+                      // Unity版本选择器
+                      UnityVersionSelector(
+                        initialVersion: _unityVersionController.text,
+                        initialRelease: _unityReleaseController.text,
+                        onVersionChanged: (version) {
+                          _unityVersionController.text = version;
+                          _handleValueChanged();
+                        },
+                        onReleaseChanged: (release) {
+                          _unityReleaseController.text = release ?? '';
+                          _handleValueChanged();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      // 许可证选择
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<LicenseType>(
+                              value: _selectedLicenseType,
+                              decoration: const InputDecoration(
+                                labelText: 'license',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              items: LicenseType.values.map((type) {
+                                return DropdownMenuItem(
+                                  value: type,
+                                  child: Text(type.displayName),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _selectedLicenseType = value;
+                                    if (value != LicenseType.custom) {
+                                      _customLicenseController.text = value.standardName;
+                                    }
+                                    _handleValueChanged();
+                                  });
+                                }
+                              },
+                              validator: (value) {
+                                if (value == LicenseType.custom && _customLicenseController.text.isEmpty) {
+                                  return '请输入自定义许可证';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          if (_selectedLicenseType == LicenseType.custom) ...[
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _customLicenseController,
+                                decoration: const InputDecoration(
+                                  labelText: 'custom license',
+                                  hintText: '输入自定义许可证名称',
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return '请输入自定义许可证';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // 描述
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                          labelText: 'description',
+                          hintText: '的简要描述',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                        maxLines: null,
+                      ),
+                      const SizedBox(height: 16),
+                      // 关键字
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'keywords',
+                            style: theme.textTheme.labelLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          KeywordsSelector(
+                            selectedKeywords: _keywords,
+                            onKeywordsChanged: (keywords) {
+                              setState(() {
+                                _keywords = keywords;
+                              });
+                              _handleValueChanged();
+                            },
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // 作者信息
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _authorNameController,
+                              decoration: const InputDecoration(
+                                labelText: 'author.name',
+                                hintText: '作者名称',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '请输入作者名称';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
+                              controller: _authorEmailController,
+                              decoration: const InputDecoration(
+                                labelText: 'author.email',
+                                hintText: '电子邮件',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // 贡献者
+                      TextFormField(
+                        controller: TextEditingController(
+                            text: _contributors
+                                .map((c) => '${c.name}${c.twitter.isNotEmpty ? ' <${c.twitter}>' : ''}')
+                                .join(', ')),
+                        decoration: const InputDecoration(
+                          labelText: 'contributors',
+                          hintText: '贡献者列表，格式：name <twitter>, name2 <twitter2>',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                        onChanged: (value) {
                           setState(() {
-                            _keywords = keywords;
+                            _contributors = value
+                                .split(',')
+                                .map((e) {
+                                  final match = RegExp(r'^(.*?)(?:\s+<(.+)>)?$').firstMatch(e.trim());
+                                  if (match != null) {
+                                    return Contributor(
+                                      name: match.group(1)?.trim() ?? '',
+                                      twitter: match.group(2)?.trim() ?? '',
+                                    );
+                                  }
+                                  return Contributor(name: e.trim());
+                                })
+                                .where((c) => c.name.isNotEmpty)
+                                .toList();
                           });
-                          _debouncedUpdateConfig();
+                          _handleValueChanged();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      // 分类
+                      TextFormField(
+                        controller: _categoryController,
+                        decoration: const InputDecoration(
+                          labelText: 'category',
+                          hintText: '例如：GUI',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // 主页
+                      TextFormField(
+                        controller: _homepageController,
+                        decoration: const InputDecoration(
+                          labelText: 'homepage',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // 仓库信息
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              controller: _repositoryTypeController,
+                              decoration: const InputDecoration(
+                                labelText: 'repository.type',
+                                hintText: '仓库类型，例如：git',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 2,
+                            child: TextFormField(
+                              controller: _repositoryUrlController,
+                              decoration: const InputDecoration(
+                                labelText: 'repository.url',
+                                hintText: '仓库地址',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      // 错误报告
+                      TextFormField(
+                        controller: _bugsUrlController,
+                        decoration: const InputDecoration(
+                          labelText: 'bugs.url',
+                          hintText: '问题追踪地址',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // 相关包
+                      TextFormField(
+                        controller: TextEditingController(
+                          text: _relatedPackages.entries.map((e) => '${e.key}:${e.value}').join(', '),
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: 'relatedPackages',
+                          hintText: '相关包列表，格式：package:version, package2:version2',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _relatedPackages = Map.fromEntries(
+                              value
+                                  .split(',')
+                                  .map((e) {
+                                    final parts = e.trim().split(':');
+                                    if (parts.length == 2) {
+                                      return MapEntry(parts[0].trim(), parts[1].trim());
+                                    }
+                                    return null;
+                                  })
+                                  .where((e) => e != null)
+                                  .cast<MapEntry<String, String>>(),
+                            );
+                          });
+                          _handleValueChanged();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      // 依赖
+                      TextFormField(
+                        controller: TextEditingController(
+                          text: _dependencies.entries.map((e) => '${e.key}@${e.value}').join(', '),
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: 'dependencies',
+                          hintText: '依赖项列表，格式：package@version, package2@version2',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _dependencies = Map.fromEntries(
+                              value
+                                  .split(',')
+                                  .map((e) {
+                                    final parts = e.trim().split('@');
+                                    if (parts.length == 2) {
+                                      return MapEntry(parts[0].trim(), parts[1].trim());
+                                    }
+                                    return null;
+                                  })
+                                  .where((e) => e != null)
+                                  .cast<MapEntry<String, String>>(),
+                            );
+                          });
+                          _handleValueChanged();
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      // 示例
+                      TextFormField(
+                        controller: TextEditingController(
+                          text: _samples.map((s) => '${s.displayName}:${s.description}:${s.path}').join(', '),
+                        ),
+                        decoration: const InputDecoration(
+                          labelText: 'samples',
+                          hintText: '示例列表，格式：displayName:description:path, displayName2:description2:path2',
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _samples = value
+                                .split(',')
+                                .map((e) {
+                                  final parts = e.trim().split(':');
+                                  if (parts.length == 3) {
+                                    return Sample(
+                                      displayName: parts[0].trim(),
+                                      description: parts[1].trim(),
+                                      path: parts[2].trim(),
+                                    );
+                                  }
+                                  return null;
+                                })
+                                .where((s) => s != null)
+                                .cast<Sample>()
+                                .toList();
+                          });
+                          _handleValueChanged();
                         },
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  // 作者信息
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _authorNameController,
-                          decoration: const InputDecoration(
-                            labelText: 'author.name',
-                            hintText: '作者名称',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return '请输入作者名称';
-                            }
-                            return null;
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _authorEmailController,
-                          decoration: const InputDecoration(
-                            labelText: 'author.email',
-                            hintText: '电子邮件',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // 贡献者
-                  TextFormField(
-                    controller: TextEditingController(
-                        text: _contributors
-                            .map((c) => '${c.name}${c.twitter.isNotEmpty ? ' <${c.twitter}>' : ''}')
-                            .join(', ')),
-                    decoration: const InputDecoration(
-                      labelText: 'contributors',
-                      hintText: '贡献者列表，格式：name <twitter>, name2 <twitter2>',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _contributors = value
-                            .split(',')
-                            .map((e) {
-                              final match = RegExp(r'^(.*?)(?:\s+<(.+)>)?$').firstMatch(e.trim());
-                              if (match != null) {
-                                return Contributor(
-                                  name: match.group(1)?.trim() ?? '',
-                                  twitter: match.group(2)?.trim() ?? '',
-                                );
-                              }
-                              return Contributor(name: e.trim());
-                            })
-                            .where((c) => c.name.isNotEmpty)
-                            .toList();
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  // 分类
-                  TextFormField(
-                    controller: _categoryController,
-                    decoration: const InputDecoration(
-                      labelText: 'category',
-                      hintText: '例如：GUI',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // 主页
-                  TextFormField(
-                    controller: _homepageController,
-                    decoration: const InputDecoration(
-                      labelText: 'homepage',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // 仓库信息
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _repositoryTypeController,
-                          decoration: const InputDecoration(
-                            labelText: 'repository.type',
-                            hintText: '仓库类型，例如：git',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        flex: 2,
-                        child: TextFormField(
-                          controller: _repositoryUrlController,
-                          decoration: const InputDecoration(
-                            labelText: 'repository.url',
-                            hintText: '仓库地址',
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  // 错误报告
-                  TextFormField(
-                    controller: _bugsUrlController,
-                    decoration: const InputDecoration(
-                      labelText: 'bugs.url',
-                      hintText: '问题追踪地址',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // 相关包
-                  TextFormField(
-                    controller: TextEditingController(
-                      text: _relatedPackages.entries.map((e) => '${e.key}:${e.value}').join(', '),
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'relatedPackages',
-                      hintText: '相关包列表，格式：package:version, package2:version2',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _relatedPackages = Map.fromEntries(
-                          value
-                              .split(',')
-                              .map((e) {
-                                final parts = e.trim().split(':');
-                                if (parts.length == 2) {
-                                  return MapEntry(parts[0].trim(), parts[1].trim());
-                                }
-                                return null;
-                              })
-                              .where((e) => e != null)
-                              .cast<MapEntry<String, String>>(),
-                        );
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  // 依赖
-                  TextFormField(
-                    controller: TextEditingController(
-                      text: _dependencies.entries.map((e) => '${e.key}@${e.value}').join(', '),
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'dependencies',
-                      hintText: '依赖项列表，格式：package@version, package2@version2',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _dependencies = Map.fromEntries(
-                          value
-                              .split(',')
-                              .map((e) {
-                                final parts = e.trim().split('@');
-                                if (parts.length == 2) {
-                                  return MapEntry(parts[0].trim(), parts[1].trim());
-                                }
-                                return null;
-                              })
-                              .where((e) => e != null)
-                              .cast<MapEntry<String, String>>(),
-                        );
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  // 示例
-                  TextFormField(
-                    controller: TextEditingController(
-                      text: _samples.map((s) => '${s.displayName}:${s.description}:${s.path}').join(', '),
-                    ),
-                    decoration: const InputDecoration(
-                      labelText: 'samples',
-                      hintText: '示例列表，格式：displayName:description:path, displayName2:description2:path2',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _samples = value
-                            .split(',')
-                            .map((e) {
-                              final parts = e.trim().split(':');
-                              if (parts.length == 3) {
-                                return Sample(
-                                  displayName: parts[0].trim(),
-                                  description: parts[1].trim(),
-                                  path: parts[2].trim(),
-                                );
-                              }
-                              return null;
-                            })
-                            .where((s) => s != null)
-                            .cast<Sample>()
-                            .toList();
-                      });
-                    },
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: Card(
+            margin: EdgeInsets.zero,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            elevation: 8,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FilledButton.icon(
+                    onPressed: _isDirty ? _saveConfig : null,
+                    icon: const Icon(Icons.save),
+                    label: const Text('保存'),
                   ),
                 ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
