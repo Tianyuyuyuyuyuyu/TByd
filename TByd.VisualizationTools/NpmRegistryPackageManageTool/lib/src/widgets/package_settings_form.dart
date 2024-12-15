@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/unity_package_config.dart';
 import '../providers/package_settings_provider.dart';
 import '../providers/unity_version_provider.dart';
+import '../providers/category_provider.dart';
 import 'unity_version_selector.dart';
 import '../models/license_type.dart';
 import '../widgets/keywords_selector.dart';
+import '../widgets/category_selector.dart';
 import 'contributors_selector.dart';
 
 /// 包设置表单组件
@@ -215,7 +217,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('配置已保存'),
+            content: const Text('���置已保存'),
             backgroundColor: Theme.of(context).colorScheme.primary,
             behavior: SnackBarBehavior.floating,
           ),
@@ -515,14 +517,39 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                       ),
                       const SizedBox(height: 16),
                       // 分类
-                      TextFormField(
-                        controller: _categoryController,
-                        decoration: const InputDecoration(
-                          labelText: 'category',
-                          hintText: '例如：GUI',
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'category',
+                                style: theme.textTheme.labelLarge,
+                              ),
+                              const SizedBox(width: 8),
+                              SizedBox(
+                                height: 12,
+                                width: 12,
+                                child: ref.watch(categoryProvider).isLoading
+                                    ? CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: theme.colorScheme.primary,
+                                      )
+                                    : null,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          CategorySelector(
+                            selectedCategory: _categoryController.text,
+                            onCategoryChanged: (category) {
+                              setState(() {
+                                _categoryController.text = category ?? '';
+                              });
+                              _handleValueChanged();
+                            },
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       // 主页

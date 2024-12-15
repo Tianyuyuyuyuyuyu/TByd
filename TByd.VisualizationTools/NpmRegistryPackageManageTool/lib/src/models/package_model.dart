@@ -58,6 +58,9 @@ class Package extends Equatable {
   /// Bug追踪地址
   final String? bugsUrl;
 
+  /// 分类
+  final String? category;
+
   /// 构造函数
   ///
   /// 创建一个新的包实例
@@ -76,6 +79,7 @@ class Package extends Equatable {
   /// - [repository] 仓库地址
   /// - [homepage] 主页
   /// - [bugsUrl] Bug追踪
+  /// - [category] 分类
   const Package({
     required this.name,
     String? displayName,
@@ -90,6 +94,7 @@ class Package extends Equatable {
     this.repository,
     this.homepage,
     this.bugsUrl,
+    this.category,
   }) : displayName = displayName ?? name;
 
   /// 从JSON创建实例
@@ -137,6 +142,9 @@ class Package extends Equatable {
         }
       }
 
+      // 获取分类
+      String? category = versionData?['category']?.toString() ?? json['category']?.toString();
+
       return Package(
         name: json['name']?.toString() ?? '',
         displayName: versionData?['displayName']?.toString() ?? json['displayName']?.toString(),
@@ -151,6 +159,7 @@ class Package extends Equatable {
         repository: repositoryUrl,
         homepage: homepageUrl,
         bugsUrl: bugsUrl,
+        category: category,
       );
     } catch (e) {
       print('解析包详情时出错: $e');
@@ -233,6 +242,7 @@ class Package extends Equatable {
       'license': license,
       'repository': repository,
       'homepage': homepage,
+      'category': category,
     };
   }
 
