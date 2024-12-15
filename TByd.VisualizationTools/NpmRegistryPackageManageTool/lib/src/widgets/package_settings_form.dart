@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/unity_package_config.dart';
 import '../providers/package_settings_provider.dart';
+import '../providers/unity_version_provider.dart';
 import 'unity_version_selector.dart';
 import '../models/license_type.dart';
 import '../widgets/keywords_selector.dart';
@@ -312,17 +313,51 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                       ),
                       const SizedBox(height: 16),
                       // Unity版本选择器
-                      UnityVersionSelector(
-                        initialVersion: _unityVersionController.text,
-                        initialRelease: _unityReleaseController.text,
-                        onVersionChanged: (version) {
-                          _unityVersionController.text = version;
-                          _handleValueChanged();
-                        },
-                        onReleaseChanged: (release) {
-                          _unityReleaseController.text = release ?? '';
-                          _handleValueChanged();
-                        },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Unity Version Configuration',
+                                style: theme.textTheme.labelLarge,
+                              ),
+                              const SizedBox(width: 4),
+                              SizedBox(
+                                height: 12,
+                                width: 12,
+                                child: ref.watch(unityVersionProvider).isLoading
+                                    ? CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: theme.colorScheme.primary,
+                                      )
+                                    : null,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: theme.colorScheme.outline.withOpacity(0.5),
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            padding: const EdgeInsets.all(12),
+                            child: UnityVersionSelector(
+                              initialVersion: _unityVersionController.text,
+                              initialRelease: _unityReleaseController.text,
+                              onVersionChanged: (version) {
+                                _unityVersionController.text = version;
+                                _handleValueChanged();
+                              },
+                              onReleaseChanged: (release) {
+                                _unityReleaseController.text = release ?? '';
+                                _handleValueChanged();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       // 许可证选择
