@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/unity_package_config.dart';
 import '../providers/package_settings_provider.dart';
 import 'unity_version_selector.dart';
+import '../models/license_type.dart';
 
 /// 包设置表单组件
 class PackageSettingsForm extends ConsumerStatefulWidget {
@@ -34,7 +35,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _unityVersionController;
   late final TextEditingController _unityReleaseController;
-  late final TextEditingController _licenseController;
+  late final TextEditingController _customLicenseController;
   late final TextEditingController _authorNameController;
   late final TextEditingController _authorEmailController;
   late final TextEditingController _categoryController;
@@ -48,6 +49,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
   late List<Sample> _samples;
   late Map<String, String> _relatedPackages;
   bool _isInitialized = false;
+  LicenseType _selectedLicenseType = LicenseType.mit;
 
   @override
   void initState() {
@@ -78,7 +80,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _descriptionController = TextEditingController()..addListener(_debouncedUpdateConfig);
     _unityVersionController = TextEditingController()..addListener(_debouncedUpdateConfig);
     _unityReleaseController = TextEditingController()..addListener(_debouncedUpdateConfig);
-    _licenseController = TextEditingController()..addListener(_debouncedUpdateConfig);
+    _customLicenseController = TextEditingController()..addListener(_debouncedUpdateConfig);
     _authorNameController = TextEditingController()..addListener(_debouncedUpdateConfig);
     _authorEmailController = TextEditingController()..addListener(_debouncedUpdateConfig);
     _categoryController = TextEditingController()..addListener(_debouncedUpdateConfig);
@@ -101,7 +103,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _descriptionController.dispose();
     _unityVersionController.dispose();
     _unityReleaseController.dispose();
-    _licenseController.dispose();
+    _customLicenseController.dispose();
     _authorNameController.dispose();
     _authorEmailController.dispose();
     _categoryController.dispose();
@@ -121,7 +123,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _descriptionController.removeListener(_debouncedUpdateConfig);
     _unityVersionController.removeListener(_debouncedUpdateConfig);
     _unityReleaseController.removeListener(_debouncedUpdateConfig);
-    _licenseController.removeListener(_debouncedUpdateConfig);
+    _customLicenseController.removeListener(_debouncedUpdateConfig);
     _authorNameController.removeListener(_debouncedUpdateConfig);
     _authorEmailController.removeListener(_debouncedUpdateConfig);
     _categoryController.removeListener(_debouncedUpdateConfig);
@@ -137,7 +139,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _descriptionController.text = config.description;
     _unityVersionController.text = config.unityVersion;
     _unityReleaseController.text = config.unityRelease ?? '';
-    _licenseController.text = config.license;
+    _customLicenseController.text = config.license;
     _authorNameController.text = config.author.name ?? '';
     _authorEmailController.text = config.author.email ?? '';
     _categoryController.text = config.category ?? '';
@@ -153,7 +155,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _descriptionController.addListener(_debouncedUpdateConfig);
     _unityVersionController.addListener(_debouncedUpdateConfig);
     _unityReleaseController.addListener(_debouncedUpdateConfig);
-    _licenseController.addListener(_debouncedUpdateConfig);
+    _customLicenseController.addListener(_debouncedUpdateConfig);
     _authorNameController.addListener(_debouncedUpdateConfig);
     _authorEmailController.addListener(_debouncedUpdateConfig);
     _categoryController.addListener(_debouncedUpdateConfig);
@@ -168,6 +170,10 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
       _contributors = List.from(config.contributors ?? []);
       _samples = List.from(config.samples ?? []);
       _relatedPackages = Map.from(config.relatedPackages ?? {});
+      _selectedLicenseType = LicenseType.fromLicenseName(config.license) ?? LicenseType.custom;
+      if (_selectedLicenseType == LicenseType.custom) {
+        _customLicenseController.text = config.license;
+      }
     });
 
     _lastConfig = config;
@@ -189,7 +195,9 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
         description: _descriptionController.text,
         unityVersion: _unityVersionController.text,
         unityRelease: _unityReleaseController.text,
-        license: _licenseController.text,
+        license: _selectedLicenseType == LicenseType.custom
+            ? _customLicenseController.text
+            : _selectedLicenseType.standardName,
         keywords: _keywords,
         author: PackageAuthor(
           name: _authorNameController.text,
@@ -323,21 +331,63 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  // 许可证
-                  TextFormField(
-                    controller: _licenseController,
-                    decoration: const InputDecoration(
-                      labelText: 'license',
-                      hintText: 'MIT',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return '请输入许可证';
-                      }
-                      return null;
-                    },
+                  // 许可证选择
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<LicenseType>(
+                          value: _selectedLicenseType,
+                          decoration: const InputDecoration(
+                            labelText: 'license',
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                          ),
+                          items: LicenseType.values.map((type) {
+                            return DropdownMenuItem(
+                              value: type,
+                              child: Text(type.displayName),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              setState(() {
+                                _selectedLicenseType = value;
+                                if (value != LicenseType.custom) {
+                                  _customLicenseController.text = value.standardName;
+                                }
+                              });
+                              _debouncedUpdateConfig();
+                            }
+                          },
+                          validator: (value) {
+                            if (value == LicenseType.custom && _customLicenseController.text.isEmpty) {
+                              return '请输入自定义许可证';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                      if (_selectedLicenseType == LicenseType.custom) ...[
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _customLicenseController,
+                            decoration: const InputDecoration(
+                              labelText: 'custom license',
+                              hintText: '输入自定义许可证名称',
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return '请输入自定义许可证';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 16),
                   // 描述

@@ -2,8 +2,8 @@
   "name": "com.tbyd.pool",
   "displayName": "TByd Pool",
   "version": "0.0.2",
-  "unity": "2021.3",
-  "unityRelease": "8f1",
+  "unity": "6000.0",
+  "unityRelease": "",
   "description": "A high-performance object pooling system for Unity",
   "license": "MIT",
   "keywords": [
