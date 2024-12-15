@@ -16,6 +16,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'login_page.dart';
 import 'package_list_page.dart';
 import 'package_operations_page.dart';
+import 'test_page.dart';
 
 /// 主页组件
 ///
@@ -168,6 +169,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                         label: l10n.settings,
                         index: 2,
                       ),
+                      _buildNavButton(
+                        context: context,
+                        icon: Icons.science_outlined,
+                        selectedIcon: Icons.science,
+                        label: '测试',
+                        index: 3,
+                      ),
                     ],
                   ),
                 ),
@@ -246,6 +254,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         return const Center(
           child: Text('设置页面'),
         );
+      case 3:
+        return const TestPage();
       default:
         return const Center(
           child: Text('未知页面'),
