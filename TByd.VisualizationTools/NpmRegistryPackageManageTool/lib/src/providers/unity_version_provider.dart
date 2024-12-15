@@ -41,7 +41,10 @@ class UnityVersionNotifier extends StateNotifier<UnityVersionState> {
   final UnityVersionService _service;
 
   /// 构造函数
-  UnityVersionNotifier(this._service) : super(const UnityVersionState());
+  UnityVersionNotifier(this._service) : super(const UnityVersionState()) {
+    // 初始化时自动加载数据
+    loadVersions();
+  }
 
   /// 加载版本信息
   Future<void> loadVersions() async {
@@ -53,6 +56,12 @@ class UnityVersionNotifier extends StateNotifier<UnityVersionState> {
     } catch (e) {
       state = state.copyWithError(e.toString());
     }
+  }
+
+  @override
+  void dispose() {
+    _service.dispose();
+    super.dispose();
   }
 }
 

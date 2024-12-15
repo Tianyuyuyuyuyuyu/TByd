@@ -1,61 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/unity_version_provider.dart';
+import '../models/unity_version.dart';
 
 /// 测试页面
-///
-/// 用于测试 Unity 版本 API 和展示版本信息
-class TestPage extends ConsumerStatefulWidget {
+class TestPage extends ConsumerWidget {
   /// 构造函数
   const TestPage({super.key});
 
   @override
-  ConsumerState<TestPage> createState() => _TestPageState();
-}
-
-class _TestPageState extends ConsumerState<TestPage> {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+  Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(unityVersionProvider);
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 标题和刷新按钮
-            Row(
-              children: [
-                Text(
-                  'Unity 版本列表',
-                  style: theme.textTheme.headlineMedium,
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  onPressed: () {
-                    ref.read(unityVersionProvider.notifier).loadVersions();
-                  },
-                  tooltip: '刷新版本列表',
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // 内容区域
-            Expanded(
-              child: _buildContent(state, theme),
-            ),
-          ],
-        ),
+      appBar: AppBar(
+        title: const Text('Unity 版本列表'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              ref.read(unityVersionProvider.notifier).loadVersions();
+            },
+          ),
+        ],
       ),
+      body: _buildBody(state),
     );
   }
 
-  /// 构建内容区域
-  Widget _buildContent(UnityVersionState state, ThemeData theme) {
+  Widget _buildBody(UnityVersionState state) {
     if (state.isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -67,33 +40,32 @@ class _TestPageState extends ConsumerState<TestPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.error_outline,
-              size: 48,
-              color: theme.colorScheme.error,
+              color: Colors.red,
+              size: 60,
             ),
             const SizedBox(height: 16),
             Text(
               '加载失败',
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.error,
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.red[700],
               ),
             ),
             const SizedBox(height: 8),
             Text(
               state.error!,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.error,
+              style: const TextStyle(
+                color: Colors.grey,
               ),
-              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            FilledButton.icon(
-              icon: const Icon(Icons.refresh),
-              label: const Text('重试'),
+            ElevatedButton(
               onPressed: () {
-                ref.read(unityVersionProvider.notifier).loadVersions();
+                // 重试按钮
               },
+              child: const Text('重试'),
             ),
           ],
         ),
@@ -101,22 +73,8 @@ class _TestPageState extends ConsumerState<TestPage> {
     }
 
     if (state.versions == null || state.versions!.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.info_outline,
-              size: 48,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '点击刷新按钮获取版本信息',
-              style: theme.textTheme.titleLarge,
-            ),
-          ],
-        ),
+      return const Center(
+        child: Text('没有找到版本信息'),
       );
     }
 
@@ -125,67 +83,75 @@ class _TestPageState extends ConsumerState<TestPage> {
       itemBuilder: (context, index) {
         final version = state.versions![index];
         return Card(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: ExpansionTile(
             title: Text(
               version.version,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
               ),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (version.longVersion != null) ...[
-                  const SizedBox(height: 4),
-                  Text('完整版本: ${version.longVersion}'),
-                ],
-                if (version.releaseDate != null) ...[
-                  const SizedBox(height: 4),
-                  Text('发布日期: ${version.releaseDate}'),
-                ],
-                if (version.isLts == true)
-                  Chip(
-                    label: const Text('LTS'),
-                    backgroundColor: theme.colorScheme.primaryContainer,
-                    labelStyle: TextStyle(
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-              ],
+            subtitle: Text(
+              version.lts ? 'LTS 版本' : '标准版本',
+              style: TextStyle(
+                color: version.lts ? Colors.green : Colors.grey,
+              ),
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.info_outline),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('版本 ${version.version} 详情'),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('发布说明:', style: theme.textTheme.titleSmall),
-                          const SizedBox(height: 8),
-                          Text(version.releaseNotes),
-                        ],
-                      ),
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('关闭'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              tooltip: '查看详情',
-            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDownloadSection(version),
+                  ],
+                ),
+              ),
+            ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildDownloadSection(UnityVersion version) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          '下载链接:',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...version.downloadUrl.entries.map((entry) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Row(
+              children: [
+                Text(
+                  '${entry.key}:',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    entry.value,
+                    style: const TextStyle(
+                      color: Colors.blue,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
     );
   }
 }
