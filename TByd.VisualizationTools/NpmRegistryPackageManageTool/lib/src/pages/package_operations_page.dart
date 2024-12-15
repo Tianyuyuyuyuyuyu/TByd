@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../widgets/package_settings_form.dart';
 import '../models/unity_package_config.dart';
 import '../providers/package_settings_provider.dart';

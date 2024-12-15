@@ -137,8 +137,8 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     _unityVersionController.text = config.unityVersion;
     _unityReleaseController.text = config.unityRelease ?? '';
     _licenseController.text = config.license;
-    _authorNameController.text = config.author?.name ?? '';
-    _authorEmailController.text = config.author?.email ?? '';
+    _authorNameController.text = config.author.name ?? '';
+    _authorEmailController.text = config.author.email ?? '';
     _categoryController.text = config.category ?? '';
     _homepageController.text = config.homepage ?? '';
     _repositoryTypeController.text = config.repository.type ?? '';
@@ -432,8 +432,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                   TextFormField(
                     controller: TextEditingController(
                         text: _contributors
-                            .map(
-                                (c) => '${c.name}${c.twitter != null && c.twitter.isNotEmpty ? ' <${c.twitter}>' : ''}')
+                            .map((c) => '${c.name}${c.twitter.isNotEmpty ? ' <${c.twitter}>' : ''}')
                             .join(', ')),
                     decoration: const InputDecoration(
                       labelText: 'contributors',
