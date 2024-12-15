@@ -604,99 +604,124 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                       ),
                       const SizedBox(height: 16),
                       // 相关包
-                      TextFormField(
-                        controller: TextEditingController(
-                          text: _relatedPackages.entries.map((e) => '${e.key}:${e.value}').join(', '),
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'relatedPackages',
-                          hintText: '相关包列表，格式：package:version, package2:version2',
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _relatedPackages = Map.fromEntries(
-                              value
-                                  .split(',')
-                                  .map((e) {
-                                    final parts = e.trim().split(':');
-                                    if (parts.length == 2) {
-                                      return MapEntry(parts[0].trim(), parts[1].trim());
-                                    }
-                                    return null;
-                                  })
-                                  .where((e) => e != null)
-                                  .cast<MapEntry<String, String>>(),
-                            );
-                          });
-                          _handleValueChanged();
-                        },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'relatedPackages',
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 8),
+                          if (_relatedPackages.isEmpty)
+                            Text(
+                              '无相关包',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                              ),
+                            )
+                          else
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _relatedPackages.entries.map((entry) {
+                                return Chip(
+                                  label: Text('${entry.key}:${entry.value}'),
+                                  backgroundColor: theme.colorScheme.surfaceVariant,
+                                  labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                                );
+                              }).toList(),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       // 依赖
-                      TextFormField(
-                        controller: TextEditingController(
-                          text: _dependencies.entries.map((e) => '${e.key}@${e.value}').join(', '),
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'dependencies',
-                          hintText: '依赖项列表，格式：package@version, package2@version2',
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _dependencies = Map.fromEntries(
-                              value
-                                  .split(',')
-                                  .map((e) {
-                                    final parts = e.trim().split('@');
-                                    if (parts.length == 2) {
-                                      return MapEntry(parts[0].trim(), parts[1].trim());
-                                    }
-                                    return null;
-                                  })
-                                  .where((e) => e != null)
-                                  .cast<MapEntry<String, String>>(),
-                            );
-                          });
-                          _handleValueChanged();
-                        },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'dependencies',
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 8),
+                          if (_dependencies.isEmpty)
+                            Text(
+                              '无依赖项',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                              ),
+                            )
+                          else
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _dependencies.entries.map((entry) {
+                                return Chip(
+                                  label: Text('${entry.key}@${entry.value}'),
+                                  backgroundColor: theme.colorScheme.surfaceVariant,
+                                  labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                                );
+                              }).toList(),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       // 示例
-                      TextFormField(
-                        controller: TextEditingController(
-                          text: _samples.map((s) => '${s.displayName}:${s.description}:${s.path}').join(', '),
-                        ),
-                        decoration: const InputDecoration(
-                          labelText: 'samples',
-                          hintText: '示例列表，格式：displayName:description:path, displayName2:description2:path2',
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _samples = value
-                                .split(',')
-                                .map((e) {
-                                  final parts = e.trim().split(':');
-                                  if (parts.length == 3) {
-                                    return Sample(
-                                      displayName: parts[0].trim(),
-                                      description: parts[1].trim(),
-                                      path: parts[2].trim(),
-                                    );
-                                  }
-                                  return null;
-                                })
-                                .where((s) => s != null)
-                                .cast<Sample>()
-                                .toList();
-                          });
-                          _handleValueChanged();
-                        },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'samples',
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 8),
+                          if (_samples.isEmpty)
+                            Text(
+                              '无示例',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                              ),
+                            )
+                          else
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _samples.length,
+                              separatorBuilder: (context, index) => const SizedBox(height: 8),
+                              itemBuilder: (context, index) {
+                                final sample = _samples[index];
+                                return Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.surfaceVariant,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        sample.displayName,
+                                        style: theme.textTheme.titleSmall,
+                                      ),
+                                      if (sample.description.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          sample.description,
+                                          style: theme.textTheme.bodyMedium,
+                                        ),
+                                      ],
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        sample.path,
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                        ],
                       ),
                     ],
                   ),
