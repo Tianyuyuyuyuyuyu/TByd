@@ -5,6 +5,7 @@ import '../models/unity_package_config.dart';
 import '../providers/package_settings_provider.dart';
 import 'unity_version_selector.dart';
 import '../models/license_type.dart';
+import '../widgets/keywords_selector.dart';
 
 /// 包设置表单组件
 class PackageSettingsForm extends ConsumerStatefulWidget {
@@ -255,6 +256,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // 第一行：name, displayName, version
                   Row(
@@ -403,19 +405,24 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                   ),
                   const SizedBox(height: 16),
                   // 关键字
-                  TextFormField(
-                    controller: TextEditingController(text: _keywords.join(', ')),
-                    decoration: const InputDecoration(
-                      labelText: 'keywords',
-                      hintText: '逗号分隔的关键字列表',
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _keywords = value.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
-                      });
-                    },
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'keywords',
+                        style: theme.textTheme.labelLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      KeywordsSelector(
+                        selectedKeywords: _keywords,
+                        onKeywordsChanged: (keywords) {
+                          setState(() {
+                            _keywords = keywords;
+                          });
+                          _debouncedUpdateConfig();
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   // 作者信息

@@ -313,6 +313,9 @@ class PackageSearchResult extends Equatable {
   /// 最后修改时间
   final DateTime lastModified;
 
+  /// 关键词列表
+  final List<String> keywords;
+
   /// 构造函数
   const PackageSearchResult({
     required this.name,
@@ -321,6 +324,7 @@ class PackageSearchResult extends Equatable {
     required this.description,
     required this.author,
     required this.lastModified,
+    this.keywords = const [],
   }) : displayName = displayName ?? name;
 
   /// 从JSON创建实例
@@ -330,12 +334,21 @@ class PackageSearchResult extends Equatable {
     final versions = json['versions'] as Map<String, dynamic>?;
     final latestVersion = versions?[latest ?? ''] as Map<String, dynamic>?;
 
+    // 解析关键词
+    List<String> keywords = [];
+    if (latestVersion != null && latestVersion['keywords'] is List) {
+      keywords = List<String>.from(latestVersion['keywords'] as List);
+    } else if (json['keywords'] is List) {
+      keywords = List<String>.from(json['keywords'] as List);
+    }
+
     return PackageSearchResult(
       name: json['name'] as String,
       version: latest ?? '0.0.0',
       description: latestVersion?['description'] as String? ?? json['description'] as String? ?? '',
       author: _extractAuthor(latestVersion?['author'] ?? json['author']),
       lastModified: DateTime.parse(time?['modified'] as String? ?? DateTime.now().toIso8601String()),
+      keywords: keywords,
     );
   }
 
@@ -355,6 +368,7 @@ class PackageSearchResult extends Equatable {
       'description': description,
       'author': author,
       'lastModified': lastModified.toIso8601String(),
+      'keywords': keywords,
     };
   }
 

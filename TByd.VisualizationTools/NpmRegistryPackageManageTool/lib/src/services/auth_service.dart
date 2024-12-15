@@ -326,7 +326,7 @@ class AuthService {
           );
         default:
           throw AuthenticationException(
-            errorData['message'] ?? '��录失败：${loginResponse.statusCode}',
+            errorData['message'] ?? '登录失败：${loginResponse.statusCode}',
             'AUTH999',
           );
       }

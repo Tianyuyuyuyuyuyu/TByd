@@ -161,7 +161,7 @@ class TestPage extends ConsumerWidget {
         text = 'Beta';
         break;
       default:
-        backgroundColor = theme.colorScheme.surfaceVariant;
+        backgroundColor = theme.colorScheme.surfaceContainerHighest;
         textColor = theme.colorScheme.onSurfaceVariant;
         text = version.versionType;
     }
