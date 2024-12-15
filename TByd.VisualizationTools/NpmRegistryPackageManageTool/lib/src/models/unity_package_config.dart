@@ -145,29 +145,29 @@ class PackageAuthor extends Equatable {
 
 class Contributor extends Equatable {
   final String name;
-  final String twitter;
+  final String email;
 
   const Contributor({
     required this.name,
-    this.twitter = '',
+    this.email = '',
   });
 
   factory Contributor.fromJson(Map<String, dynamic> json) {
     return Contributor(
       name: json['name'] as String? ?? '',
-      twitter: json['twitter'] as String? ?? '',
+      email: json['email'] as String? ?? '',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'twitter': twitter,
+      'email': email,
     };
   }
 
   @override
-  List<Object?> get props => [name, twitter];
+  List<Object?> get props => [name, email];
 }
 
 class Repository extends Equatable {

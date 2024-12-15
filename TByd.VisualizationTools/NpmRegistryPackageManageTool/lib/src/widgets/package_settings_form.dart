@@ -7,6 +7,7 @@ import '../providers/unity_version_provider.dart';
 import 'unity_version_selector.dart';
 import '../models/license_type.dart';
 import '../widgets/keywords_selector.dart';
+import 'contributors_selector.dart';
 
 /// 包设置表单组件
 class PackageSettingsForm extends ConsumerStatefulWidget {
@@ -69,8 +70,13 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                   widget.initialConfig!,
                   projectPath: savedState.currentProjectPath,
                 );
+            // 确保立即更新表单
+            _updateFormFromConfig(widget.initialConfig!);
           }
         });
+      } else {
+        // 如果配置已存在，直接更新表单
+        _updateFormFromConfig(widget.initialConfig!);
       }
     }
   }
@@ -488,36 +494,24 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                       ),
                       const SizedBox(height: 16),
                       // 贡献者
-                      TextFormField(
-                        controller: TextEditingController(
-                            text: _contributors
-                                .map((c) => '${c.name}${c.twitter.isNotEmpty ? ' <${c.twitter}>' : ''}')
-                                .join(', ')),
-                        decoration: const InputDecoration(
-                          labelText: 'contributors',
-                          hintText: '贡献者列表，格式：name <twitter>, name2 <twitter2>',
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _contributors = value
-                                .split(',')
-                                .map((e) {
-                                  final match = RegExp(r'^(.*?)(?:\s+<(.+)>)?$').firstMatch(e.trim());
-                                  if (match != null) {
-                                    return Contributor(
-                                      name: match.group(1)?.trim() ?? '',
-                                      twitter: match.group(2)?.trim() ?? '',
-                                    );
-                                  }
-                                  return Contributor(name: e.trim());
-                                })
-                                .where((c) => c.name.isNotEmpty)
-                                .toList();
-                          });
-                          _handleValueChanged();
-                        },
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'contributors',
+                            style: theme.textTheme.labelLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          ContributorsSelector(
+                            selectedContributors: _contributors,
+                            onContributorsChanged: (contributors) {
+                              setState(() {
+                                _contributors = contributors;
+                              });
+                              _handleValueChanged();
+                            },
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       // 分类
