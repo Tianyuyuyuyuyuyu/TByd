@@ -17,8 +17,30 @@ class UnityVersionService {
   /// 超时时间
   static const Duration _timeout = Duration(seconds: 30);
 
+  /// 调试输出目录
+  static const String _debugOutputDir = 'debug_output';
+
   /// HTTP 客户端
   final http.Client _client = http.Client();
+
+  /// 确保调试输出目录存在
+  Future<void> _ensureDebugOutputDir() async {
+    final directory = Directory(_debugOutputDir);
+    if (!await directory.exists()) {
+      await directory.create(recursive: true);
+    }
+  }
+
+  /// 保存调试文件
+  Future<void> _saveDebugFile(String fileName, String content) async {
+    if (const bool.fromEnvironment('dart.vm.product')) {
+      return; // 在生产环境中不保存调试文件
+    }
+    await _ensureDebugOutputDir();
+    final file = File('$_debugOutputDir/$fileName');
+    await file.writeAsString(content);
+    print('已保存调试文件到 ${file.path}');
+  }
 
   /// 获取版本列表
   Future<List<UnityVersion>> fetchVersions() async {
@@ -77,8 +99,7 @@ class UnityVersionService {
       final content = response.body;
 
       // 保存响应内容以供调试
-      await File('unity_versions_page.html').writeAsString(content);
-      print('已保存页面内容到 unity_versions_page.html');
+      await _saveDebugFile('unity_versions_page.html', content);
 
       // 查找包含版本信息的 script
       final scriptPattern = RegExp(r'window\.__props__\s*=\s*({[\s\S]*?});[\s\n]*</script>', multiLine: true);
@@ -164,8 +185,7 @@ class UnityVersionService {
 
         // 保存响应内容以供调试
         final debugFileName = 'unity_${major}_page.html';
-        await File(debugFileName).writeAsString(content);
-        print('已保存页面内容到 $debugFileName');
+        await _saveDebugFile(debugFileName, content);
 
         String? jsonStr;
 
@@ -196,7 +216,7 @@ class UnityVersionService {
         }
 
         if (jsonStr == null) {
-          throw Exception('��找到版本数据');
+          throw Exception('未找到版本数据');
         }
 
         // 解析 JSON 数据
