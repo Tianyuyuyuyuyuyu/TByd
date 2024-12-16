@@ -34,7 +34,7 @@ final packageServiceProvider = Provider<PackageService>((ref) {
 
 /// 包详情状态类
 ///
-/// 存储和管理包详情相关的所有状态信息，包括：
+/// 存储和管理包详情相关的所有状态信息，���括：
 /// - 加载状态
 /// - 错误信息
 /// - 包信息
@@ -190,7 +190,7 @@ final searchProvider = StateNotifierProvider<SearchNotifier, AsyncValue<List<Pac
   (ref) {
     final packageService = ref.watch(packageServiceProvider);
     final keywordsNotifier = ref.watch(keywordsProvider.notifier);
-    return SearchNotifier(packageService, keywordsNotifier);
+    return SearchNotifier(packageService, keywordsNotifier, ref);
   },
 );
 
@@ -213,14 +213,25 @@ final packageDetailsProvider = StateNotifierProvider.family<PackageDetailsNotifi
 class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>> {
   final PackageService _packageService;
   final KeywordsNotifier _keywordsNotifier;
+  final Ref _ref;
   List<PackageSearchResult> _allPackages = [];
   bool _isDisposed = false;
 
   /// 构造函数
   ///
-  /// 初始化状态并加载所有包列表
-  SearchNotifier(this._packageService, this._keywordsNotifier) : super(const AsyncValue.loading()) {
-    _loadAllPackages();
+  /// 初始化状态并监听认证状态变化
+  SearchNotifier(this._packageService, this._keywordsNotifier, this._ref) : super(const AsyncValue.data([])) {
+    // 监听认证状态变化
+    _ref.listen(authProvider, (previous, next) {
+      if (!next.isAuthenticated && previous?.isAuthenticated == true) {
+        reset();
+      }
+    });
+  }
+
+  /// 重置搜索状态
+  void reset() {
+    state = const AsyncValue.data([]);
   }
 
   /// 加载所有包
@@ -254,7 +265,7 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
   ///
   /// 根据查询文本在本地包列表中搜索
   /// [query] - 搜索关键词
-  void search(String query) {
+  Future<void> search(String query) async {
     if (_isDisposed) return;
 
     final searchText = query.trim().toLowerCase();

@@ -16,6 +16,7 @@ import '../services/login_history_service.dart';
 import 'unity_version_provider.dart';
 import 'locale_provider.dart';
 import 'encryption_provider.dart';
+import 'package_settings_provider.dart';
 
 /// 认证服务提供者
 ///
@@ -174,7 +175,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 处理用户登出流程，包括：
   /// - 清除服务器端会话
   /// - 清除本地登录历史
-  /// - 重置认证状态
+  /// - 重置认��状态
   Future<void> logout() async {
     if (!state.isAuthenticated || state.auth == null) {
       state = const AuthState();
@@ -191,10 +192,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       await _historyService.clearUserLoginInfo(state.auth!.serverUrl);
 
+      // 重置包设置状态
+      _ref.read(packageSettingsProvider.notifier).reset();
+
       state = const AuthState();
     } catch (e) {
       if (e is AuthenticationException && (e.code == 'AUTH001' || e.code == 'AUTH002')) {
         await _historyService.clearUserLoginInfo(state.auth!.serverUrl);
+
+        // 重置包设置状态
+        _ref.read(packageSettingsProvider.notifier).reset();
+
         state = const AuthState();
       } else {
         state = state.copyWith(
@@ -209,7 +217,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 检查认证状态
   ///
   /// 验证当前的认证令牌是否有效
-  /// 如果令牌无效，则重置认证状��
+  /// 如果令牌无效，则重置认证状
   Future<void> checkAuth() async {
     if (!state.isAuthenticated || state.auth == null) return;
 
