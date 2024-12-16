@@ -61,16 +61,6 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
 
       // 尝试读取package.json
       await _loadPackageConfig(folderPath);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('已选择文件夹: $folderPath'),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
     }
   }
 
@@ -108,7 +98,7 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
       final jsonContent = const JsonEncoder.withIndent('  ').convert(config.toJson());
       await packageJsonFile.writeAsString(jsonContent);
 
-      // 更新provider的配置
+      // 更新provider的配��
       ref.read(packageSettingsProvider.notifier).updateConfig(
             config,
             projectPath: _selectedFolderPath,
