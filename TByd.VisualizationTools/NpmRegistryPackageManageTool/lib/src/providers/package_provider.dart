@@ -34,7 +34,7 @@ final packageServiceProvider = Provider<PackageService>((ref) {
 
 /// 包详情状态类
 ///
-/// 存储和管理包详情相关的所有状态信息，���括：
+/// 存储和管理包详情相关的所有状态信息，括：
 /// - 加载状态
 /// - 错误信息
 /// - 包信息
@@ -220,13 +220,20 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
   /// 构造函数
   ///
   /// 初始化状态并监听认证状态变化
-  SearchNotifier(this._packageService, this._keywordsNotifier, this._ref) : super(const AsyncValue.data([])) {
+  SearchNotifier(this._packageService, this._keywordsNotifier, this._ref) : super(const AsyncValue.loading()) {
     // 监听认证状态变化
     _ref.listen(authProvider, (previous, next) {
       if (!next.isAuthenticated && previous?.isAuthenticated == true) {
         reset();
+      } else if (next.isAuthenticated && previous?.isAuthenticated != true) {
+        _loadAllPackages();
       }
     });
+
+    // 初始化时加载包列表
+    if (_ref.read(authProvider).isAuthenticated) {
+      _loadAllPackages();
+    }
   }
 
   /// 重置搜索状态
@@ -241,9 +248,17 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
     if (_isDisposed) return;
 
     try {
-      print('Loading all packages');
+      print('开始加载所有包');
+      state = const AsyncValue.loading();
+
       final packages = await _packageService.searchPackages('');
       if (_isDisposed) return;
+
+      if (packages.isEmpty) {
+        print('未找到任何包');
+        state = const AsyncValue.data([]);
+        return;
+      }
 
       _allPackages = packages;
       state = AsyncValue.data(_allPackages);
@@ -254,8 +269,10 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
         allKeywords.addAll(package.keywords);
       }
       _keywordsNotifier.addKeywords(allKeywords);
+
+      print('成功加载 ${packages.length} 个包');
     } catch (error, stackTrace) {
-      print('Error loading packages: $error');
+      print('加载包列表失败: $error');
       if (_isDisposed) return;
       state = AsyncValue.error(error, stackTrace);
     }
@@ -269,19 +286,26 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
     if (_isDisposed) return;
 
     final searchText = query.trim().toLowerCase();
+    print('搜索包: "$searchText"');
 
     try {
       if (searchText.isEmpty) {
-        // 如果搜索文本为空，显示所有包
+        print('搜索文本为空，显示所有包');
         state = AsyncValue.data(_allPackages);
         return;
       }
 
       // 在本地列表中筛选匹配的包
-      final results = _allPackages.where((package) => package.name.toLowerCase().contains(searchText)).toList();
+      final results = _allPackages.where((package) {
+        final name = package.name.toLowerCase();
+        final description = package.description.toLowerCase();
+        return name.contains(searchText) || description.contains(searchText);
+      }).toList();
 
+      print('找到 ${results.length} 个匹配的包');
       state = AsyncValue.data(results);
     } catch (error, stackTrace) {
+      print('搜索失败: $error');
       state = AsyncValue.error(error, stackTrace);
     }
   }

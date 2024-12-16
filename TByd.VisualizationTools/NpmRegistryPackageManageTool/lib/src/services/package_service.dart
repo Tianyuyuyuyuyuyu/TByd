@@ -40,13 +40,16 @@ class PackageService {
   /// 抛出异常：当服务器无响应或请求失败时
   Future<List<PackageSearchResult>> searchPackages(String query) async {
     if (serverUrl.isEmpty) {
-      throw Exception('Server URL is not set');
+      print('错误：服务器URL未设置');
+      return [];
     }
 
     final uri = Uri.parse('$serverUrl/-/verdaccio/data/packages');
+    print('正在请求：$uri');
 
     try {
       final response = await client.get(uri, headers: _getHeaders()).timeout(const Duration(seconds: 30));
+      print('服务器响应状态码：${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -58,20 +61,26 @@ class PackageService {
               final result = _createSearchResult(pkg);
               results.add(result);
             } catch (e) {
+              print('解析包数据失败：$e');
               continue;
             }
           }
         }
 
+        print('成功获取到 ${results.length} 个包');
         return results;
       } else {
-        throw Exception('获取包列表失败: ${response.statusCode}');
+        print('服务器返回错误：${response.statusCode}');
+        print('响应内容：${response.body}');
+        return [];
       }
     } catch (e) {
       if (e is TimeoutException) {
-        throw Exception('请求超时，请稍后重试');
+        print('请求超时：$e');
+      } else {
+        print('请求失败：$e');
       }
-      throw Exception('获取包列表失败: $e');
+      return [];
     }
   }
 
@@ -116,7 +125,7 @@ class PackageService {
 
       return _sortByRelevance(results, searchText);
     } catch (e) {
-      throw Exception('解析搜索结果失败: $e');
+      throw Exception('解析搜索结果���败: $e');
     }
   }
 
@@ -480,7 +489,7 @@ class PackageService {
         // 解析 JSON 数据
         final dynamic jsonData = json.decode(response.body);
 
-        // 移除顶层的 readme 字段
+        // 移除顶层的 readme ���段
         if (jsonData is Map) {
           jsonData.remove('readme');
 
