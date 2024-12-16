@@ -63,9 +63,7 @@ class UnityVersionService {
 
     _isLoading = true;
     try {
-      print('开始获取Unity版本信息...');
       final List<UnityVersion> allVersions = [];
-
       final versionSeries = await _fetchVersionSeries();
 
       for (final series in versionSeries) {
@@ -78,7 +76,6 @@ class UnityVersionService {
       }
 
       allVersions.sort((a, b) => _compareVersions(b.version, a.version));
-      print('成功获取 ${allVersions.length} 个Unity版本信息');
 
       // 保存到缓存
       _cachedVersions = allVersions;

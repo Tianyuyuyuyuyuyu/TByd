@@ -33,25 +33,27 @@ class _UnityVersionSelectorState extends ConsumerState<UnityVersionSelector> {
   }
 
   void _initializeVersion() {
-    print('Debug: Initializing with version: ${widget.initialVersion}, release: ${widget.initialRelease}'); // 调试信息
-
     if (widget.initialVersion.isEmpty) {
-      _selectedYear = '';
-      _selectedVersion = '';
-      _selectedRelease = null;
+      setState(() {
+        _selectedYear = '';
+        _selectedVersion = '';
+        _selectedRelease = null;
+      });
     } else {
       // 解析版本号，格式为 "2021.3"
       final versionParts = widget.initialVersion.split('.');
       if (versionParts.length >= 2) {
-        _selectedYear = versionParts[0]; // "2021"
-        _selectedVersion = widget.initialVersion; // "2021.3"
-        _selectedRelease = widget.initialRelease; // "8f1"
-        print(
-            'Debug: Parsed version - Year: $_selectedYear, Version: $_selectedVersion, Release: $_selectedRelease'); // 调试信息
+        setState(() {
+          _selectedYear = versionParts[0]; // "2021"
+          _selectedVersion = widget.initialVersion; // "2021.3"
+          _selectedRelease = widget.initialRelease; // "8f1"
+        });
       } else {
-        _selectedYear = versionParts[0];
-        _selectedVersion = widget.initialVersion;
-        _selectedRelease = widget.initialRelease;
+        setState(() {
+          _selectedYear = versionParts[0];
+          _selectedVersion = widget.initialVersion;
+          _selectedRelease = widget.initialRelease;
+        });
       }
     }
   }
@@ -74,7 +76,7 @@ class _UnityVersionSelectorState extends ConsumerState<UnityVersionSelector> {
     return years.toList()..sort((a, b) => b.compareTo(a));
   }
 
-  /// 从版本列表中���取指定年份的小版本
+  /// 从版本列表中提取指定年份的小版本
   List<String> _extractMinorVersions(List<UnityVersion> versions, String year) {
     final Set<String> minorVersions = {};
     for (var version in versions) {
@@ -111,7 +113,7 @@ class _UnityVersionSelectorState extends ConsumerState<UnityVersionSelector> {
 
     // 当版本列表加载完成后，验证当前选择的值是否有效
     if (!versionState.isLoading && versions.isNotEmpty) {
-      // 验证年份
+      // 证年份
       if (!years.contains(_selectedYear)) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           setState(() {
@@ -144,13 +146,6 @@ class _UnityVersionSelectorState extends ConsumerState<UnityVersionSelector> {
         });
       }
     }
-
-    print('Debug: Selected Year: $_selectedYear'); // 调试信息
-    print('Debug: Selected Version: $_selectedVersion'); // 调试信息
-    print('Debug: Selected Release: $_selectedRelease'); // 调试信息
-    print('Debug: Available Years: $years'); // 调试信息
-    print('Debug: Available Minor Versions: $minorVersions'); // 调试信息
-    print('Debug: Available Releases: $releases'); // 调试信息
 
     // 创建通用的下拉框装饰
     final dropdownDecoration = const InputDecoration(
@@ -207,6 +202,10 @@ class _UnityVersionSelectorState extends ConsumerState<UnityVersionSelector> {
                 value: _selectedYear,
                 decoration: dropdownDecoration,
                 items: [
+                  const DropdownMenuItem<String>(
+                    value: '',
+                    child: Text(''),
+                  ),
                   if (_selectedYear.isNotEmpty && !years.contains(_selectedYear))
                     DropdownMenuItem<String>(
                       value: _selectedYear,
@@ -251,6 +250,10 @@ class _UnityVersionSelectorState extends ConsumerState<UnityVersionSelector> {
                 value: _selectedVersion,
                 decoration: dropdownDecoration,
                 items: [
+                  const DropdownMenuItem<String>(
+                    value: '',
+                    child: Text(''),
+                  ),
                   if (_selectedVersion.isNotEmpty && !minorVersions.contains(_selectedVersion))
                     DropdownMenuItem<String>(
                       value: _selectedVersion,

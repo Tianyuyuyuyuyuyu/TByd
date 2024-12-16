@@ -46,36 +46,28 @@ class PackageService {
     final uri = Uri.parse('$serverUrl/-/verdaccio/data/packages');
 
     try {
-      print('发送请求到: ${uri.toString()}');
       final response = await client.get(uri, headers: _getHeaders()).timeout(const Duration(seconds: 30));
-      print('响应状态码: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('响应数据类型: ${data.runtimeType}');
         final results = <PackageSearchResult>[];
 
         if (data is List) {
-          print('包总数: ${data.length}');
           for (final pkg in data) {
             try {
               final result = _createSearchResult(pkg);
               results.add(result);
             } catch (e) {
-              print('解析包数据时出错: $e');
               continue;
             }
           }
         }
 
-        print('成功解析包数量: ${results.length}');
         return results;
       } else {
-        print('请求失败: ${response.body}');
         throw Exception('获取包列表失败: ${response.statusCode}');
       }
     } catch (e) {
-      print('请求出错: $e');
       if (e is TimeoutException) {
         throw Exception('请求超时，请稍后重试');
       }
@@ -112,7 +104,6 @@ class PackageService {
               results.add(result);
             }
           } catch (e) {
-            print('解析包数据时出错: $e');
             continue;
           }
         }
@@ -125,7 +116,6 @@ class PackageService {
 
       return _sortByRelevance(results, searchText);
     } catch (e) {
-      print('解析搜索结果时出错: $e');
       throw Exception('解析搜索结果失败: $e');
     }
   }
@@ -158,7 +148,7 @@ class PackageService {
         // 解析包名
         name = data['name']?.toString() ?? '';
 
-        // 解析显示名称 - 从包的最新版本中获
+        // 解析显示名称 - 从包的最新版本中获取
         if (data['versions'] is Map) {
           final versions = data['versions'] as Map;
           final latestVersion = data['dist-tags']?['latest']?.toString();
@@ -201,19 +191,19 @@ class PackageService {
               try {
                 lastModified = DateTime.parse(modified.toString());
               } catch (e) {
-                print('解析时间戳出错: $e');
+                // 忽略解析错误
               }
             }
           } else if (timeData is String) {
             try {
               lastModified = DateTime.parse(timeData);
             } catch (e) {
-              print('解析时间戳出错: $e');
+              // 忽略解析错误
             }
           }
         }
       } catch (e) {
-        print('解析字段时出错: $e');
+        // 忽略字段解析错误
       }
 
       return PackageSearchResult(
@@ -233,7 +223,6 @@ class PackageService {
   /// 当主搜索方法未返回结果时使用
   /// [query] - 搜索关键词
   Future<List<PackageSearchResult>> _searchPackagesAlternative(String query) async {
-    print('使用备用搜索方法');
     final searchText = query.trim().toLowerCase();
 
     // 使用 v1 search API 并带上搜索文本
@@ -242,47 +231,24 @@ class PackageService {
     );
 
     try {
-      print('发送备用搜索请求到: ${uri.toString()}');
       final response = await client
           .get(
-        uri,
-        headers: _getHeaders(),
-      )
-          .timeout(
-        const Duration(seconds: 30),
-        onTimeout: () {
-          throw Exception('搜索请求超时，请稍后重试');
-        },
-      );
-
-      print('备用搜索响应状态码: ${response.statusCode}');
+            uri,
+            headers: _getHeaders(),
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final results = <PackageSearchResult>[];
 
-        if (data is List) {
-          for (final pkg in data) {
+        if (data is Map<String, dynamic> && data.containsKey('objects')) {
+          final objects = data['objects'] as List;
+          for (final obj in objects) {
             try {
-              final result = _createSearchResult(pkg);
-              if (_matchesPackageName(result.name, searchText)) {
-                results.add(result);
-              }
+              final result = _createSearchResult(obj['package']);
+              results.add(result);
             } catch (e) {
-              print('解析包数据时出错: $e');
-              continue;
-            }
-          }
-        } else if (data is Map) {
-          for (final entry in data.entries) {
-            if (entry.key.startsWith('_')) continue;
-            try {
-              final result = _createSearchResult(entry.value);
-              if (_matchesPackageName(result.name, searchText)) {
-                results.add(result);
-              }
-            } catch (e) {
-              print('解析包数据时出错: $e');
               continue;
             }
           }
@@ -290,14 +256,13 @@ class PackageService {
 
         return _sortByRelevance(results, searchText);
       } else {
-        throw Exception('搜索包失败: ${response.statusCode}');
+        throw Exception('备用搜索失败: ${response.statusCode}');
       }
     } catch (e) {
-      print('备用搜索请求出错: $e');
-      if (e.toString().contains('timeout')) {
-        throw Exception('搜索请求超时，请稍后重试');
+      if (e is TimeoutException) {
+        throw Exception('备用搜索请求超时，请稍后重试');
       }
-      throw Exception('搜索包失败: $e');
+      throw Exception('备用搜索失败: $e');
     }
   }
 
