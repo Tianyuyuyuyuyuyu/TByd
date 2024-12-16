@@ -22,10 +22,6 @@ import '../providers/keywords_provider.dart';
 /// 依赖于认证状态获取服务器URL和认证令牌
 final packageServiceProvider = Provider<PackageService>((ref) {
   final authState = ref.watch(authProvider);
-  print('PackageService created with:');
-  print('serverUrl: ${authState.auth?.serverUrl}');
-  print('token: ${authState.auth?.token != null}');
-
   return PackageService(
     serverUrl: authState.auth?.serverUrl ?? '',
     token: authState.auth?.token,
@@ -216,24 +212,22 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
   final Ref _ref;
   List<PackageSearchResult> _allPackages = [];
   bool _isDisposed = false;
+  bool _isLoading = false;
 
-  /// 构造函数
-  ///
-  /// 初始化状态并监听认证状态变化
   SearchNotifier(this._packageService, this._keywordsNotifier, this._ref) : super(const AsyncValue.loading()) {
+    // 只在初始化时检查一次认证状态并加载
+    final authState = _ref.read(authProvider);
+    if (authState.isAuthenticated) {
+      _loadAllPackages();
+    }
+
     // 监听认证状态变化
     _ref.listen(authProvider, (previous, next) {
       if (!next.isAuthenticated && previous?.isAuthenticated == true) {
+        // 用户登出，清空列表
         reset();
-      } else if (next.isAuthenticated && previous?.isAuthenticated != true) {
-        _loadAllPackages();
       }
     });
-
-    // 初始化时加载包列表
-    if (_ref.read(authProvider).isAuthenticated) {
-      _loadAllPackages();
-    }
   }
 
   /// 重置搜索状态
@@ -245,7 +239,8 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
   ///
   /// 从服务器获取完整的包列表
   Future<void> _loadAllPackages() async {
-    if (_isDisposed) return;
+    if (_isDisposed || _isLoading) return; // 防止重复加载
+    _isLoading = true;
 
     try {
       print('开始加载所有包');
@@ -275,6 +270,8 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
       print('加载包列表失败: $error');
       if (_isDisposed) return;
       state = AsyncValue.error(error, stackTrace);
+    } finally {
+      _isLoading = false; // 重置加载状态
     }
   }
 
