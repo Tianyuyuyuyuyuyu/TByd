@@ -1,0 +1,41 @@
+{
+  "name": "com.r1ch.tbyd-framework-triereddot",
+  "displayName": "TByd Framework RedDot",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "trie reddot.",
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "RedDot"
+  ],
+  "author": {
+    "name": "R1ch, Inc.",
+    "email": "zhaoqing343@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "BeiDa"
+    }
+  ],
+  "category": "GUI",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main/TByd.Framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/main"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+  },
+  "samples": [
+    {
+      "displayName": "Tutorials",
+      "description": "Tutorials",
+      "path": "Samples~/Tutorials"
+    }
+  ]
+}
