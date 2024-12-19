@@ -7,15 +7,6 @@
       "dependencies": {},
       "hash": "56662924960a53695a640af80125f1cfd334d5ee"
     },
-    "com.r1ch.tbyd-framework": {
-      "version": "0.0.5",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.cysharp.unitask": "2.5.0"
-      },
-      "url": "http://120.26.201.54:1998"
-    },
     "com.unity.collab-proxy": {
       "version": "2.2.0",
       "depth": 0,
