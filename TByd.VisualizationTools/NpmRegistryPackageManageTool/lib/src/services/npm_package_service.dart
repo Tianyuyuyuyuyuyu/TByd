@@ -49,7 +49,7 @@ class NpmPackageService {
 
   /// 获取HTTP请求头
   ///
-  /// 根据是否有认证令牌返回适当的请求头
+  /// 根据是否���认证令牌返回适当的请求头
   Map<String, String> get _headers => {
         'Accept': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
@@ -221,5 +221,53 @@ class NpmPackageService {
     _readmeCache.clear();
     _client.close();
     developer.log('Disposed NpmPackageService');
+  }
+
+  /// 获取包信息
+  ///
+  /// 从NPM仓库获取指定包的信息
+  ///
+  /// 参数：
+  /// - [packageName] 包名
+  ///
+  /// 返回：
+  /// 包含包信息的Map，如果获取失败则返回null
+  Future<Map<String, dynamic>?> fetchPackageInfo(String packageName) async {
+    if (packageName.isEmpty) {
+      throw ArgumentError('Package name cannot be empty');
+    }
+
+    try {
+      developer.log('Fetching package info for: $packageName');
+      developer.log('Using base URL: $baseUrl');
+
+      final response = await _client.get(
+        Uri.parse('$baseUrl/$packageName'),
+        headers: _headers,
+      );
+
+      developer.log('API Response Status: ${response.statusCode}');
+
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        throw Exception('未授权访问。请检查您的认证信息。');
+      }
+
+      if (response.statusCode == 404) {
+        return null;
+      }
+
+      if (response.statusCode != 200) {
+        throw Exception('服务器返回错误: ${response.statusCode}');
+      }
+
+      try {
+        return json.decode(response.body) as Map<String, dynamic>;
+      } catch (e) {
+        throw Exception('无法解析服务器响应: $e');
+      }
+    } catch (e, stackTrace) {
+      developer.log('Error fetching package info', error: e, stackTrace: stackTrace);
+      rethrow;
+    }
   }
 }
