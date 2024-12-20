@@ -96,7 +96,7 @@ class _ContributorsSelectorState extends ConsumerState<ContributorsSelector> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                 border: Border(
                   bottom: BorderSide(color: theme.dividerColor),
                 ),

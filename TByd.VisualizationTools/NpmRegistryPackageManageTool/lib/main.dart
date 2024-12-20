@@ -22,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // 自定义providers
 import 'src/providers/locale_provider.dart';
 import 'src/providers/auth_provider.dart';
+import 'src/providers/unity_version_provider.dart';
 
 // 页面路由
 import 'src/pages/login_page.dart';
@@ -69,6 +70,8 @@ class MyApp extends ConsumerWidget {
     final locale = ref.watch(localeProvider);
     // 监听认证状态
     final authState = ref.watch(authProvider);
+    // 监听 Unity 版本加载状态
+    final unityVersionState = ref.watch(unityVersionProvider);
 
     return MaterialApp(
       title: 'NPM Registry Manager',
@@ -102,8 +105,76 @@ class MyApp extends ConsumerWidget {
       ],
       // 支持的语言列表
       supportedLocales: LocaleNotifier.supportedLocales,
-      // 根据认证状态决定初始页面
-      home: authState.isAuthenticated ? const HomePage() : const LoginPage(),
+      // 根据 Unity 版本加载状态和认证状态决定显示的页面
+      home: Builder(
+        builder: (context) {
+          if (unityVersionState.error != null) {
+            // Unity 版本获取失败，显示错误页面
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Unity 版本数据获取失败',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      unityVersionState.error!,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    FilledButton(
+                      onPressed: () {
+                        ref.read(unityVersionProvider.notifier).refreshVersions();
+                      },
+                      child: const Text('重试'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (unityVersionState.isLoading || unityVersionState.versions == null) {
+            // Unity 版本正在加载，显示加载页面
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      '正在爬取Unity中国官网所有 Unity 版本数据...',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Made By 田雨 - TByd',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          // Unity 版本加载完成，根据认证状态显示对应页面
+          return authState.isAuthenticated ? const HomePage() : const LoginPage();
+        },
+      ),
       // 注册路由表
       routes: {
         '/login': (context) => const LoginPage(),

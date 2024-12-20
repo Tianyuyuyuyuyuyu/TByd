@@ -108,7 +108,7 @@ class _KeywordsSelectorState extends ConsumerState<KeywordsSelector> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                 border: Border(
                   bottom: BorderSide(color: theme.dividerColor),
                 ),
@@ -212,7 +212,7 @@ class _KeywordsSelectorState extends ConsumerState<KeywordsSelector> {
                           .map((keyword) => ActionChip(
                                 label: Text(keyword),
                                 onPressed: () => _addKeyword(keyword),
-                                backgroundColor: theme.colorScheme.surfaceVariant,
+                                backgroundColor: theme.colorScheme.surfaceContainerHighest,
                                 labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                               ))
                           .toList();

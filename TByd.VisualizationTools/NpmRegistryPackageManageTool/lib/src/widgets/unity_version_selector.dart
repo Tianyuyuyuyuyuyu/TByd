@@ -148,7 +148,7 @@ class _UnityVersionSelectorState extends ConsumerState<UnityVersionSelector> {
     }
 
     // 创建通用的下拉框装饰
-    final dropdownDecoration = const InputDecoration(
+    const dropdownDecoration = InputDecoration(
       isDense: true,
       contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       border: OutlineInputBorder(),

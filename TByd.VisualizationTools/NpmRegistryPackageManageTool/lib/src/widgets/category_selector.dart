@@ -101,7 +101,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
                 border: Border(
                   bottom: BorderSide(color: theme.dividerColor),
                 ),
@@ -210,7 +210,7 @@ class _CategorySelectorState extends ConsumerState<CategorySelector> {
                                 onPressed: () => _addCategory(category),
                                 backgroundColor: category == widget.selectedCategory
                                     ? theme.colorScheme.primary.withOpacity(0.1)
-                                    : theme.colorScheme.surfaceVariant,
+                                    : theme.colorScheme.surfaceContainerHighest,
                                 labelStyle: TextStyle(
                                   color: category == widget.selectedCategory
                                       ? theme.colorScheme.primary
