@@ -18,6 +18,8 @@ import 'package_list_page.dart';
 import 'package_operations_page.dart';
 import 'test_page.dart';
 import '../widgets/user_avatar.dart';
+import '../pages/package_details_page.dart';
+import '../providers/package_provider.dart';
 
 /// 主页组件
 ///
@@ -211,7 +213,34 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget _buildContent() {
     switch (_selectedIndex) {
       case 0:
-        return const PackageListPage();
+        return Row(
+          children: [
+            // 左侧包列表
+            const SizedBox(
+              width: 300,
+              child: PackageListPage(),
+            ),
+            // 右侧详情页
+            Expanded(
+              child: Consumer(
+                builder: (context, ref, child) {
+                  final packageState = ref.watch(packageProvider);
+                  final selectedPackageName = packageState.selectedPackageName;
+
+                  if (selectedPackageName == null) {
+                    return const Center(
+                      child: Text('请选择一个包'),
+                    );
+                  }
+
+                  return PackageDetailsPage(
+                    packageName: selectedPackageName,
+                  );
+                },
+              ),
+            ),
+          ],
+        );
       case 1:
         return const PackageOperationsPage();
       default:

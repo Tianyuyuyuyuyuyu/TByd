@@ -66,6 +66,4 @@ class SearchNotifier extends StateNotifier<SearchState> {
 }
 
 /// 搜索状态提供者
-final searchProvider = StateNotifierProvider<SearchNotifier, SearchState>((ref) {
-  return SearchNotifier();
-});
+final searchProvider = StateProvider<String>((ref) => '');

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/package_provider.dart';
-import '../models/package_model.dart';
+import '../providers/search_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package_details_page.dart';
 import '../widgets/search_box.dart';
-import '../providers/search_provider.dart';
 
 class PackageListPage extends ConsumerStatefulWidget {
   const PackageListPage({super.key});
@@ -15,130 +14,154 @@ class PackageListPage extends ConsumerStatefulWidget {
 }
 
 class _PackageListPageState extends ConsumerState<PackageListPage> {
-  PackageSearchResult? _selectedPackage;
-  final ScrollController _scrollController = ScrollController();
-
   @override
   void initState() {
     super.initState();
-    // 不需要手动加载包，SearchNotifier 会在初始化时自动加载
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _refreshPackages() async {
-    await ref.read(packageProvider.notifier).refresh();
+    // 初始化时刷新包列表
+    Future.microtask(() {
+      ref.read(packageProvider.notifier).refreshPackages();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context);
-    final searchState = ref.watch(searchProvider);
-    final packagesState = ref.watch(packageProvider);
+    final packageState = ref.watch(packageProvider);
+    final searchText = ref.watch(searchProvider);
 
-    return Row(
+    // 过滤包列表
+    final filteredPackages = packageState.packages.where((package) {
+      if (searchText.isEmpty) return true;
+      return package.name.toLowerCase().contains(searchText.toLowerCase());
+    }).toList();
+
+    return Column(
       children: [
-        // 左侧包列表
-        Container(
-          width: 300,
-          decoration: BoxDecoration(
-            border: Border(
-              right: BorderSide(
-                color: theme.colorScheme.outlineVariant,
-                width: 1,
-              ),
-            ),
-          ),
-          child: Column(
-            children: [
-              // 搜索框
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SearchBox(
-                  controller: searchState.controller,
-                  onSearch: (value) {
-                    ref.read(searchProvider.notifier).updateSearchText(value);
-                    ref.read(packageProvider.notifier).search(value);
-                  },
-                  hintText: l10n.searchPlaceholder,
-                ),
-              ),
-              // 包列表
-              Expanded(
-                child: packagesState.when(
-                  loading: () => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  error: (error, _) => Center(
-                    child: Text(
-                      error.toString(),
-                      style: TextStyle(color: theme.colorScheme.error),
-                    ),
-                  ),
-                  data: (packages) => packages.isEmpty && searchState.searchText.isNotEmpty
-                      ? Center(
-                          child: Text(
-                            l10n.noPackagesFound,
-                            style: theme.textTheme.bodyLarge,
-                          ),
-                        )
-                      : Scrollbar(
-                          controller: _scrollController,
-                          thumbVisibility: true,
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            itemCount: packages.length,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              final package = packages[index];
-                              final isSelected = package == _selectedPackage;
-
-                              return ListTile(
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16.0,
-                                  vertical: 8.0,
-                                ),
-                                title: Text(
-                                  package.displayName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                subtitle: Text(
-                                  package.description ?? '',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                selected: isSelected,
-                                selectedTileColor: theme.colorScheme.primaryContainer,
-                                onTap: () {
-                                  setState(() {
-                                    _selectedPackage = package;
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                ),
-              ),
-            ],
+        // 搜索框
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SearchBox(
+            hintText: '搜索包',
           ),
         ),
-        // 右侧详情页
+        // 包列表
         Expanded(
-          child: _selectedPackage == null
-              ? Center(
-                  child: Text(
-                    l10n.noPackagesFound,
-                    style: theme.textTheme.bodyLarge,
+          child: Builder(
+            builder: (context) {
+              if (packageState.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (packageState.error != null) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '加载失败',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(packageState.error!),
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: () {
+                          ref.read(packageProvider.notifier).refreshPackages();
+                        },
+                        icon: const Icon(Icons.refresh),
+                        label: const Text('重试'),
+                      ),
+                    ],
                   ),
-                )
-              : PackageDetailsPage(packageName: _selectedPackage!.name),
+                );
+              }
+
+              if (filteredPackages.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        searchText.isEmpty ? '暂无包' : '未找到匹配的包',
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      if (searchText.isNotEmpty)
+                        FilledButton.icon(
+                          onPressed: () {
+                            ref.read(searchProvider.notifier).state = '';
+                          },
+                          icon: const Icon(Icons.clear),
+                          label: const Text('清除搜索'),
+                        ),
+                    ],
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: filteredPackages.length,
+                itemBuilder: (context, index) {
+                  final package = filteredPackages[index];
+                  final isSelected = package.name == packageState.selectedPackageName;
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ListTile(
+                      selected: isSelected,
+                      selectedTileColor: theme.colorScheme.primaryContainer.withOpacity(0.1),
+                      title: Text(
+                        package.displayName,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (package.description.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(package.description),
+                          ],
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  package.version,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                package.author,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        ref.read(packageProvider.notifier).setSelectedPackage(package.name);
+                      },
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         ),
       ],
     );

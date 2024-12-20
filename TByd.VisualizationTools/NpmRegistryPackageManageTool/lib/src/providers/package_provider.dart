@@ -177,156 +177,89 @@ class PackageDetailsNotifier extends StateNotifier<PackageDetailsState> {
   }
 }
 
-/// 全局提供者
+/// 包管理状态
+class PackageState {
+  /// 包列表
+  final List<PackageSearchResult> packages;
 
-/// 包列表状态提供者
-///
-/// 提供包列表的状态管理
-final packageProvider = StateNotifierProvider<PackageListNotifier, AsyncValue<List<PackageSearchResult>>>(
-  (ref) {
-    final packageService = ref.watch(packageServiceProvider);
-    final keywordsNotifier = ref.watch(keywordsProvider.notifier);
-    return PackageListNotifier(packageService, keywordsNotifier, ref);
-  },
-);
+  /// 当前选中的包名
+  final String? selectedPackageName;
 
-/// 包列表状态管理器
-///
-/// 负责管理包列表功能，包括：
-/// - 加载所有包列表
-/// - 搜索过滤
-/// - 结果刷新
-class PackageListNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>> {
+  /// 是否正在加载
+  final bool isLoading;
+
+  /// 错误信息
+  final String? error;
+
+  /// 构造函数
+  const PackageState({
+    this.packages = const [],
+    this.selectedPackageName,
+    this.isLoading = false,
+    this.error,
+  });
+
+  /// 创建新实例
+  PackageState copyWith({
+    List<PackageSearchResult>? packages,
+    String? selectedPackageName,
+    bool? isLoading,
+    String? error,
+  }) {
+    return PackageState(
+      packages: packages ?? this.packages,
+      selectedPackageName: selectedPackageName ?? this.selectedPackageName,
+      isLoading: isLoading ?? this.isLoading,
+      error: error ?? this.error,
+    );
+  }
+}
+
+/// 包管理状态提供者
+class PackageNotifier extends StateNotifier<PackageState> {
   final PackageService _packageService;
-  final KeywordsNotifier _keywordsNotifier;
-  final Ref _ref;
-  List<PackageSearchResult> _allPackages = [];
-  bool _isDisposed = false;
-  bool _isLoading = false;
 
-  PackageListNotifier(this._packageService, this._keywordsNotifier, this._ref) : super(const AsyncValue.loading()) {
-    // 只在初始化时检查一次认证状态并加载
-    final authState = _ref.read(authProvider);
-    if (authState.isAuthenticated) {
-      _loadAllPackages();
-    }
+  PackageNotifier(this._packageService) : super(const PackageState());
 
-    // 监听认证状态变化
-    _ref.listen(authProvider, (previous, next) {
-      if (!next.isAuthenticated && previous?.isAuthenticated == true) {
-        // 用户登出，清空列表
-        reset();
-      }
-    });
-  }
-
-  /// 重置搜索状态
-  void reset() {
-    state = const AsyncValue.data([]);
-  }
-
-  /// 加载所有包
-  ///
-  /// 从服务器获取完整的包列表
-  Future<void> _loadAllPackages() async {
-    if (_isDisposed || _isLoading) return; // 防止重复加载
-    _isLoading = true;
-
-    try {
-      print('开始加载所有包');
-      state = const AsyncValue.loading();
-
-      final packages = await _packageService.searchPackages('');
-      if (_isDisposed) return;
-
-      if (packages.isEmpty) {
-        print('未找到任何包');
-        state = const AsyncValue.data([]);
-        return;
-      }
-
-      _allPackages = packages;
-      state = AsyncValue.data(_allPackages);
-
-      // 收集所有关键字
-      final allKeywords = <String>{};
-      for (final package in packages) {
-        allKeywords.addAll(package.keywords);
-      }
-      _keywordsNotifier.addKeywords(allKeywords);
-
-      print('成功加载 ${packages.length} 个包');
-    } catch (error, stackTrace) {
-      print('加载包列表失败: $error');
-      if (_isDisposed) return;
-      state = AsyncValue.error(error, stackTrace);
-    } finally {
-      _isLoading = false; // 重置加载状态
-    }
-  }
-
-  /// 搜索包
-  ///
-  /// 根据查询文本在本地包列表中搜索
-  /// [query] - 搜索关键词
-  Future<void> search(String query) async {
-    if (_isDisposed) return;
-
-    final searchText = query.trim().toLowerCase();
-    print('搜索包: "$searchText"');
-
-    try {
-      if (searchText.isEmpty) {
-        print('搜索文本为空，显示所有包');
-        state = AsyncValue.data(_allPackages);
-        return;
-      }
-
-      // 在本地列表中筛选匹配的包
-      final results = _allPackages.where((package) {
-        final name = package.name.toLowerCase();
-        return name.contains(searchText);
-      }).toList();
-
-      // 按相关性排序
-      results.sort((a, b) {
-        final aName = a.name.toLowerCase();
-        final bName = b.name.toLowerCase();
-
-        // 完全匹配的排在最前面
-        if (aName == searchText && bName != searchText) return -1;
-        if (bName == searchText && aName != searchText) return 1;
-
-        // 前缀匹配的排在其次
-        if (aName.startsWith(searchText) && !bName.startsWith(searchText)) return -1;
-        if (bName.startsWith(searchText) && !aName.startsWith(searchText)) return 1;
-
-        // 其他按字母顺序排序
-        return aName.compareTo(bName);
-      });
-
-      print('找到 ${results.length} 个匹配的包');
-      state = AsyncValue.data(results);
-    } catch (error, stackTrace) {
-      print('搜索失败: $error');
-      state = AsyncValue.error(error, stackTrace);
-    }
+  /// 设置选中的包
+  void setSelectedPackage(String? packageName) {
+    state = state.copyWith(selectedPackageName: packageName);
   }
 
   /// 刷新包列表
-  ///
-  /// 重新从服务器加载所有包的信息
-  Future<void> refresh() async {
-    await _loadAllPackages();
-  }
+  Future<void> refreshPackages() async {
+    state = state.copyWith(isLoading: true, error: null);
 
-  /// 资源释放
-  @override
-  void dispose() {
-    _isDisposed = true;
-    super.dispose();
+    try {
+      final packages = await _packageService.searchPackages('');
+
+      // 如果当前选中的包不在新的列表中，选择第一个包
+      final selectedExists = packages.any((p) => p.name == state.selectedPackageName);
+      final newSelectedPackage = selectedExists
+          ? state.selectedPackageName
+          : packages.isNotEmpty
+              ? packages.first.name
+              : null;
+
+      state = state.copyWith(
+        packages: packages,
+        selectedPackageName: newSelectedPackage,
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        error: e.toString(),
+        isLoading: false,
+      );
+    }
   }
 }
+
+/// 包管理状态提供者
+final packageProvider = StateNotifierProvider<PackageNotifier, PackageState>((ref) {
+  final packageService = ref.watch(packageServiceProvider);
+  return PackageNotifier(packageService);
+});
 
 /// 包详情状态提供者
 ///
