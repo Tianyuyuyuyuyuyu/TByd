@@ -47,7 +47,7 @@ flutter pub get
 
 ### 2. 选择任务
 
-您可以从以���方面入手：
+您可以从以下方面入手：
 - 修复 [Issues](https://github.com/tbyd/npm-registry-manager/issues) 中的 bug
 - 改进文档
 - 添加新功能
@@ -209,7 +209,7 @@ docs/
 ## 发布流程
 
 ### 版本号规范
-- 遵循语义化��本
+- 遵循语义化版本
 - 更新 CHANGELOG.md
 - 标记版本标签
 

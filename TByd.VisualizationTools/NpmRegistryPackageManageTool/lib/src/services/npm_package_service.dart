@@ -49,7 +49,7 @@ class NpmPackageService {
 
   /// 获取HTTP请求头
   ///
-  /// 根据是否���认证令牌返回适当的请求头
+  /// 根据是否有认证令牌返回适当的请求头
   Map<String, String> get _headers => {
         'Accept': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
@@ -231,7 +231,7 @@ class NpmPackageService {
   /// - [packageName] 包名
   ///
   /// 返回：
-  /// 包含包信息的Map，如果获取失败则返回null
+  /// 包含包信息的Map，如果获取失���则返回null
   Future<Map<String, dynamic>?> fetchPackageInfo(String packageName) async {
     if (packageName.isEmpty) {
       throw ArgumentError('Package name cannot be empty');

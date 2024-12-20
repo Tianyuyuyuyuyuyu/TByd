@@ -46,7 +46,7 @@ class User {
     };
   }
 
-  /// 创建一个新的用户实例，但只���新部分属性
+  /// 创建一个新的用户实例，但只更新部分属性
   User copyWith({
     String? username,
     String? serverUrl,

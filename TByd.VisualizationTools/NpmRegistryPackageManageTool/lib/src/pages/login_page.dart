@@ -90,7 +90,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() {
       _servers = history.servers;
       if (_servers.isNotEmpty) {
-        // 按最后使用时间排序，选择最近使用���务器
+        // 按最后使用时间排序，选择最近使用的服务器
         _servers.sort((a, b) => b.lastUsed.compareTo(a.lastUsed));
         _selectedServer = _servers.first;
         _serverController.text = _selectedServer!.serverUrl;

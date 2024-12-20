@@ -78,7 +78,7 @@ class PackageService {
       if (e is TimeoutException) {
         print('请求超时：$e');
       } else {
-        print('请求失败：$e');
+        print('���求失败：$e');
       }
       return [];
     }
@@ -125,7 +125,7 @@ class PackageService {
 
       return _sortByRelevance(results, searchText);
     } catch (e) {
-      throw Exception('解析搜索结果���败: $e');
+      throw Exception('解析搜索结果失败: $e');
     }
   }
 
@@ -489,7 +489,7 @@ class PackageService {
         // 解析 JSON 数据
         final dynamic jsonData = json.decode(response.body);
 
-        // 移除顶层的 readme ���段
+        // 移除顶层的 readme 部分
         if (jsonData is Map) {
           jsonData.remove('readme');
 
