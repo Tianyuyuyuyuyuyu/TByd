@@ -317,69 +317,22 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                                     Expanded(
                                       child: TextFormField(
                                         controller: _versionController,
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           labelText: 'version',
                                           hintText: '1.0.0',
                                           isDense: true,
-                                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                                          suffixIcon: isLoadingVersion
-                                              ? SizedBox(
-                                                  width: 16,
-                                                  height: 16,
-                                                  child: Center(
-                                                    child: CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                      color: theme.colorScheme.primary,
-                                                    ),
-                                                  ),
-                                                )
-                                              : null,
+                                          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                                         ),
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return '请输入版本号';
                                           }
-
-                                          // 如果存在现有版本，检查新版本是否高于现有版本
-                                          if (existingVersion != null) {
-                                            final isHigherVersion = _compareVersions(value, existingVersion) > 0;
-                                            if (!isHigherVersion) {
-                                              return '新版本号必须高于现有版本 $existingVersion';
-                                            }
-                                          }
-
                                           return null;
                                         },
-                                        style: TextStyle(
-                                          color: existingVersion != null &&
-                                                  _compareVersions(_versionController.text, existingVersion) <= 0
-                                              ? theme.colorScheme.error
-                                              : null,
-                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
-                                if (existingVersion != null) ...[
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        '现有版本: ',
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: theme.colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                      Text(
-                                        existingVersion,
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: theme.colorScheme.primary,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
                               ],
                             ),
                           ),
@@ -838,37 +791,5 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
         ),
       ],
     );
-  }
-
-  /// 比较两个版本号
-  ///
-  /// 返回：
-  /// - 正数：version1 大于 version2
-  /// - 0：version1 等于 version2
-  /// - 负数：version1 小于 version2
-  int _compareVersions(String version1, String version2) {
-    final v1Parts = version1.split('.').map(int.tryParse).toList();
-    final v2Parts = version2.split('.').map(int.tryParse).toList();
-
-    // 确保两个版本号都有三个部分（主版本号.次版本号.修订号）
-    while (v1Parts.length < 3) {
-      v1Parts.add(0);
-    }
-    while (v2Parts.length < 3) {
-      v2Parts.add(0);
-    }
-
-    // 如果任何部分无法解析为数字，则认为版本号无效
-    if (v1Parts.contains(null) || v2Parts.contains(null)) {
-      return 0;
-    }
-
-    // 比较每个部分
-    for (var i = 0; i < 3; i++) {
-      final diff = v1Parts[i]! - v2Parts[i]!;
-      if (diff != 0) return diff;
-    }
-
-    return 0;
   }
 }
