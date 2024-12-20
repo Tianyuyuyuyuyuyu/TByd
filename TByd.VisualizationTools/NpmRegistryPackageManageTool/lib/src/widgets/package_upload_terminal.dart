@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/package_upload_service.dart';
+import '../providers/terminal_output_provider.dart';
 
 class PackageUploadTerminal extends ConsumerStatefulWidget {
   final String projectPath;
@@ -23,12 +24,13 @@ class PackageUploadTerminal extends ConsumerStatefulWidget {
 
 class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
   final ScrollController _scrollController = ScrollController();
-  final List<String> _outputLines = [];
 
   @override
   void initState() {
     super.initState();
-    _initializeTerminal();
+    if (ref.read(terminalOutputProvider).isEmpty) {
+      Future(() => _initializeTerminal());
+    }
   }
 
   @override
@@ -38,14 +40,11 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
   }
 
   void _initializeTerminal() {
-    setState(() {
-      _outputLines.addAll([
-        'Windows PowerShell',
-        '版权所有 (C) Microsoft Corporation。保留所有权利。',
-        '',
-        'PS ${widget.projectPath}> ',
-      ]);
-    });
+    if (!mounted) return;
+
+    final notifier = ref.read(terminalOutputProvider.notifier);
+    notifier.initialize();
+    notifier.addLine('PS ${widget.projectPath}> ');
     _scrollToBottom();
   }
 
@@ -60,28 +59,30 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
   void _appendOutput(String line) {
     if (!mounted) return;
 
-    setState(() {
-      if (_outputLines.isNotEmpty && _outputLines.last.startsWith('PS ')) {
-        // 如果最后一行是提示符，在它之前插入输出
-        _outputLines.insert(_outputLines.length - 1, line);
-      } else {
-        _outputLines.add(line);
-      }
-    });
+    final notifier = ref.read(terminalOutputProvider.notifier);
+    final lines = ref.read(terminalOutputProvider);
+
+    if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
+      // 如果最后一行是提示符，在它之前插入输出
+      notifier.insertLine(lines.length - 1, line);
+    } else {
+      notifier.addLine(line);
+    }
     _scrollToBottom();
   }
 
   void _appendCommand(String command) {
     if (!mounted) return;
 
-    setState(() {
-      // 移除旧的提示符
-      if (_outputLines.isNotEmpty && _outputLines.last.startsWith('PS ')) {
-        _outputLines.removeLast();
-      }
-      // 添加带命令的提示符
-      _outputLines.add('PS ${widget.projectPath}> $command');
-    });
+    final notifier = ref.read(terminalOutputProvider.notifier);
+    final lines = ref.read(terminalOutputProvider);
+
+    // 移除旧的提示符
+    if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
+      notifier.removeLast();
+    }
+    // 添加带命令的提示符
+    notifier.addLine('PS ${widget.projectPath}> $command');
     _scrollToBottom();
   }
 
@@ -93,24 +94,28 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     // 显示正在执行的命令
     _appendCommand(command);
 
+    // 处理标准输出
     process.stdout.transform(utf8Decoder).listen(
       (output) {
         final lines = output.split('\n');
         for (final line in lines) {
-          if (line.trim().isNotEmpty) {
-            _appendOutput(line.trimRight());
+          final trimmed = line.trimRight();
+          if (trimmed.isNotEmpty) {
+            _appendOutput(trimmed);
           }
         }
       },
       onDone: () => stdoutCompleter.complete(),
     );
 
+    // 处理标准错误
     process.stderr.transform(utf8Decoder).listen(
       (error) {
         final lines = error.split('\n');
         for (final line in lines) {
-          if (line.trim().isNotEmpty) {
-            _appendOutput(line.trimRight());
+          final trimmed = line.trimRight();
+          if (trimmed.isNotEmpty) {
+            _appendOutput(trimmed);
           }
         }
       },
@@ -125,6 +130,10 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
       _appendOutput('\n命令执行失败，退出码：$exitCode');
     }
 
+    // 添加新的命令提示符
+    final notifier = ref.read(terminalOutputProvider.notifier);
+    notifier.addLine('PS ${widget.projectPath}> ');
+
     return exitCode == 0;
   }
 
@@ -134,9 +143,8 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     // 通知父组件开始上传
     widget.onUpload?.call();
 
-    setState(() {
-      _outputLines.clear();
-    });
+    // 清空终端并重新初始化
+    ref.read(terminalOutputProvider.notifier).clear();
     _initializeTerminal();
 
     final uploadService = ref.read(packageUploadServiceProvider);
@@ -182,15 +190,17 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     }
 
     // 移除最后一个提示符
-    setState(() {
-      if (_outputLines.isNotEmpty && _outputLines.last.startsWith('PS ')) {
-        _outputLines.removeLast();
-      }
-    });
+    final notifier = ref.read(terminalOutputProvider.notifier);
+    final lines = ref.read(terminalOutputProvider);
+    if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
+      notifier.removeLast();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final outputLines = ref.watch(terminalOutputProvider);
+
     return Stack(
       children: [
         Container(
@@ -208,10 +218,10 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
             radius: const Radius.circular(4),
             child: ListView.builder(
               controller: _scrollController,
-              itemCount: _outputLines.length,
+              itemCount: outputLines.length,
               itemBuilder: (context, index) {
                 return SelectableText(
-                  _outputLines[index],
+                  outputLines[index],
                   style: const TextStyle(
                     color: Colors.white,
                     fontFamily: 'Consolas',
