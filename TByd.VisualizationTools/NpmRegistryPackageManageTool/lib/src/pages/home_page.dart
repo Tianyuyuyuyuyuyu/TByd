@@ -135,8 +135,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       _buildNavButton(
                         context: context,
-                        icon: Icons.build_outlined,
-                        selectedIcon: Icons.build,
+                        icon: Icons.upload_outlined,
+                        selectedIcon: Icons.upload,
                         label: '包操作',
                         index: 1,
                       ),
@@ -172,7 +172,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ],
             ),
           ),
-          // 主内��区域
+          // 主内容区域
           Expanded(
             child: _buildContent(),
           ),
@@ -219,7 +219,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  /// 构建主内容区域
+  /// 构���主内容区域
   ///
   /// 根据当前选中的导航索引显示相应的页面内容
   Widget _buildContent() {
