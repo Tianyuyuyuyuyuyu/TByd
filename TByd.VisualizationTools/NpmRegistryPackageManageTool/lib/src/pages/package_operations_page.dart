@@ -8,6 +8,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import '../widgets/markdown_file_viewer.dart';
 
 /// 包操作页面
 ///
@@ -210,7 +211,7 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
                 ),
                 unselectedLabelStyle: theme.textTheme.titleSmall,
                 tabs: const [
-                  Tab(text: '发布设置'),
+                  Tab(text: 'package.json'),
                   Tab(text: 'README'),
                   Tab(text: 'CHANGELOG'),
                 ],
@@ -227,22 +228,14 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
                     onConfigChanged: _savePackageConfig,
                   ),
                   // README 页签内容
-                  Card(
-                    child: Center(
-                      child: Text(
-                        'README 内容区域',
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ),
+                  MarkdownFileViewer(
+                    projectPath: _selectedFolderPath!,
+                    fileName: 'README.md',
                   ),
                   // CHANGELOG 页签内容
-                  Card(
-                    child: Center(
-                      child: Text(
-                        'CHANGELOG 内容区域',
-                        style: theme.textTheme.bodyLarge,
-                      ),
-                    ),
+                  MarkdownFileViewer(
+                    projectPath: _selectedFolderPath!,
+                    fileName: 'CHANGELOG.md',
                   ),
                 ],
               ),
