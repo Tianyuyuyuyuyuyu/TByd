@@ -81,8 +81,6 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
       }
       // 添加带命令的提示符
       _outputLines.add('PS ${widget.projectPath}> $command');
-      // 添加新的提示符
-      _outputLines.add('PS ${widget.projectPath}> ');
     });
     _scrollToBottom();
   }
@@ -182,49 +180,65 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
       _appendOutput('\n发生错误：${e.toString()}');
       success = false;
     }
+
+    // 移除最后一个提示符
+    setState(() {
+      if (_outputLines.isNotEmpty && _outputLines.last.startsWith('PS ')) {
+        _outputLines.removeLast();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            margin: const EdgeInsets.all(16),
-            padding: const EdgeInsets.all(16),
-            child: RawScrollbar(
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1E293B),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          margin: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(16),
+          child: RawScrollbar(
+            controller: _scrollController,
+            thumbVisibility: false,
+            thickness: 8,
+            thumbColor: Colors.white24,
+            radius: const Radius.circular(4),
+            child: ListView.builder(
               controller: _scrollController,
-              thumbVisibility: false,
-              thickness: 8,
-              thumbColor: Colors.white24,
-              radius: const Radius.circular(4),
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: _outputLines.length,
-                itemBuilder: (context, index) {
-                  return SelectableText(
-                    _outputLines[index],
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Consolas',
-                      fontSize: 14,
-                      height: 1.2,
-                    ),
-                  );
-                },
-              ),
+              itemCount: _outputLines.length,
+              itemBuilder: (context, index) {
+                return SelectableText(
+                  _outputLines[index],
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Consolas',
+                    fontSize: 14,
+                    height: 1.2,
+                  ),
+                );
+              },
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: ElevatedButton(
+        Positioned(
+          right: 24,
+          bottom: 24,
+          child: FilledButton.icon(
             onPressed: widget.isUploading ? null : _startUpload,
-            child: Text(widget.isUploading ? 'Uploading...' : 'Start Upload'),
+            icon: widget.isUploading
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Icon(Icons.upload),
+            label: Text(widget.isUploading ? '上传中...' : '一键上传'),
           ),
         ),
       ],
