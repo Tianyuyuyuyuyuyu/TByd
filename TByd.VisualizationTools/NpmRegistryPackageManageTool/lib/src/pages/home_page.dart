@@ -140,20 +140,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                         label: '包操作',
                         index: 1,
                       ),
-                      _buildNavButton(
-                        context: context,
-                        icon: Icons.settings_outlined,
-                        selectedIcon: Icons.settings,
-                        label: l10n.settings,
-                        index: 2,
-                      ),
-                      _buildNavButton(
-                        context: context,
-                        icon: Icons.science_outlined,
-                        selectedIcon: Icons.science,
-                        label: '测试',
-                        index: 3,
-                      ),
                     ],
                   ),
                 ),
@@ -219,7 +205,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  /// 构���主内容区域
+  /// 构建主内容区域
   ///
   /// 根据当前选中的导航索引显示相应的页面内容
   Widget _buildContent() {
@@ -228,12 +214,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         return const PackageListPage();
       case 1:
         return const PackageOperationsPage();
-      case 2:
-        return const Center(
-          child: Text('设置页面'),
-        );
-      case 3:
-        return const TestPage();
       default:
         return const Center(
           child: Text('未知页面'),
