@@ -1,92 +1,113 @@
-# NPM Registry Manager
+# NPM Registry Package Manage Tool
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Windows-blue.svg)]()
-[![Flutter](https://img.shields.io/badge/Flutter-3.0+-blue.svg)]()
+A Flutter-based NPM private registry management tool, specifically designed for managing and maintaining Verdaccio-based private NPM registries.
 
-A professional NPM package management tool built with Flutter, focusing on efficient and secure package management experience for Windows platform.
+## Features
 
-[English](./README_EN.md) | [简体中文](./README.md)
+### Package Management
+- 📦 Browse and search all packages in the registry
+- 🔄 Display package details (version, author, license, etc.)
+- 📝 View README and CHANGELOG
+- 🚀 One-click package version upload
+- 🗑️ Remove unwanted package versions
 
-## 🚀 Features
+### User Interface
+- 🎨 Modern Material Design 3 interface
+- 🌙 Light/Dark theme support
+- 📱 Responsive design for desktop and mobile devices
+- 🔍 Real-time search functionality
+- 📊 Version history visualization
 
-- **Efficient Package Management**
-  - Intuitive package publishing and updating
-  - Smart version conflict handling
-  - Batch operation support
-  - Real-time progress display
+### Security
+- 🔐 Secure authentication mechanism
+- 🔑 JWT Token authentication support
+- 👤 User permission management
 
-- **Secure and Reliable**
-  - Secure authentication
-  - Encrypted credential storage
-  - Operation audit logs
-  - Permission management system
+## System Requirements
 
-- **User Friendly**
-  - Modern Material Design interface
-  - Dark/Light theme support
-  - Multi-language interface (Chinese/English)
-  - Customizable workspace layout
+- Windows 10 or higher
+- iOS 11.0 or higher
+- Node.js 14.0 or higher
+- npm 6.0 or higher
 
-## 📋 System Requirements
+## Installation
 
-- Windows 10/11 64-bit
-- 4GB RAM or higher
-- 500MB available space
-- 1280x720 or higher resolution
-- Stable network connection
+1. Ensure Flutter SDK is installed
+```bash
+flutter --version
+```
 
-## 🔧 Quick Start
+2. Clone the project
+```bash
+git clone https://github.com/Tianyuyuyuyuyuyu/TByd
+cd TByd/TByd.VisualizationTools/NpmRegistryPackageManageTool
+```
 
-1. **Download and Install**
-   - Download the latest version from [Releases](https://github.com/tbyd/npm-registry-manager/releases)
-   - Run the installer
-   - Follow the installation wizard
+3. Install dependencies
+```bash
+flutter pub get
+```
 
-2. **Initial Setup**
-   - Launch the application
-   - Configure Verdaccio connection
-   - Complete initialization
+4. Run the application
+```bash
+flutter run
+```
 
-3. **Start Using**
-   - Connect to your Verdaccio registry
-   - Start managing your NPM packages
+## Configuration
 
-For detailed installation instructions, please refer to [Installation Guide](./INSTALL.md).
+1. Configure Verdaccio server address on first launch
+2. Enter your username and password for authentication
+3. Start using all features after successful login
 
-## 📚 Documentation
+## Usage
 
-- [User Guide](./docs/user-guide.md)
-- [FAQ](./docs/faq.md)
-- [Troubleshooting](./docs/troubleshooting.md)
-- [Development Guide](./docs/development.md)
+### Package Management
+1. Browse all published packages on the main interface
+2. Use the search box to quickly find specific packages
+3. Click package name to view details
+4. In the details page you can:
+   - View README documentation
+   - Check version history
+   - View dependencies
+   - Manage package versions
 
-## 🔄 Changelog
+### Upload New Package
+1. Click the upload button
+2. Select the package to upload
+3. Confirm version information
+4. Click confirm to upload
 
-See [CHANGELOG.md](./CHANGELOG.md) for detailed update history.
+### Version Management
+1. View all versions in the package details page
+2. Support for deleting specific versions
+3. View changes for each version
 
-## 🤝 Contributing
+## Tech Stack
 
-We welcome community contributions! Please check [Contributing Guide](./CONTRIBUTING.md) to learn how to participate in project development.
+- 🎯 Dart
+- 💙 Flutter
+- 🔄 Riverpod (State Management)
+- 🌐 http (Network Requests)
+- 🎨 Material 3 (UI Design)
 
-## 💬 Get Help
+## Contributing
 
-- 📧 Email: [tianyulovecars@gmail.com](mailto:tianyulovecars@gmail.com)
-- 🐛 Issues: [GitHub Issues](https://github.com/tbyd/npm-registry-manager/issues)
-- 💡 Suggestions: [GitHub Discussions](https://github.com/tbyd/npm-registry-manager/discussions)
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Create a Pull Request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) file for details.
+MIT License - see the [LICENSE](LICENSE) file for details
 
-## 🎯 Roadmap
+## Contact
 
-- [ ] Breakpoint resume support
-- [ ] Package dependency visualization
-- [ ] Command Line Interface (CLI)
-- [ ] Plugin system
-- [ ] Automated workflow
+- Project Maintainer: TByd Team
+- Email: tianyulovecars@gmail.com
+- Project Homepage: https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.VisualizationTools/NpmRegistryPackageManageTool
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
-Thanks to all developers and users who have contributed to this project. 
+Thanks to all developers who have contributed to this project! 
