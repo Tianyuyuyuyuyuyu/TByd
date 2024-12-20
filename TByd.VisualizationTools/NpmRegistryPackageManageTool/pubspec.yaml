@@ -39,3 +39,4 @@ flutter:
     - assets/images/yarn.svg
     - assets/images/pnpm.svg
     - assets/images/git.svg
+    - assets/icons/verdaccio.svg
