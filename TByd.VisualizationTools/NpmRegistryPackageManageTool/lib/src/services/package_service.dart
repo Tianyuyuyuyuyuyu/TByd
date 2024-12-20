@@ -78,7 +78,7 @@ class PackageService {
       if (e is TimeoutException) {
         print('请求超时：$e');
       } else {
-        print('���求失败：$e');
+        print('请求失败：$e');
       }
       return [];
     }
@@ -151,6 +151,7 @@ class PackageService {
       String version = '0.0.0';
       String description = '';
       String author = 'Unknown';
+      String? license;
       DateTime lastModified = DateTime.now();
 
       try {
@@ -163,12 +164,22 @@ class PackageService {
           final latestVersion = data['dist-tags']?['latest']?.toString();
           if (latestVersion != null && versions[latestVersion] is Map) {
             final latestVersionData = versions[latestVersion] as Map;
-            displayName = latestVersionData['displayName']?.toString() ?? name;
+            displayName = latestVersionData['displayName']?.toString() ??
+                data['displayName']?.toString() ??
+                latestVersionData['name']?.toString() ??
+                name;
+            // 从最新版本获取许可证信息
+            license = latestVersionData['license']?.toString();
           } else {
-            displayName = name;
+            displayName = data['displayName']?.toString() ?? name;
           }
         } else {
-          displayName = name;
+          displayName = data['displayName']?.toString() ?? name;
+        }
+
+        // 如果最新版本没有许可证信息，尝试从包的根级别获取
+        if (license == null || license.isEmpty) {
+          license = data['license']?.toString();
         }
 
         // 解析版本号
@@ -221,6 +232,7 @@ class PackageService {
         version: version,
         description: description,
         author: author,
+        license: license,
         lastModified: lastModified,
       );
     }

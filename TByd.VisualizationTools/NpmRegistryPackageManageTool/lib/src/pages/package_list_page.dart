@@ -149,6 +149,25 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
+                              if (package.license != null && package.license!.isNotEmpty) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.tertiaryContainer,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    package.license!,
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: theme.colorScheme.onTertiaryContainer,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ],

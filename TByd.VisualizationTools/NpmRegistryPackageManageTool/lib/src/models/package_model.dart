@@ -320,6 +320,9 @@ class PackageSearchResult extends Equatable {
   /// 作者
   final String author;
 
+  /// 许可证
+  final String? license;
+
   /// 最后修改时间
   final DateTime lastModified;
 
@@ -333,6 +336,7 @@ class PackageSearchResult extends Equatable {
     required this.version,
     required this.description,
     required this.author,
+    this.license,
     required this.lastModified,
     this.keywords = const [],
   }) : displayName = displayName ?? name;
@@ -352,13 +356,27 @@ class PackageSearchResult extends Equatable {
       keywords = List<String>.from(json['keywords'] as List);
     }
 
+    // 解析显示名称
+    String? displayName;
+    if (latestVersion != null) {
+      displayName = latestVersion['displayName'] as String?;
+    }
+    if (displayName == null) {
+      displayName = json['displayName'] as String?;
+    }
+    if (displayName == null) {
+      displayName = latestVersion?['name'] as String?;
+    }
+
     return PackageSearchResult(
       name: json['name'] as String,
+      displayName: displayName,
       version: latest ?? '0.0.0',
       description: latestVersion?['description'] as String? ?? json['description'] as String? ?? '',
       author: _extractAuthor(latestVersion?['author'] ?? json['author']),
       lastModified: DateTime.parse(time?['modified'] as String? ?? DateTime.now().toIso8601String()),
       keywords: keywords,
+      license: latestVersion?['license'] as String? ?? json['license'] as String? ?? 'Unknown',
     );
   }
 
@@ -379,6 +397,7 @@ class PackageSearchResult extends Equatable {
       'author': author,
       'lastModified': lastModified.toIso8601String(),
       'keywords': keywords,
+      'license': license,
     };
   }
 

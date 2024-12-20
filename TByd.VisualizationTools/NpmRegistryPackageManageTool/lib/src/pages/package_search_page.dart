@@ -38,7 +38,7 @@ class PackageSearchPage extends ConsumerStatefulWidget {
 /// - 结果展示
 /// - 防抖控制
 class _PackageSearchPageState extends ConsumerState<PackageSearchPage> {
-  /// 搜索输入控制器
+  /// 搜索输���控制器
   final _searchController = TextEditingController();
 
   /// 防抖控制器
@@ -186,7 +186,7 @@ class PackageListItem extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      package.name,
+                      package.displayName ?? package.name,
                       style: theme.textTheme.titleLarge?.copyWith(
                         color: theme.colorScheme.primary,
                       ),
@@ -268,7 +268,7 @@ class Debouncer {
   /// [milliseconds] 防抖延迟时间
   Debouncer({required this.milliseconds});
 
-  /// 执行防抖操作
+  /// 执���防抖操作
   ///
   /// [action] 要执行的操作
   void run(VoidCallback action) {
