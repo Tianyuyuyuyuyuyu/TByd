@@ -285,9 +285,25 @@ class PackageListNotifier extends StateNotifier<AsyncValue<List<PackageSearchRes
       // 在本地列表中筛选匹配的包
       final results = _allPackages.where((package) {
         final name = package.name.toLowerCase();
-        final description = package.description.toLowerCase();
-        return name.contains(searchText) || description.contains(searchText);
+        return name.contains(searchText);
       }).toList();
+
+      // 按相关性排序
+      results.sort((a, b) {
+        final aName = a.name.toLowerCase();
+        final bName = b.name.toLowerCase();
+
+        // 完全匹配的排在最前面
+        if (aName == searchText && bName != searchText) return -1;
+        if (bName == searchText && aName != searchText) return 1;
+
+        // 前缀匹配的排在其次
+        if (aName.startsWith(searchText) && !bName.startsWith(searchText)) return -1;
+        if (bName.startsWith(searchText) && !aName.startsWith(searchText)) return 1;
+
+        // 其他按字母顺序排序
+        return aName.compareTo(bName);
+      });
 
       print('找到 ${results.length} 个匹配的包');
       state = AsyncValue.data(results);
