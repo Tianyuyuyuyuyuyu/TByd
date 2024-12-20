@@ -4,7 +4,8 @@ import '../providers/package_provider.dart';
 import '../models/package_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package_details_page.dart';
-import '../widgets/package_search_box.dart';
+import '../widgets/search_box.dart';
+import '../providers/search_provider.dart';
 
 class PackageListPage extends ConsumerStatefulWidget {
   const PackageListPage({super.key});
@@ -30,7 +31,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   }
 
   Future<void> _refreshPackages() async {
-    await ref.read(searchProvider.notifier).refresh();
+    await ref.read(packageProvider.notifier).refresh();
   }
 
   @override
@@ -38,6 +39,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
     final searchState = ref.watch(searchProvider);
+    final packagesState = ref.watch(packageProvider);
 
     return Row(
       children: [
@@ -57,16 +59,18 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               // 搜索框
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: PackageSearchBox(
+                child: SearchBox(
+                  controller: searchState.controller,
                   onSearch: (value) {
-                    ref.read(searchProvider.notifier).search(value);
+                    ref.read(searchProvider.notifier).updateSearchText(value);
+                    ref.read(packageProvider.notifier).search(value);
                   },
                   hintText: l10n.searchPlaceholder,
                 ),
               ),
               // 包列表
               Expanded(
-                child: searchState.when(
+                child: packagesState.when(
                   loading: () => const Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -76,7 +80,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                       style: TextStyle(color: theme.colorScheme.error),
                     ),
                   ),
-                  data: (packages) => packages.isEmpty
+                  data: (packages) => packages.isEmpty && searchState.searchText.isNotEmpty
                       ? Center(
                           child: Text(
                             l10n.noPackagesFound,

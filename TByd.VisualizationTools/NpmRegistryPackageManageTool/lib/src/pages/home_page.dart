@@ -95,7 +95,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final authState = ref.watch(authProvider);
 
     return Scaffold(
       body: Row(
@@ -173,7 +172,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ],
             ),
           ),
-          // 主内容区域
+          // 主内��区域
           Expanded(
             child: _buildContent(),
           ),

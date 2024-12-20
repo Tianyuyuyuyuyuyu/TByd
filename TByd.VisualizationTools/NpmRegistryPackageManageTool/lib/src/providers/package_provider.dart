@@ -179,34 +179,24 @@ class PackageDetailsNotifier extends StateNotifier<PackageDetailsState> {
 
 /// 全局提供者
 
-/// 搜索状态提供者
+/// 包列表状态提供者
 ///
-/// 提供包搜索功能的状态管理
-final searchProvider = StateNotifierProvider<SearchNotifier, AsyncValue<List<PackageSearchResult>>>(
+/// 提供包列表的状态管理
+final packageProvider = StateNotifierProvider<PackageListNotifier, AsyncValue<List<PackageSearchResult>>>(
   (ref) {
     final packageService = ref.watch(packageServiceProvider);
     final keywordsNotifier = ref.watch(keywordsProvider.notifier);
-    return SearchNotifier(packageService, keywordsNotifier, ref);
+    return PackageListNotifier(packageService, keywordsNotifier, ref);
   },
 );
 
-/// 包详情状态提供者
+/// 包列表状态管理器
 ///
-/// 提供特定包的详细信息管理
-final packageDetailsProvider = StateNotifierProvider.family<PackageDetailsNotifier, PackageDetailsState, String>(
-  (ref, packageName) {
-    final packageService = ref.watch(packageServiceProvider);
-    return PackageDetailsNotifier(packageService, packageName);
-  },
-);
-
-/// 搜索状态管理器
-///
-/// 负责管理包搜索功能，包括：
+/// 负责管理包列表功能，包括：
 /// - 加载所有包列表
 /// - 搜索过滤
 /// - 结果刷新
-class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>> {
+class PackageListNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>> {
   final PackageService _packageService;
   final KeywordsNotifier _keywordsNotifier;
   final Ref _ref;
@@ -214,7 +204,7 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
   bool _isDisposed = false;
   bool _isLoading = false;
 
-  SearchNotifier(this._packageService, this._keywordsNotifier, this._ref) : super(const AsyncValue.loading()) {
+  PackageListNotifier(this._packageService, this._keywordsNotifier, this._ref) : super(const AsyncValue.loading()) {
     // 只在初始化时检查一次认证状态并加载
     final authState = _ref.read(authProvider);
     if (authState.isAuthenticated) {
@@ -321,3 +311,13 @@ class SearchNotifier extends StateNotifier<AsyncValue<List<PackageSearchResult>>
     super.dispose();
   }
 }
+
+/// 包详情状态提供者
+///
+/// 提供特定包的详细信息管理
+final packageDetailsProvider = StateNotifierProvider.family<PackageDetailsNotifier, PackageDetailsState, String>(
+  (ref, packageName) {
+    final packageService = ref.watch(packageServiceProvider);
+    return PackageDetailsNotifier(packageService, packageName);
+  },
+);
