@@ -136,7 +136,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Text(
-                                  package.version,
+                                  'v${package.version}',
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: theme.colorScheme.onPrimaryContainer,
                                   ),
