@@ -17,6 +17,8 @@ import 'unity_version_provider.dart';
 import 'locale_provider.dart';
 import 'encryption_provider.dart';
 import 'package_settings_provider.dart';
+import '../models/user.dart';
+import '../utils/avatar.dart';
 
 /// 认证服务提供者
 ///
@@ -60,11 +62,15 @@ class AuthState {
   /// 认证模型，包含用户认证相关的详细信息
   final AuthModel? auth;
 
+  /// 当前登录用户
+  final User? user;
+
   const AuthState({
     this.isAuthenticated = false,
     this.isLoading = false,
     this.error,
     this.auth,
+    this.user,
   });
 
   /// 创建状态副本
@@ -79,12 +85,14 @@ class AuthState {
     bool? isLoading,
     String? error,
     AuthModel? auth,
+    User? user,
   }) {
     return AuthState(
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       isLoading: isLoading ?? this.isLoading,
       error: error,
       auth: auth ?? this.auth,
+      user: user ?? this.user,
     );
   }
 }
@@ -116,6 +124,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
     );
   }
 
+  /// 保存登录历史
+  Future<void> _saveLoginHistory(User user) async {
+    await _historyService.saveLoginInfo(
+      user.serverUrl,
+      user.username,
+      user.savedPassword ?? '',
+      user.rememberPassword,
+    );
+  }
+
   /// 用户登录
   ///
   /// 处理用户登录流程，包括：
@@ -144,20 +162,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password,
       );
 
-      if (rememberMe) {
-        await _historyService.saveLoginInfo(
-          serverUrl,
-          username,
-          password,
-          rememberMe,
-        );
-      }
-
-      state = state.copyWith(
-        isAuthenticated: true,
-        isLoading: false,
-        auth: auth,
+      // 创建用户对象
+      final user = User(
+        username: username,
+        serverUrl: serverUrl,
+        rememberPassword: rememberMe,
+        savedPassword: rememberMe ? password : null,
       );
+
+      // 更新状态
+      state = state.copyWith(
+        isLoading: false,
+        isAuthenticated: true,
+        auth: auth,
+        user: user,
+      );
+
+      // 保存登录历史
+      if (rememberMe) {
+        await _saveLoginHistory(user);
+      }
 
       // 登录成功后立即获取 Unity 版本信息
       _ref.read(unityVersionProvider.notifier).loadVersions();
@@ -167,6 +191,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         error: e.toString(),
         isAuthenticated: false,
       );
+      rethrow;
     }
   }
 
@@ -175,7 +200,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 处理用户登出流程，包括：
   /// - 清除服务器端会话
   /// - 清除本地登录历史
-  /// - 重置认��状态
+  /// - 重置认证状态
   Future<void> logout() async {
     if (!state.isAuthenticated || state.auth == null) {
       state = const AuthState();
@@ -217,7 +242,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 检查认证状态
   ///
   /// 验证当前的认证令牌是否有效
-  /// 如果令牌无效，则重置认证状
+  /// 如果令牌无效，则重置认证状态
   Future<void> checkAuth() async {
     if (!state.isAuthenticated || state.auth == null) return;
 
@@ -244,7 +269,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 /// 全局认证状态提供者
 ///
 /// 提供对认证状态的全局访问
-/// 整合了认证服务和登录历史服务
+/// 整合认证服务和登录历史服务
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   final historyService = ref.watch(loginHistoryServiceProvider);

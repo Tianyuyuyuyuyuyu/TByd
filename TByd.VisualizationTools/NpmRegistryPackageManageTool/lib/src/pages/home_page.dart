@@ -17,6 +17,7 @@ import 'login_page.dart';
 import 'package_list_page.dart';
 import 'package_operations_page.dart';
 import 'test_page.dart';
+import '../widgets/user_avatar.dart';
 
 /// 主页组件
 ///
@@ -113,33 +114,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             child: Column(
               children: [
-                // 用户头像和名称
+                // 用户头像
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 16, 8, 8),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: theme.colorScheme.primary,
-                        child: Text(
-                          authState.auth?.username.substring(0, 1).toUpperCase() ?? 'U',
-                          style: TextStyle(
-                            color: theme.colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        authState.auth?.username ?? '',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                  padding: const EdgeInsets.all(16.0),
+                  child: UserAvatar(
+                    size: 40,
                   ),
                 ),
                 const Divider(),
