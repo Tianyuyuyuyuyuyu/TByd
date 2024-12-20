@@ -9,6 +9,8 @@ import 'dart:convert';
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import '../widgets/markdown_file_viewer.dart';
+import '../widgets/package_upload_terminal.dart';
+import '../services/package_upload_service.dart';
 
 /// 包操作页面
 ///
@@ -27,11 +29,12 @@ class PackageOperationsPage extends ConsumerStatefulWidget {
 class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> with SingleTickerProviderStateMixin {
   String? _selectedFolderPath;
   late TabController _tabController;
+  bool _isUploading = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
 
     // 恢复上次的项目路径
     Future.microtask(() {
@@ -127,6 +130,35 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
     }
   }
 
+  Future<void> _handleUpload() async {
+    if (_selectedFolderPath == null) {
+      return;
+    }
+
+    setState(() {
+      _isUploading = true;
+    });
+
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('上传失败：${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUploading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -214,6 +246,7 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
                   Tab(text: 'package.json'),
                   Tab(text: 'README'),
                   Tab(text: 'CHANGELOG'),
+                  Tab(text: '上传'),
                 ],
               ),
             ),
@@ -222,7 +255,7 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  // 发布设置页签内容
+                  // 发布设置页内容
                   PackageSettingsForm(
                     initialConfig: currentConfig,
                     onConfigChanged: _savePackageConfig,
@@ -236,6 +269,12 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
                   MarkdownFileViewer(
                     projectPath: _selectedFolderPath!,
                     fileName: 'CHANGELOG.md',
+                  ),
+                  // 上传页签内容
+                  PackageUploadTerminal(
+                    projectPath: _selectedFolderPath!,
+                    onUpload: _handleUpload,
+                    isUploading: _isUploading,
                   ),
                 ],
               ),
