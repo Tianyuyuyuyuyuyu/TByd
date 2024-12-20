@@ -24,6 +24,7 @@ class PackageUploadTerminal extends ConsumerStatefulWidget {
 class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
   final ScrollController _scrollController = ScrollController();
   final List<String> _outputLines = [];
+  Timer? _scrollTimer;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
 
   @override
   void dispose() {
+    _scrollTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -43,19 +45,24 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     _appendOutput('PS ${widget.projectPath}> ');
   }
 
+  void _scrollToBottom() {
+    if (!_scrollController.hasClients) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
+  }
+
   void _appendOutput(String line, {bool showPrompt = false}) {
+    if (!mounted) return;
+
     setState(() {
       _outputLines.add(line);
     });
-    // 滚动到底部
+
+    // 确保在下一帧渲染完成后滚动
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      }
+      _scrollToBottom();
     });
   }
 
@@ -160,9 +167,12 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
             ),
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
-            child: Scrollbar(
+            child: RawScrollbar(
               controller: _scrollController,
-              thumbVisibility: true,
+              thumbVisibility: false,
+              thickness: 8,
+              thumbColor: Colors.white24,
+              radius: const Radius.circular(4),
               child: ListView.builder(
                 controller: _scrollController,
                 itemCount: _outputLines.length,
