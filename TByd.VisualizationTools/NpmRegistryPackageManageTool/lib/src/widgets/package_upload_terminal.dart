@@ -9,12 +9,14 @@ import '../providers/terminal_output_provider.dart';
 class PackageUploadTerminal extends ConsumerStatefulWidget {
   final String projectPath;
   final VoidCallback? onUpload;
+  final VoidCallback? onUploadSuccess;
   final bool isUploading;
 
   const PackageUploadTerminal({
     super.key,
     required this.projectPath,
     this.onUpload,
+    this.onUploadSuccess,
     this.isUploading = false,
   });
 
@@ -57,17 +59,17 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     });
   }
 
-  void _appendOutput(String line) {
+  void _appendOutput(String line, {bool showPrompt = false, Color? color}) {
     if (!mounted) return;
 
     final notifier = ref.read(terminalOutputProvider.notifier);
     final lines = ref.read(terminalOutputProvider);
 
-    if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
+    if (lines.isNotEmpty && lines.last.text.startsWith('PS ')) {
       // 如果最后一行是提示符，在它之前插入输出
-      notifier.insertLine(lines.length - 1, line);
+      notifier.insertLine(lines.length - 1, line, color: color);
     } else {
-      notifier.addLine(line);
+      notifier.addLine(line, color: color);
     }
     _scrollToBottom();
   }
@@ -79,7 +81,7 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     final lines = ref.read(terminalOutputProvider);
 
     // 移除旧的提示符
-    if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
+    if (lines.isNotEmpty && lines.last.text.startsWith('PS ')) {
       notifier.removeLast();
     }
     // 添加带命令的提示符
@@ -185,17 +187,19 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
       }
 
       if (success) {
-        _appendOutput('\n包发布成功！');
+        _appendOutput('\n包发布成功！', color: Colors.green);
+        // 通知父组件上传成功
+        widget.onUploadSuccess?.call();
       } else {
-        _appendOutput('\n包发布失败，请检查上面的错误信息。');
+        _appendOutput('\n包发布失败，请检查上面的错误信息。', color: Colors.red);
       }
     } catch (e) {
-      _appendOutput('\n发生错误：${e.toString()}');
+      _appendOutput('\n发生错误：${e.toString()}', color: Colors.red);
     } finally {
       // 移除最后一个提示符
       final notifier = ref.read(terminalOutputProvider.notifier);
       final lines = ref.read(terminalOutputProvider);
-      if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
+      if (lines.isNotEmpty && lines.last.text.startsWith('PS ')) {
         notifier.removeLast();
       }
 
@@ -231,10 +235,11 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
               controller: _scrollController,
               itemCount: outputLines.length,
               itemBuilder: (context, index) {
+                final line = outputLines[index];
                 return SelectableText(
-                  outputLines[index],
-                  style: const TextStyle(
-                    color: Colors.white,
+                  line.text,
+                  style: TextStyle(
+                    color: line.color ?? Colors.white,
                     fontFamily: 'Consolas',
                     fontSize: 14,
                     height: 1.2,

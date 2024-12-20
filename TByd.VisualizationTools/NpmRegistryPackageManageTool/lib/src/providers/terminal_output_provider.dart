@@ -1,25 +1,33 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class TerminalOutputNotifier extends StateNotifier<List<String>> {
+class TerminalLine {
+  final String text;
+  final Color? color;
+
+  const TerminalLine(this.text, {this.color});
+}
+
+class TerminalOutputNotifier extends StateNotifier<List<TerminalLine>> {
   TerminalOutputNotifier()
       : super([
-          'Windows PowerShell',
-          '版权所有 (C) Microsoft Corporation。保留所有权利。',
-          '',
+          const TerminalLine('Windows PowerShell'),
+          const TerminalLine('版权所有 (C) Microsoft Corporation。保留所有权利。'),
+          const TerminalLine(''),
         ]);
 
   void clear() {
     state = [];
   }
 
-  void addLine(String line) {
-    state = [...state, line];
+  void addLine(String line, {Color? color}) {
+    state = [...state, TerminalLine(line, color: color)];
   }
 
-  void insertLine(int index, String line) {
+  void insertLine(int index, String line, {Color? color}) {
     final newList = [...state];
     if (index >= 0 && index <= newList.length) {
-      newList.insert(index, line);
+      newList.insert(index, TerminalLine(line, color: color));
       state = newList;
     }
   }
@@ -33,14 +41,14 @@ class TerminalOutputNotifier extends StateNotifier<List<String>> {
   void initialize() {
     if (state.isEmpty) {
       state = [
-        'Windows PowerShell',
-        '版权所有 (C) Microsoft Corporation。保留所有权利。',
-        '',
+        const TerminalLine('Windows PowerShell'),
+        const TerminalLine('版权所有 (C) Microsoft Corporation。保留所有权利。'),
+        const TerminalLine(''),
       ];
     }
   }
 }
 
-final terminalOutputProvider = StateNotifierProvider<TerminalOutputNotifier, List<String>>((ref) {
+final terminalOutputProvider = StateNotifierProvider<TerminalOutputNotifier, List<TerminalLine>>((ref) {
   return TerminalOutputNotifier();
 });

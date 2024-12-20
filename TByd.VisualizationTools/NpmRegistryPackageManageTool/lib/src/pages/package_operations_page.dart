@@ -159,6 +159,23 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
     }
   }
 
+  Future<void> _handleUploadSuccess() async {
+    // 显示成功提示
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('包发布成功！'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // 重新加载配置
+      if (_selectedFolderPath != null) {
+        await _loadPackageConfig(_selectedFolderPath!);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -274,6 +291,7 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
                   PackageUploadTerminal(
                     projectPath: _selectedFolderPath!,
                     onUpload: _handleUpload,
+                    onUploadSuccess: _handleUploadSuccess,
                     isUploading: _isUploading,
                   ),
                 ],

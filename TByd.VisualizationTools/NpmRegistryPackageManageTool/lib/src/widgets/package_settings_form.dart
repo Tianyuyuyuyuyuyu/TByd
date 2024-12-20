@@ -229,6 +229,28 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     }
   }
 
+  Widget _buildVersionBadge(String version) {
+    return Image.network(
+      'https://img.shields.io/badge/version-$version-blue.svg',
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Text(
+            'version: $version',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -267,7 +289,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 第一行：name, displayName, version
+                      // 第一行���name, displayName, version
                       Row(
                         children: [
                           Expanded(
