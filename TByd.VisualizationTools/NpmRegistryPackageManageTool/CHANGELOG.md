@@ -1,23 +1,63 @@
-# NPM Registry Manager
+# NPM Registry Package Manage Tool
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Windows-blue.svg)]()
 [![Flutter](https://img.shields.io/badge/Flutter-3.0+-blue.svg)]()
 
-NPM Registry Manager 是一个专业的 NPM 包管理工具，专注于提供高效、安全的包管理体验。
+基于 Flutter 开发的 NPM 私有仓库管理工具，专门用于管理和维护基于 Verdaccio 的私有 NPM 仓库。
 
 ## 作者与维护者
 
-- **主要开发者**: TByd Team
+- **主要开发者**: TianYu - TByd Team
 - **技术支持**: TByd Technical Support
 - **联系邮箱**: [tianyulovecars@gmail.com](mailto:tianyulovecars@gmail.com)
+- **项目主页**: [GitHub](https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.VisualizationTools/NpmRegistryPackageManageTool)
 
 ## Changelog
 
-All notable changes to NPM Registry Manager will be documented in this file.
+All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.0-beta.2] - 2024-12-20
+
+### Added
+- 新增包上传功能
+  - 一键上传功能
+  - 实时显示上传进度和状态
+  - 命令执行结果实时展示
+  - 自动刷新包列表
+- 新增包搜索功能
+  - 实时搜索
+  - 搜索状态保持
+- 新增包详情展示
+  - README 和 CHANGELOG 查看
+  - 包信息完整展示
+  - 版本历史记录
+
+### Changed
+- 优化用户界面
+  - 改进包列表显示
+  - 优化版本号展示样式
+  - 调整导航栏图标
+  - 优化终端输出显示
+- 改进包管理功能
+  - 使用 displayName 显示包名
+  - 添加许可证信息显示
+  - 优化作者信息展示
+
+### Fixed
+- 修复终端输出乱码问题
+- 修复搜索状态丢失问题
+- 修复版本徽章加载失败问题
+- 修复包列表刷新问题
+- 修复中文显示问题
+
+### Security
+- 加强身份验证机制
+- 改进 JWT Token 处理
+- 优化权限控制
 
 ## [0.1.0-beta.1] - 2024-12-14
 
@@ -178,7 +218,7 @@ A: 系统会自动检测版本冲突，并提供以下选项：
 A: 选择多个包后，可以进行：
 - 批量更新
 - 批量删除
-- ��量导出
+- 批量导出
 
 ### 4. 性能优化
 
