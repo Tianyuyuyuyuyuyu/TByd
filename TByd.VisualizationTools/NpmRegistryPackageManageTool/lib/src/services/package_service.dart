@@ -4,8 +4,9 @@ import 'package:http/http.dart' as http;
 import '../models/package_model.dart';
 import '../utils/constants.dart';
 
-/// 包管理服务类，负责与 Verdaccio NPM 仓库进行交互
-/// 提供包的搜索、详情获取、版本管理等核心功能
+/// NPM Registry Manager - 包管理服务类
+///
+/// 该文件负责与 Verdaccio NPM 仓库进行交互，提供包的搜索、详情获取、版本管理等核心功能
 class PackageService {
   /// Verdaccio 服务器的基础 URL
   final String serverUrl;
@@ -308,7 +309,7 @@ class PackageService {
   /// 返回排序后的结果（最多50个）
   List<PackageSearchResult> _sortByRelevance(List<PackageSearchResult> results, String searchText) {
     results.sort((a, b) {
-      final aName = a.name.toLowerCase(); // 使用 name 而不是 displayName 进行排序
+      final aName = a.name.toLowerCase();
       final bName = b.name.toLowerCase();
 
       // 完全匹配优先
@@ -332,7 +333,7 @@ class PackageService {
   /// 抛出异常：当获取失败时
   Future<Package> getPackageDetails(String packageName) async {
     if (serverUrl.isEmpty) {
-      throw Exception('Server URL is not set');
+      throw Exception('服务器URL未设置');
     }
 
     final uri = Uri.parse('$serverUrl/$packageName');
@@ -364,10 +365,10 @@ class PackageService {
 
         return Package.fromJson(data);
       } else {
-        throw Exception('Failed to get package details: ${response.statusCode}');
+        throw Exception('获取包详情失败: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to get package details: $e');
+      throw Exception('获取包详情失败: $e');
     }
   }
 
@@ -376,7 +377,7 @@ class PackageService {
   /// 返回按时间倒序排列的版本列表
   Future<List<PackageVersion>> getPackageVersions(String packageName) async {
     if (serverUrl.isEmpty) {
-      throw Exception('Server URL is not set');
+      throw Exception('服务器URL未设置');
     }
 
     final uri = Uri.parse('$serverUrl/$packageName');
@@ -393,10 +394,10 @@ class PackageService {
         return versions.keys.map((version) => PackageVersion.fromJson(data, version)).toList()
           ..sort((a, b) => b.publishedAt.compareTo(a.publishedAt));
       } else {
-        throw Exception('Failed to get package versions: ${response.statusCode}');
+        throw Exception('获取包版本失败: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to get package versions: $e');
+      throw Exception('获取包版本失败: $e');
     }
   }
 
@@ -406,11 +407,11 @@ class PackageService {
   /// 抛出异常：当操作失败或未授权时
   Future<void> unpublishPackage(String packageName, String version) async {
     if (serverUrl.isEmpty) {
-      throw Exception('Server URL is not set');
+      throw Exception('服务器URL未设置');
     }
 
     if (token == null) {
-      throw Exception('Authentication token is required');
+      throw Exception('需要认证令牌');
     }
 
     final uri = Uri.parse('$serverUrl${ApiConstants.unpublish}').replace(
@@ -427,10 +428,10 @@ class PackageService {
       );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Failed to unpublish package: ${response.statusCode}');
+        throw Exception('下架包失败: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to unpublish package: $e');
+      throw Exception('下架包失败: $e');
     }
   }
 
@@ -440,11 +441,11 @@ class PackageService {
   /// [message] - 弃用说明
   Future<void> deprecatePackage(String packageName, String version, String message) async {
     if (serverUrl.isEmpty) {
-      throw Exception('Server URL is not set');
+      throw Exception('服务器URL未设置');
     }
 
     if (token == null) {
-      throw Exception('Authentication token is required');
+      throw Exception('需要认证令牌');
     }
 
     final uri = Uri.parse('$serverUrl${ApiConstants.deprecate}');
@@ -461,10 +462,10 @@ class PackageService {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('Failed to deprecate package: ${response.statusCode}');
+        throw Exception('标记包为已弃用失败: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to deprecate package: $e');
+      throw Exception('标记包为已弃用失败: $e');
     }
   }
 
@@ -489,7 +490,7 @@ class PackageService {
   /// 返回格式化的 JSON 字符串
   Future<String> getRawManifest(String packageName) async {
     if (serverUrl.isEmpty) {
-      throw Exception('Server URL is not set');
+      throw Exception('服务器URL未设置');
     }
 
     final uri = Uri.parse('$serverUrl/$packageName');
@@ -498,21 +499,17 @@ class PackageService {
       final response = await client.get(uri, headers: _getHeaders());
 
       if (response.statusCode == 200) {
-        // 解析 JSON 数据
         final dynamic jsonData = json.decode(response.body);
 
-        // 移除顶层的 readme 部分
         if (jsonData is Map) {
           jsonData.remove('readme');
 
-          // 移除版本中的 readme 字段
           final versions = jsonData['versions'];
           if (versions is Map) {
             for (final version in versions.values) {
               if (version is Map) {
                 version.remove('readme');
 
-                // 将 Installation 转换为大写
                 if (version['installation'] != null) {
                   version['INSTALLATION'] = version.remove('installation');
                 }
@@ -520,19 +517,17 @@ class PackageService {
             }
           }
 
-          // 处理顶层的 Installation
           if (jsonData['installation'] != null) {
             jsonData['INSTALLATION'] = jsonData.remove('installation');
           }
         }
 
-        // 格式化 JSON 以便于阅读
         return const JsonEncoder.withIndent('  ').convert(jsonData);
       } else {
-        throw Exception('Failed to get raw manifest: ${response.statusCode}');
+        throw Exception('获取原始清单失败: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Failed to get raw manifest: $e');
+      throw Exception('获取原始清单失败: $e');
     }
   }
 }
