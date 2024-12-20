@@ -7,6 +7,7 @@ import '../providers/package_settings_provider.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path/path.dart' as path;
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 /// 包操作页面
 ///
@@ -98,7 +99,7 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
       final jsonContent = const JsonEncoder.withIndent('  ').convert(config.toJson());
       await packageJsonFile.writeAsString(jsonContent);
 
-      // 更新provider的配��
+      // 更新provider的配置
       ref.read(packageSettingsProvider.notifier).updateConfig(
             config,
             projectPath: _selectedFolderPath,
@@ -158,7 +159,20 @@ class _PackageOperationsPageState extends ConsumerState<PackageOperationsPage> w
                         onPressed: _selectFolder,
                       ),
                       if (_selectedFolderPath != null) ...[
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.folder),
+                          onPressed: () async {
+                            if (_selectedFolderPath != null) {
+                              final uri = Uri.file(_selectedFolderPath!);
+                              if (await url_launcher.canLaunchUrl(uri)) {
+                                await url_launcher.launchUrl(uri);
+                              }
+                            }
+                          },
+                          tooltip: '打开项目文件夹',
+                        ),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             _selectedFolderPath!,

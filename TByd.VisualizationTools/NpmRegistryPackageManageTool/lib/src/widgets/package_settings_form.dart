@@ -10,6 +10,9 @@ import '../models/license_type.dart';
 import '../widgets/keywords_selector.dart';
 import '../widgets/category_selector.dart';
 import 'contributors_selector.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'dart:io';
+import 'package:path/path.dart' as path;
 
 /// 包设置表单组件
 class PackageSettingsForm extends ConsumerStatefulWidget {
@@ -689,7 +692,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                               children: _relatedPackages.entries.map((entry) {
                                 return Chip(
                                   label: Text('${entry.key}:${entry.value}'),
-                                  backgroundColor: theme.colorScheme.surfaceVariant,
+                                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
                                   labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                                 );
                               }).toList(),
@@ -720,7 +723,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                               children: _dependencies.entries.map((entry) {
                                 return Chip(
                                   label: Text('${entry.key}@${entry.value}'),
-                                  backgroundColor: theme.colorScheme.surfaceVariant,
+                                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
                                   labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                                 );
                               }).toList(),
@@ -755,7 +758,7 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                                 return Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceVariant,
+                                    color: theme.colorScheme.surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Column(
@@ -809,6 +812,21 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   FilledButton.icon(
+                    onPressed: () async {
+                      final savedState = ref.read(packageSettingsProvider);
+                      if (savedState.currentProjectPath != null) {
+                        final packageJsonFile = File(path.join(savedState.currentProjectPath!, 'package.json'));
+                        final uri = Uri.file(packageJsonFile.path);
+                        if (await url_launcher.canLaunchUrl(uri)) {
+                          await url_launcher.launchUrl(uri);
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.code),
+                    label: const Text('打开源文件'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.icon(
                     onPressed: _saveConfig,
                     icon: const Icon(Icons.save),
                     label: const Text('保存'),
@@ -833,8 +851,12 @@ class _PackageSettingsFormState extends ConsumerState<PackageSettingsForm> {
     final v2Parts = version2.split('.').map(int.tryParse).toList();
 
     // 确保两个版本号都有三个部分（主版本号.次版本号.修订号）
-    while (v1Parts.length < 3) v1Parts.add(0);
-    while (v2Parts.length < 3) v2Parts.add(0);
+    while (v1Parts.length < 3) {
+      v1Parts.add(0);
+    }
+    while (v2Parts.length < 3) {
+      v2Parts.add(0);
+    }
 
     // 如果任何部分无法解析为数字，则认为版本号无效
     if (v1Parts.contains(null) || v2Parts.contains(null)) {

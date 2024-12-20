@@ -160,7 +160,7 @@ class MyApp extends ConsumerWidget {
                     const SizedBox(height: 8),
                     Text(
                       'Made By 田雨 - TByd',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                             fontWeight: FontWeight.bold,
                           ),
