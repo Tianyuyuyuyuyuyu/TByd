@@ -24,6 +24,7 @@ class PackageUploadTerminal extends ConsumerStatefulWidget {
 
 class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
   final ScrollController _scrollController = ScrollController();
+  bool _isLocalUploading = false;
 
   @override
   void initState() {
@@ -138,19 +139,23 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
   }
 
   Future<void> _startUpload() async {
-    if (widget.isUploading) return;
+    if (_isLocalUploading || widget.isUploading) return;
 
-    // 通知父组件开始上传
-    widget.onUpload?.call();
-
-    // 清空终端并重新初始化
-    ref.read(terminalOutputProvider.notifier).clear();
-    _initializeTerminal();
-
-    final uploadService = ref.read(packageUploadServiceProvider);
-    bool success = true;
+    setState(() {
+      _isLocalUploading = true;
+    });
 
     try {
+      // 通知父组件开始上传
+      widget.onUpload?.call();
+
+      // 清空终端并重新初始化
+      ref.read(terminalOutputProvider.notifier).clear();
+      _initializeTerminal();
+
+      final uploadService = ref.read(packageUploadServiceProvider);
+      bool success = true;
+
       // 1. 设置 registry
       final setRegistryProcess = await uploadService.executeSetRegistry(widget.projectPath);
       success = await _handleProcessOutput(
@@ -186,20 +191,26 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
       }
     } catch (e) {
       _appendOutput('\n发生错误：${e.toString()}');
-      success = false;
-    }
+    } finally {
+      // 移除最后一个提示符
+      final notifier = ref.read(terminalOutputProvider.notifier);
+      final lines = ref.read(terminalOutputProvider);
+      if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
+        notifier.removeLast();
+      }
 
-    // 移除最后一个提示符
-    final notifier = ref.read(terminalOutputProvider.notifier);
-    final lines = ref.read(terminalOutputProvider);
-    if (lines.isNotEmpty && lines.last.startsWith('PS ')) {
-      notifier.removeLast();
+      if (mounted) {
+        setState(() {
+          _isLocalUploading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final outputLines = ref.watch(terminalOutputProvider);
+    final isUploading = _isLocalUploading || widget.isUploading;
 
     return Stack(
       children: [
@@ -237,8 +248,8 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
           right: 24,
           bottom: 24,
           child: FilledButton.icon(
-            onPressed: widget.isUploading ? null : _startUpload,
-            icon: widget.isUploading
+            onPressed: isUploading ? null : _startUpload,
+            icon: isUploading
                 ? const SizedBox(
                     width: 16,
                     height: 16,
@@ -248,7 +259,7 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
                     ),
                   )
                 : const Icon(Icons.upload),
-            label: Text(widget.isUploading ? '上传中...' : '一键上传'),
+            label: Text(isUploading ? '上传中...' : '一键上传'),
           ),
         ),
       ],
