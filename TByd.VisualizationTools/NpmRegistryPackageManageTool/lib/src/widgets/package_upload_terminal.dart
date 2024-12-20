@@ -24,25 +24,29 @@ class PackageUploadTerminal extends ConsumerStatefulWidget {
 class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
   final ScrollController _scrollController = ScrollController();
   final List<String> _outputLines = [];
-  Timer? _scrollTimer;
 
   @override
   void initState() {
     super.initState();
-    _appendOutput('Windows PowerShell');
-    _appendOutput('版权所有 (C) Microsoft Corporation。保留所有权利。\n');
-    _showPrompt();
+    _initializeTerminal();
   }
 
   @override
   void dispose() {
-    _scrollTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _showPrompt() {
-    _appendOutput('PS ${widget.projectPath}> ');
+  void _initializeTerminal() {
+    setState(() {
+      _outputLines.addAll([
+        'Windows PowerShell',
+        '版权所有 (C) Microsoft Corporation。保留所有权利。',
+        '',
+        'PS ${widget.projectPath}> ',
+      ]);
+    });
+    _scrollToBottom();
   }
 
   void _scrollToBottom() {
@@ -53,21 +57,34 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     });
   }
 
-  void _appendOutput(String line, {bool showPrompt = false}) {
+  void _appendOutput(String line) {
     if (!mounted) return;
 
     setState(() {
-      _outputLines.add(line);
+      if (_outputLines.isNotEmpty && _outputLines.last.startsWith('PS ')) {
+        // 如果最后一行是提示符，在它之前插入输出
+        _outputLines.insert(_outputLines.length - 1, line);
+      } else {
+        _outputLines.add(line);
+      }
     });
-
-    // 确保在下一帧渲染完成后滚动
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToBottom();
-    });
+    _scrollToBottom();
   }
 
   void _appendCommand(String command) {
-    _appendOutput('PS ${widget.projectPath}> $command');
+    if (!mounted) return;
+
+    setState(() {
+      // 移除旧的提示符
+      if (_outputLines.isNotEmpty && _outputLines.last.startsWith('PS ')) {
+        _outputLines.removeLast();
+      }
+      // 添加带命令的提示符
+      _outputLines.add('PS ${widget.projectPath}> $command');
+      // 添加新的提示符
+      _outputLines.add('PS ${widget.projectPath}> ');
+    });
+    _scrollToBottom();
   }
 
   Future<bool> _handleProcessOutput(Process process, String command, String commandName) async {
@@ -79,24 +96,37 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
     _appendCommand(command);
 
     process.stdout.transform(utf8Decoder).listen(
-          (output) => _appendOutput(output.trimRight()),
-          onDone: () => stdoutCompleter.complete(),
-        );
+      (output) {
+        final lines = output.split('\n');
+        for (final line in lines) {
+          if (line.trim().isNotEmpty) {
+            _appendOutput(line.trimRight());
+          }
+        }
+      },
+      onDone: () => stdoutCompleter.complete(),
+    );
 
     process.stderr.transform(utf8Decoder).listen(
-          (error) => _appendOutput(error.trimRight()),
-          onDone: () => stderrCompleter.complete(),
-        );
+      (error) {
+        final lines = error.split('\n');
+        for (final line in lines) {
+          if (line.trim().isNotEmpty) {
+            _appendOutput(line.trimRight());
+          }
+        }
+      },
+      onDone: () => stderrCompleter.complete(),
+    );
 
     // 等待两个流都完成
     await Future.wait([stdoutCompleter.future, stderrCompleter.future]);
     final exitCode = await process.exitCode;
 
     if (exitCode != 0) {
-      _appendOutput('\n命令执行失败，退出码：$exitCode\n');
+      _appendOutput('\n命令执行失败，退出码：$exitCode');
     }
 
-    _showPrompt();
     return exitCode == 0;
   }
 
@@ -108,9 +138,8 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
 
     setState(() {
       _outputLines.clear();
-      _appendOutput('Windows PowerShell');
-      _appendOutput('版权所有 (C) Microsoft Corporation。保留所有权利。\n');
     });
+    _initializeTerminal();
 
     final uploadService = ref.read(packageUploadServiceProvider);
     bool success = true;
@@ -145,12 +174,12 @@ class _PackageUploadTerminalState extends ConsumerState<PackageUploadTerminal> {
       }
 
       if (success) {
-        _appendOutput('\n包发布成功！\n');
+        _appendOutput('\n包发布成功！');
       } else {
-        _appendOutput('\n包发布失败，请检查上面的错误信息。\n');
+        _appendOutput('\n包发布失败，请检查上面的错误信息。');
       }
     } catch (e) {
-      _appendOutput('\n发生错误：${e.toString()}\n');
+      _appendOutput('\n发生错误：${e.toString()}');
       success = false;
     }
   }
