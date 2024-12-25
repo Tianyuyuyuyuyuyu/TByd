@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from datetime import datetime
+import pytz  # 添加时区支持
 
 def fetch_trending():
     url = "https://github.com/trending"
@@ -12,55 +13,69 @@ def fetch_trending():
     soup = BeautifulSoup(response.text, 'html.parser')
     
     repos = []
+    # 修改选择器以确保获取所有仓库
     articles = soup.select('article.Box-row')
+    
+    print(f"Found {len(articles)} repositories") # 添加调试信息
     
     for article in articles[:50]:  # 获取前50个仓库
         try:
-            name = article.select_one('h2 a').get_text(strip=True)
-            repo_relative_url = article.select_one('h2 a')['href'].strip('/')
+            # 修改选择器以更准确地获取信息
+            repo_link = article.select_one('h2.h3 a')
+            name = repo_link['href'].strip('/')
+            
             description = article.select_one('p')
             description = description.get_text(strip=True) if description else "暂无描述"
             
             # 获取 star 数和 fork 数
-            stats = article.select('span.d-inline-block')
+            stats = article.select('a.Link--muted')
             stars = stats[0].get_text(strip=True) if len(stats) > 0 else "0"
             forks = stats[1].get_text(strip=True) if len(stats) > 1 else "0"
             
             # 获取今日新增 star 数
-            today_stars = article.select_one('.float-sm-right')
+            today_stars = article.select_one('span.d-inline-block.float-sm-right')
             today_stars = today_stars.get_text(strip=True) if today_stars else "0"
             
             # 获取主要编程语言
-            language = article.select_one('[itemprop="programmingLanguage"]')
-            language = language.get_text(strip=True) if language else "未知语言"
+            language_span = article.select_one('span[itemprop="programmingLanguage"]')
+            language = language_span.get_text(strip=True) if language_span else "未知语言"
             
-            url = f"https://github.com/{repo_relative_url}"
+            url = f"https://github.com/{name}"
             
             repos.append({
                 'name': name,
                 'description': description,
                 'url': url,
-                'stars': stars,
-                'forks': forks,
-                'today_stars': today_stars,
+                'stars': stars.replace(',', ''),  # 移除数字中的逗号
+                'forks': forks.replace(',', ''),
+                'today_stars': today_stars.replace('stars today', '').strip(),
                 'language': language
             })
+            
+            # 添加调试信息
+            print(f"Successfully processed: {name}")
+            
         except Exception as e:
             print(f"Error processing repository: {str(e)}")
             continue
     
+    print(f"Successfully processed {len(repos)} repositories") # 添加调试信息
     return repos
 
 if __name__ == "__main__":
+    # 设置时区为北京时间
+    beijing_tz = pytz.timezone('Asia/Shanghai')
+    current_time = datetime.now(beijing_tz).strftime('%Y-%m-%d %H:%M')
+    current_time_file = datetime.now(beijing_tz).strftime('%Y%m%d%H%M')
+    
     # 获取趋势项目
     trending_repos = fetch_trending()
     
     # 保存结果
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
-    
-    with open(f'Action_Trending/trending-{datetime.now().strftime("%Y%m%d%H%M")}.md', 'w', encoding='utf-8') as f:
+    with open(f'Action_Trending/trending-{current_time_file}.md', 'w', encoding='utf-8') as f:
         f.write(f'# GitHub Trending 热门项目 ({current_time})\n\n')
         f.write('*自动更新时间：每天早7:00、中午12:00、晚22:00*\n\n')
+        f.write(f'*共 {len(trending_repos)} 个项目*\n\n')
         
         if trending_repos:
             for idx, repo in enumerate(trending_repos, 1):
