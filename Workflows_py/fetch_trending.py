@@ -51,27 +51,26 @@ def fetch_trending():
     
     return repos
 
-if __name__ == "__main__":
-    # 获取趋势项目
-    trending_repos = fetch_trending()
+# 获取趋势项目
+trending_repos = fetch_trending()
+
+# 保存结果
+current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+
+with open(f'Action_Trending/trending-{datetime.now().strftime("%Y%m%d%H%M")}.md', 'w', encoding='utf-8') as f:
+    f.write(f'# GitHub Trending 热门项目 ({current_time})\n\n')
+    f.write('*自动更新时间：每天早7:00、中午12:00、晚22:00*\n\n')
     
-    # 保存结果
-    current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+    if trending_repos:
+        for idx, repo in enumerate(trending_repos, 1):
+            f.write(f'## {idx}. {repo["name"]}\n')
+            f.write(f'- 📝 描述：{repo["description"]}\n')
+            f.write(f'- ⭐ Stars：{repo["stars"]}\n')
+            f.write(f'- 🔱 Forks：{repo["forks"]}\n')
+            f.write(f'- 📈 今日新增：{repo["today_stars"]}\n')
+            f.write(f'- 💻 主要语言：{repo["language"]}\n')
+            f.write(f'- 🔗 项目链接：[点击访问]({repo["url"]})\n\n')
+    else:
+        f.write('暂时没有获取到任何项目信息。\n')
     
-    with open(f'Action_Trending/trending-{datetime.now().strftime("%Y%m%d%H%M")}.md', 'w', encoding='utf-8') as f:
-        f.write(f'# GitHub Trending 热门项目 ({current_time})\n\n')
-        f.write('*自动更新时间：每天早7:00、中午12:00、晚22:00*\n\n')
-        
-        if trending_repos:
-            for idx, repo in enumerate(trending_repos, 1):
-                f.write(f'## {idx}. {repo["name"]}\n')
-                f.write(f'- 📝 描述：{repo["description"]}\n')
-                f.write(f'- ⭐ Stars：{repo["stars"]}\n')
-                f.write(f'- 🔱 Forks：{repo["forks"]}\n')
-                f.write(f'- 📈 今日新增：{repo["today_stars"]}\n')
-                f.write(f'- 💻 主要语言：{repo["language"]}\n')
-                f.write(f'- 🔗 项目链接：[点击访问]({repo["url"]})\n\n')
-        else:
-            f.write('暂时没有获取到任何项目信息。\n')
-        
-        f.write('\n---\n*更多项目请访问 [GitHub Trending](https://github.com/trending)*') 
+    f.write('\n---\n*更多项目请访问 [GitHub Trending](https://github.com/trending)*')
