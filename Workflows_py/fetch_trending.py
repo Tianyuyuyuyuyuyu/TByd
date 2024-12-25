@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import json
 from datetime import datetime
 import pytz  # 添加时区支持
+import os
 
 def fetch_trending():
     url = "https://github.com/trending"
@@ -63,10 +64,13 @@ def fetch_trending():
     return repos
 
 if __name__ == "__main__":
-    # 设置时区为北京时间
-    beijing_tz = pytz.timezone('Asia/Shanghai')
-    current_time = datetime.now(beijing_tz).strftime('%Y-%m-%d %H:%M')
-    current_time_file = datetime.now(beijing_tz).strftime('%Y%m%d%H%M')
+    # 直接使用系统环境的时区（已在工作流中设置为 Asia/Shanghai）
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+    current_time_file = datetime.now().strftime('%Y%m%d%H%M')
+    
+    # 打印调试信息
+    print(f"Current time: {current_time}")
+    print(f"System timezone: {os.environ.get('TZ', 'not set')}")
     
     # 获取趋势项目
     trending_repos = fetch_trending()
