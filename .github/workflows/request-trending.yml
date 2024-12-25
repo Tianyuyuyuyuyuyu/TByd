@@ -1,0 +1,121 @@
+name: Request Trending
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # 每10分钟触发一次
+  workflow_dispatch:
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+          
+      - name: Create content directories
+        run: |
+          mkdir -p GameDev
+          mkdir -p Trending
+          
+      - name: Fetch GitHub Trending
+        run: |
+          cat << 'EOF' > fetch_trending.py
+          import requests
+          from bs4 import BeautifulSoup
+          import json
+          from datetime import datetime
+          
+          def is_game_related(description):
+              keywords = ['game', 'unity', 'unreal', 'pygame', 'gamedev', 'gaming',
+                         'game-engine', '游戏', '游戏引擎', 'godot', 'opengl', 'directx']
+              if description:
+                  return any(keyword in description.lower() for keyword in keywords)
+              return False
+          
+          def fetch_trending():
+              url = "https://github.com/trending"
+              response = requests.get(url)
+              soup = BeautifulSoup(response.text, 'html.parser')
+              
+              repos = []
+              articles = soup.select('article.Box-row')
+              
+              for article in articles[:20]:
+                  try:
+                      name = article.select_one('h2 a').get_text(strip=True)
+                      description = article.select_one('p')
+                      description = description.get_text(strip=True) if description else ""
+                      url = f"https://github.com/{name}"
+                      
+                      if is_game_related(description):
+                          repos.append({
+                              'name': name,
+                              'description': description,
+                              'url': url
+                          })
+                  except:
+                      continue
+              
+              return repos
+          
+          # 获取趋势项目
+          trending_repos = fetch_trending()
+          
+          # 保存结果
+          current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
+          
+          with open(f'Trending/trending-{datetime.now().strftime("%Y%m%d%H%M")}.md', 'w', encoding='utf-8') as f:
+              f.write(f'# GitHub 游戏开发趋势项目 ({current_time})\n\n')
+              if trending_repos:
+                  for repo in trending_repos:
+                      f.write(f'## {repo["name"]}\n')
+                      f.write(f'- 描述：{repo["description"]}\n')
+                      f.write(f'- 链接：{repo["url"]}\n\n')
+              else:
+                  f.write('今天没有发现游戏相关的热门项目。\n')
+          EOF
+          
+          python fetch_trending.py
+          
+      - name: Generate daily summary
+        run: |
+          # 设置时区为北京时间
+          export TZ=Asia/Shanghai
+          
+          # 生成游戏开发日志
+          TOPICS=("游戏性设计" "图形渲染" "物理引擎" "AI系统" "音频处理" "多人联网")
+          RANDOM_TOPIC=${TOPICS[$RANDOM % ${#TOPICS[@]}]}
+          
+          echo "# 游戏开发日志 $(date '+%Y年%m月%d日 %H:%M')" > GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          echo "## 今日研究主题：${RANDOM_TOPIC}" >> GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          echo "## 参考资料" >> GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          echo "可以查看今日的 Trending 项目获取灵感。" >> GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          
+      - name: Commit changes
+        run: |
+          git config --global user.name 'Tianyuyuyuyuyuyu'
+          git config --global user.email 'TianyuLovecars@gmail.com'
+          git add .
+          
+          # 生成随机提交信息
+          MESSAGES=("更新游戏开发趋势" "新增开发日志" "更新GitHub趋势项目" "记录游戏开发灵感")
+          RANDOM_MESSAGE=${MESSAGES[$RANDOM % ${#MESSAGES[@]}]}
+          
+          git commit -m "${RANDOM_MESSAGE} $(date '+%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN }}
