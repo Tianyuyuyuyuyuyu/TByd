@@ -76,7 +76,7 @@ jobs:
           # 保存结果
           current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
           
-          with open(f'Trending/trending-{datetime.now().strftime("%Y%m%d%H%M")}.md', 'w', encoding='utf-8') as f:
+          with open(f'Action_Trending/trending-{datetime.now().strftime("%Y%m%d%H%M")}.md', 'w', encoding='utf-8') as f:
               f.write(f'# GitHub 游戏开发趋势项目 ({current_time})\n\n')
               if trending_repos:
                   for repo in trending_repos:
@@ -98,10 +98,10 @@ jobs:
           TOPICS=("游戏性设计" "图形渲染" "物理引擎" "AI系统" "音频处理" "多人联网")
           RANDOM_TOPIC=${TOPICS[$RANDOM % ${#TOPICS[@]}]}
           
-          echo "# 游戏开发日志 $(date '+%Y年%m月%d日 %H:%M')" > GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
-          echo "## 今日研究主题：${RANDOM_TOPIC}" >> GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
-          echo "## 参考资料" >> GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
-          echo "可以查看今日的 Trending 项目获取灵感。" >> GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          echo "# 游戏开发日志 $(date '+%Y年%m月%d日 %H:%M')" > Action_GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          echo "## 今日研究主题：${RANDOM_TOPIC}" >> Action_GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          echo "## 参考资料" >> Action_GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
+          echo "可以查看今日的 Trending 项目获取灵感。" >> Action_GameDev/devlog-$(date +\%Y\%m\%d\%H\%M).md
           
       - name: Commit changes
         run: |
