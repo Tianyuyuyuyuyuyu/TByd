@@ -26,8 +26,8 @@ jobs:
           
       - name: Create content directories
         run: |
-          mkdir -p GameDev
-          mkdir -p Trending
+          mkdir -p Action_GameDev
+          mkdir -p Action_Trending
           
       - name: Fetch GitHub Trending
         run: |
