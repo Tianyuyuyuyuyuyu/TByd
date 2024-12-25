@@ -24,13 +24,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4
           
-      - name: Create content directories
+      - name: Create directories
         run: |
           mkdir -p Action_Trending
+          mkdir -p Workflows_py
           
-      - name: Fetch GitHub Trending
+      - name: Create and run fetch script
         run: |
-          cat << 'EOF' > fetch_trending.py
+          # 确保目录存在
+          mkdir -p Workflows_py
+          
+          # 将脚本写入新位置
+          cat << 'EOF' > Workflows_py/fetch_trending.py
           import requests
           from bs4 import BeautifulSoup
           import json
@@ -109,7 +114,8 @@ jobs:
               f.write('\n---\n*更多项目请访问 [GitHub Trending](https://github.com/trending)*')
           EOF
           
-          python fetch_trending.py
+          # 运行脚本
+          python Workflows_py/fetch_trending.py
           
       - name: Commit changes
         run: |
