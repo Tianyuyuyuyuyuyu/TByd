@@ -8,6 +8,8 @@ on:
 jobs:
   auto-commit:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai # 设置时区为北京时间
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
