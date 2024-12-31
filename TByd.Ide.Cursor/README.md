@@ -1,0 +1,2 @@
+# TByd IDE Cursor
+

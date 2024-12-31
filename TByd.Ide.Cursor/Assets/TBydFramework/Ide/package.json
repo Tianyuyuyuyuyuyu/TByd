@@ -1,0 +1,32 @@
+{
+  "name": "com.r1ch.ide.cursor",
+  "displayName": "Cursor Editor",
+  "description": "Cursor 编辑器集成，支持将 Cursor 作为 Unity 的代码编辑器。添加了对生成 csproj 文件用于智能感知、自动发现安装等的支持。",
+  "version": "0.0.3",
+  "unity": "2019.4",
+  "unityRelease": "9f1",
+  "license": "MIT",
+  "keywords": [
+    "IDE"
+  ],
+  "author": {
+    "name": "R1ch, Inc.",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "category": "IDE",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Ide.Cursor",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Ide.Cursor/Assets/TBydFramework/Ide"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+    "com.unity.test-framework": "1.1.9"
+  },
+  "_upm": {
+    "changelog": "Integration:\n\n- Add support for Cursor"
+  }
+}
