@@ -1,0 +1,50 @@
+# 开发文档和示例
+/DevDocs/
+/DevDocs.meta
+/Examples~/
+/Examples~.meta
+
+# 测试相关
+/Tests/
+/Tests.meta
+*.tests.*
+
+# 编辑器资源
+/Editor Resources/
+/Editor Resources.meta
+
+# 开发和版本控制
+.git/
+.github/
+.gitignore
+.gitattributes
+.gitkeep
+.npmignore
+.editorconfig
+*.swp
+
+# IDE配置
+.vs/
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.suo
+*.user
+
+# 临时文件和日志
+*.log
+*.tmp
+
+# OS生成的文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# 其他
+/PackageResources/
+/PackageResources.meta 
