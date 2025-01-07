@@ -1,14 +1,10 @@
 {
-    "name": "TByd.Core.DI.Editor",
+    "name": "TByd.Core.DI.Abstractions.Runtime",
     "rootNamespace": "",
-    "references": [
-        "GUID:1838b6d26971aab48860099406590e04"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "references": [],
+    "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

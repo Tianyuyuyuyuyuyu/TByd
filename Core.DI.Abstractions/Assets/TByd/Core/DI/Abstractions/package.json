@@ -1,15 +1,17 @@
 {
-  "name": "com.tbyd.core.template(全小写，com.tbyd.模块名.包名)",
-  "displayName": "TByd Core Template(Unity Package Manager中显示的名称)",
+  "name": "com.tbyd.core.di.abstractions",
+  "displayName": "TByd Core DI Abstractions",
   "version": "0.0.1",
   "unity": "2021.3",
   "unityRelease": "8f1",
-  "description": "添加当前UPM包的描述",  
+  "description": "TByd Core DI Abstractions提供了一套框架无关的依赖注入抽象接口，支持多种DI容器的实现。",  
   "license": "MIT",
   "keywords": [
     "TByd",
     "Core",
-    "Template"
+    "DI",
+    "Dependency Injection",
+    "IoC"
   ],
   "author": {
     "name": "TByd",
@@ -31,14 +33,5 @@
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
   },
   "relatedPackages": {},
-  "dependencies": {
-	"com.cysharp.unitask": "2.5.0"
-  },
-  "samples": [
-    {
-        "displayName": "Basic Object Pool",
-        "description": "Demonstrates basic usage of ObjectPool<T>",
-        "path": "Samples~/01_BasicObjectPool"
-      }
-  ]
+  "dependencies": {}
 }
