@@ -24,7 +24,7 @@
     }
   ],
   "category": "Core",
-  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Framework",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/Core.DI.Abstractions/Assets/TByd/Core/DI/Abstractions",
   "repository": {
     "type": "git",
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master"

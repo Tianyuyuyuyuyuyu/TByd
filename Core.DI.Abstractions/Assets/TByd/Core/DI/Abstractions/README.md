@@ -1,26 +1,96 @@
-# Package Template
+# TByd Core DI Abstractions
 
-## 描述
-这是一个Unity包开发模板，提供标准的目录结构和基本配置。
+TByd Core DI Abstractions提供了一套框架无关的依赖注入抽象接口，支持多种DI容器的实现。
 
-## 安装方法
-1. 打开Unity Package Manager
-2. 点击 "+" 按钮
-3. 选择 "Add package from git URL"
-4. 输入包的Git URL
+## 特性
 
-## 快速开始
-1. 克隆此仓库
-2. 修改 package.json 中的包信息
-3. 开始开发你的包
+- 框架无关的依赖注入抽象层
+- 支持多种生命周期（Transient、Scoped、Singleton）
+- 支持ID标识的服务注册和解析
+- 完整的生命周期作用域管理
+- 类型安全的泛型API
 
-## 功能特性
-- 标准的UPM包结构
-- 完整的文档模板
-- 示例代码
+## 安装
 
-## 依赖说明
-- Unity 2021.3 或更高版本
+### 配置私有仓库
+
+1. 打开`Packages/manifest.json`
+2. 添加私有仓库的scoped registry配置：
+
+```json
+{
+  "scopedRegistries": [
+    {
+      "name": "TByd Registry",
+      "url": "http://120.26.201.54:1998",
+      "scopes": [
+        "com.tbyd"
+      ]
+    }
+  ],
+  "dependencies": {
+    "com.tbyd.core.di.abstractions": "0.0.1"
+  }
+}
+```
+
+### 通过Unity Package Manager
+
+1. 确保已配置私有仓库
+2. 打开Package Manager
+3. 点击"+"按钮
+4. 选择"Add package by name"
+5. 输入：`com.tbyd.core.di.abstractions`
+6. 选择版本：`0.0.1`
+
+## 基本使用
+
+### 1. 定义服务接口和实现
+
+```csharp
+public interface IMyService
+{
+    void DoSomething();
+}
+
+public class MyService : IMyService
+{
+    public void DoSomething() { }
+}
+```
+
+### 2. 注册服务
+
+```csharp
+public class Installer
+{
+    public void Install(IContainerBuilder builder)
+    {
+        // 注册为瞬态服务
+        builder.Register<IMyService, MyService>();
+        
+        // 注册为单例
+        builder.Register<IMyService, MyService>(LifetimeType.Singleton);
+        
+        // 注册带ID的服务
+        builder.Register<IMyService, MyService>(id: "special");
+    }
+}
+```
+
+### 3. 使用依赖注入
+
+```csharp
+public class MyComponent
+{
+    [Inject]
+    private IMyService _service;
+    
+    [Inject("special")]
+    private IMyService _specialService;
+}
+```
 
 ## 许可证
-[LICENSE](LICENSE.md) 文件包含详细信息。 
+
+本项目基于MIT许可证。详见[LICENSE](LICENSE.md)文件。 
