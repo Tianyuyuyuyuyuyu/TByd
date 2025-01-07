@@ -1,2 +1,0 @@
-# TByd Framework Template
-
