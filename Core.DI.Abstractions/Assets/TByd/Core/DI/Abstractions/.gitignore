@@ -1,55 +1,46 @@
-# Unity生成的元数据
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+# Unity meta files
 *.meta
-*.pidb.meta
-*.pdb.meta
-*.mdb.meta
+*.asmdef.meta
+*.cs.meta
+*.md.meta
 
-!package.json.meta
-!*.asmdef.meta
-!*.asmref.meta
-!*.asset.meta
-!*/Editor/Resources/**/*.meta
-
-# IDE配置
+# IDE
 .vs/
-.vscode/
 .idea/
+.vscode/
 *.csproj
 *.sln
-*.suo
 *.user
 *.userprefs
 *.pidb
-*.booproj
-*.svd
-*.pdb
-*.mdb
-.vsconfig
+*.suo
+*.sln.docstates
 
-# 临时文件和日志
-*.log
-*.tmp
-*.temp
-.fake
+# Package
+node_modules/
+package-lock.json
+*.tgz
 
-# OS生成的文件
+# OS generated
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
-Icon?
 ehthumbs.db
 Thumbs.db
-Desktop.ini
 
-# 备份文件
-*.bak
-*.backup
-*~
-*.swp
-
-# Unity包特定
-/[Aa]rtifacts/
-/[Cc]odeCoverage/
-/[Bb]uild[Rr]eports/ 
+# Development
+/[Dd]evDocs/
+/[Tt]ests/
+/[Ee]xamples~/
+/[Ss]amples~/ 

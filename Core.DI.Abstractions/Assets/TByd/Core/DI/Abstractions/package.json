@@ -1,7 +1,7 @@
 {
   "name": "com.tbyd.core.di.abstractions",
   "displayName": "TByd Core DI Abstractions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "unity": "2021.3",
   "unityRelease": "8f1",
   "description": "TByd Core DI Abstractions提供了一套框架无关的依赖注入抽象接口，支持多种DI容器的实现。",  
@@ -32,6 +32,9 @@
   "bugs": {
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
   },
-  "relatedPackages": {},
+  "relatedPackages": {
+    "com.tbyd.core.di.vcontainer": "0.0.1",
+    "com.tbyd.core.di.zenject": "0.0.1"
+  },
   "dependencies": {}
 }
