@@ -1,0 +1,38 @@
+{
+  "name": "com.tbyd.module.csv",
+  "displayName": "TByd Csv",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "Unity CSV Config",
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "Unity",
+    "CSharp"
+  ],
+  "author": {
+    "name": "TByd-BeiDa",
+    "email": "zhaoqing343@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "TByd-TianYu",
+      "email": "tianyulovecars@gmail.com"
+    }
+  ],
+  "category": "Module",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+
+  }
+
+}

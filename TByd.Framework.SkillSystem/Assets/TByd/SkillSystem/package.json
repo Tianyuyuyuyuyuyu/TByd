@@ -1,0 +1,39 @@
+{
+  "name": "com.tbyd.module.skillsystem",
+  "displayName": "TByd SkillSystem",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "技能系统",  
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "SkillSystem",
+    "CSharp"
+  ],
+  "author": {
+    "name": "TByd-BeiDa",
+    "email": "zhaoqing343@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "TByd-TianYu",
+      "email": "tianyulovecars@gmail.com"
+    }
+  ],
+  "category": "Module",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Framework",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": 
+  {
+    "com.cysharp.unitask": "2.5.0"
+  }
+
+}
