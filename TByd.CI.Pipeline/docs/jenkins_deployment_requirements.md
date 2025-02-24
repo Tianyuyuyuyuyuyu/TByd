@@ -37,6 +37,42 @@
 - 也可以使用其他国内镜像源（如 DaoCloud、网易云）来加速镜像拉取。
 - 如果有特定的镜像需求，建议在本地构建并缓存这些镜像，避免频繁拉取。
 
+## 3.3 所需 Docker 镜像
+- **Jenkins 基础镜像**：
+  - `jenkins/jenkins:lts-jdk11`（最新 LTS 版本）
+  - 或 `jenkins/jenkins:2.426.1-lts-jdk11`（指定版本号）
+
+- **Unity 构建环境**：
+  - `unityci/editor:2023.2.9f1-linux-il2cpp-2.0`
+  - 注意：Unity 镜像版本需要与项目使用的 Unity 版本保持一致
+
+- **Docker-in-Docker（可选）**：
+  - `docker:24.0.7-dind`
+  - 用于在 Jenkins 中运行 Docker 命令
+
+- **Node.js（可选，用于前端构建）**：
+  - `node:20.11.1-alpine`
+  - 轻量级版本，用于运行前端构建任务
+
+- **代码质量分析**：
+  - `sonarqube:9.9.4-community`
+  - 用于静态代码分析和代码质量检查
+
+- **监控工具**：
+  - `prom/prometheus:v2.49.1`（监控数据收集）
+  - `grafana/grafana:10.3.3`（监控数据可视化）
+  - 用于监控 Jenkins 和构建任务的性能
+
+- **测试环境（根据项目需求选择）**：
+  - `nunit/nunit:3.16.3`（如果使用 NUnit 测试）
+  - `mcr.microsoft.com/dotnet/sdk:8.0`（如果需要 .NET 环境）
+
+注意：
+1. 在拉取这些镜像之前，建议先测试是否能从 Docker Hub 直接拉取。
+2. 如果遇到网络问题，可以使用前述的阿里云容器镜像服务或其他国内镜像源。
+3. 某些镜像可能需要根据具体项目需求和版本兼容性进行调整。
+4. 建议在测试环境中验证所有镜像的兼容性后再部署到生产环境。
+
 ## 4. 安全性要求
 - 配置安全组，限制对 Jenkins 服务器的访问，仅允许特定 IP 地址访问。
 - 启用 HTTPS，确保数据传输的安全性。
