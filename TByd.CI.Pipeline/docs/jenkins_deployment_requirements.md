@@ -5,7 +5,7 @@
 
 ## 2. 部署目标
 - 在阿里云服务器上成功安装和配置 Jenkins。
-- 使用已备案的域名（ci.tianyuyuyu.com 或 jenkins.tianyuyuyu.com）进行访问。
+- 使用已备案的域名（ci.tianyuyuyu.com）进行访问。
 - 确保 Jenkins 能够与我们的版本控制系统（如 Git）和构建工具（如 Unity）无缝集成。
 
 ## 3. 硬件和软件要求
@@ -88,4 +88,120 @@
 
 ## 7. 域名配置
 - 将域名（ci.tianyuyuyu.com 或 jenkins.tianyuyuyu.com）解析到阿里云服务器的 IP 地址。
-- 配置 DNS 记录，确保域名能够正常访问 Jenkins。 
+- 配置 DNS 记录，确保域名能够正常访问 Jenkins。
+
+# Git + GitHub + Nexus 实施步骤文档
+
+## 1. 版本控制：Git + GitHub
+### 1.1 本地 Git 配置
+1. 安装 Git：
+   - 在 [Git 官网](https://git-scm.com/) 下载并安装 Git。
+2. 初始化 Git 仓库：
+   ```bash
+   cd /path/to/your/unity/project
+   git init
+   ```
+3. 创建 `.gitignore` 文件，确保忽略不必要的文件：
+   ```gitignore
+   Library/
+   Temp/
+   Logs/
+   ```
+4. 提交初始代码：
+   ```bash
+   git add .
+   git commit -m "初始提交"
+   ```
+
+### 1.2 GitHub 配置
+1. 创建 GitHub 仓库：
+   - 登录 GitHub，点击 "New" 创建新仓库。
+2. 将本地仓库推送到 GitHub：
+   ```bash
+   git remote add origin https://github.com/yourusername/your-repo.git
+   git push -u origin master
+   ```
+3. 配置分支管理和 Pull Request：
+   - 在 GitHub 上创建分支，进行代码开发。
+   - 提交 Pull Request 进行代码审查。
+
+## 2. 构建产物管理：Nexus
+### 2.1 Nexus 安装与配置
+1. 下载 Nexus Repository Manager：
+   - 从 [Nexus 官网](https://www.sonatype.com/nexus-repository-oss) 下载并安装 Nexus。
+2. 启动 Nexus：
+   ```bash
+   ./nexus start
+   ```
+3. 访问 Nexus 界面：
+   - 打开浏览器，访问 `http://localhost:8081`。
+4. 创建仓库：
+   - 在 Nexus 中创建一个新的仓库，用于存储构建产物。
+
+### 2.2 上传构建产物
+1. 在 Jenkins 中配置 Nexus 插件。
+2. 在 Jenkins Pipeline 中添加上传构建产物的步骤：
+   ```groovy
+   stage('Upload to Nexus') {
+       steps {
+           nexusArtifactUploader artifacts: [[artifactId: 'your-artifact', classifier: '', file: 'builds/YourGame.exe', type: 'exe']], 
+           nexusUrl: 'http://your-nexus-url', 
+           groupId: 'com.yourcompany', 
+           nexusVersion: 'nexus3', 
+           repository: 'your-repo', 
+           version: '1.0.0'
+       }
+   }
+   ```
+
+## 3. CI/CD 集成：Jenkins
+### 3.1 Jenkins 安装与配置
+1. 下载并安装 Jenkins：
+   - 从 [Jenkins 官网](https://www.jenkins.io/download/) 下载并安装 Jenkins。
+2. 启动 Jenkins：
+   ```bash
+   ./jenkins.war
+   ```
+3. 访问 Jenkins 界面：
+   - 打开浏览器，访问 `http://localhost:8080`。
+4. 安装必要的插件：
+   - 在 Jenkins 中安装 Git、Nexus 和其他相关插件。
+
+### 3.2 Jenkins Pipeline 配置
+1. 创建 Jenkins Pipeline 项目。
+2. 在 Jenkinsfile 中定义构建流程：
+   ```groovy
+   pipeline {
+       agent any
+       stages {
+           stage('Checkout') {
+               steps {
+                   git 'https://github.com/yourusername/your-repo.git'
+               }
+           }
+           stage('Build') {
+               steps {
+                   sh 'unity-editor -quit -batchmode -nographics -projectPath /path/to/your/unity/project -executeMethod Builder.BuildGame'
+               }
+           }
+           stage('Upload to Nexus') {
+               steps {
+                   nexusArtifactUploader artifacts: [[artifactId: 'your-artifact', classifier: '', file: 'builds/YourGame.exe', type: 'exe']], 
+                   nexusUrl: 'http://your-nexus-url', 
+                   groupId: 'com.yourcompany', 
+                   nexusVersion: 'nexus3', 
+                   repository: 'your-repo', 
+                   version: '1.0.0'
+               }
+           }
+       }
+   }
+   ```
+
+### 3.3 自动触发构建
+1. 配置 GitHub Webhook：
+   - 在 GitHub 仓库设置中，添加 Webhook，指向 Jenkins 的构建 URL。
+2. 提交代码后，Jenkins 将自动触发构建流程。
+
+## 总结
+通过使用 Git + GitHub + Nexus + Jenkins 的组合，可以实现高效的版本控制、构建产物管理和自动化 CI/CD 流程，确保 Unity 项目的持续集成和交付。 
