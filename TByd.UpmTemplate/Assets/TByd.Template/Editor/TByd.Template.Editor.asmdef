@@ -1,7 +1,9 @@
 {
     "name": "TByd.Template.Editor",
-    "rootNamespace": "",
-    "references": [],
+    "rootNamespace": "TByd.Template.Editor",
+    "references": [
+        "TByd.Template.Runtime"
+    ],
     "includePlatforms": [
         "Editor"
     ],
