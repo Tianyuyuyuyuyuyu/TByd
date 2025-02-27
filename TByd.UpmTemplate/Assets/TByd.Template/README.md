@@ -1,13 +1,22 @@
-# Package Template
+# TByd Template
+
+## 简介
+这是一个用于创建UPM包的模板。
+
+## 安装
+在Unity中，打开Package Manager，点击"Add package from git URL..."，然后输入以下URL：
+```
+https://github.com/YourRepo/TByd.Template.git
+```
+
+## 使用
+在项目中使用此模板创建新的UPM包。
+
+## 示例
+请查看`Samples`文件夹中的示例。
 
 ## 描述
 这是一个Unity包开发模板，提供标准的目录结构和基本配置。
-
-## 安装方法
-1. 打开Unity Package Manager
-2. 点击 "+" 按钮
-3. 选择 "Add package from git URL"
-4. 输入包的Git URL
 
 ## 快速开始
 1. 克隆此仓库

@@ -1,5 +1,5 @@
 {
-  "name": "com.tbyd.core.template(全小写，com.tbyd.模块名.包名)",
+  "name": "com.tbyd.template",
   "displayName": "TByd Core Template(Unity Package Manager中显示的名称)",
   "version": "0.0.1",
   "unity": "2021.3",
@@ -8,7 +8,6 @@
   "license": "MIT",
   "keywords": [
     "TByd",
-    "Core",
     "Template"
   ],
   "author": {
@@ -36,9 +35,9 @@
   },
   "samples": [
     {
-        "displayName": "Basic Object Pool",
-        "description": "Demonstrates basic usage of ObjectPool<T>",
-        "path": "Samples~/01_BasicObjectPool"
-      }
+      "displayName": "Sample 1",
+      "description": "A sample demonstrating the use of the package.",
+      "path": "Samples~/Sample1"
+    }
   ]
 }
