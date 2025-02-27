@@ -5,6 +5,8 @@
   "unity": "2021.3",
   "unityRelease": "8f1",
   "description": "添加当前UPM包的描述",  
+  "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate/Assets/TByd.Template/Documentation~",
+  "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/TByd.UpmTemplate/Assets/TByd.Template/CHANGELOG.md",
   "license": "MIT",
   "keywords": [
     "TByd",
@@ -20,8 +22,8 @@
       "email": "zhaoqing343@gmail.com"
     }
   ],
-  "category": "Core",
-  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Framework",
+  "category": "UpmTemplate",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate",
   "repository": {
     "type": "git",
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master"

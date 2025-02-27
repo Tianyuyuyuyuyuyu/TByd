@@ -1,16 +1,27 @@
-# Package Documentation
+# TByd Template Documentation
 
-欢迎使用此Unity包。本文档将帮助您了解如何使用该包的功能。
+欢迎使用TByd Template！本文件提供了关于如何使用和配置此UPM包的详细信息。
 
 ## 目录
-1. [开始使用](getting-started.md)
-2. [基本概念](concepts.md)
-3. [API参考](API.md)
-4. [示例](../Examples~/README.md)
-5. [常见问题](faq.md)
+- [API 参考](API.md)
+- [安装指南](#安装指南)
+- [使用示例](#使用示例)
+- [常见问题](#常见问题)
 
-## 快速入门
-请参考[开始使用](getting-started.md)章节来快速上手。
+## 安装指南
+1. 打开Unity Package Manager。
+2. 点击"Add package from git URL..."。
+3. 输入以下URL：
+   ```
+   https://github.com/YourRepo/TByd.Template.git
+   ```
 
-## 支持
-如果您遇到任何问题，请查看[常见问题](faq.md)或提交Issue。 
+## 使用示例
+请查看`Samples`文件夹中的示例，了解如何在项目中使用此模板。
+
+## 常见问题
+### 如何更新包？
+在Unity Package Manager中，选择此包并点击"Update"按钮。
+
+### 如何报告问题？
+请在[GitHub Issues](https://github.com/Tianyuyuyuyuyuyu/TByd/issues)中报告问题。 

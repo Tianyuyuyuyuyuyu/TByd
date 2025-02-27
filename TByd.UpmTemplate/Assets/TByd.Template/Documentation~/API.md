@@ -1,8 +1,11 @@
-# API 文档
+# TByd Template API 参考
+
+## 概述
+此文档提供了TByd Template的API参考，包括可用的类、方法和属性。
 
 ## 命名空间
 ```csharp
-using Company.Package
+using Company.Package;
 ```
 
 ## 核心类
@@ -123,4 +126,23 @@ MyManager.Instance.OnSomethingHappened += (sender, args) =>
 ## 更多资源
 - [示例代码](../Examples~/README.md)
 - [性能优化指南](../DevDocs/Performance.md)
-- [设计文档](../DevDocs/DesignDoc.md) 
+- [设计文档](../DevDocs/DesignDoc.md)
+
+## 类
+### ClassName
+- **描述**: 这是一个示例类，用于演示API文档的结构。
+- **方法**:
+  - `MethodName()`: 描述此方法的功能。
+
+## 方法
+### MethodName()
+- **参数**:
+  - `_argumentName`: 描述参数的功能。
+- **返回值**: 描述返回值的类型和含义。
+
+## 示例
+```csharp
+// 示例代码
+ClassName instance = new ClassName();
+instance.MethodName();
+``` 

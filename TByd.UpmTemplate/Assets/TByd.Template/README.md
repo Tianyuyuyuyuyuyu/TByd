@@ -15,14 +15,6 @@ https://github.com/YourRepo/TByd.Template.git
 ## 示例
 请查看`Samples`文件夹中的示例。
 
-## 描述
-这是一个Unity包开发模板，提供标准的目录结构和基本配置。
-
-## 快速开始
-1. 克隆此仓库
-2. 修改 package.json 中的包信息
-3. 开始开发你的包
-
 ## 功能特性
 - 标准的UPM包结构
 - 完整的文档模板
