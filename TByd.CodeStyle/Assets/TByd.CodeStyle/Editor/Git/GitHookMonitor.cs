@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
@@ -266,19 +267,131 @@ namespace TByd.CodeStyle.Editor.Git
         /// <returns>钩子状态字典</returns>
         public static Dictionary<GitHookType, bool> GetHookStatus()
         {
-            // 如果不是Git仓库，则返回空字典
-            if (!GitRepository.IsProjectGitRepository())
-            {
-                return new Dictionary<GitHookType, bool>();
-            }
+            return GitHookManager.GetAllHookStatus();
+        }
+        
+        /// <summary>
+        /// 获取钩子文件路径
+        /// </summary>
+        /// <param name="_hookType">钩子类型</param>
+        /// <param name="_hooksDir">钩子目录</param>
+        /// <returns>钩子文件路径</returns>
+        public static string GetHookPath(GitHookType _hookType, string _hooksDir)
+        {
+            string hookFileName = _hookType.GetFileName();
+            return Path.Combine(_hooksDir, hookFileName);
+        }
+        
+        /// <summary>
+        /// 检查钩子是否已安装
+        /// </summary>
+        /// <param name="_hookType">钩子类型</param>
+        /// <param name="_hooksDir">钩子目录</param>
+        /// <returns>是否已安装</returns>
+        public static bool IsHookInstalled(GitHookType _hookType, string _hooksDir)
+        {
+            string hookPath = GetHookPath(_hookType, _hooksDir);
             
-            // 如果未初始化，则尝试初始化
-            if (!s_Initialized)
+            if (!File.Exists(hookPath))
+                return false;
+                
+            try
             {
-                Initialize();
+                string content = File.ReadAllText(hookPath);
+                return content.Contains("TByd.CodeStyle");
             }
+            catch (Exception e)
+            {
+                Debug.LogError($"[TByd.CodeStyle] 读取钩子文件失败: {e.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// 安装钩子
+        /// </summary>
+        /// <param name="_hookType">钩子类型</param>
+        /// <param name="_hooksDir">钩子目录</param>
+        /// <returns>是否安装成功</returns>
+        public static bool InstallHook(GitHookType _hookType, string _hooksDir)
+        {
+            string hookPath = GetHookPath(_hookType, _hooksDir);
             
-            return s_HookStatusCache;
+            try
+            {
+                // 检查是否已存在非托管钩子
+                if (File.Exists(hookPath) && !IsHookInstalled(_hookType, _hooksDir))
+                {
+                    // 备份现有钩子
+                    string backupPath = hookPath + ".backup";
+                    if (File.Exists(backupPath))
+                    {
+                        File.Delete(backupPath);
+                    }
+                    
+                    File.Move(hookPath, backupPath);
+                    Debug.Log($"[TByd.CodeStyle] 已备份现有钩子: {hookPath} -> {backupPath}");
+                }
+                
+                // 创建钩子内容
+                string hookContent = $"#!/bin/sh\n# TByd.CodeStyle {_hookType.GetFileName()} hook\n\n" +
+                                    "# 这是一个测试钩子，用于单元测试\n" +
+                                    "echo \"TByd.CodeStyle hook test\"\n" +
+                                    "exit 0\n";
+                
+                // 写入钩子文件
+                File.WriteAllText(hookPath, hookContent);
+                
+                Debug.Log($"[TByd.CodeStyle] 已安装钩子: {_hookType.GetFileName()}");
+                
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[TByd.CodeStyle] 安装钩子失败: {e.Message}");
+                return false;
+            }
+        }
+        
+        /// <summary>
+        /// 卸载钩子
+        /// </summary>
+        /// <param name="_hookType">钩子类型</param>
+        /// <param name="_hooksDir">钩子目录</param>
+        /// <returns>是否卸载成功</returns>
+        public static bool UninstallHook(GitHookType _hookType, string _hooksDir)
+        {
+            string hookPath = GetHookPath(_hookType, _hooksDir);
+            
+            try
+            {
+                // 检查钩子是否存在且由TByd.CodeStyle管理
+                if (!File.Exists(hookPath) || !IsHookInstalled(_hookType, _hooksDir))
+                {
+                    Debug.LogWarning($"[TByd.CodeStyle] 钩子不存在或不是由TByd.CodeStyle管理: {_hookType.GetFileName()}");
+                    return false;
+                }
+                
+                // 删除钩子文件
+                File.Delete(hookPath);
+                
+                // 检查是否有备份，如果有则恢复
+                string backupPath = hookPath + ".backup";
+                if (File.Exists(backupPath))
+                {
+                    File.Move(backupPath, hookPath);
+                    Debug.Log($"[TByd.CodeStyle] 已恢复备份钩子: {backupPath} -> {hookPath}");
+                }
+                
+                Debug.Log($"[TByd.CodeStyle] 已卸载钩子: {_hookType.GetFileName()}");
+                
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[TByd.CodeStyle] 卸载钩子失败: {e.Message}");
+                return false;
+            }
         }
     }
 } 

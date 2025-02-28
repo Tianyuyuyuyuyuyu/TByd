@@ -25,11 +25,46 @@ namespace TByd.CodeStyle.Runtime.Config
         public static event Action ConfigChanged;
         
         /// <summary>
+        /// 配置文件路径
+        /// </summary>
+        public static string ConfigPath 
+        { 
+            get => s_ConfigFilePath;
+            set => SetConfigPath(value);
+        }
+        
+        /// <summary>
+        /// 设置配置文件路径
+        /// </summary>
+        /// <param name="_path">配置文件路径</param>
+        public static void SetConfigPath(string _path)
+        {
+            if (string.IsNullOrEmpty(_path))
+            {
+                Debug.LogError("[TByd.CodeStyle] 配置文件路径不能为空");
+                return;
+            }
+            
+            s_ConfigFilePath = _path;
+            s_IsConfigLoaded = false; // 重置配置加载状态，以便下次获取配置时重新加载
+        }
+        
+        /// <summary>
         /// 初始化配置管理器
         /// </summary>
         public static void Initialize()
         {
-            s_ConfigFilePath = Path.Combine(Application.dataPath, "..", "ProjectSettings", c_ConfigFileName);
+            // 只有在未设置路径时才设置默认路径
+            if (string.IsNullOrEmpty(s_ConfigFilePath))
+            {
+                s_ConfigFilePath = Path.Combine(Application.dataPath, "..", "ProjectSettings", c_ConfigFileName);
+                Debug.Log($"[TByd.CodeStyle] 使用默认配置路径: {s_ConfigFilePath}");
+            }
+            else
+            {
+                Debug.Log($"[TByd.CodeStyle] 使用已设置的配置路径: {s_ConfigFilePath}");
+            }
+            
             LoadConfig();
         }
         
@@ -54,6 +89,7 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             if (s_CurrentConfig == null)
             {
+                Debug.LogError("[TByd.CodeStyle] 保存配置失败: 当前配置为空");
                 return;
             }
             
@@ -62,17 +98,50 @@ namespace TByd.CodeStyle.Runtime.Config
                 string configJson = JsonUtility.ToJson(s_CurrentConfig, true);
                 string directoryPath = Path.GetDirectoryName(s_ConfigFilePath);
                 
+                Debug.Log($"[TByd.CodeStyle] 准备保存配置到: {s_ConfigFilePath}");
+                Debug.Log($"[TByd.CodeStyle] 配置目录: {directoryPath}");
+                
                 if (!Directory.Exists(directoryPath))
                 {
+                    Debug.Log($"[TByd.CodeStyle] 创建配置目录: {directoryPath}");
                     Directory.CreateDirectory(directoryPath);
+                }
+                else
+                {
+                    Debug.Log($"[TByd.CodeStyle] 配置目录已存在: {directoryPath}");
+                }
+                
+                // 确保有写入权限
+                try
+                {
+                    // 创建一个临时文件来测试写入权限
+                    string testFile = Path.Combine(directoryPath, "test_write.tmp");
+                    File.WriteAllText(testFile, "test");
+                    Debug.Log($"[TByd.CodeStyle] 成功写入测试文件: {testFile}");
+                    File.Delete(testFile);
+                    Debug.Log($"[TByd.CodeStyle] 成功删除测试文件: {testFile}");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"[TByd.CodeStyle] 无法写入配置目录: {e.Message}");
+                    throw; // 重新抛出异常，让上层处理
                 }
                 
                 File.WriteAllText(s_ConfigFilePath, configJson);
-                Debug.Log($"[TByd.CodeStyle] 配置已保存到: {s_ConfigFilePath}");
+                
+                // 验证文件是否成功写入
+                if (File.Exists(s_ConfigFilePath))
+                {
+                    Debug.Log($"[TByd.CodeStyle] 配置已成功保存到: {s_ConfigFilePath}");
+                }
+                else
+                {
+                    Debug.LogError($"[TByd.CodeStyle] 配置文件保存后不存在: {s_ConfigFilePath}");
+                }
             }
             catch (Exception e)
             {
-                Debug.LogError($"[TByd.CodeStyle] 保存配置失败: {e.Message}");
+                Debug.LogError($"[TByd.CodeStyle] 保存配置失败: {e.Message}\n{e.StackTrace}");
             }
         }
         

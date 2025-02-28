@@ -58,7 +58,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         /// <summary>
         /// 打开窗口的菜单项
         /// </summary>
-        [MenuItem("Tools/TByd/代码风格工具", false, 100)]
+        [MenuItem("TByd/CodeStyle/代码风格工具", false, 100)]
         public static void ShowWindow()
         {
             s_Instance = GetWindow<CodeStyleWindow>(false, c_WindowTitle, true);

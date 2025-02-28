@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TByd.CodeStyle.Runtime.Config;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Runtime.Git.Commit
 {
@@ -236,34 +237,31 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>验证结果</returns>
         public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
         {
+            // 添加调试日志
+            Debug.Log($"[TByd.CodeStyle] SubjectRule.Validate: Subject='{_message.Subject}', RequireSubject={_config.RequireSubject}");
+            
             // 如果不要求简短描述，则跳过验证
             if (!_config.RequireSubject)
             {
+                Debug.Log($"[TByd.CodeStyle] SubjectRule.Validate: 不要求简短描述，跳过验证");
                 return CommitMessageRuleResult.Success();
             }
             
-            // 如果简短描述为空，则验证失败
-            if (string.IsNullOrEmpty(_message.Subject))
+            // 如果简短描述为空或只包含空白字符，则验证失败
+            if (string.IsNullOrWhiteSpace(_message.Subject))
             {
+                Debug.Log($"[TByd.CodeStyle] SubjectRule.Validate: 简短描述为空，验证失败");
                 return CommitMessageRuleResult.Failure(
                     "简短描述不能为空",
                     "请添加简短描述，例如: feat: 添加登录界面");
             }
             
-            // 检查简短描述长度是否超过最大长度
+            // 检查简短描述长度是否超过配置的最大长度
             if (_message.Subject.Length > _config.SubjectMaxLength)
             {
                 return CommitMessageRuleResult.Failure(
-                    $"简短描述长度不能超过 {_config.SubjectMaxLength} 个字符",
-                    $"当前长度: {_message.Subject.Length}，请缩短简短描述");
-            }
-            
-            // 检查简短描述是否以句号结尾
-            if (_message.Subject.EndsWith("."))
-            {
-                return CommitMessageRuleResult.Failure(
-                    "简短描述不应以句号结尾",
-                    "请移除简短描述末尾的句号");
+                    $"简短描述长度超过限制（最大{_config.SubjectMaxLength}个字符）",
+                    $"当前长度: {_message.Subject.Length}，请精简描述");
             }
             
             return CommitMessageRuleResult.Success();
@@ -353,7 +351,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
     }
     
     /// <summary>
-    /// 格式规则，验证提交消息的整体格式是否符合要求
+    /// 格式规则，验证提交消息格式是否符合要求
     /// </summary>
     public class FormatRule : ICommitMessageRule
     {
@@ -375,20 +373,28 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>验证结果</returns>
         public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
         {
-            // 如果提交消息为空，则验证失败
-            if (_message.IsEmpty())
+            // 检查原始消息是否包含冒号
+            if (!_message.RawHeader.Contains(":"))
             {
                 return CommitMessageRuleResult.Failure(
-                    "提交消息不能为空",
-                    "请按照格式填写提交消息: <type>(<scope>): <subject>");
+                    "提交消息格式错误：缺少冒号",
+                    "正确格式为: <type>(<scope>): <subject>");
             }
             
-            // 如果原始消息不符合格式要求，则验证失败
-            if (!CommitMessageParser.IsValidFormat(_message.RawMessage))
+            // 检查冒号后是否有空格
+            if (_message.RawHeader.Contains(":") && !_message.RawHeader.Contains(": "))
             {
                 return CommitMessageRuleResult.Failure(
-                    "提交消息格式不正确",
-                    "正确格式: <type>(<scope>): <subject>\n例如: feat(ui): 添加登录界面");
+                    "提交消息格式错误：冒号后应有空格",
+                    "正确格式为: <type>(<scope>): <subject>");
+            }
+            
+            // 检查类型是否为空
+            if (string.IsNullOrEmpty(_message.Type))
+            {
+                return CommitMessageRuleResult.Failure(
+                    "提交消息格式错误：缺少类型",
+                    "正确格式为: <type>(<scope>): <subject>");
             }
             
             return CommitMessageRuleResult.Success();

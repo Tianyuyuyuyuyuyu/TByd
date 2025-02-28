@@ -13,7 +13,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         // 格式: <type>(<scope>): <subject>
         // 例如: feat(ui): 添加登录界面
         private static readonly Regex s_HeaderRegex = new Regex(
-            @"^(?<type>[a-z]+)(?:\((?<scope>[a-z0-9_\-\.]+)\))?:\s*(?<subject>.+)$",
+            @"^(?<type>[a-z]+)(?:\((?<scope>[a-z0-9_\-\.]+)\))?:\s*(?<subject>.*)$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
             
         /// <summary>
@@ -57,7 +57,17 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 
                 string type = headerMatch.Groups["type"].Value;
                 string scope = headerMatch.Groups["scope"].Success ? headerMatch.Groups["scope"].Value : string.Empty;
-                string subject = headerMatch.Groups["subject"].Value;
+                string subject = headerMatch.Groups["subject"].Value.Trim();
+                
+                // 添加调试日志
+                Debug.Log($"[TByd.CodeStyle] 解析提交消息: Type={type}, Scope={scope}, Subject='{subject}', 原始主题='{headerMatch.Groups["subject"].Value}'");
+                
+                // 确保空主题被正确处理
+                if (string.IsNullOrWhiteSpace(subject))
+                {
+                    Debug.Log($"[TByd.CodeStyle] 检测到空主题，设置为空字符串");
+                    subject = string.Empty;
+                }
                 
                 return new CommitMessage(type, scope, subject, body, footer, cleanMessage);
             }

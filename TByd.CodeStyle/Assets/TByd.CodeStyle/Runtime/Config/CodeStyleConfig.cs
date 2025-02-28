@@ -144,5 +144,21 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_GitHookConfig;
             set => m_GitHookConfig = value;
         }
+        
+        /// <summary>
+        /// Git设置，用于测试兼容性
+        /// </summary>
+        public GitHookConfig GitSettings
+        {
+            get => m_GitHookConfig;
+        }
+        
+        /// <summary>
+        /// 提交消息设置，用于测试兼容性
+        /// </summary>
+        public GitCommitConfig CommitMessageSettings
+        {
+            get => m_GitCommitConfig;
+        }
     }
 } 

@@ -1,6 +1,6 @@
 {
-    "name": "TByd.Template.Tests.Runtime",
-    "rootNamespace": "TByd.Template.Tests.Runtime",
+    "name": "TByd.CodeStyle.Tests.Runtime",
+    "rootNamespace": "TByd.CodeStyle.Tests.Runtime",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",

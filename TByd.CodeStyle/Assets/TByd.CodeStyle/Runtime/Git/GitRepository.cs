@@ -198,5 +198,34 @@ namespace TByd.CodeStyle.Runtime.Git
             string repositoryPath = GetGitRepositoryPath();
             return new GitRepository(repositoryPath);
         }
+        
+        /// <summary>
+        /// 获取Git目录路径
+        /// </summary>
+        /// <param name="_repositoryPath">仓库路径</param>
+        /// <returns>Git目录路径，如果不是Git仓库则返回空字符串</returns>
+        public static string GetGitDirectory(string _repositoryPath)
+        {
+            if (string.IsNullOrEmpty(_repositoryPath))
+                return string.Empty;
+                
+            string gitDirPath = Path.Combine(_repositoryPath, c_GitDirName);
+            return Directory.Exists(gitDirPath) ? gitDirPath : string.Empty;
+        }
+        
+        /// <summary>
+        /// 获取Git钩子目录路径
+        /// </summary>
+        /// <param name="_repositoryPath">仓库路径</param>
+        /// <returns>钩子目录路径，如果不是Git仓库则返回空字符串</returns>
+        public static string GetHooksDirectory(string _repositoryPath)
+        {
+            string gitDirPath = GetGitDirectory(_repositoryPath);
+            if (string.IsNullOrEmpty(gitDirPath))
+                return string.Empty;
+                
+            string hooksDirPath = Path.Combine(gitDirPath, c_HooksDirName);
+            return Directory.Exists(hooksDirPath) ? hooksDirPath : string.Empty;
+        }
     }
 } 

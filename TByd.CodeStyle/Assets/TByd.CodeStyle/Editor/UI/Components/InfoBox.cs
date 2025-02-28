@@ -25,6 +25,24 @@ namespace TByd.CodeStyle.Editor.UI.Components
         private string m_Message;
         
         /// <summary>
+        /// 信息内容
+        /// </summary>
+        public string Message
+        {
+            get => m_Message;
+            set => m_Message = value;
+        }
+        
+        /// <summary>
+        /// 信息类型
+        /// </summary>
+        public InfoType Type
+        {
+            get => m_Type;
+            set => m_Type = value;
+        }
+        
+        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="_title">标题</param>

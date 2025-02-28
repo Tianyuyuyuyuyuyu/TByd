@@ -53,6 +53,43 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         }
         
         /// <summary>
+        /// 清除当前通知
+        /// </summary>
+        public static void ClearNotification()
+        {
+            s_CurrentNotification = null;
+            EditorApplication.update -= UpdateNotification;
+        }
+        
+        /// <summary>
+        /// 检查是否有通知
+        /// </summary>
+        /// <returns>是否有通知</returns>
+        public static bool HasNotification()
+        {
+            return !string.IsNullOrEmpty(s_CurrentNotification) && 
+                   EditorApplication.timeSinceStartup <= s_NotificationEndTime;
+        }
+        
+        /// <summary>
+        /// 获取当前通知内容
+        /// </summary>
+        /// <returns>通知内容</returns>
+        public static string GetCurrentNotification()
+        {
+            return s_CurrentNotification;
+        }
+        
+        /// <summary>
+        /// 获取当前通知类型
+        /// </summary>
+        /// <returns>通知类型</returns>
+        public static NotificationType GetCurrentNotificationType()
+        {
+            return s_CurrentNotificationType;
+        }
+        
+        /// <summary>
         /// 显示进度条
         /// </summary>
         /// <param name="_title">进度标题</param>
@@ -69,6 +106,22 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         }
         
         /// <summary>
+        /// 更新进度条
+        /// </summary>
+        /// <param name="_info">进度信息</param>
+        /// <param name="_progress">进度值（0-1）</param>
+        public static void UpdateProgress(string _info, float _progress)
+        {
+            s_ProgressInfo = _info;
+            s_Progress = Mathf.Clamp01(_progress);
+            
+            if (s_IsProgressVisible)
+            {
+                EditorUtility.DisplayProgressBar(s_ProgressTitle, s_ProgressInfo, s_Progress);
+            }
+        }
+        
+        /// <summary>
         /// 隐藏进度条
         /// </summary>
         public static void HideProgress()
@@ -78,6 +131,53 @@ namespace TByd.CodeStyle.Editor.UI.Utils
                 EditorUtility.ClearProgressBar();
                 s_IsProgressVisible = false;
             }
+        }
+        
+        /// <summary>
+        /// 清除进度条
+        /// </summary>
+        public static void ClearProgress()
+        {
+            HideProgress();
+            s_ProgressTitle = null;
+            s_ProgressInfo = null;
+            s_Progress = 0f;
+        }
+        
+        /// <summary>
+        /// 检查是否有进度条
+        /// </summary>
+        /// <returns>是否有进度条</returns>
+        public static bool HasProgress()
+        {
+            return s_IsProgressVisible;
+        }
+        
+        /// <summary>
+        /// 获取进度条标题
+        /// </summary>
+        /// <returns>进度条标题</returns>
+        public static string GetProgressTitle()
+        {
+            return s_ProgressTitle;
+        }
+        
+        /// <summary>
+        /// 获取进度条信息
+        /// </summary>
+        /// <returns>进度条信息</returns>
+        public static string GetProgressInfo()
+        {
+            return s_ProgressInfo;
+        }
+        
+        /// <summary>
+        /// 获取当前进度值
+        /// </summary>
+        /// <returns>进度值（0-1）</returns>
+        public static float GetProgress()
+        {
+            return s_Progress;
         }
         
         /// <summary>
@@ -98,6 +198,27 @@ namespace TByd.CodeStyle.Editor.UI.Utils
             EditorGUILayout.LabelField(GetNotificationTypePrefix(s_CurrentNotificationType) + s_CurrentNotification, style);
             
             EditorGUILayout.EndVertical();
+        }
+        
+        /// <summary>
+        /// 绘制通知
+        /// </summary>
+        /// <param name="_rect">绘制区域</param>
+        /// <returns>是否绘制了通知</returns>
+        public static bool DrawNotification(Rect _rect)
+        {
+            if (string.IsNullOrEmpty(s_CurrentNotification) || 
+                EditorApplication.timeSinceStartup > s_NotificationEndTime)
+                return false;
+            
+            GUIStyle style = new GUIStyle(EditorStyles.helpBox);
+            style.normal.textColor = GetNotificationColor(s_CurrentNotificationType);
+            style.fontStyle = FontStyle.Bold;
+            style.padding = new RectOffset(10, 10, 5, 5);
+            
+            GUI.Box(_rect, GetNotificationTypePrefix(s_CurrentNotificationType) + s_CurrentNotification, style);
+            
+            return true;
         }
         
         /// <summary>

@@ -162,6 +162,15 @@ namespace TByd.CodeStyle.Runtime.Git
         }
         
         /// <summary>
+        /// 是否启用Git钩子，用于测试兼容性
+        /// </summary>
+        public bool EnableGitHooks
+        {
+            get => m_AutoInstallHooks;
+            set => m_AutoInstallHooks = value;
+        }
+        
+        /// <summary>
         /// 钩子配置列表
         /// </summary>
         public List<HookConfig> HookConfigs

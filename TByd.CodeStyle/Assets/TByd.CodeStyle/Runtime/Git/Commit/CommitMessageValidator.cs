@@ -103,7 +103,14 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>验证结果</returns>
         public CommitMessageValidationResult ValidateText(string _messageText)
         {
+            // 添加调试日志
+            Debug.Log($"[TByd.CodeStyle] ValidateText: '{_messageText}'");
+            
             CommitMessage message = CommitMessageParser.Parse(_messageText);
+            
+            // 添加调试日志
+            Debug.Log($"[TByd.CodeStyle] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
+            
             return Validate(message);
         }
         
@@ -169,6 +176,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 return true;
             }
         }
+        
+        /// <summary>
+        /// 错误消息列表
+        /// </summary>
+        public List<string> Errors => GetErrorMessages();
         
         /// <summary>
         /// 获取错误消息列表

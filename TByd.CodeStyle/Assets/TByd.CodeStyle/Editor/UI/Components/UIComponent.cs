@@ -34,6 +34,24 @@ namespace TByd.CodeStyle.Editor.UI.Components
         protected bool m_IsCollapsed;
         
         /// <summary>
+        /// 组件标题
+        /// </summary>
+        public string Title
+        {
+            get => m_Title;
+            set => m_Title = value;
+        }
+        
+        /// <summary>
+        /// 组件描述
+        /// </summary>
+        public string Description
+        {
+            get => m_Description;
+            set => m_Description = value;
+        }
+        
+        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="_title">组件标题</param>
@@ -121,6 +139,17 @@ namespace TByd.CodeStyle.Editor.UI.Components
         public void SetDescription(string _description)
         {
             m_Description = _description;
+        }
+        
+        /// <summary>
+        /// 切换折叠状态
+        /// </summary>
+        public void ToggleCollapsed()
+        {
+            if (m_IsCollapsible)
+            {
+                m_IsCollapsed = !m_IsCollapsed;
+            }
         }
     }
 } 

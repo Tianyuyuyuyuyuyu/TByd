@@ -124,6 +124,22 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         }
         
         /// <summary>
+        /// 原始提交消息头部
+        /// </summary>
+        public string RawHeader
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(m_RawMessage))
+                    return string.Empty;
+                
+                // 获取第一行作为头部
+                int newlineIndex = m_RawMessage.IndexOf('\n');
+                return newlineIndex > 0 ? m_RawMessage.Substring(0, newlineIndex) : m_RawMessage;
+            }
+        }
+        
+        /// <summary>
         /// 获取格式化的提交消息
         /// </summary>
         /// <returns>格式化的提交消息</returns>
