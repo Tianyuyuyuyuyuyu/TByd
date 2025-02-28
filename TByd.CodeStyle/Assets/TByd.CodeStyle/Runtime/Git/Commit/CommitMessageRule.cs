@@ -186,11 +186,23 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
             
             // 检查作用域是否在配置的有效作用域列表中
-            bool isValidScope = _config.Scopes.Contains(_message.Scope);
+            bool isValidScope = false;
+            
+            // 如果作用域列表为空，则任何非空作用域都是有效的
+            if (_config.Scopes == null || _config.Scopes.Count == 0)
+            {
+                isValidScope = true;
+            }
+            else
+            {
+                isValidScope = _config.Scopes.Contains(_message.Scope);
+            }
             
             if (!isValidScope)
             {
-                string validScopesStr = string.Join(", ", _config.Scopes);
+                string validScopesStr = _config.Scopes != null && _config.Scopes.Count > 0 
+                    ? string.Join(", ", _config.Scopes) 
+                    : "未配置有效作用域";
                 
                 return CommitMessageRuleResult.Failure(
                     $"作用域 '{_message.Scope}' 无效",
