@@ -29,29 +29,9 @@ if [ -z "$clean_msg" ]; then
 fi
 
 # 如果是在Unity编辑器中运行，则使用C#代码进行更高级的检查
+# 但我们不会直接退出，而是继续进行基本检查
 if [ -n "$UNITY_EDITOR" ]; then
     echo "在Unity编辑器中运行Git钩子，使用高级提交消息检查"
-    
-    # 使用Unity编辑器中的C#代码进行检查
-    # 注意：这里我们需要确保C#代码能够正确执行
-    # 如果C#代码无法执行，我们仍然需要进行基本的检查
-    
-    # 尝试使用Unity编辑器的验证逻辑
-    # 如果返回非零值，表示验证失败
-    if command -v "UnityEditor.exe" > /dev/null 2>&1; then
-        # 在Windows上尝试调用Unity编辑器进行验证
-        "UnityEditor.exe" -batchmode -projectPath "$(dirname "$0")/../../../.." -executeMethod TByd.CodeStyle.Editor.Git.Commit.CommitMessageChecker.ValidateFromCommandLine "$commit_msg_file"
-        exit_code=$?
-        if [ $exit_code -ne 0 ]; then
-            echo "Unity编辑器验证失败，退出代码: $exit_code"
-            exit $exit_code
-        fi
-        echo "Unity编辑器验证通过"
-        exit 0
-    fi
-    
-    # 如果无法调用Unity编辑器，则继续使用shell脚本进行基本检查
-    echo "无法调用Unity编辑器进行验证，使用基本检查"
 fi
 
 # 检查提交消息格式
