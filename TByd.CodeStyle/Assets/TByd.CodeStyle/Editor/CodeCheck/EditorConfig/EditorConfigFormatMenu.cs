@@ -19,7 +19,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         {
             // 获取配置
             bool enableEditorConfig = ConfigManager.GetConfig().EnableEditorConfig;
-            
+
             // 如果未启用EditorConfig，则显示提示
             if (!enableEditorConfig)
             {
@@ -29,7 +29,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     "确定");
                 return;
             }
-            
+
             // 如果项目中没有EditorConfig文件，则显示提示
             if (!EditorConfigManager.HasProjectEditorConfig())
             {
@@ -38,7 +38,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     "项目中未找到EditorConfig文件。是否创建默认配置？",
                     "创建默认配置",
                     "取消");
-                
+
                 if (createConfig)
                 {
                     EditorConfigManager.CreateDefaultEditorConfig();
@@ -48,18 +48,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     return;
                 }
             }
-            
+
             // 获取选中的资源路径
             string[] selectedAssets = GetSelectedAssetPaths();
-            
+
             if (selectedAssets.Length == 0)
             {
                 return;
             }
-            
+
             // 收集需要格式化的文件
             List<string> filesToFormat = new List<string>();
-            
+
             foreach (string assetPath in selectedAssets)
             {
                 // 检查是否是文件夹
@@ -75,7 +75,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     filesToFormat.Add(assetPath);
                 }
             }
-            
+
             if (filesToFormat.Count == 0)
             {
                 EditorUtility.DisplayDialog(
@@ -84,7 +84,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     "确定");
                 return;
             }
-            
+
             // 显示确认对话框
             bool confirm = EditorUtility.DisplayDialog(
                 "格式化文件",
@@ -94,36 +94,36 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 "是否继续？",
                 "继续",
                 "取消");
-            
+
             if (!confirm)
             {
                 return;
             }
-            
+
             // 显示进度条
             EditorUtility.DisplayProgressBar("格式化文件", "正在准备格式化...", 0f);
-            
+
             try
             {
                 int totalFiles = filesToFormat.Count;
                 int formattedFiles = 0;
                 int failedFiles = 0;
                 List<string> failedFilesList = new List<string>();
-                
+
                 // 格式化每个文件
                 for (int i = 0; i < totalFiles; i++)
                 {
                     string file = filesToFormat[i];
-                    
+
                     // 更新进度条
                     EditorUtility.DisplayProgressBar(
-                        "格式化文件", 
-                        $"正在格式化 {Path.GetFileName(file)}...", 
+                        "格式化文件",
+                        $"正在格式化 {Path.GetFileName(file)}...",
                         (float)i / totalFiles);
-                    
+
                     // 格式化文件
                     bool success = EditorConfigManager.FormatFile(file);
-                    
+
                     if (success)
                     {
                         formattedFiles++;
@@ -134,22 +134,22 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         failedFilesList.Add(file);
                     }
                 }
-                
+
                 // 刷新资源数据库
                 AssetDatabase.Refresh();
-                
+
                 // 显示结果
                 EditorUtility.ClearProgressBar();
-                
+
                 string message = $"格式化完成！\n\n" +
-                                 $"总文件数: {totalFiles}\n" +
-                                 $"成功格式化的文件: {formattedFiles}\n" +
-                                 $"格式化失败的文件: {failedFiles}";
-                
+                                $"总文件数: {totalFiles}\n" +
+                                $"成功格式化的文件: {formattedFiles}\n" +
+                                $"格式化失败的文件: {failedFiles}";
+
                 if (failedFiles > 0)
                 {
                     message += "\n\n格式化失败的文件:";
-                    
+
                     // 最多显示10个文件
                     int displayCount = Mathf.Min(failedFilesList.Count, 10);
                     for (int i = 0; i < displayCount; i++)
@@ -157,13 +157,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         string relativePath = failedFilesList[i].Replace(Application.dataPath, "Assets");
                         message += $"\n- {relativePath}";
                     }
-                    
+
                     if (failedFilesList.Count > 10)
                     {
                         message += $"\n... 以及其他 {failedFilesList.Count - 10} 个文件";
                     }
                 }
-                
+
                 EditorUtility.DisplayDialog("格式化结果", message, "确定");
             }
             finally
@@ -171,7 +171,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 EditorUtility.ClearProgressBar();
             }
         }
-        
+
         /// <summary>
         /// 验证菜单项是否可用
         /// </summary>
@@ -180,12 +180,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         {
             // 获取选中的资源路径
             string[] selectedAssets = GetSelectedAssetPaths();
-            
+
             if (selectedAssets.Length == 0)
             {
                 return false;
             }
-            
+
             // 检查是否有可格式化的文件
             foreach (string assetPath in selectedAssets)
             {
@@ -199,10 +199,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         /// <summary>
         /// 获取选中的资源路径
         /// </summary>
@@ -210,18 +210,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         private static string[] GetSelectedAssetPaths()
         {
             Object[] selectedObjects = Selection.objects;
-            
+
             if (selectedObjects == null || selectedObjects.Length == 0)
             {
                 return new string[0];
             }
-            
+
             List<string> assetPaths = new List<string>();
-            
+
             foreach (Object obj in selectedObjects)
             {
                 string assetPath = AssetDatabase.GetAssetPath(obj);
-                
+
                 if (!string.IsNullOrEmpty(assetPath))
                 {
                     // 转换为绝对路径
@@ -231,13 +231,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         string fullPath = Path.Combine(
                             projectPath.Substring(0, projectPath.Length - 6), // 移除 "Assets" 部分
                             assetPath);
-                        
+
                         assetPaths.Add(fullPath);
                     }
                 }
             }
-            
+
             return assetPaths.ToArray();
         }
     }
-} 
+}

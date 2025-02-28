@@ -15,7 +15,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         private static readonly Regex s_HeaderRegex = new Regex(
             @"^(?<type>[a-z]+)(?:\((?<scope>[a-z0-9_\-\.]+)\))?:\s*(?<subject>.*)$",
             RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            
+
         /// <summary>
         /// 解析提交消息文本
         /// </summary>
@@ -27,48 +27,48 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 return new CommitMessage();
             }
-            
+
             try
             {
                 // 移除注释行
                 string cleanMessage = RemoveComments(_message);
-                
+
                 // 分割消息为头部、正文和页脚
                 string[] parts = SplitMessage(cleanMessage);
-                
+
                 string header = parts[0];
                 string body = parts.Length > 1 ? parts[1] : string.Empty;
                 string footer = parts.Length > 2 ? parts[2] : string.Empty;
-                
+
                 // 解析头部
                 Match headerMatch = s_HeaderRegex.Match(header);
-                
+
                 if (!headerMatch.Success)
                 {
                     // 如果头部格式不正确，返回只包含原始消息的对象
                     return new CommitMessage(
-                        string.Empty, 
-                        string.Empty, 
-                        header, 
-                        body, 
-                        footer, 
+                        string.Empty,
+                        string.Empty,
+                        header,
+                        body,
+                        footer,
                         cleanMessage);
                 }
-                
+
                 string type = headerMatch.Groups["type"].Value;
                 string scope = headerMatch.Groups["scope"].Success ? headerMatch.Groups["scope"].Value : string.Empty;
                 string subject = headerMatch.Groups["subject"].Value.Trim();
-                
+
                 // 添加调试日志
                 Debug.Log($"[TByd.CodeStyle] 解析提交消息: Type={type}, Scope={scope}, Subject='{subject}', 原始主题='{headerMatch.Groups["subject"].Value}'");
-                
+
                 // 确保空主题被正确处理
                 if (string.IsNullOrWhiteSpace(subject))
                 {
                     Debug.Log($"[TByd.CodeStyle] 检测到空主题，设置为空字符串");
                     subject = string.Empty;
                 }
-                
+
                 return new CommitMessage(type, scope, subject, body, footer, cleanMessage);
             }
             catch (Exception e)
@@ -77,7 +77,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 return new CommitMessage(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, _message);
             }
         }
-        
+
         /// <summary>
         /// 移除提交消息中的注释行
         /// </summary>
@@ -89,10 +89,10 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 return string.Empty;
             }
-            
+
             string[] lines = _message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            
+
             foreach (string line in lines)
             {
                 if (!line.TrimStart().StartsWith("#"))
@@ -100,10 +100,10 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     sb.AppendLine(line);
                 }
             }
-            
+
             return sb.ToString().Trim();
         }
-        
+
         /// <summary>
         /// 分割提交消息为头部、正文和页脚
         /// </summary>
@@ -115,13 +115,13 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 return new[] { string.Empty };
             }
-            
+
             // 按照空行分割消息
             string[] parts = Regex.Split(_message, @"(?:\r?\n){2,}");
-            
+
             return parts;
         }
-        
+
         /// <summary>
         /// 检查提交消息是否符合格式要求
         /// </summary>
@@ -133,18 +133,18 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 return false;
             }
-            
+
             string cleanMessage = RemoveComments(_message);
             string[] parts = SplitMessage(cleanMessage);
-            
+
             if (parts.Length == 0 || string.IsNullOrEmpty(parts[0]))
             {
                 return false;
             }
-            
+
             return s_HeaderRegex.IsMatch(parts[0]);
         }
-        
+
         /// <summary>
         /// 从提交消息文件中读取提交消息
         /// </summary>
@@ -159,7 +159,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     Debug.LogError($"[TByd.CodeStyle] 提交消息文件不存在: {_filePath}");
                     return new CommitMessage();
                 }
-                
+
                 string message = System.IO.File.ReadAllText(_filePath);
                 return Parse(message);
             }
@@ -170,4 +170,4 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
         }
     }
-} 
+}

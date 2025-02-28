@@ -17,10 +17,10 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
     {
         // 规则列表
         private readonly List<ICodeCheckRule> m_Rules = new List<ICodeCheckRule>();
-        
+
         // 代码检查配置
         private readonly CodeCheckConfig m_Config;
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -28,11 +28,11 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         public CodeChecker(CodeCheckConfig _config)
         {
             m_Config = _config;
-            
+
             // 注册默认规则
             RegisterDefaultRules();
         }
-        
+
         /// <summary>
         /// 注册默认规则
         /// </summary>
@@ -45,7 +45,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             RegisterRule(new PropertyNamingRule());
             RegisterRule(new MethodNamingRule());
             RegisterRule(new ParameterNamingRule());
-            
+
             // Unity规则
             RegisterRule(new AvoidGameObjectFindRule());
             RegisterRule(new AvoidFindInUpdateRule());
@@ -56,7 +56,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             RegisterRule(new AvoidCameraMainRule());
             RegisterRule(new AvoidEmptyMonoBehaviourMethodsRule());
         }
-        
+
         /// <summary>
         /// 注册规则
         /// </summary>
@@ -67,15 +67,15 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             if (m_Rules.Any(r => r.Id == _rule.Id))
             {
                 Debug.LogWarning($"[TByd.CodeStyle] 规则 '{_rule.Id}' 已存在，将被替换");
-                
+
                 // 移除已存在的规则
                 m_Rules.RemoveAll(r => r.Id == _rule.Id);
             }
-            
+
             // 添加规则
             m_Rules.Add(_rule);
         }
-        
+
         /// <summary>
         /// 获取所有规则
         /// </summary>
@@ -84,7 +84,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         {
             return m_Rules;
         }
-        
+
         /// <summary>
         /// 获取规则
         /// </summary>
@@ -94,7 +94,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         {
             return m_Rules.FirstOrDefault(r => r.Id == _ruleId);
         }
-        
+
         /// <summary>
         /// 启用规则
         /// </summary>
@@ -102,13 +102,13 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         public void EnableRule(string _ruleId)
         {
             ICodeCheckRule rule = GetRule(_ruleId);
-            
+
             if (rule != null)
             {
                 rule.Enabled = true;
             }
         }
-        
+
         /// <summary>
         /// 禁用规则
         /// </summary>
@@ -116,13 +116,13 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         public void DisableRule(string _ruleId)
         {
             ICodeCheckRule rule = GetRule(_ruleId);
-            
+
             if (rule != null)
             {
                 rule.Enabled = false;
             }
         }
-        
+
         /// <summary>
         /// 设置规则严重程度
         /// </summary>
@@ -131,13 +131,13 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         public void SetRuleSeverity(string _ruleId, CodeCheckRuleSeverity _severity)
         {
             ICodeCheckRule rule = GetRule(_ruleId);
-            
+
             if (rule != null)
             {
                 rule.Severity = _severity;
             }
         }
-        
+
         /// <summary>
         /// 检查代码
         /// </summary>
@@ -150,22 +150,22 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             {
                 return CodeCheckResult.Success();
             }
-            
+
             // 检查文件是否应该被忽略
             if (ShouldIgnoreFile(_filePath))
             {
                 return CodeCheckResult.Success();
             }
-            
+
             List<CodeCheckIssue> allIssues = new List<CodeCheckIssue>();
-            
+
             // 执行所有启用的规则
             foreach (ICodeCheckRule rule in m_Rules.Where(r => r.Enabled))
             {
                 try
                 {
                     CodeCheckResult result = rule.Check(_code, _filePath, m_Config);
-                    
+
                     if (!result.IsValid)
                     {
                         allIssues.AddRange(result.Issues);
@@ -176,15 +176,15 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                     Debug.LogError($"[TByd.CodeStyle] 规则 '{rule.Id}' 执行异常: {e.Message}");
                 }
             }
-            
+
             if (allIssues.Count > 0)
             {
                 return CodeCheckResult.Failure(allIssues);
             }
-            
+
             return CodeCheckResult.Success();
         }
-        
+
         /// <summary>
         /// 检查文件
         /// </summary>
@@ -197,13 +197,13 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 Debug.LogError($"[TByd.CodeStyle] 文件不存在: {_filePath}");
                 return CodeCheckResult.Success();
             }
-            
+
             // 检查文件是否应该被忽略
             if (ShouldIgnoreFile(_filePath))
             {
                 return CodeCheckResult.Success();
             }
-            
+
             try
             {
                 string code = File.ReadAllText(_filePath);
@@ -215,7 +215,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 return CodeCheckResult.Success();
             }
         }
-        
+
         /// <summary>
         /// 检查目录
         /// </summary>
@@ -229,15 +229,15 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 Debug.LogError($"[TByd.CodeStyle] 目录不存在: {_directoryPath}");
                 return CodeCheckResult.Success();
             }
-            
+
             List<CodeCheckIssue> allIssues = new List<CodeCheckIssue>();
-            
+
             // 获取所有C#文件
             string[] files = Directory.GetFiles(
-                _directoryPath, 
-                "*.cs", 
+                _directoryPath,
+                "*.cs",
                 _recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
-            
+
             foreach (string filePath in files)
             {
                 // 检查文件是否应该被忽略
@@ -245,23 +245,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 {
                     continue;
                 }
-                
+
                 CodeCheckResult result = CheckFile(filePath);
-                
+
                 if (!result.IsValid)
                 {
                     allIssues.AddRange(result.Issues);
                 }
             }
-            
+
             if (allIssues.Count > 0)
             {
                 return CodeCheckResult.Failure(allIssues);
             }
-            
+
             return CodeCheckResult.Success();
         }
-        
+
         /// <summary>
         /// 检查文件是否应该被忽略
         /// </summary>
@@ -273,13 +273,13 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             {
                 return true;
             }
-            
+
             // 检查文件扩展名
             if (!_filePath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
-            
+
             // 检查忽略路径
             foreach (string ignorePath in m_Config.IgnoredPaths)
             {
@@ -287,7 +287,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 {
                     continue;
                 }
-                
+
                 // 支持通配符
                 if (ignorePath.Contains("*"))
                 {
@@ -302,10 +302,10 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
+
         /// <summary>
         /// 生成检查报告
         /// </summary>
@@ -317,25 +317,25 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             {
                 return "代码检查通过，未发现问题。";
             }
-            
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("代码检查报告");
             sb.AppendLine("====================");
             sb.AppendLine();
-            
+
             // 按文件分组
             var issuesByFile = _result.Issues
                 .GroupBy(i => i.FilePath)
                 .OrderBy(g => g.Key);
-            
+
             foreach (var fileGroup in issuesByFile)
             {
                 sb.AppendLine($"文件: {fileGroup.Key}");
                 sb.AppendLine("--------------------");
-                
+
                 // 按行号排序
                 var sortedIssues = fileGroup.OrderBy(i => i.LineNumber).ThenBy(i => i.ColumnNumber);
-                
+
                 foreach (var issue in sortedIssues)
                 {
                     string severityStr = issue.Severity switch
@@ -345,35 +345,35 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                         CodeCheckRuleSeverity.Info => "[信息]",
                         _ => "[未知]"
                     };
-                    
+
                     sb.AppendLine($"  {severityStr} 行 {issue.LineNumber}, 列 {issue.ColumnNumber}: {issue.Message} ({issue.RuleId})");
-                    
+
                     if (!string.IsNullOrEmpty(issue.FixSuggestion))
                     {
                         sb.AppendLine($"    建议: {issue.FixSuggestion}");
                     }
-                    
+
                     if (!string.IsNullOrEmpty(issue.CodeSnippet))
                     {
                         sb.AppendLine($"    代码: {issue.CodeSnippet}");
                     }
-                    
+
                     sb.AppendLine();
                 }
             }
-            
+
             // 添加统计信息
             int errorCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Error);
             int warningCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Warning);
             int infoCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Info);
-            
+
             sb.AppendLine("====================");
             sb.AppendLine($"总计: {_result.Issues.Count} 个问题");
             sb.AppendLine($"  错误: {errorCount}");
             sb.AppendLine($"  警告: {warningCount}");
             sb.AppendLine($"  信息: {infoCount}");
-            
+
             return sb.ToString();
         }
     }
-} 
+}

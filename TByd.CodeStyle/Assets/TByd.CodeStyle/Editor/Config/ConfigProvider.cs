@@ -13,7 +13,7 @@ namespace TByd.CodeStyle.Editor.Config
     {
         // 配置变更事件
         public static event Action ConfigChanged;
-        
+
         /// <summary>
         /// 静态构造函数，在编辑器加载时初始化
         /// </summary>
@@ -21,14 +21,14 @@ namespace TByd.CodeStyle.Editor.Config
         {
             // 初始化配置管理器
             ConfigManager.Initialize();
-            
+
             // 订阅配置变更事件
             ConfigManager.ConfigChanged += OnConfigChanged;
-            
+
             // 订阅编辑器更新事件，用于检测配置文件变更
             EditorApplication.update += CheckConfigFileChange;
         }
-        
+
         /// <summary>
         /// 获取当前配置
         /// </summary>
@@ -37,18 +37,18 @@ namespace TByd.CodeStyle.Editor.Config
         {
             return ConfigManager.GetConfig();
         }
-        
+
         /// <summary>
         /// 保存配置
         /// </summary>
         public static void SaveConfig()
         {
             ConfigManager.SaveConfig();
-            
+
             // 触发配置变更事件
             OnConfigChanged();
         }
-        
+
         /// <summary>
         /// 重置配置
         /// </summary>
@@ -56,7 +56,7 @@ namespace TByd.CodeStyle.Editor.Config
         {
             ConfigManager.ResetConfig();
         }
-        
+
         /// <summary>
         /// 配置变更处理
         /// </summary>
@@ -64,7 +64,7 @@ namespace TByd.CodeStyle.Editor.Config
         {
             // 触发编辑器配置变更事件
             ConfigChanged?.Invoke();
-            
+
             // 刷新编辑器窗口
             // 注意：不要使用EditorUtility.SetDirty(null)，这会导致ArgumentNullException
             // 使用EditorWindow.RepaintAll()来刷新所有编辑器窗口
@@ -73,7 +73,7 @@ namespace TByd.CodeStyle.Editor.Config
                 EditorWindow.focusedWindow.Repaint();
             }
         }
-        
+
         /// <summary>
         /// 检查配置文件变更
         /// </summary>
@@ -82,7 +82,7 @@ namespace TByd.CodeStyle.Editor.Config
             // 这里可以添加检测配置文件变更的逻辑
             // 例如，检查文件修改时间，如果变更则重新加载配置
         }
-        
+
         /// <summary>
         /// 导出配置
         /// </summary>
@@ -100,7 +100,7 @@ namespace TByd.CodeStyle.Editor.Config
                 Debug.LogError($"[TByd.CodeStyle] 导出配置失败: {e.Message}");
             }
         }
-        
+
         /// <summary>
         /// 导入配置
         /// </summary>
@@ -111,7 +111,7 @@ namespace TByd.CodeStyle.Editor.Config
             {
                 string configJson = System.IO.File.ReadAllText(_path);
                 CodeStyleConfig config = JsonUtility.FromJson<CodeStyleConfig>(configJson);
-                
+
                 // 更新当前配置
                 ConfigManager.GetConfig().ConfigVersion = config.ConfigVersion;
                 ConfigManager.GetConfig().EnableGitCommitCheck = config.EnableGitCommitCheck;
@@ -120,10 +120,10 @@ namespace TByd.CodeStyle.Editor.Config
                 ConfigManager.GetConfig().CheckBeforeCommit = config.CheckBeforeCommit;
                 ConfigManager.GetConfig().GitCommitConfig = config.GitCommitConfig;
                 ConfigManager.GetConfig().CodeCheckConfig = config.CodeCheckConfig;
-                
+
                 // 保存配置
                 SaveConfig();
-                
+
                 Debug.Log($"[TByd.CodeStyle] 配置已从 {_path} 导入");
             }
             catch (Exception e)
@@ -132,4 +132,4 @@ namespace TByd.CodeStyle.Editor.Config
             }
         }
     }
-} 
+}

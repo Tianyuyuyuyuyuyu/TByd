@@ -11,78 +11,78 @@ namespace TByd.CodeStyle.Runtime.Git
         /// 提交前钩子，在git commit命令执行前触发
         /// </summary>
         PreCommit,
-        
+
         /// <summary>
         /// 提交消息钩子，在编辑提交消息时触发
         /// </summary>
         CommitMsg,
-        
+
         /// <summary>
         /// 提交后钩子，在提交完成后触发
         /// </summary>
         PostCommit,
-        
+
         /// <summary>
         /// 推送前钩子，在git push命令执行前触发
         /// </summary>
         PrePush,
-        
+
         /// <summary>
         /// 推送后钩子，在推送完成后触发
         /// </summary>
         PostPush,
-        
+
         /// <summary>
         /// 合并前钩子，在合并操作执行前触发
         /// </summary>
         PreMerge,
-        
+
         /// <summary>
         /// 合并后钩子，在合并完成后触发
         /// </summary>
         PostMerge,
-        
+
         /// <summary>
         /// 检出钩子，在git checkout命令执行后触发
         /// </summary>
         PostCheckout,
-        
+
         /// <summary>
         /// 应用补丁前钩子，在git am命令执行前触发
         /// </summary>
         ApplyPatchMsg,
-        
+
         /// <summary>
         /// 预接收钩子，在服务器接收推送前触发
         /// </summary>
         PreReceive,
-        
+
         /// <summary>
         /// 更新钩子，在服务器更新引用前触发
         /// </summary>
         Update,
-        
+
         /// <summary>
         /// 接收后钩子，在服务器接收推送后触发
         /// </summary>
         PostReceive,
-        
+
         /// <summary>
         /// 更新后钩子，在服务器更新引用后触发
         /// </summary>
         PostUpdate,
-        
+
         /// <summary>
         /// 引用更新钩子，在本地引用更新后触发
         /// </summary>
         PostRewrite,
-        
+
         /// <summary>
         /// 准备提交消息钩子，在提交消息编辑器启动前触发
         /// </summary>
         PrepareCommitMsg
     }
-    
+
     /// <summary>
     /// Git钩子类型扩展方法
     /// </summary>
@@ -131,7 +131,7 @@ namespace TByd.CodeStyle.Runtime.Git
                     throw new ArgumentOutOfRangeException(nameof(_hookType), _hookType, "未知的Git钩子类型");
             }
         }
-        
+
         /// <summary>
         /// 获取钩子描述
         /// </summary>
@@ -175,7 +175,7 @@ namespace TByd.CodeStyle.Runtime.Git
                     return "未知钩子类型";
             }
         }
-        
+
         /// <summary>
         /// 从文件名获取钩子类型
         /// </summary>
@@ -220,4 +220,4 @@ namespace TByd.CodeStyle.Runtime.Git
             }
         }
     }
-} 
+}

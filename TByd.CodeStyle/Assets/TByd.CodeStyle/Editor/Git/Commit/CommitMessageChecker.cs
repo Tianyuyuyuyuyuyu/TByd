@@ -18,16 +18,16 @@ namespace TByd.CodeStyle.Editor.Git.Commit
     {
         // 环境变量名，用于标识在Unity编辑器中运行
         private const string c_UnityEditorEnvVar = "UNITY_EDITOR";
-        
+
         // 是否已初始化
         private static bool s_Initialized;
-        
+
         // 提交消息验证器
         private static CommitMessageValidator s_Validator;
-        
+
         // 提交消息修复器
         private static CommitMessageFixer s_Fixer;
-        
+
         /// <summary>
         /// 静态构造函数，在编辑器加载时初始化
         /// </summary>
@@ -36,7 +36,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             // 延迟初始化，确保配置已加载
             EditorApplication.delayCall += Initialize;
         }
-        
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -44,21 +44,21 @@ namespace TByd.CodeStyle.Editor.Git.Commit
         {
             if (s_Initialized)
                 return;
-                
+
             // 订阅配置变更事件
             ConfigProvider.ConfigChanged += OnConfigChanged;
-            
+
             // 初始化验证器和修复器
             InitializeValidatorAndFixer();
-            
+
             // 设置环境变量，标识在Unity编辑器中运行
             SetUnityEditorEnvironmentVariable();
-            
+
             s_Initialized = true;
-            
+
             Debug.Log("[TByd.CodeStyle] 提交消息检查器初始化成功");
         }
-        
+
         /// <summary>
         /// 配置变更事件处理
         /// </summary>
@@ -67,7 +67,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             // 重新初始化验证器和修复器
             InitializeValidatorAndFixer();
         }
-        
+
         /// <summary>
         /// 初始化验证器和修复器
         /// </summary>
@@ -75,14 +75,14 @@ namespace TByd.CodeStyle.Editor.Git.Commit
         {
             // 获取当前配置
             CodeStyleConfig config = ConfigProvider.GetConfig();
-            
+
             // 初始化验证器
             s_Validator = new CommitMessageValidator(config.GitCommitConfig);
-            
+
             // 初始化修复器
             s_Fixer = new CommitMessageFixer(config.GitCommitConfig);
         }
-        
+
         /// <summary>
         /// 设置环境变量，标识在Unity编辑器中运行
         /// </summary>
@@ -92,7 +92,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             {
                 // 设置环境变量
                 Environment.SetEnvironmentVariable(c_UnityEditorEnvVar, "true");
-                
+
                 Debug.Log("[TByd.CodeStyle] 已设置环境变量: UNITY_EDITOR=true");
             }
             catch (Exception e)
@@ -100,7 +100,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 Debug.LogError($"[TByd.CodeStyle] 设置环境变量失败: {e.Message}");
             }
         }
-        
+
         /// <summary>
         /// 验证提交消息
         /// </summary>
@@ -112,27 +112,27 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             {
                 InitializeValidatorAndFixer();
             }
-            
+
             // 添加调试日志
             Debug.Log($"[TByd.CodeStyle] 验证提交消息: '{_messageText}'");
-            
+
             // 解析提交消息
             var message = Runtime.Git.Commit.CommitMessageParser.Parse(_messageText);
             Debug.Log($"[TByd.CodeStyle] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
-            
+
             // 验证提交消息
             var result = s_Validator.ValidateText(_messageText);
-            
+
             // 输出验证结果
             Debug.Log($"[TByd.CodeStyle] 验证结果: IsValid={result.IsValid}, Errors.Count={result.Errors.Count}");
             foreach (var error in result.Errors)
             {
                 Debug.Log($"[TByd.CodeStyle] 错误: {error}");
             }
-            
+
             return result;
         }
-        
+
         /// <summary>
         /// 验证提交消息
         /// </summary>
@@ -142,7 +142,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
         {
             return ValidateMessage(_messageText);
         }
-        
+
         /// <summary>
         /// 验证提交消息文件
         /// </summary>
@@ -154,10 +154,10 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             {
                 InitializeValidatorAndFixer();
             }
-            
+
             return s_Validator.ValidateFile(_filePath);
         }
-        
+
         /// <summary>
         /// 修复提交消息
         /// </summary>
@@ -169,10 +169,10 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             {
                 InitializeValidatorAndFixer();
             }
-            
+
             return s_Fixer.FixText(_messageText);
         }
-        
+
         /// <summary>
         /// 修复提交消息文件
         /// </summary>
@@ -184,10 +184,10 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             {
                 InitializeValidatorAndFixer();
             }
-            
+
             return s_Fixer.FixFile(_filePath);
         }
-        
+
         /// <summary>
         /// 生成提交消息模板
         /// </summary>
@@ -198,10 +198,10 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             {
                 InitializeValidatorAndFixer();
             }
-            
+
             return s_Fixer.GenerateTemplate();
         }
-        
+
         /// <summary>
         /// 将模板写入提交消息文件
         /// </summary>
@@ -213,10 +213,10 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             {
                 InitializeValidatorAndFixer();
             }
-            
+
             return s_Fixer.WriteTemplateToFile(_filePath);
         }
-        
+
         /// <summary>
         /// 格式化提交消息
         /// </summary>
@@ -228,54 +228,54 @@ namespace TByd.CodeStyle.Editor.Git.Commit
         /// <param name="_isBreakingChange">是否是破坏性变更</param>
         /// <returns>格式化后的提交消息</returns>
         public static string FormatCommitMessage(
-            string _type, 
-            string _scope, 
-            string _subject, 
-            string _body = "", 
-            string _footer = "", 
+            string _type,
+            string _scope,
+            string _subject,
+            string _body = "",
+            string _footer = "",
             bool _isBreakingChange = false)
         {
             if (s_Fixer == null)
             {
                 InitializeValidatorAndFixer();
             }
-            
+
             // 构建头部
             string header = _type;
-            
+
             // 添加范围
             if (!string.IsNullOrEmpty(_scope))
             {
                 header += $"({_scope})";
             }
-            
+
             // 添加破坏性变更标记
             if (_isBreakingChange)
             {
                 header += "!";
             }
-            
+
             // 添加冒号和主题
             header += $": {_subject}";
-            
+
             // 构建完整消息
             string message = header;
-            
+
             // 添加正文
             if (!string.IsNullOrEmpty(_body))
             {
                 message += $"\n\n{_body}";
             }
-            
+
             // 添加页脚
             if (!string.IsNullOrEmpty(_footer))
             {
                 message += $"\n\n{_footer}";
             }
-            
+
             return message;
         }
-        
+
         /// <summary>
         /// 解析提交消息
         /// </summary>
@@ -303,48 +303,48 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             _body = string.Empty;
             _footer = string.Empty;
             _isBreakingChange = false;
-            
+
             if (string.IsNullOrEmpty(_message))
             {
                 return false;
             }
-            
+
             try
             {
                 // 分割消息为头部、正文和页脚
                 string[] parts = _message.Split(new[] { "\n\n" }, StringSplitOptions.None);
                 string header = parts[0].Trim();
-                
+
                 // 解析正文和页脚
                 if (parts.Length > 1)
                 {
                     _body = parts[1].Trim();
                 }
-                
+
                 if (parts.Length > 2)
                 {
                     _footer = parts[2].Trim();
                 }
-                
+
                 // 检查是否包含破坏性变更标记
                 _isBreakingChange = header.Contains("!") || (_footer.Contains("BREAKING CHANGE"));
-                
+
                 // 解析头部
                 int colonIndex = header.IndexOf(": ");
                 if (colonIndex < 0)
                 {
                     return false;
                 }
-                
+
                 // 提取主题
                 _subject = header.Substring(colonIndex + 2).Trim();
-                
+
                 // 提取类型和范围
                 string typeScope = header.Substring(0, colonIndex).Trim();
-                
+
                 // 移除破坏性变更标记
                 typeScope = typeScope.Replace("!", "");
-                
+
                 // 解析类型和范围
                 int scopeStartIndex = typeScope.IndexOf("(");
                 if (scopeStartIndex < 0)
@@ -356,14 +356,14 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 {
                     // 有范围
                     _type = typeScope.Substring(0, scopeStartIndex).Trim();
-                    
+
                     int scopeEndIndex = typeScope.IndexOf(")", scopeStartIndex);
                     if (scopeEndIndex > scopeStartIndex)
                     {
                         _scope = typeScope.Substring(scopeStartIndex + 1, scopeEndIndex - scopeStartIndex - 1).Trim();
                     }
                 }
-                
+
                 return true;
             }
             catch
@@ -371,7 +371,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 从命令行参数验证提交消息文件
         /// </summary>
@@ -386,30 +386,30 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                     Console.Error.WriteLine("错误: 缺少提交消息文件路径参数");
                     return 1;
                 }
-                
+
                 string filePath = _args[0];
-                
+
                 if (!File.Exists(filePath))
                 {
                     Console.Error.WriteLine($"错误: 提交消息文件不存在: {filePath}");
                     return 1;
                 }
-                
+
                 // 初始化验证器
                 if (s_Validator == null)
                 {
                     InitializeValidatorAndFixer();
                 }
-                
+
                 // 验证提交消息
                 CommitMessageValidationResult result = s_Validator.ValidateFile(filePath);
-                
+
                 if (!result.IsValid)
                 {
                     Console.Error.WriteLine(result.GetFormattedErrorMessage());
                     return 1;
                 }
-                
+
                 Console.WriteLine("提交消息验证通过");
                 return 0;
             }
@@ -420,4 +420,4 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             }
         }
     }
-} 
+}

@@ -16,10 +16,10 @@ namespace TByd.CodeStyle.Tests.Editor
     {
         // 报告保存路径
         private const string c_ReportPath = "TestReports";
-        
+
         // 报告文件名
         private const string c_ReportFileName = "TestReport_{0}.html";
-        
+
         /// <summary>
         /// 获取测试总数
         /// </summary>
@@ -29,7 +29,7 @@ namespace TByd.CodeStyle.Tests.Editor
         {
             return _result.PassCount + _result.FailCount + _result.SkipCount + _result.InconclusiveCount;
         }
-        
+
         /// <summary>
         /// 获取测试状态
         /// </summary>
@@ -44,7 +44,7 @@ namespace TByd.CodeStyle.Tests.Editor
             else
                 return TestStatus.Skipped;
         }
-        
+
         /// <summary>
         /// 生成测试报告
         /// </summary>
@@ -52,21 +52,21 @@ namespace TByd.CodeStyle.Tests.Editor
         public static void GenerateTestReport()
         {
             Debug.Log("开始生成测试报告...");
-            
+
             // 创建测试运行器API
             var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
-            
+
             // 创建测试运行器请求
             var request = new ExecutionSettings();
             request.filters = new[] { new Filter { testMode = TestMode.EditMode } };
-            
+
             // 注册回调
             testRunnerApi.RegisterCallbacks(new TestReportCallbacks());
-            
+
             // 执行测试
             testRunnerApi.Execute(request);
         }
-        
+
         /// <summary>
         /// 测试报告回调
         /// </summary>
@@ -74,39 +74,39 @@ namespace TByd.CodeStyle.Tests.Editor
         {
             // 测试结果列表
             private List<TestResult> m_TestResults = new List<TestResult>();
-            
+
             // 开始时间
             private DateTime m_StartTime;
-            
+
             public void RunStarted(ITestAdaptor testsToRun)
             {
                 m_StartTime = DateTime.Now;
                 Debug.Log($"开始运行测试: {testsToRun.Name}");
             }
-            
+
             public void RunFinished(ITestResultAdaptor result)
             {
                 // 计算测试时间
                 TimeSpan duration = DateTime.Now - m_StartTime;
-                
+
                 // 生成报告
                 string reportContent = GenerateHtmlReport(result, m_TestResults, duration);
-                
+
                 // 确保报告目录存在
                 string reportDir = Path.Combine(Application.dataPath, "..", c_ReportPath);
                 Directory.CreateDirectory(reportDir);
-                
+
                 // 保存报告
                 string reportFileName = string.Format(c_ReportFileName, DateTime.Now.ToString("yyyyMMdd_HHmmss"));
                 string reportPath = Path.Combine(reportDir, reportFileName);
                 File.WriteAllText(reportPath, reportContent);
-                
+
                 Debug.Log($"测试报告已生成: {reportPath}");
-                
+
                 // 打开报告
                 EditorUtility.RevealInFinder(reportPath);
             }
-            
+
             public void TestStarted(ITestAdaptor test)
             {
                 if (!test.IsSuite)
@@ -114,7 +114,7 @@ namespace TByd.CodeStyle.Tests.Editor
                     Debug.Log($"开始测试: {test.FullName}");
                 }
             }
-            
+
             public void TestFinished(ITestResultAdaptor result)
             {
                 if (!result.Test.IsSuite)
@@ -131,7 +131,7 @@ namespace TByd.CodeStyle.Tests.Editor
                     });
                 }
             }
-            
+
             /// <summary>
             /// 生成HTML报告
             /// </summary>
@@ -142,7 +142,7 @@ namespace TByd.CodeStyle.Tests.Editor
             private string GenerateHtmlReport(ITestResultAdaptor _result, List<TestResult> _testResults, TimeSpan _duration)
             {
                 StringBuilder sb = new StringBuilder();
-                
+
                 // HTML头部
                 sb.AppendLine("<!DOCTYPE html>");
                 sb.AppendLine("<html lang=\"zh-CN\">");
@@ -180,10 +180,10 @@ namespace TByd.CodeStyle.Tests.Editor
                 sb.AppendLine("    </script>");
                 sb.AppendLine("</head>");
                 sb.AppendLine("<body>");
-                
+
                 // 标题
                 sb.AppendLine("    <h1>TByd.CodeStyle 测试报告</h1>");
-                
+
                 // 摘要
                 sb.AppendLine("    <div class=\"summary\">");
                 sb.AppendLine("        <h2>测试摘要</h2>");
@@ -194,7 +194,7 @@ namespace TByd.CodeStyle.Tests.Editor
                 sb.AppendLine($"        <div class=\"summary-item\">测试时间: <strong>{_duration.TotalSeconds:F2}秒</strong></div>");
                 sb.AppendLine($"        <div class=\"summary-item\">生成时间: <strong>{DateTime.Now}</strong></div>");
                 sb.AppendLine("    </div>");
-                
+
                 // 测试结果表格
                 sb.AppendLine("    <h2>测试结果</h2>");
                 sb.AppendLine("    <table>");
@@ -203,14 +203,14 @@ namespace TByd.CodeStyle.Tests.Editor
                 sb.AppendLine("            <th>状态</th>");
                 sb.AppendLine("            <th>时间(秒)</th>");
                 sb.AppendLine("        </tr>");
-                
+
                 // 测试结果行
                 for (int i = 0; i < _testResults.Count; i++)
                 {
                     var testResult = _testResults[i];
                     string rowClass = "test-row ";
                     string statusText = "";
-                    
+
                     switch (testResult.PassState)
                     {
                         case UnityEditor.TestTools.TestRunner.Api.TestStatus.Passed:
@@ -226,13 +226,13 @@ namespace TByd.CodeStyle.Tests.Editor
                             statusText = "<span class=\"ignored\">忽略</span>";
                             break;
                     }
-                    
+
                     sb.AppendLine($"        <tr class=\"{rowClass}\" onclick=\"toggleDetails({i})\">");
                     sb.AppendLine($"            <td>{testResult.Name}</td>");
                     sb.AppendLine($"            <td>{statusText}</td>");
                     sb.AppendLine($"            <td>{testResult.Duration:F3}</td>");
                     sb.AppendLine("        </tr>");
-                    
+
                     // 测试详情
                     if (testResult.PassState != UnityEditor.TestTools.TestRunner.Api.TestStatus.Passed)
                     {
@@ -253,17 +253,17 @@ namespace TByd.CodeStyle.Tests.Editor
                         sb.AppendLine($"        </tr>");
                     }
                 }
-                
+
                 sb.AppendLine("    </table>");
-                
+
                 // HTML尾部
                 sb.AppendLine("</body>");
                 sb.AppendLine("</html>");
-                
+
                 return sb.ToString();
             }
         }
-        
+
         /// <summary>
         /// 测试结果类
         /// </summary>

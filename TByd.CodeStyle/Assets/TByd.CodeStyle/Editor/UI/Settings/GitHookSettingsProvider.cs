@@ -16,39 +16,39 @@ namespace TByd.CodeStyle.Editor.UI.Settings
     {
         // 设置路径
         private const string c_SettingsPath = "Project/TByd/Git钩子";
-        
+
         // 关键字
-        private static readonly string[] s_Keywords = new string[] 
-        { 
-            "TByd", "Git", "Hook", "钩子", "提交", "Commit" 
+        private static readonly string[] s_Keywords = new string[]
+        {
+            "TByd", "Git", "Hook", "钩子", "提交", "Commit"
         };
-        
+
         // 配置
         private CodeStyleConfig m_Config;
-        
+
         // 是否已初始化
         private bool m_Initialized;
-        
+
         // 是否已修改
         private bool m_IsDirty;
-        
+
         // 滚动位置
         private Vector2 m_ScrollPosition;
-        
+
         // 钩子状态
         private Dictionary<GitHookType, bool> m_HookStatus = new Dictionary<GitHookType, bool>();
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="_path">设置路径</param>
         /// <param name="_scopes">设置范围</param>
         /// <param name="_keywords">关键字</param>
-        public GitHookSettingsProvider(string _path, SettingsScope _scopes, IEnumerable<string> _keywords = null) 
+        public GitHookSettingsProvider(string _path, SettingsScope _scopes, IEnumerable<string> _keywords = null)
             : base(_path, _scopes, _keywords)
         {
         }
-        
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -56,18 +56,18 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         {
             if (m_Initialized)
                 return;
-                
+
             m_Config = ConfigProvider.GetConfig();
-            
+
             // 订阅配置变更事件
             ConfigProvider.ConfigChanged += OnConfigChanged;
-            
+
             // 获取钩子状态
             m_HookStatus = GitHookMonitor.GetHookStatus();
-            
+
             m_Initialized = true;
         }
-        
+
         /// <summary>
         /// 配置变更处理
         /// </summary>
@@ -75,11 +75,11 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         {
             m_Config = ConfigProvider.GetConfig();
             m_IsDirty = false;
-            
+
             // 更新钩子状态
             m_HookStatus = GitHookMonitor.GetHookStatus();
         }
-        
+
         /// <summary>
         /// 绘制设置UI
         /// </summary>
@@ -90,31 +90,31 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 Initialize();
             }
-            
+
             // 绘制标题
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Git钩子设置", EditorStyles.boldLabel);
             EditorGUILayout.Space();
-            
+
             // 检查是否是Git仓库
             if (!GitRepository.IsProjectGitRepository())
             {
                 EditorGUILayout.HelpBox("当前项目不是Git仓库，无法使用Git钩子功能。", MessageType.Warning);
-                
+
                 // 添加Git仓库路径配置
                 DrawGitRepositoryPathSettings();
-                
+
                 return;
             }
-            
+
             // 滚动视图
             m_ScrollPosition = EditorGUILayout.BeginScrollView(m_ScrollPosition);
-            
+
             // 添加Git仓库路径配置
             DrawGitRepositoryPathSettings();
-            
+
             EditorGUILayout.Space();
-            
+
             // 绘制自动安装钩子设置
             bool autoInstall = m_Config.GitHookConfig.AutoInstallHooks;
             bool newAutoInstall = EditorGUILayout.ToggleLeft("自动安装钩子", autoInstall);
@@ -123,7 +123,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 m_Config.GitHookConfig.AutoInstallHooks = newAutoInstall;
                 m_IsDirty = true;
             }
-            
+
             // 绘制启动时检查钩子状态设置
             bool checkOnStartup = m_Config.GitHookConfig.CheckHooksOnStartup;
             bool newCheckOnStartup = EditorGUILayout.ToggleLeft("启动时检查钩子状态", checkOnStartup);
@@ -132,42 +132,42 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 m_Config.GitHookConfig.CheckHooksOnStartup = newCheckOnStartup;
                 m_IsDirty = true;
             }
-            
+
             EditorGUILayout.Space();
-            
+
             // 绘制钩子列表
             EditorGUILayout.LabelField("钩子列表", EditorStyles.boldLabel);
-            
+
             // 刷新钩子状态
             RefreshHookStatus();
-            
+
             // 绘制钩子配置
             foreach (var hookConfig in m_Config.GitHookConfig.HookConfigs)
             {
                 DrawHookConfig(hookConfig);
             }
-            
+
             EditorGUILayout.Space();
-            
+
             // 绘制操作按钮
             EditorGUILayout.BeginHorizontal();
-            
+
             if (GUILayout.Button("安装所有钩子"))
             {
                 GitHookMonitor.InstallEnabledHooks();
                 RefreshHookStatus();
             }
-            
+
             if (GUILayout.Button("卸载所有钩子"))
             {
                 GitHookMonitor.UninstallAllHooks();
                 RefreshHookStatus();
             }
-            
+
             EditorGUILayout.EndHorizontal();
-            
+
             EditorGUILayout.EndScrollView();
-            
+
             // 保存修改
             if (m_IsDirty)
             {
@@ -175,7 +175,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 m_IsDirty = false;
             }
         }
-        
+
         /// <summary>
         /// 绘制Git仓库路径设置
         /// </summary>
@@ -183,13 +183,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("Git仓库路径设置", EditorStyles.boldLabel);
-            
+
             // 显示当前Git仓库路径
-            string currentRepoPath = string.IsNullOrEmpty(m_Config.CustomGitRepositoryPath) ? 
+            string currentRepoPath = string.IsNullOrEmpty(m_Config.CustomGitRepositoryPath) ?
                 "使用Unity项目根目录" : m_Config.CustomGitRepositoryPath;
-            
+
             EditorGUILayout.LabelField("当前Git仓库路径:", currentRepoPath);
-            
+
             // 检测当前路径是否有效
             bool isValidRepo = GitRepository.IsProjectGitRepository();
             if (isValidRepo)
@@ -200,19 +200,19 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 EditorGUILayout.HelpBox("未检测到有效的Git仓库，请检查路径是否正确", MessageType.Warning);
             }
-            
+
             EditorGUILayout.Space();
-            
+
             // 自定义Git仓库路径
             EditorGUILayout.BeginHorizontal();
-            
+
             string newPath = EditorGUILayout.TextField("自定义Git仓库路径:", m_Config.CustomGitRepositoryPath);
             if (newPath != m_Config.CustomGitRepositoryPath)
             {
                 m_Config.CustomGitRepositoryPath = newPath;
                 m_IsDirty = true;
             }
-            
+
             if (GUILayout.Button("浏览...", GUILayout.Width(80)))
             {
                 string path = EditorUtility.OpenFolderPanel("选择Git仓库根目录", "", "");
@@ -226,57 +226,57 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     }
                     else
                     {
-                        EditorUtility.DisplayDialog("无效的Git仓库", 
+                        EditorUtility.DisplayDialog("无效的Git仓库",
                             "所选目录不是有效的Git仓库，请确保目录中包含.git文件夹。", "确定");
                     }
                 }
             }
-            
+
             EditorGUILayout.EndHorizontal();
-            
+
             if (GUILayout.Button("重置为默认路径"))
             {
                 m_Config.CustomGitRepositoryPath = string.Empty;
                 m_IsDirty = true;
             }
-            
+
             EditorGUILayout.EndVertical();
         }
-        
+
         /// <summary>
         /// 绘制钩子配置
         /// </summary>
         private void DrawHookConfig(GitHookConfig.HookConfig hookConfig)
         {
             EditorGUILayout.BeginHorizontal();
-            
+
             EditorGUI.BeginChangeCheck();
-            
+
             // 获取钩子状态
             bool isInstalled = false;
             m_HookStatus.TryGetValue(hookConfig.HookType, out isInstalled);
-            
+
             // 显示钩子状态
             GUIStyle statusStyle = new GUIStyle(EditorStyles.label);
             statusStyle.normal.textColor = isInstalled ? Color.green : Color.red;
-            
+
             EditorGUILayout.LabelField(isInstalled ? "已安装" : "未安装", statusStyle, GUILayout.Width(60));
-            
+
             // 显示钩子类型
             EditorGUILayout.LabelField(hookConfig.HookType.ToString(), GUILayout.Width(120));
-            
+
             // 显示钩子文件名
             EditorGUILayout.LabelField(hookConfig.HookType.GetFileName(), GUILayout.Width(120));
-            
+
             // 显示钩子启用状态
             bool enabled = EditorGUILayout.Toggle(hookConfig.Enabled, GUILayout.Width(20));
-            
+
             if (EditorGUI.EndChangeCheck())
             {
                 hookConfig.Enabled = enabled;
                 m_IsDirty = true;
             }
-            
+
             // 显示安装/卸载按钮
             if (isInstalled)
             {
@@ -294,15 +294,15 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     m_HookStatus = GitHookMonitor.GetHookStatus();
                 }
             }
-            
+
             EditorGUILayout.EndHorizontal();
-            
+
             // 显示钩子描述
             EditorGUILayout.LabelField(hookConfig.HookType.GetDescription(), EditorStyles.miniLabel);
-            
+
             EditorGUILayout.Space();
         }
-        
+
         /// <summary>
         /// 刷新钩子状态
         /// </summary>
@@ -311,7 +311,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             GitHookManager.RefreshHookStatusCache();
             m_HookStatus = GitHookMonitor.GetHookStatus();
         }
-        
+
         /// <summary>
         /// 创建设置提供者
         /// </summary>
@@ -322,4 +322,4 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             return new GitHookSettingsProvider(c_SettingsPath, SettingsScope.Project, s_Keywords);
         }
     }
-} 
+}

@@ -12,27 +12,27 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// 组件是否可见
         /// </summary>
         protected bool m_IsVisible = true;
-        
+
         /// <summary>
         /// 组件标题
         /// </summary>
         protected string m_Title;
-        
+
         /// <summary>
         /// 组件描述
         /// </summary>
         protected string m_Description;
-        
+
         /// <summary>
         /// 是否可折叠
         /// </summary>
         protected bool m_IsCollapsible;
-        
+
         /// <summary>
         /// 是否已折叠
         /// </summary>
         protected bool m_IsCollapsed;
-        
+
         /// <summary>
         /// 组件标题
         /// </summary>
@@ -41,7 +41,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
             get => m_Title;
             set => m_Title = value;
         }
-        
+
         /// <summary>
         /// 组件描述
         /// </summary>
@@ -50,7 +50,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
             get => m_Description;
             set => m_Description = value;
         }
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -64,7 +64,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
             m_IsCollapsible = _isCollapsible;
             m_IsCollapsed = false;
         }
-        
+
         /// <summary>
         /// 绘制组件
         /// </summary>
@@ -72,26 +72,26 @@ namespace TByd.CodeStyle.Editor.UI.Components
         {
             if (!m_IsVisible)
                 return;
-                
+
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            
+
             DrawHeader();
-            
+
             if (!m_IsCollapsible || !m_IsCollapsed)
             {
                 DrawContent();
             }
-            
+
             EditorGUILayout.EndVertical();
         }
-        
+
         /// <summary>
         /// 绘制组件头部
         /// </summary>
         protected virtual void DrawHeader()
         {
             EditorGUILayout.BeginHorizontal();
-            
+
             if (m_IsCollapsible)
             {
                 m_IsCollapsed = EditorGUILayout.Foldout(m_IsCollapsed, m_Title, true);
@@ -100,20 +100,20 @@ namespace TByd.CodeStyle.Editor.UI.Components
             {
                 EditorGUILayout.LabelField(m_Title, EditorStyles.boldLabel);
             }
-            
+
             EditorGUILayout.EndHorizontal();
-            
+
             if (!string.IsNullOrEmpty(m_Description))
             {
                 EditorGUILayout.HelpBox(m_Description, MessageType.None);
             }
         }
-        
+
         /// <summary>
         /// 绘制组件内容
         /// </summary>
         protected abstract void DrawContent();
-        
+
         /// <summary>
         /// 设置组件可见性
         /// </summary>
@@ -122,7 +122,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         {
             m_IsVisible = _isVisible;
         }
-        
+
         /// <summary>
         /// 设置组件标题
         /// </summary>
@@ -131,7 +131,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         {
             m_Title = _title;
         }
-        
+
         /// <summary>
         /// 设置组件描述
         /// </summary>
@@ -140,7 +140,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         {
             m_Description = _description;
         }
-        
+
         /// <summary>
         /// 切换折叠状态
         /// </summary>
@@ -152,4 +152,4 @@ namespace TByd.CodeStyle.Editor.UI.Components
             }
         }
     }
-} 
+}

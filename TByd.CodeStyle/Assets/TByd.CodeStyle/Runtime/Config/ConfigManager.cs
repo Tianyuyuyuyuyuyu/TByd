@@ -11,28 +11,28 @@ namespace TByd.CodeStyle.Runtime.Config
     {
         // 配置文件名
         private const string c_ConfigFileName = "TBydCodeStyleConfig.json";
-        
+
         // 配置文件路径
         private static string s_ConfigFilePath;
-        
+
         // 当前配置
         private static CodeStyleConfig s_CurrentConfig;
-        
+
         // 配置是否已加载
         private static bool s_IsConfigLoaded;
-        
+
         // 配置变更事件
         public static event Action ConfigChanged;
-        
+
         /// <summary>
         /// 配置文件路径
         /// </summary>
-        public static string ConfigPath 
-        { 
+        public static string ConfigPath
+        {
             get => s_ConfigFilePath;
             set => SetConfigPath(value);
         }
-        
+
         /// <summary>
         /// 设置配置文件路径
         /// </summary>
@@ -44,11 +44,11 @@ namespace TByd.CodeStyle.Runtime.Config
                 Debug.LogError("[TByd.CodeStyle] 配置文件路径不能为空");
                 return;
             }
-            
+
             s_ConfigFilePath = _path;
             s_IsConfigLoaded = false; // 重置配置加载状态，以便下次获取配置时重新加载
         }
-        
+
         /// <summary>
         /// 初始化配置管理器
         /// </summary>
@@ -64,10 +64,10 @@ namespace TByd.CodeStyle.Runtime.Config
             {
                 Debug.Log($"[TByd.CodeStyle] 使用已设置的配置路径: {s_ConfigFilePath}");
             }
-            
+
             LoadConfig();
         }
-        
+
         /// <summary>
         /// 获取当前配置
         /// </summary>
@@ -78,10 +78,10 @@ namespace TByd.CodeStyle.Runtime.Config
             {
                 LoadConfig();
             }
-            
+
             return s_CurrentConfig;
         }
-        
+
         /// <summary>
         /// 保存配置
         /// </summary>
@@ -92,15 +92,15 @@ namespace TByd.CodeStyle.Runtime.Config
                 Debug.LogError("[TByd.CodeStyle] 保存配置失败: 当前配置为空");
                 return;
             }
-            
+
             try
             {
                 string configJson = JsonUtility.ToJson(s_CurrentConfig, true);
                 string directoryPath = Path.GetDirectoryName(s_ConfigFilePath);
-                
+
                 Debug.Log($"[TByd.CodeStyle] 准备保存配置到: {s_ConfigFilePath}");
                 Debug.Log($"[TByd.CodeStyle] 配置目录: {directoryPath}");
-                
+
                 if (!Directory.Exists(directoryPath))
                 {
                     Debug.Log($"[TByd.CodeStyle] 创建配置目录: {directoryPath}");
@@ -110,7 +110,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 {
                     Debug.Log($"[TByd.CodeStyle] 配置目录已存在: {directoryPath}");
                 }
-                
+
                 // 确保有写入权限
                 try
                 {
@@ -126,9 +126,9 @@ namespace TByd.CodeStyle.Runtime.Config
                     Debug.LogError($"[TByd.CodeStyle] 无法写入配置目录: {e.Message}");
                     throw; // 重新抛出异常，让上层处理
                 }
-                
+
                 File.WriteAllText(s_ConfigFilePath, configJson);
-                
+
                 // 验证文件是否成功写入
                 if (File.Exists(s_ConfigFilePath))
                 {
@@ -144,7 +144,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 Debug.LogError($"[TByd.CodeStyle] 保存配置失败: {e.Message}\n{e.StackTrace}");
             }
         }
-        
+
         /// <summary>
         /// 加载配置
         /// </summary>
@@ -156,7 +156,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 {
                     string configJson = File.ReadAllText(s_ConfigFilePath);
                     s_CurrentConfig = JsonUtility.FromJson<CodeStyleConfig>(configJson);
-                    
+
                     // 检查配置版本并进行迁移
                     MigrateConfigIfNeeded();
                 }
@@ -166,7 +166,7 @@ namespace TByd.CodeStyle.Runtime.Config
                     s_CurrentConfig = new CodeStyleConfig();
                     SaveConfig();
                 }
-                
+
                 s_IsConfigLoaded = true;
             }
             catch (Exception e)
@@ -176,7 +176,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 s_IsConfigLoaded = true;
             }
         }
-        
+
         /// <summary>
         /// 重置配置
         /// </summary>
@@ -184,11 +184,11 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             s_CurrentConfig = new CodeStyleConfig();
             SaveConfig();
-            
+
             // 触发配置变更事件
             ConfigChanged?.Invoke();
         }
-        
+
         /// <summary>
         /// 检查配置版本并进行迁移
         /// </summary>
@@ -196,10 +196,10 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             // 当前配置版本
             int currentVersion = s_CurrentConfig.ConfigVersion;
-            
+
             // 最新配置版本
             int latestVersion = 1;
-            
+
             if (currentVersion < latestVersion)
             {
                 // 执行迁移
@@ -207,17 +207,17 @@ namespace TByd.CodeStyle.Runtime.Config
                 {
                     MigrateConfig(version);
                 }
-                
+
                 // 更新配置版本
                 s_CurrentConfig.ConfigVersion = latestVersion;
-                
+
                 // 保存迁移后的配置
                 SaveConfig();
-                
+
                 Debug.Log($"[TByd.CodeStyle] 配置已从版本 {currentVersion} 迁移到版本 {latestVersion}");
             }
         }
-        
+
         /// <summary>
         /// 迁移配置
         /// </summary>
@@ -229,15 +229,15 @@ namespace TByd.CodeStyle.Runtime.Config
                 case 1:
                     // 版本1的迁移逻辑
                     break;
-                    
+
                 // 添加更多版本的迁移逻辑
-                
+
                 default:
                     Debug.LogWarning($"[TByd.CodeStyle] 未知的配置版本: {_targetVersion}");
                     break;
             }
         }
-        
+
         /// <summary>
         /// 通知配置变更
         /// </summary>
@@ -246,4 +246,4 @@ namespace TByd.CodeStyle.Runtime.Config
             ConfigChanged?.Invoke();
         }
     }
-} 
+}

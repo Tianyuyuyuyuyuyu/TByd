@@ -17,13 +17,13 @@ namespace TByd.CodeStyle.Editor.UI.Components
             Warning,
             Error
         }
-        
+
         // 信息类型
         private InfoType m_Type;
-        
+
         // 信息内容
         private string m_Message;
-        
+
         /// <summary>
         /// 信息内容
         /// </summary>
@@ -32,7 +32,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
             get => m_Message;
             set => m_Message = value;
         }
-        
+
         /// <summary>
         /// 信息类型
         /// </summary>
@@ -41,7 +41,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
             get => m_Type;
             set => m_Type = value;
         }
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -55,7 +55,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
             m_Message = _message;
             m_Type = _type;
         }
-        
+
         /// <summary>
         /// 绘制内容
         /// </summary>
@@ -64,7 +64,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
             MessageType messageType = GetMessageType();
             EditorGUILayout.HelpBox(m_Message, messageType);
         }
-        
+
         /// <summary>
         /// 获取对应的Unity消息类型
         /// </summary>
@@ -83,7 +83,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
                     return MessageType.None;
             }
         }
-        
+
         /// <summary>
         /// 设置信息内容
         /// </summary>
@@ -92,7 +92,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         {
             m_Message = _message;
         }
-        
+
         /// <summary>
         /// 设置信息类型
         /// </summary>
@@ -102,4 +102,4 @@ namespace TByd.CodeStyle.Editor.UI.Components
             m_Type = _type;
         }
     }
-} 
+}

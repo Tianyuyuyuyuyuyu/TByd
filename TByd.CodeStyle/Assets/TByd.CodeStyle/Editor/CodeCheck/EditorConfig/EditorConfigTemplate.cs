@@ -14,7 +14,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         public static List<EditorConfigRule> GetDefaultRules()
         {
             List<EditorConfigRule> rules = new List<EditorConfigRule>();
-            
+
             // 所有文件的通用规则
             EditorConfigRule allFilesRule = new EditorConfigRule("*");
             allFilesRule.SetProperty("charset", "utf-8");
@@ -22,40 +22,40 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             allFilesRule.SetProperty("insert_final_newline", "true");
             allFilesRule.SetProperty("trim_trailing_whitespace", "true");
             rules.Add(allFilesRule);
-            
+
             // C#文件规则
             EditorConfigRule csharpRule = new EditorConfigRule("*.cs");
             csharpRule.SetProperty("indent_style", "space");
             csharpRule.SetProperty("indent_size", "4");
             csharpRule.SetProperty("tab_width", "4");
             rules.Add(csharpRule);
-            
+
             // JSON文件规则
             EditorConfigRule jsonRule = new EditorConfigRule("*.json");
             jsonRule.SetProperty("indent_style", "space");
             jsonRule.SetProperty("indent_size", "2");
             rules.Add(jsonRule);
-            
+
             // YAML文件规则
             EditorConfigRule yamlRule = new EditorConfigRule("*.{yml,yaml}");
             yamlRule.SetProperty("indent_style", "space");
             yamlRule.SetProperty("indent_size", "2");
             rules.Add(yamlRule);
-            
+
             // Markdown文件规则
             EditorConfigRule markdownRule = new EditorConfigRule("*.md");
             markdownRule.SetProperty("trim_trailing_whitespace", "false");
             rules.Add(markdownRule);
-            
+
             // Unity特定文件规则
             EditorConfigRule unityRule = new EditorConfigRule("*.{asmdef,asmref}");
             unityRule.SetProperty("indent_style", "space");
             unityRule.SetProperty("indent_size", "4");
             rules.Add(unityRule);
-            
+
             return rules;
         }
-        
+
         /// <summary>
         /// 获取Unity项目推荐的EditorConfig规则
         /// </summary>
@@ -63,7 +63,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         public static List<EditorConfigRule> GetUnityProjectRules()
         {
             List<EditorConfigRule> rules = new List<EditorConfigRule>();
-            
+
             // 所有文件的通用规则
             EditorConfigRule allFilesRule = new EditorConfigRule("*");
             allFilesRule.SetProperty("charset", "utf-8");
@@ -71,13 +71,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             allFilesRule.SetProperty("insert_final_newline", "true");
             allFilesRule.SetProperty("trim_trailing_whitespace", "true");
             rules.Add(allFilesRule);
-            
+
             // C#文件规则
             EditorConfigRule csharpRule = new EditorConfigRule("*.cs");
             csharpRule.SetProperty("indent_style", "space");
             csharpRule.SetProperty("indent_size", "4");
             csharpRule.SetProperty("tab_width", "4");
-            
+
             // C#编码常规约定
             csharpRule.SetProperty("dotnet_sort_system_directives_first", "true");
             csharpRule.SetProperty("dotnet_style_qualification_for_field", "false:silent");
@@ -103,12 +103,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_style_prefer_auto_properties", "true:silent");
             csharpRule.SetProperty("dotnet_style_prefer_conditional_expression_over_assignment", "true:silent");
             csharpRule.SetProperty("dotnet_style_prefer_conditional_expression_over_return", "true:silent");
-            
+
             // var使用建议
             csharpRule.SetProperty("csharp_style_var_for_built_in_types", "true:suggestion");
             csharpRule.SetProperty("csharp_style_var_when_type_is_apparent", "true:suggestion");
             csharpRule.SetProperty("csharp_style_var_elsewhere", "true:suggestion");
-            
+
             // 表达式相关
             csharpRule.SetProperty("csharp_style_expression_bodied_methods", "false:silent");
             csharpRule.SetProperty("csharp_style_expression_bodied_constructors", "false:silent");
@@ -125,7 +125,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("csharp_prefer_simple_default_expression", "true:suggestion");
             csharpRule.SetProperty("csharp_style_prefer_local_over_anonymous_function", "true:suggestion");
             csharpRule.SetProperty("csharp_style_inlined_variable_declaration", "true:suggestion");
-            
+
             // C#代码风格规则
             csharpRule.SetProperty("csharp_new_line_before_open_brace", "all");
             csharpRule.SetProperty("csharp_new_line_before_else", "true");
@@ -136,7 +136,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("csharp_new_line_between_query_expression_clauses", "true");
             csharpRule.SetProperty("csharp_preserve_single_line_statements", "false");
             csharpRule.SetProperty("csharp_preserve_single_line_blocks", "false");
-            
+
             // 缩进规则
             csharpRule.SetProperty("csharp_indent_case_contents", "true");
             csharpRule.SetProperty("csharp_indent_case_contents_when_block", "false");
@@ -144,7 +144,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("csharp_indent_labels", "flush_left");
             csharpRule.SetProperty("csharp_indent_block_contents", "true");
             csharpRule.SetProperty("csharp_indent_braces", "false");
-            
+
             // 空格规则
             csharpRule.SetProperty("csharp_space_after_cast", "false");
             csharpRule.SetProperty("csharp_space_after_keywords_in_control_flow_statements", "true");
@@ -167,7 +167,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("csharp_space_before_open_square_brackets", "false");
             csharpRule.SetProperty("csharp_space_between_empty_square_brackets", "false");
             csharpRule.SetProperty("csharp_space_between_square_brackets", "false");
-            
+
             // 命名规则 - 使用Pascal命名规则的符号
             csharpRule.SetProperty("dotnet_naming_style.pascal_case_style.capitalization", "pascal_case");
             csharpRule.SetProperty("dotnet_naming_symbols.pascal_case_symbols.applicable_kinds", "namespace,class,struct,enum,property,method,event,delegate");
@@ -175,7 +175,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.severity", "suggestion");
             csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.symbols", "pascal_case_symbols");
             csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.style", "pascal_case_style");
-            
+
             // 命名规则 - 公开成员变量使用驼峰式命名
             csharpRule.SetProperty("dotnet_naming_style.public_class_member_style.capitalization", "camel_case");
             csharpRule.SetProperty("dotnet_naming_symbols.public_class_member.applicable_kinds", "field");
@@ -183,7 +183,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_naming_rule.public_class_member_rule.severity", "suggestion");
             csharpRule.SetProperty("dotnet_naming_rule.public_class_member_rule.symbols", "public_class_member");
             csharpRule.SetProperty("dotnet_naming_rule.public_class_member_rule.style", "public_class_member_style");
-            
+
             // 命名规则 - 静态成员变量使用s_前缀
             csharpRule.SetProperty("dotnet_naming_style.static_member_style.capitalization", "pascal_case");
             csharpRule.SetProperty("dotnet_naming_style.static_member_style.required_prefix", "s_");
@@ -193,7 +193,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_naming_rule.static_member_rule.severity", "suggestion");
             csharpRule.SetProperty("dotnet_naming_rule.static_member_rule.symbols", "static_member");
             csharpRule.SetProperty("dotnet_naming_rule.static_member_rule.style", "static_member_style");
-            
+
             // 命名规则 - 私有成员变量使用m_前缀
             csharpRule.SetProperty("dotnet_naming_style.private_class_member_style.capitalization", "pascal_case");
             csharpRule.SetProperty("dotnet_naming_style.private_class_member_style.required_prefix", "m_");
@@ -202,7 +202,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_naming_rule.private_class_member_rule.severity", "suggestion");
             csharpRule.SetProperty("dotnet_naming_rule.private_class_member_rule.symbols", "private_class_member");
             csharpRule.SetProperty("dotnet_naming_rule.private_class_member_rule.style", "private_class_member_style");
-            
+
             // 命名规则 - 常量使用全大写字母
             csharpRule.SetProperty("dotnet_naming_style.constant_fields_style.capitalization", "all_upper");
             csharpRule.SetProperty("dotnet_naming_style.constant_fields_style.word_separator", "_");
@@ -212,7 +212,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_naming_rule.constant_fields_rule.severity", "suggestion");
             csharpRule.SetProperty("dotnet_naming_rule.constant_fields_rule.symbols", "constant_fields");
             csharpRule.SetProperty("dotnet_naming_rule.constant_fields_rule.style", "constant_fields_style");
-            
+
             // 命名规则 - 接口使用I前缀
             csharpRule.SetProperty("dotnet_naming_style.interface_style.capitalization", "pascal_case");
             csharpRule.SetProperty("dotnet_naming_style.interface_style.required_prefix", "I");
@@ -221,56 +221,56 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_naming_rule.interface_should_be_pascal_case.severity", "suggestion");
             csharpRule.SetProperty("dotnet_naming_rule.interface_should_be_pascal_case.symbols", "interface_symbol");
             csharpRule.SetProperty("dotnet_naming_rule.interface_should_be_pascal_case.style", "interface_style");
-            
+
             rules.Add(csharpRule);
-            
+
             // JSON文件规则
             EditorConfigRule jsonRule = new EditorConfigRule("*.json");
             jsonRule.SetProperty("indent_style", "space");
             jsonRule.SetProperty("indent_size", "2");
             rules.Add(jsonRule);
-            
+
             // YAML文件规则
             EditorConfigRule yamlRule = new EditorConfigRule("*.{yml,yaml}");
             yamlRule.SetProperty("indent_style", "space");
             yamlRule.SetProperty("indent_size", "2");
             rules.Add(yamlRule);
-            
+
             // Markdown文件规则
             EditorConfigRule markdownRule = new EditorConfigRule("*.md");
             markdownRule.SetProperty("trim_trailing_whitespace", "false");
             rules.Add(markdownRule);
-            
+
             // Unity特定文件规则
             EditorConfigRule unityRule = new EditorConfigRule("*.{asmdef,asmref}");
             unityRule.SetProperty("indent_style", "space");
             unityRule.SetProperty("indent_size", "4");
             rules.Add(unityRule);
-            
+
             // Unity序列化文件规则
             EditorConfigRule unityYamlRule = new EditorConfigRule("*.unity");
             unityYamlRule.SetProperty("indent_style", "space");
             unityYamlRule.SetProperty("indent_size", "2");
             rules.Add(unityYamlRule);
-            
+
             EditorConfigRule unityMetaRule = new EditorConfigRule("*.meta");
             unityMetaRule.SetProperty("indent_style", "space");
             unityMetaRule.SetProperty("indent_size", "2");
             rules.Add(unityMetaRule);
-            
+
             EditorConfigRule unityPrefabRule = new EditorConfigRule("*.prefab");
             unityPrefabRule.SetProperty("indent_style", "space");
             unityPrefabRule.SetProperty("indent_size", "2");
             rules.Add(unityPrefabRule);
-            
+
             // Makefile规则
             EditorConfigRule makefileRule = new EditorConfigRule("Makefile");
             makefileRule.SetProperty("indent_style", "tab");
             rules.Add(makefileRule);
-            
+
             return rules;
         }
-        
+
         /// <summary>
         /// 获取默认的EditorConfig内容
         /// </summary>
@@ -279,7 +279,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         {
             return EditorConfigParser.GenerateContent(GetDefaultRules());
         }
-        
+
         /// <summary>
         /// 获取Unity项目推荐的EditorConfig内容
         /// </summary>
@@ -289,4 +289,4 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             return EditorConfigParser.GenerateContent(GetUnityProjectRules());
         }
     }
-} 
+}

@@ -13,7 +13,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
     {
         // Git提交配置
         private readonly GitCommitConfig m_Config;
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -22,7 +22,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         {
             m_Config = _config;
         }
-        
+
         /// <summary>
         /// 修复提交消息
         /// </summary>
@@ -34,7 +34,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 return new CommitMessage();
             }
-            
+
             try
             {
                 // 创建新的提交消息对象
@@ -45,19 +45,19 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     _message.Body,
                     _message.Footer,
                     _message.RawMessage);
-                
+
                 // 修复类型
                 fixedMessage.Type = FixType(fixedMessage.Type);
-                
+
                 // 修复作用域
                 fixedMessage.Scope = FixScope(fixedMessage.Scope);
-                
+
                 // 修复简短描述
                 fixedMessage.Subject = FixSubject(fixedMessage.Subject);
-                
+
                 // 更新原始消息
                 fixedMessage.RawMessage = fixedMessage.GetFormattedMessage();
-                
+
                 return fixedMessage;
             }
             catch (Exception e)
@@ -66,7 +66,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 return _message;
             }
         }
-        
+
         /// <summary>
         /// 修复提交类型
         /// </summary>
@@ -79,7 +79,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 // 如果类型为空，则使用默认类型
                 return m_Config.CommitTypes.Count > 0 ? m_Config.CommitTypes[0].Type : "feat";
             }
-            
+
             // 检查类型是否在配置的有效类型列表中
             foreach (var commitType in m_Config.CommitTypes)
             {
@@ -89,11 +89,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     return commitType.Type;
                 }
             }
-            
+
             // 如果类型无效，则使用默认类型
             return m_Config.CommitTypes.Count > 0 ? m_Config.CommitTypes[0].Type : "feat";
         }
-        
+
         /// <summary>
         /// 修复作用域
         /// </summary>
@@ -108,11 +108,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 {
                     return string.Empty;
                 }
-                
+
                 // 如果作用域为空但要求作用域，则使用默认作用域
                 return m_Config.Scopes.Count > 0 ? m_Config.Scopes[0] : "core";
             }
-            
+
             // 检查作用域是否在配置的有效作用域列表中
             foreach (var scope in m_Config.Scopes)
             {
@@ -122,11 +122,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     return scope;
                 }
             }
-            
+
             // 如果作用域无效，则使用默认作用域
             return m_Config.Scopes.Count > 0 ? m_Config.Scopes[0] : "core";
         }
-        
+
         /// <summary>
         /// 修复简短描述
         /// </summary>
@@ -138,19 +138,19 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 return string.Empty;
             }
-            
+
             // 移除末尾的句号
             string subject = _subject.TrimEnd('.');
-            
+
             // 截断过长的简短描述
             if (subject.Length > m_Config.SubjectMaxLength)
             {
                 subject = subject.Substring(0, m_Config.SubjectMaxLength);
             }
-            
+
             return subject;
         }
-        
+
         /// <summary>
         /// 修复提交消息文本
         /// </summary>
@@ -162,7 +162,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             CommitMessage fixedMessage = Fix(message);
             return fixedMessage.GetFormattedMessage();
         }
-        
+
         /// <summary>
         /// 修复提交消息文件
         /// </summary>
@@ -177,12 +177,12 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     Debug.LogError($"[TByd.CodeStyle] 提交消息文件不存在: {_filePath}");
                     return false;
                 }
-                
+
                 string messageText = System.IO.File.ReadAllText(_filePath);
                 string fixedMessageText = FixText(messageText);
-                
+
                 System.IO.File.WriteAllText(_filePath, fixedMessageText);
-                
+
                 return true;
             }
             catch (Exception e)
@@ -191,7 +191,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 生成提交消息模板
         /// </summary>
@@ -199,7 +199,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         public string GenerateTemplate()
         {
             StringBuilder sb = new StringBuilder();
-            
+
             // 添加模板说明
             sb.AppendLine("# 请按照以下格式填写提交信息:");
             sb.AppendLine("# <type>(<scope>): <subject>");
@@ -208,7 +208,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             sb.AppendLine("# <空行>");
             sb.AppendLine("# <footer>");
             sb.AppendLine("#");
-            
+
             // 添加类型说明
             sb.AppendLine("# 类型(type)说明:");
             foreach (var commitType in m_Config.CommitTypes)
@@ -219,7 +219,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 }
             }
             sb.AppendLine("#");
-            
+
             // 添加作用域说明
             sb.AppendLine("# 作用域(scope)说明:");
             foreach (var scope in m_Config.Scopes)
@@ -227,29 +227,29 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 sb.AppendLine($"#   {scope}");
             }
             sb.AppendLine("#");
-            
+
             // 添加简短描述说明
             sb.AppendLine("# 简短描述(subject)说明:");
             sb.AppendLine("#   - 使用祈使句（如\"添加\"而不是\"添加了\"）");
             sb.AppendLine("#   - 不要以句号结尾");
             sb.AppendLine($"#   - 不要超过{m_Config.SubjectMaxLength}个字符");
             sb.AppendLine("#");
-            
+
             // 添加详细描述说明
             sb.AppendLine("# 详细描述(body)说明:");
             sb.AppendLine("#   - 解释为什么进行此次修改");
             sb.AppendLine("#   - 描述与之前行为的区别");
             sb.AppendLine("#");
-            
+
             // 添加页脚说明
             sb.AppendLine("# 关闭问题(footer)说明:");
             sb.AppendLine("#   - 关闭的问题: Closes #123, #456");
             sb.AppendLine("#   - 破坏性变更说明");
             sb.AppendLine("#");
-            
+
             return sb.ToString();
         }
-        
+
         /// <summary>
         /// 将模板写入提交消息文件
         /// </summary>
@@ -260,17 +260,17 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             try
             {
                 string template = GenerateTemplate();
-                
+
                 // 如果文件已存在，则读取原始内容
                 string originalContent = string.Empty;
                 if (System.IO.File.Exists(_filePath))
                 {
                     originalContent = System.IO.File.ReadAllText(_filePath);
                 }
-                
+
                 // 将模板和原始内容写入文件
                 System.IO.File.WriteAllText(_filePath, template + originalContent);
-                
+
                 return true;
             }
             catch (Exception e)
@@ -280,4 +280,4 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
         }
     }
-} 
+}

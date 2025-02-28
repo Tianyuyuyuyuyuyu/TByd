@@ -70,7 +70,9 @@ fi
 # 检查所有文件是否包含合并冲突标记
 echo "检查合并冲突标记..."
 for file in $staged_files; do
-    if grep -q "<<<<<<< HEAD" "$file" || grep -q "=======" "$file" || grep -q ">>>>>>> " "$file"; then
+    # 使用更精确的正则表达式检查合并冲突标记
+    # 只匹配独立一行的合并冲突标记，而不是包含在字符串或代码中的类似模式
+    if grep -q "^<<<<<<< HEAD" "$file" || grep -q "^=======$" "$file" || grep -q "^>>>>>>> " "$file"; then
         echo "错误: 文件 $file 包含未解决的合并冲突，请在提交前解决"
         exit 1
     fi

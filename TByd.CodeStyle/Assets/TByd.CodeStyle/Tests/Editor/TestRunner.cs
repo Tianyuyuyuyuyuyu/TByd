@@ -16,21 +16,21 @@ namespace TByd.CodeStyle.Tests.Editor
         public static void RunAllTests()
         {
             Debug.Log("开始运行所有TByd.CodeStyle测试...");
-            
+
             // 创建测试运行器API
             var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
-            
+
             // 创建测试运行器请求
             var request = new ExecutionSettings();
             request.filters = new[] { new Filter { testMode = TestMode.EditMode } };
-            
+
             // 注册回调
             testRunnerApi.RegisterCallbacks(new TestCallbacks());
-            
+
             // 执行测试
             testRunnerApi.Execute(request);
         }
-        
+
         /// <summary>
         /// 获取测试总数
         /// </summary>
@@ -40,7 +40,7 @@ namespace TByd.CodeStyle.Tests.Editor
         {
             return _result.PassCount + _result.FailCount + _result.SkipCount + _result.InconclusiveCount;
         }
-        
+
         /// <summary>
         /// 测试回调
         /// </summary>
@@ -50,7 +50,7 @@ namespace TByd.CodeStyle.Tests.Editor
             {
                 Debug.Log($"开始运行测试: {testsToRun.Name}");
             }
-            
+
             public void RunFinished(ITestResultAdaptor result)
             {
                 int testCount = result.GetTestCount();
@@ -63,7 +63,7 @@ namespace TByd.CodeStyle.Tests.Editor
                     Debug.LogWarning($"测试完成，但有失败项。通过: {result.PassCount}, 失败: {result.FailCount}, 总计: {testCount}");
                 }
             }
-            
+
             public void TestStarted(ITestAdaptor test)
             {
                 if (!test.IsSuite)
@@ -71,7 +71,7 @@ namespace TByd.CodeStyle.Tests.Editor
                     Debug.Log($"开始测试: {test.FullName}");
                 }
             }
-            
+
             public void TestFinished(ITestResultAdaptor result)
             {
                 if (!result.Test.IsSuite)
@@ -88,4 +88,4 @@ namespace TByd.CodeStyle.Tests.Editor
             }
         }
     }
-} 
+}

@@ -13,22 +13,22 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 规则模式（文件匹配模式）
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private string m_Pattern;
-        
+
         /// <summary>
         /// 规则属性
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private Dictionary<string, string> m_Properties = new Dictionary<string, string>();
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
         public EditorConfigRule()
         {
         }
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -37,7 +37,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         {
             m_Pattern = _pattern;
         }
-        
+
         /// <summary>
         /// 规则模式
         /// </summary>
@@ -46,7 +46,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             get => m_Pattern;
             set => m_Pattern = value;
         }
-        
+
         /// <summary>
         /// 规则属性
         /// </summary>
@@ -55,7 +55,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             get => m_Properties;
             set => m_Properties = value;
         }
-        
+
         /// <summary>
         /// 设置属性
         /// </summary>
@@ -67,10 +67,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             {
                 return;
             }
-            
+
             // EditorConfig属性名不区分大小写
             _key = _key.ToLowerInvariant();
-            
+
             if (m_Properties.ContainsKey(_key))
             {
                 m_Properties[_key] = _value;
@@ -80,7 +80,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 m_Properties.Add(_key, _value);
             }
         }
-        
+
         /// <summary>
         /// 获取属性
         /// </summary>
@@ -93,18 +93,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             {
                 return _defaultValue;
             }
-            
+
             // EditorConfig属性名不区分大小写
             _key = _key.ToLowerInvariant();
-            
+
             if (m_Properties.TryGetValue(_key, out string value))
             {
                 return value;
             }
-            
+
             return _defaultValue;
         }
-        
+
         /// <summary>
         /// 移除属性
         /// </summary>
@@ -115,16 +115,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             {
                 return;
             }
-            
+
             // EditorConfig属性名不区分大小写
             _key = _key.ToLowerInvariant();
-            
+
             if (m_Properties.ContainsKey(_key))
             {
                 m_Properties.Remove(_key);
             }
         }
-        
+
         /// <summary>
         /// 清空所有属性
         /// </summary>
@@ -133,4 +133,4 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             m_Properties.Clear();
         }
     }
-} 
+}

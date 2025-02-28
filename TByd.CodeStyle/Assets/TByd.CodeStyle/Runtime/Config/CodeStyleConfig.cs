@@ -13,63 +13,63 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 配置版本号，用于配置迁移
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private int m_ConfigVersion = 1;
-        
+
         /// <summary>
         /// 是否启用Git提交规范检查
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_EnableGitCommitCheck = true;
-        
+
         /// <summary>
         /// 是否启用代码风格检查
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_EnableCodeStyleCheck = true;
-        
+
         /// <summary>
         /// 是否启用EditorConfig支持
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_EnableEditorConfig = true;
-        
+
         /// <summary>
         /// 是否在编译时自动检查代码风格
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_CheckOnCompile = false;
-        
+
         /// <summary>
         /// 是否在Git提交前检查代码风格
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_CheckBeforeCommit = true;
-        
+
         /// <summary>
         /// 自定义Git仓库路径，为空则使用Unity项目根目录
         /// </summary>
         [SerializeField]
         private string m_CustomGitRepositoryPath = string.Empty;
-        
+
         /// <summary>
         /// Git提交规范配置
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private GitCommitConfig m_GitCommitConfig = new GitCommitConfig();
-        
+
         /// <summary>
         /// 代码风格检查配置
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private CodeCheckConfig m_CodeCheckConfig = new CodeCheckConfig();
-        
+
         /// <summary>
         /// Git钩子配置
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private GitHookConfig m_GitHookConfig = new GitHookConfig();
-        
+
         /// <summary>
         /// 配置版本号
         /// </summary>
@@ -78,7 +78,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_ConfigVersion;
             set => m_ConfigVersion = value;
         }
-        
+
         /// <summary>
         /// 是否启用Git提交规范检查
         /// </summary>
@@ -87,7 +87,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_EnableGitCommitCheck;
             set => m_EnableGitCommitCheck = value;
         }
-        
+
         /// <summary>
         /// 是否启用代码风格检查
         /// </summary>
@@ -96,7 +96,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_EnableCodeStyleCheck;
             set => m_EnableCodeStyleCheck = value;
         }
-        
+
         /// <summary>
         /// 是否启用EditorConfig支持
         /// </summary>
@@ -105,7 +105,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_EnableEditorConfig;
             set => m_EnableEditorConfig = value;
         }
-        
+
         /// <summary>
         /// 是否在编译时自动检查代码风格
         /// </summary>
@@ -114,7 +114,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_CheckOnCompile;
             set => m_CheckOnCompile = value;
         }
-        
+
         /// <summary>
         /// 是否在Git提交前检查代码风格
         /// </summary>
@@ -123,7 +123,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_CheckBeforeCommit;
             set => m_CheckBeforeCommit = value;
         }
-        
+
         /// <summary>
         /// 自定义Git仓库路径，为空则使用Unity项目根目录
         /// </summary>
@@ -132,7 +132,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_CustomGitRepositoryPath;
             set => m_CustomGitRepositoryPath = value;
         }
-        
+
         /// <summary>
         /// Git提交规范配置
         /// </summary>
@@ -141,7 +141,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_GitCommitConfig;
             set => m_GitCommitConfig = value;
         }
-        
+
         /// <summary>
         /// 代码风格检查配置
         /// </summary>
@@ -150,7 +150,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_CodeCheckConfig;
             set => m_CodeCheckConfig = value;
         }
-        
+
         /// <summary>
         /// Git钩子配置
         /// </summary>
@@ -159,7 +159,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_GitHookConfig;
             set => m_GitHookConfig = value;
         }
-        
+
         /// <summary>
         /// Git设置，用于测试兼容性
         /// </summary>
@@ -167,7 +167,7 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             get => m_GitHookConfig;
         }
-        
+
         /// <summary>
         /// 提交消息设置，用于测试兼容性
         /// </summary>
@@ -176,4 +176,4 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_GitCommitConfig;
         }
     }
-} 
+}

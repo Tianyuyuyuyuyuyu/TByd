@@ -19,26 +19,26 @@ namespace TByd.CodeStyle.Runtime.Git
             /// <summary>
             /// 钩子类型
             /// </summary>
-            [SerializeField] 
+            [SerializeField]
             private GitHookType m_HookType;
-            
+
             /// <summary>
             /// 是否启用
             /// </summary>
-            [SerializeField] 
+            [SerializeField]
             private bool m_Enabled = true;
-            
+
             /// <summary>
             /// 自定义参数
             /// </summary>
-            [SerializeField] 
+            [SerializeField]
             private Dictionary<string, string> m_Parameters = new Dictionary<string, string>();
-            
+
             /// <summary>
             /// 构造函数
             /// </summary>
             public HookConfig() { }
-            
+
             /// <summary>
             /// 构造函数
             /// </summary>
@@ -49,7 +49,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 m_HookType = _hookType;
                 m_Enabled = _enabled;
             }
-            
+
             /// <summary>
             /// 钩子类型
             /// </summary>
@@ -58,7 +58,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 get => m_HookType;
                 set => m_HookType = value;
             }
-            
+
             /// <summary>
             /// 是否启用
             /// </summary>
@@ -67,7 +67,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 get => m_Enabled;
                 set => m_Enabled = value;
             }
-            
+
             /// <summary>
             /// 自定义参数
             /// </summary>
@@ -76,7 +76,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 get => m_Parameters;
                 set => m_Parameters = value;
             }
-            
+
             /// <summary>
             /// 设置参数
             /// </summary>
@@ -93,7 +93,7 @@ namespace TByd.CodeStyle.Runtime.Git
                     m_Parameters.Add(_key, _value);
                 }
             }
-            
+
             /// <summary>
             /// 获取参数
             /// </summary>
@@ -105,25 +105,25 @@ namespace TByd.CodeStyle.Runtime.Git
                 return m_Parameters.TryGetValue(_key, out var value) ? value : _defaultValue;
             }
         }
-        
+
         /// <summary>
         /// 是否自动安装钩子
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_AutoInstallHooks = true;
-        
+
         /// <summary>
         /// 是否在编辑器启动时检查钩子状态
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_CheckHooksOnStartup = true;
-        
+
         /// <summary>
         /// 钩子配置列表
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private List<HookConfig> m_HookConfigs = new List<HookConfig>();
-        
+
         /// <summary>
         /// 构造函数，初始化默认钩子配置
         /// </summary>
@@ -131,7 +131,7 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             InitDefaultHookConfigs();
         }
-        
+
         /// <summary>
         /// 初始化默认钩子配置
         /// </summary>
@@ -142,7 +142,7 @@ namespace TByd.CodeStyle.Runtime.Git
             m_HookConfigs.Add(new HookConfig(GitHookType.CommitMsg, true));
             m_HookConfigs.Add(new HookConfig(GitHookType.PrepareCommitMsg, true));
         }
-        
+
         /// <summary>
         /// 是否自动安装钩子
         /// </summary>
@@ -151,7 +151,7 @@ namespace TByd.CodeStyle.Runtime.Git
             get => m_AutoInstallHooks;
             set => m_AutoInstallHooks = value;
         }
-        
+
         /// <summary>
         /// 是否在编辑器启动时检查钩子状态
         /// </summary>
@@ -160,7 +160,7 @@ namespace TByd.CodeStyle.Runtime.Git
             get => m_CheckHooksOnStartup;
             set => m_CheckHooksOnStartup = value;
         }
-        
+
         /// <summary>
         /// 是否启用Git钩子，用于测试兼容性
         /// </summary>
@@ -169,7 +169,7 @@ namespace TByd.CodeStyle.Runtime.Git
             get => m_AutoInstallHooks;
             set => m_AutoInstallHooks = value;
         }
-        
+
         /// <summary>
         /// 钩子配置列表
         /// </summary>
@@ -178,7 +178,7 @@ namespace TByd.CodeStyle.Runtime.Git
             get => m_HookConfigs;
             set => m_HookConfigs = value;
         }
-        
+
         /// <summary>
         /// 获取钩子配置
         /// </summary>
@@ -188,7 +188,7 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             return m_HookConfigs.Find(config => config.HookType == _hookType);
         }
-        
+
         /// <summary>
         /// 设置钩子启用状态
         /// </summary>
@@ -206,7 +206,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 m_HookConfigs.Add(new HookConfig(_hookType, _enabled));
             }
         }
-        
+
         /// <summary>
         /// 检查钩子是否启用
         /// </summary>
@@ -218,4 +218,4 @@ namespace TByd.CodeStyle.Runtime.Git
             return config != null && config.Enabled;
         }
     }
-} 
+}

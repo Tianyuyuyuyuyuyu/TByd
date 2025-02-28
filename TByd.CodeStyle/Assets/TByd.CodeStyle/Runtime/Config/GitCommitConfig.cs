@@ -19,26 +19,26 @@ namespace TByd.CodeStyle.Runtime.Config
             /// <summary>
             /// 类型标识
             /// </summary>
-            [SerializeField] 
+            [SerializeField]
             private string m_Type;
-            
+
             /// <summary>
             /// 类型描述
             /// </summary>
-            [SerializeField] 
+            [SerializeField]
             private string m_Description;
-            
+
             /// <summary>
             /// 是否启用
             /// </summary>
-            [SerializeField] 
+            [SerializeField]
             private bool m_Enabled = true;
-            
+
             /// <summary>
             /// 构造函数
             /// </summary>
             public CommitType() { }
-            
+
             /// <summary>
             /// 构造函数
             /// </summary>
@@ -51,7 +51,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 m_Description = _description;
                 m_Enabled = _enabled;
             }
-            
+
             /// <summary>
             /// 类型标识
             /// </summary>
@@ -60,7 +60,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 get => m_Type;
                 set => m_Type = value;
             }
-            
+
             /// <summary>
             /// 类型描述
             /// </summary>
@@ -69,7 +69,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 get => m_Description;
                 set => m_Description = value;
             }
-            
+
             /// <summary>
             /// 是否启用
             /// </summary>
@@ -79,61 +79,61 @@ namespace TByd.CodeStyle.Runtime.Config
                 set => m_Enabled = value;
             }
         }
-        
+
         /// <summary>
         /// 是否强制使用提交模板
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_ForceUseTemplate = true;
-        
+
         /// <summary>
         /// 是否要求提交类型
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_RequireType = true;
-        
+
         /// <summary>
         /// 是否要求作用域
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_RequireScope = false;
-        
+
         /// <summary>
         /// 是否要求简短描述
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_RequireSubject = true;
-        
+
         /// <summary>
         /// 是否要求详细描述
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_RequireBody = false;
-        
+
         /// <summary>
         /// 是否要求关闭的问题
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private bool m_RequireFooter = false;
-        
+
         /// <summary>
         /// 简短描述的最大长度
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private int m_SubjectMaxLength = 100;
-        
+
         /// <summary>
         /// 提交类型列表
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private List<CommitType> m_CommitTypes = new List<CommitType>();
-        
+
         /// <summary>
         /// 作用域列表
         /// </summary>
-        [SerializeField] 
+        [SerializeField]
         private List<string> m_Scopes = new List<string>();
-        
+
         /// <summary>
         /// 构造函数，初始化默认提交类型
         /// </summary>
@@ -142,7 +142,7 @@ namespace TByd.CodeStyle.Runtime.Config
             InitDefaultCommitTypes();
             InitDefaultScopes();
         }
-        
+
         /// <summary>
         /// 初始化默认提交类型
         /// </summary>
@@ -160,7 +160,7 @@ namespace TByd.CodeStyle.Runtime.Config
             m_CommitTypes.Add(new CommitType("chore", "其他修改"));
             m_CommitTypes.Add(new CommitType("revert", "回退提交"));
         }
-        
+
         /// <summary>
         /// 初始化默认作用域
         /// </summary>
@@ -173,7 +173,7 @@ namespace TByd.CodeStyle.Runtime.Config
             m_Scopes.Add("editor");
             m_Scopes.Add("docs");
         }
-        
+
         /// <summary>
         /// 是否强制使用提交模板
         /// </summary>
@@ -182,7 +182,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_ForceUseTemplate;
             set => m_ForceUseTemplate = value;
         }
-        
+
         /// <summary>
         /// 是否要求提交类型
         /// </summary>
@@ -191,7 +191,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_RequireType;
             set => m_RequireType = value;
         }
-        
+
         /// <summary>
         /// 是否要求作用域
         /// </summary>
@@ -200,7 +200,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_RequireScope;
             set => m_RequireScope = value;
         }
-        
+
         /// <summary>
         /// 是否要求简短描述
         /// </summary>
@@ -209,7 +209,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_RequireSubject;
             set => m_RequireSubject = value;
         }
-        
+
         /// <summary>
         /// 是否要求详细描述
         /// </summary>
@@ -218,7 +218,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_RequireBody;
             set => m_RequireBody = value;
         }
-        
+
         /// <summary>
         /// 是否要求关闭的问题
         /// </summary>
@@ -227,7 +227,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_RequireFooter;
             set => m_RequireFooter = value;
         }
-        
+
         /// <summary>
         /// 简短描述的最大长度
         /// </summary>
@@ -236,7 +236,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_SubjectMaxLength;
             set => m_SubjectMaxLength = value;
         }
-        
+
         /// <summary>
         /// 提交类型列表
         /// </summary>
@@ -245,7 +245,7 @@ namespace TByd.CodeStyle.Runtime.Config
             get => m_CommitTypes;
             set => m_CommitTypes = value;
         }
-        
+
         /// <summary>
         /// 作用域列表
         /// </summary>
@@ -255,4 +255,4 @@ namespace TByd.CodeStyle.Runtime.Config
             set => m_Scopes = value;
         }
     }
-} 
+}

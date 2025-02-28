@@ -12,22 +12,22 @@ namespace TByd.CodeStyle.Runtime.Git
     {
         // Git目录名
         private const string c_GitDirName = ".git";
-        
+
         // 钩子目录名
         private const string c_HooksDirName = "hooks";
-        
+
         // 仓库路径
         private string m_RepositoryPath;
-        
+
         // Git目录路径
         private string m_GitDirPath;
-        
+
         // 钩子目录路径
         private string m_HooksDirPath;
-        
+
         // 是否是有效的Git仓库
         private bool m_IsValid;
-        
+
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -36,7 +36,7 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             Initialize(_repositoryPath);
         }
-        
+
         /// <summary>
         /// 初始化
         /// </summary>
@@ -46,36 +46,36 @@ namespace TByd.CodeStyle.Runtime.Git
             m_RepositoryPath = _repositoryPath;
             m_GitDirPath = Path.Combine(m_RepositoryPath, c_GitDirName);
             m_HooksDirPath = Path.Combine(m_GitDirPath, c_HooksDirName);
-            
+
             // 检查是否是有效的Git仓库
             m_IsValid = Directory.Exists(m_GitDirPath) && Directory.Exists(m_HooksDirPath);
-            
+
             if (!m_IsValid)
             {
                 Debug.LogWarning($"[TByd.CodeStyle] 路径不是有效的Git仓库: {m_RepositoryPath}");
             }
         }
-        
+
         /// <summary>
         /// 仓库路径
         /// </summary>
         public string RepositoryPath => m_RepositoryPath;
-        
+
         /// <summary>
         /// Git目录路径
         /// </summary>
         public string GitDirPath => m_GitDirPath;
-        
+
         /// <summary>
         /// 钩子目录路径
         /// </summary>
         public string HooksDirPath => m_HooksDirPath;
-        
+
         /// <summary>
         /// 是否是有效的Git仓库
         /// </summary>
         public bool IsValid => m_IsValid;
-        
+
         /// <summary>
         /// 获取钩子文件路径
         /// </summary>
@@ -85,7 +85,7 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             return Path.Combine(m_HooksDirPath, _hookName);
         }
-        
+
         /// <summary>
         /// 检查钩子是否存在
         /// </summary>
@@ -95,10 +95,10 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             if (!m_IsValid)
                 return false;
-                
+
             return File.Exists(GetHookPath(_hookName));
         }
-        
+
         /// <summary>
         /// 检查钩子是否由TByd.CodeStyle管理
         /// </summary>
@@ -108,7 +108,7 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             if (!HookExists(_hookName))
                 return false;
-                
+
             try
             {
                 string content = File.ReadAllText(GetHookPath(_hookName));
@@ -120,7 +120,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 return false;
             }
         }
-        
+
         /// <summary>
         /// 获取Git可执行文件路径
         /// </summary>
@@ -132,11 +132,11 @@ namespace TByd.CodeStyle.Runtime.Git
             {
                 return "git.exe";
             }
-            
+
             // 在macOS和Linux上，通常是git
             return "git";
         }
-        
+
         /// <summary>
         /// 获取Git仓库路径
         /// </summary>
@@ -145,7 +145,7 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             // 获取配置
             CodeStyleConfig config = null;
-            
+
             try
             {
                 config = ConfigManager.GetConfig();
@@ -154,17 +154,17 @@ namespace TByd.CodeStyle.Runtime.Git
             {
                 // 配置未初始化，使用默认路径
             }
-            
+
             // 如果配置了自定义路径且不为空，则使用自定义路径
             if (config != null && !string.IsNullOrEmpty(config.CustomGitRepositoryPath))
             {
                 return config.CustomGitRepositoryPath;
             }
-            
+
             // 否则使用Unity项目根目录
             return Path.GetDirectoryName(Application.dataPath);
         }
-        
+
         /// <summary>
         /// 检测是否是Git仓库
         /// </summary>
@@ -174,11 +174,11 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             if (string.IsNullOrEmpty(_path))
                 return false;
-                
+
             string gitDirPath = Path.Combine(_path, c_GitDirName);
             return Directory.Exists(gitDirPath);
         }
-        
+
         /// <summary>
         /// 检测项目根目录是否是Git仓库
         /// </summary>
@@ -188,7 +188,7 @@ namespace TByd.CodeStyle.Runtime.Git
             string repositoryPath = GetGitRepositoryPath();
             return IsGitRepository(repositoryPath);
         }
-        
+
         /// <summary>
         /// 获取项目Git仓库
         /// </summary>
@@ -198,7 +198,7 @@ namespace TByd.CodeStyle.Runtime.Git
             string repositoryPath = GetGitRepositoryPath();
             return new GitRepository(repositoryPath);
         }
-        
+
         /// <summary>
         /// 获取Git目录路径
         /// </summary>
@@ -208,11 +208,11 @@ namespace TByd.CodeStyle.Runtime.Git
         {
             if (string.IsNullOrEmpty(_repositoryPath))
                 return string.Empty;
-                
+
             string gitDirPath = Path.Combine(_repositoryPath, c_GitDirName);
             return Directory.Exists(gitDirPath) ? gitDirPath : string.Empty;
         }
-        
+
         /// <summary>
         /// 获取Git钩子目录路径
         /// </summary>
@@ -223,9 +223,9 @@ namespace TByd.CodeStyle.Runtime.Git
             string gitDirPath = GetGitDirectory(_repositoryPath);
             if (string.IsNullOrEmpty(gitDirPath))
                 return string.Empty;
-                
+
             string hooksDirPath = Path.Combine(gitDirPath, c_HooksDirName);
             return Directory.Exists(hooksDirPath) ? hooksDirPath : string.Empty;
         }
     }
-} 
+}
