@@ -8,7 +8,7 @@
     "m_GitCommitConfig": {
         "m_ForceUseTemplate": true,
         "m_RequireType": true,
-        "m_RequireScope": false,
+        "m_RequireScope": true,
         "m_RequireSubject": true,
         "m_RequireBody": false,
         "m_RequireFooter": false,
