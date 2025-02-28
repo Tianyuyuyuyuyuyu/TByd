@@ -1,16 +1,18 @@
 {
   "name": "com.tbyd.template",
-  "displayName": "TByd Core Template(Unity Package Manager中显示的名称)",
+  "displayName": "TByd Template",
   "version": "0.0.1",
   "unity": "2021.3",
   "unityRelease": "8f1",
-  "description": "添加当前UPM包的描述",  
-  "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate/Assets/TByd.Template/Documentation~",
-  "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/TByd.UpmTemplate/Assets/TByd.Template/CHANGELOG.md",
+  "description": "Unity UPM包开发模板，提供标准的包结构和基础功能",  
+  "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate/Documentation~",
+  "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate/CHANGELOG.md",
   "license": "MIT",
   "keywords": [
     "TByd",
-    "Template"
+    "Template",
+    "UPM",
+    "Package"
   ],
   "author": {
     "name": "TByd",
@@ -23,10 +25,10 @@
     }
   ],
   "category": "UpmTemplate",
-  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master"
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate"
   },
   "bugs": {
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
@@ -37,9 +39,19 @@
   },
   "samples": [
     {
-      "displayName": "Sample 1",
-      "description": "A sample demonstrating the use of the package.",
-      "path": "Samples~/Sample1"
+      "displayName": "基础用法",
+      "description": "展示包的基本功能和用法",
+      "path": "Samples~/BasicUsage"
+    },
+    {
+      "displayName": "高级功能",
+      "description": "展示包的高级功能和扩展用法",
+      "path": "Samples~/AdvancedFeatures"
+    },
+    {
+      "displayName": "示例场景",
+      "description": "包含完整功能演示的示例场景",
+      "path": "Samples~/ExampleScene"
     }
   ]
 }
