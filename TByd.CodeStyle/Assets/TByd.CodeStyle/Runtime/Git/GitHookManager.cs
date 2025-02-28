@@ -249,15 +249,28 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <returns>钩子模板内容</returns>
         private static string GetHookTemplate(GitHookType _hookType)
         {
+            // 首先尝试从包路径获取模板
             string templatePath = Path.Combine(c_HookTemplatesDir, _hookType.GetFileName() + ".template");
             
-            // 检查模板文件是否存在
+            // 检查包路径模板文件是否存在
             if (File.Exists(templatePath))
             {
+                Debug.Log($"[TByd.CodeStyle] 从包路径加载钩子模板: {templatePath}");
                 return File.ReadAllText(templatePath);
             }
             
+            // 如果包路径不存在，尝试从项目路径获取模板
+            string projectTemplatePath = Path.Combine(Application.dataPath, "TByd.CodeStyle/PackageResources/GitHooks", _hookType.GetFileName() + ".template");
+            
+            // 检查项目路径模板文件是否存在
+            if (File.Exists(projectTemplatePath))
+            {
+                Debug.Log($"[TByd.CodeStyle] 从项目路径加载钩子模板: {projectTemplatePath}");
+                return File.ReadAllText(projectTemplatePath);
+            }
+            
             // 如果模板文件不存在，则生成默认模板
+            Debug.LogWarning($"[TByd.CodeStyle] 未找到钩子模板文件，使用默认模板: {_hookType.GetFileName()}");
             return GenerateDefaultHookTemplate(_hookType);
         }
         
@@ -304,6 +317,7 @@ namespace TByd.CodeStyle.Runtime.Git
                     sb.AppendLine("fi");
                     sb.AppendLine();
                     sb.AppendLine("echo \"TByd.CodeStyle: 正在检查代码风格...\"");
+                    sb.AppendLine("echo \"TByd.CodeStyle: 钩子已触发\"");
                     sb.AppendLine("# 这里可以添加代码风格检查的逻辑");
                     sb.AppendLine("# 如果检查失败，返回非零值");
                     sb.AppendLine("exit 0");
@@ -317,8 +331,79 @@ namespace TByd.CodeStyle.Runtime.Git
                     sb.AppendLine("commit_msg=$(cat $commit_msg_file)");
                     sb.AppendLine();
                     sb.AppendLine("echo \"TByd.CodeStyle: 正在检查提交消息格式...\"");
-                    sb.AppendLine("# 这里可以添加提交消息格式检查的逻辑");
-                    sb.AppendLine("# 如果检查失败，返回非零值");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查提交消息是否为空");
+                    sb.AppendLine("if [ -z \"$commit_msg\" ]; then");
+                    sb.AppendLine("    echo \"错误: 提交消息不能为空\"");
+                    sb.AppendLine("    exit 1");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("# 移除注释行");
+                    sb.AppendLine("clean_msg=$(echo \"$commit_msg\" | grep -v \"^#\")");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查清理后的提交消息是否为空");
+                    sb.AppendLine("if [ -z \"$clean_msg\" ]; then");
+                    sb.AppendLine("    echo \"错误: 提交消息不能只包含注释\"");
+                    sb.AppendLine("    exit 1");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("# 如果是在Unity编辑器中运行，则使用C#代码进行更高级的检查");
+                    sb.AppendLine("# 但我们不会直接退出，而是继续进行基本检查");
+                    sb.AppendLine("if [ -n \"$UNITY_EDITOR\" ]; then");
+                    sb.AppendLine("    echo \"在Unity编辑器中运行Git钩子，使用高级提交消息检查\"");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查提交消息格式");
+                    sb.AppendLine("# 格式: <type>(<scope>): <subject>");
+                    sb.AppendLine("# 例如: feat(ui): 添加登录界面");
+                    sb.AppendLine();
+                    sb.AppendLine("# 提取类型和作用域");
+                    sb.AppendLine("type_scope_subject=$(echo \"$clean_msg\" | head -1)");
+                    sb.AppendLine("type=$(echo \"$type_scope_subject\" | grep -oE \"^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)\")");
+                    sb.AppendLine("scope=$(echo \"$type_scope_subject\" | grep -oE \"\\([a-zA-Z0-9_\\-\\.]+\\)\" | tr -d \"()\")");
+                    sb.AppendLine("subject=$(echo \"$type_scope_subject\" | sed -E \"s/^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\\([a-zA-Z0-9_\\-\\.]+\\))?:\\s*//\")");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查类型");
+                    sb.AppendLine("if [ -z \"$type\" ]; then");
+                    sb.AppendLine("    echo \"错误: 提交消息格式不正确\"");
+                    sb.AppendLine("    echo \"正确格式: <type>(<scope>): <subject>\"");
+                    sb.AppendLine("    echo \"例如: feat(ui): 添加登录界面\"");
+                    sb.AppendLine("    echo \"可用的类型: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert\"");
+                    sb.AppendLine("    exit 1");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查作用域");
+                    sb.AppendLine("# 注意：这里我们恢复了作用域检查的强制性");
+                    sb.AppendLine("# 如果没有作用域，则提交失败");
+                    sb.AppendLine("if [ -z \"$scope\" ]; then");
+                    sb.AppendLine("    echo \"错误: 提交消息缺少作用域\"");
+                    sb.AppendLine("    echo \"正确格式: <type>(<scope>): <subject>\"");
+                    sb.AppendLine("    echo \"例如: feat(ui): 添加登录界面\"");
+                    sb.AppendLine("    echo \"常用作用域: core, ui, config, git, editor, docs\"");
+                    sb.AppendLine("    exit 1");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查主题");
+                    sb.AppendLine("if [ -z \"$subject\" ]; then");
+                    sb.AppendLine("    echo \"错误: 提交消息缺少主题描述\"");
+                    sb.AppendLine("    echo \"正确格式: <type>(<scope>): <subject>\"");
+                    sb.AppendLine("    exit 1");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查提交消息长度");
+                    sb.AppendLine("subject_length=$(echo \"$type_scope_subject\" | wc -c)");
+                    sb.AppendLine("if [ $subject_length -gt 100 ]; then");
+                    sb.AppendLine("    echo \"错误: 提交消息第一行不能超过100个字符\"");
+                    sb.AppendLine("    echo \"当前长度: $subject_length\"");
+                    sb.AppendLine("    exit 1");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("# 检查主题是否以句号结尾");
+                    sb.AppendLine("if echo \"$subject\" | grep -q \"\\.$\"; then");
+                    sb.AppendLine("    echo \"警告: 主题描述不应以句号结尾\"");
+                    sb.AppendLine("fi");
+                    sb.AppendLine();
+                    sb.AppendLine("echo \"提交消息格式检查通过\"");
                     sb.AppendLine("exit 0");
                     break;
                     
