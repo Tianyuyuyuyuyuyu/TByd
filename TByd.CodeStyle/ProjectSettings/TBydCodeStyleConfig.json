@@ -2,6 +2,7 @@
     "m_ConfigVersion": 1,
     "m_EnableGitCommitCheck": true,
     "m_EnableCodeStyleCheck": true,
+    "m_EnableEditorConfig": true,
     "m_CheckOnCompile": false,
     "m_CheckBeforeCommit": true,
     "m_CustomGitRepositoryPath": "H:/TYPersonal/TByd",
