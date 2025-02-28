@@ -44,6 +44,13 @@ namespace TByd.CodeStyle.Editor.Git
             if (s_Initialized)
                 return;
                 
+            // 检查项目是否是Git仓库
+            if (!GitRepository.IsProjectGitRepository())
+            {
+                Debug.LogWarning("[TByd.CodeStyle] 项目不是Git仓库，Git钩子监控器初始化失败");
+                return;
+            }
+            
             // 初始化Git钩子管理器
             GitHookManager.Initialize();
             
@@ -265,7 +272,13 @@ namespace TByd.CodeStyle.Editor.Git
                 return new Dictionary<GitHookType, bool>();
             }
             
-            return GitHookManager.GetAllHookStatus();
+            // 如果未初始化，则尝试初始化
+            if (!s_Initialized)
+            {
+                Initialize();
+            }
+            
+            return s_HookStatusCache;
         }
     }
 } 
