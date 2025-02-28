@@ -1,6 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
+using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.Git;
 using TByd.CodeStyle.Editor.Git.Commit;
@@ -90,7 +92,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         private void InitializeGitCommitData()
         {
             // 获取配置
-            CodeStyleConfig config = ConfigProvider.GetConfig();
+            CodeStyleConfig config = ConfigManager.GetConfig();
             
             // 初始化提交类型选项
             List<string> typeOptions = new List<string>();
@@ -241,28 +243,68 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             
             EditorGUILayout.Space();
             
+            // 显示EditorConfig状态
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("EditorConfig状态", EditorStyles.boldLabel);
+            
+            bool hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
+            
+            if (hasEditorConfig)
+            {
+                EditorGUILayout.LabelField("EditorConfig:", "已检测到");
+                EditorGUILayout.LabelField("规则数量:", EditorConfigManager.GetRules().Count.ToString());
+                
+                EditorGUILayout.Space();
+                if (GUILayout.Button("查看EditorConfig设置"))
+                {
+                    SettingsService.OpenProjectSettings("Project/TByd/EditorConfig");
+                }
+            }
+            else
+            {
+                EditorGUILayout.LabelField("EditorConfig:", "未检测到");
+                EditorGUILayout.HelpBox("当前项目未配置EditorConfig，建议添加以保持代码风格一致性。", MessageType.Info);
+                
+                EditorGUILayout.Space();
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("创建默认配置"))
+                {
+                    EditorConfigManager.CreateDefaultEditorConfig();
+                }
+                
+                if (GUILayout.Button("创建Unity项目配置"))
+                {
+                    EditorConfigManager.CreateUnityProjectEditorConfig();
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+            
+            EditorGUILayout.EndVertical();
+            
+            EditorGUILayout.Space();
+            
             // 功能状态
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("功能状态", EditorStyles.boldLabel);
             
-            CodeStyleConfig config = ConfigProvider.GetConfig();
+            CodeStyleConfig config = ConfigManager.GetConfig();
             
             bool enableGitCommit = config.EnableGitCommitCheck;
-            bool newEnableGitCommit = EditorGUILayout.ToggleLeft("启用Git提交规范检查", enableGitCommit);
-            
-            if (newEnableGitCommit != enableGitCommit)
-            {
-                config.EnableGitCommitCheck = newEnableGitCommit;
-                ConfigProvider.SaveConfig();
-            }
-            
             bool enableCodeCheck = config.EnableCodeStyleCheck;
-            bool newEnableCodeCheck = EditorGUILayout.ToggleLeft("启用代码风格检查", enableCodeCheck);
+            bool enableEditorConfig = config.EnableEditorConfig;
             
-            if (newEnableCodeCheck != enableCodeCheck)
+            EditorGUI.BeginChangeCheck();
+            
+            enableGitCommit = EditorGUILayout.ToggleLeft("启用Git提交规范检查", enableGitCommit);
+            enableCodeCheck = EditorGUILayout.ToggleLeft("启用代码风格检查", enableCodeCheck);
+            enableEditorConfig = EditorGUILayout.ToggleLeft("启用EditorConfig支持", enableEditorConfig);
+            
+            if (EditorGUI.EndChangeCheck())
             {
-                config.EnableCodeStyleCheck = newEnableCodeCheck;
-                ConfigProvider.SaveConfig();
+                config.EnableGitCommitCheck = enableGitCommit;
+                config.EnableCodeStyleCheck = enableCodeCheck;
+                config.EnableEditorConfig = enableEditorConfig;
+                ConfigManager.SaveConfig();
             }
             
             EditorGUILayout.EndVertical();
@@ -287,15 +329,15 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 return;
             }
             
-            if (!ConfigProvider.GetConfig().EnableGitCommitCheck)
+            if (!ConfigManager.GetConfig().EnableGitCommitCheck)
             {
                 EditorGUILayout.HelpBox("Git提交规范检查已禁用，请在设置中启用。", MessageType.Warning);
                 
                 if (GUILayout.Button("启用Git提交规范检查"))
                 {
-                    CodeStyleConfig config = ConfigProvider.GetConfig();
+                    CodeStyleConfig config = ConfigManager.GetConfig();
                     config.EnableGitCommitCheck = true;
-                    ConfigProvider.SaveConfig();
+                    ConfigManager.SaveConfig();
                 }
                 
                 EditorGUILayout.EndVertical();
@@ -315,7 +357,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 m_SelectedCommitTypeIndex = newTypeIndex;
                 if (m_SelectedCommitTypeIndex > 0)
                 {
-                    m_CommitType = ConfigProvider.GetConfig().GitCommitConfig.CommitTypes[m_SelectedCommitTypeIndex - 1].Type;
+                    m_CommitType = ConfigManager.GetConfig().GitCommitConfig.CommitTypes[m_SelectedCommitTypeIndex - 1].Type;
                 }
                 else
                 {
@@ -553,22 +595,311 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         /// </summary>
         private void DrawCodeCheckTab()
         {
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            
-            GUILayout.Label("代码检查", EditorStyles.boldLabel);
-            EditorGUILayout.Space();
-            
-            EditorGUILayout.HelpBox("代码检查功能将在第三阶段实现，敬请期待！", MessageType.Info);
-            
-            // 显示开发路线图
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("开发路线图:");
-            EditorGUILayout.LabelField("第一阶段: Git提交规范（已完成）");
-            EditorGUILayout.LabelField("第二阶段: EditorConfig支持与代码风格规范");
-            EditorGUILayout.LabelField("第三阶段: 代码检查功能");
-            EditorGUILayout.LabelField("第四阶段: 高级功能与优化");
-            
+            EditorGUILayout.BeginVertical(GUI.skin.box);
+            {
+                EditorGUILayout.LabelField("代码检查设置", EditorStyles.boldLabel);
+                EditorGUILayout.Space();
+
+                // 获取配置
+                CodeStyleConfig config = ConfigManager.GetConfig();
+                
+                // 启用代码风格检查
+                bool enableCodeStyleCheck = EditorGUILayout.Toggle("启用代码风格检查", config.EnableCodeStyleCheck);
+                if (enableCodeStyleCheck != config.EnableCodeStyleCheck)
+                {
+                    config.EnableCodeStyleCheck = enableCodeStyleCheck;
+                    ConfigManager.SaveConfig();
+                }
+                
+                // 启用EditorConfig支持
+                bool enableEditorConfig = EditorGUILayout.Toggle("启用EditorConfig支持", config.EnableEditorConfig);
+                if (enableEditorConfig != config.EnableEditorConfig)
+                {
+                    config.EnableEditorConfig = enableEditorConfig;
+                    ConfigManager.SaveConfig();
+                    
+                    // 如果启用了EditorConfig，确保加载配置
+                    if (enableEditorConfig)
+                    {
+                        EditorConfigManager.Initialize();
+                    }
+                }
+                
+                // 如果启用了EditorConfig，显示EditorConfig相关选项
+                if (enableEditorConfig)
+                {
+                    EditorGUILayout.Space();
+                    EditorGUILayout.LabelField("EditorConfig设置", EditorStyles.boldLabel);
+                    
+                    // 检查项目是否存在EditorConfig文件
+                    bool hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
+                    
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        EditorGUILayout.LabelField("EditorConfig状态:", GUILayout.Width(150));
+                        
+                        if (hasEditorConfig)
+                        {
+                            EditorGUILayout.LabelField("已启用", EditorStyles.boldLabel);
+                        }
+                        else
+                        {
+                            EditorGUILayout.LabelField("未启用", EditorStyles.boldLabel);
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        EditorGUILayout.LabelField("配置文件路径:", GUILayout.Width(150));
+                        EditorGUILayout.TextField(EditorConfigManager.GetProjectEditorConfigPath());
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    
+                    EditorGUILayout.Space();
+                    
+                    // 绘制操作按钮
+                    EditorGUILayout.BeginHorizontal();
+                    {
+                        if (hasEditorConfig)
+                        {
+                            // 重新加载按钮
+                            if (GUILayout.Button("重新加载", GUILayout.Width(100)))
+                            {
+                                EditorConfigManager.LoadProjectEditorConfig();
+                            }
+                            
+                            // 编辑按钮
+                            if (GUILayout.Button("编辑文件", GUILayout.Width(100)))
+                            {
+                                string editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
+                                if (File.Exists(editorConfigPath))
+                                {
+                                    // 使用系统默认编辑器打开文件
+                                    EditorUtility.OpenWithDefaultApp(editorConfigPath);
+                                }
+                            }
+                            
+                            // 验证按钮
+                            if (GUILayout.Button("验证项目文件", GUILayout.Width(120)))
+                            {
+                                ValidateProjectFiles();
+                            }
+                            
+                            // 格式化按钮
+                            if (GUILayout.Button("格式化项目文件", GUILayout.Width(120)))
+                            {
+                                FormatProjectFiles();
+                            }
+                        }
+                        else
+                        {
+                            // 创建默认配置按钮
+                            if (GUILayout.Button("创建默认配置", GUILayout.Width(120)))
+                            {
+                                EditorConfigManager.CreateDefaultEditorConfig();
+                            }
+                            
+                            // 创建Unity项目配置按钮
+                            if (GUILayout.Button("创建Unity项目配置", GUILayout.Width(150)))
+                            {
+                                EditorConfigManager.CreateUnityProjectEditorConfig();
+                            }
+                        }
+                    }
+                    EditorGUILayout.EndHorizontal();
+                    
+                    // 显示更多设置的链接
+                    EditorGUILayout.Space();
+                    if (GUILayout.Button("更多EditorConfig设置...", GUILayout.Width(200)))
+                    {
+                        SettingsService.OpenProjectSettings("Project/TByd/EditorConfig");
+                    }
+                }
+            }
             EditorGUILayout.EndVertical();
+        }
+        
+        /// <summary>
+        /// 验证项目文件是否符合EditorConfig规则
+        /// </summary>
+        private void ValidateProjectFiles()
+        {
+            // 显示进度条
+            EditorUtility.DisplayProgressBar("验证项目文件", "正在准备验证...", 0f);
+            
+            try
+            {
+                // 获取项目中的所有C#文件
+                string projectPath = Application.dataPath;
+                string[] csharpFiles = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories);
+                
+                int totalFiles = csharpFiles.Length;
+                int validFiles = 0;
+                int invalidFiles = 0;
+                List<string> invalidFilesList = new List<string>();
+                
+                // 验证每个文件
+                for (int i = 0; i < totalFiles; i++)
+                {
+                    string file = csharpFiles[i];
+                    
+                    // 更新进度条
+                    EditorUtility.DisplayProgressBar(
+                        "验证项目文件", 
+                        $"正在验证 {Path.GetFileName(file)}...", 
+                        (float)i / totalFiles);
+                    
+                    // 验证文件
+                    bool isValid = EditorConfigManager.ValidateFile(file);
+                    
+                    if (isValid)
+                    {
+                        validFiles++;
+                    }
+                    else
+                    {
+                        invalidFiles++;
+                        invalidFilesList.Add(file);
+                    }
+                }
+                
+                // 显示结果
+                EditorUtility.ClearProgressBar();
+                
+                string message = $"验证完成！\n\n" +
+                                 $"总文件数: {totalFiles}\n" +
+                                 $"符合规则的文件: {validFiles}\n" +
+                                 $"不符合规则的文件: {invalidFiles}";
+                
+                if (invalidFiles > 0)
+                {
+                    message += "\n\n不符合规则的文件:";
+                    
+                    // 最多显示10个文件
+                    int displayCount = Mathf.Min(invalidFilesList.Count, 10);
+                    for (int i = 0; i < displayCount; i++)
+                    {
+                        string relativePath = invalidFilesList[i].Replace(Application.dataPath, "Assets");
+                        message += $"\n- {relativePath}";
+                    }
+                    
+                    if (invalidFilesList.Count > 10)
+                    {
+                        message += $"\n... 以及其他 {invalidFilesList.Count - 10} 个文件";
+                    }
+                    
+                    EditorUtility.DisplayDialog("验证结果", message, "确定");
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("验证结果", message, "确定");
+                }
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
+        }
+        
+        /// <summary>
+        /// 格式化项目文件使其符合EditorConfig规则
+        /// </summary>
+        private void FormatProjectFiles()
+        {
+            // 显示确认对话框
+            bool confirm = EditorUtility.DisplayDialog(
+                "格式化项目文件",
+                "此操作将根据EditorConfig规则格式化项目中的所有C#文件。\n\n" +
+                "格式化可能会修改文件的缩进、行尾、空白字符等。\n\n" +
+                "建议在执行此操作前备份或提交您的更改。\n\n" +
+                "是否继续？",
+                "继续",
+                "取消");
+            
+            if (!confirm)
+            {
+                return;
+            }
+            
+            // 显示进度条
+            EditorUtility.DisplayProgressBar("格式化项目文件", "正在准备格式化...", 0f);
+            
+            try
+            {
+                // 获取项目中的所有C#文件
+                string projectPath = Application.dataPath;
+                string[] csharpFiles = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories);
+                
+                int totalFiles = csharpFiles.Length;
+                int formattedFiles = 0;
+                int failedFiles = 0;
+                List<string> failedFilesList = new List<string>();
+                
+                // 格式化每个文件
+                for (int i = 0; i < totalFiles; i++)
+                {
+                    string file = csharpFiles[i];
+                    
+                    // 更新进度条
+                    EditorUtility.DisplayProgressBar(
+                        "格式化项目文件", 
+                        $"正在格式化 {Path.GetFileName(file)}...", 
+                        (float)i / totalFiles);
+                    
+                    // 格式化文件
+                    bool success = EditorConfigManager.FormatFile(file);
+                    
+                    if (success)
+                    {
+                        formattedFiles++;
+                    }
+                    else
+                    {
+                        failedFiles++;
+                        failedFilesList.Add(file);
+                    }
+                }
+                
+                // 刷新资源数据库
+                AssetDatabase.Refresh();
+                
+                // 显示结果
+                EditorUtility.ClearProgressBar();
+                
+                string message = $"格式化完成！\n\n" +
+                                 $"总文件数: {totalFiles}\n" +
+                                 $"成功格式化的文件: {formattedFiles}\n" +
+                                 $"格式化失败的文件: {failedFiles}";
+                
+                if (failedFiles > 0)
+                {
+                    message += "\n\n格式化失败的文件:";
+                    
+                    // 最多显示10个文件
+                    int displayCount = Mathf.Min(failedFilesList.Count, 10);
+                    for (int i = 0; i < displayCount; i++)
+                    {
+                        string relativePath = failedFilesList[i].Replace(Application.dataPath, "Assets");
+                        message += $"\n- {relativePath}";
+                    }
+                    
+                    if (failedFilesList.Count > 10)
+                    {
+                        message += $"\n... 以及其他 {failedFilesList.Count - 10} 个文件";
+                    }
+                    
+                    EditorUtility.DisplayDialog("格式化结果", message, "确定");
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("格式化结果", message, "确定");
+                }
+            }
+            finally
+            {
+                EditorUtility.ClearProgressBar();
+            }
         }
         
         /// <summary>
@@ -581,137 +912,128 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             GUILayout.Label("设置", EditorStyles.boldLabel);
             EditorGUILayout.Space();
             
-            if (GUILayout.Button("打开项目设置"))
-            {
-                SettingsService.OpenProjectSettings("Project/TByd/代码风格");
-            }
+            CodeStyleConfig config = ConfigManager.GetConfig();
+            
+            EditorGUI.BeginChangeCheck();
+            
+            // 基本设置
+            EditorGUILayout.LabelField("基本设置", EditorStyles.boldLabel);
+            
+            config.EnableGitCommitCheck = EditorGUILayout.ToggleLeft("启用Git提交规范检查", config.EnableGitCommitCheck);
+            config.EnableCodeStyleCheck = EditorGUILayout.ToggleLeft("启用代码风格检查", config.EnableCodeStyleCheck);
+            config.EnableEditorConfig = EditorGUILayout.ToggleLeft("启用EditorConfig支持", config.EnableEditorConfig);
+            
+            EditorGUILayout.Space();
+            
+            // 检查设置
+            EditorGUILayout.LabelField("检查设置", EditorStyles.boldLabel);
+            
+            config.CheckOnCompile = EditorGUILayout.ToggleLeft("在编译时检查代码风格", config.CheckOnCompile);
+            config.CheckBeforeCommit = EditorGUILayout.ToggleLeft("在提交前检查代码风格", config.CheckBeforeCommit);
             
             EditorGUILayout.Space();
             
             // Git仓库设置
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label("Git仓库设置", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Git仓库设置", EditorStyles.boldLabel);
             
-            // 获取当前配置
-            CodeStyleConfig config = ConfigProvider.GetConfig();
-            
-            // 显示当前Git仓库路径
-            string currentRepoPath = string.IsNullOrEmpty(config.CustomGitRepositoryPath) ? 
-                "使用Unity项目根目录" : config.CustomGitRepositoryPath;
-            
-            EditorGUILayout.LabelField("当前Git仓库路径:", currentRepoPath);
-            
-            // 检测当前路径是否有效
-            bool isValidRepo = GitRepository.IsProjectGitRepository();
-            if (isValidRepo)
-            {
-                EditorGUILayout.HelpBox("已检测到有效的Git仓库", MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("未检测到有效的Git仓库，请检查路径是否正确", MessageType.Warning);
-            }
-            
-            EditorGUILayout.Space();
-            
-            // 自定义Git仓库路径
             EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("自定义Git仓库路径:", GUILayout.Width(150));
             
-            string newPath = EditorGUILayout.TextField("自定义Git仓库路径:", config.CustomGitRepositoryPath);
-            if (newPath != config.CustomGitRepositoryPath)
-            {
-                config.CustomGitRepositoryPath = newPath;
-                ConfigProvider.SaveConfig();
-                
-                // 重新检查Git仓库状态
-                CheckGitRepositoryStatus();
-            }
+            string repositoryPath = config.CustomGitRepositoryPath;
+            repositoryPath = EditorGUILayout.TextField(repositoryPath);
             
             if (GUILayout.Button("浏览...", GUILayout.Width(80)))
             {
-                string path = EditorUtility.OpenFolderPanel("选择Git仓库根目录", "", "");
+                string path = EditorUtility.OpenFolderPanel("选择Git仓库路径", repositoryPath, "");
                 if (!string.IsNullOrEmpty(path))
                 {
-                    // 检查选择的目录是否是有效的Git仓库
-                    if (GitRepository.IsGitRepository(path))
-                    {
-                        config.CustomGitRepositoryPath = path;
-                        ConfigProvider.SaveConfig();
-                        
-                        // 重新检查Git仓库状态
-                        CheckGitRepositoryStatus();
-                        
-                        NotificationSystem.ShowNotification("Git仓库路径已更新", NotificationType.Success);
-                    }
-                    else
-                    {
-                        EditorUtility.DisplayDialog("无效的Git仓库", 
-                            "所选目录不是有效的Git仓库，请确保目录中包含.git文件夹。", "确定");
-                    }
+                    repositoryPath = path;
                 }
             }
             
+            config.CustomGitRepositoryPath = repositoryPath;
+            
             EditorGUILayout.EndHorizontal();
-            
-            if (GUILayout.Button("重置为默认路径"))
-            {
-                config.CustomGitRepositoryPath = string.Empty;
-                ConfigProvider.SaveConfig();
-                
-                // 重新检查Git仓库状态
-                CheckGitRepositoryStatus();
-                
-                NotificationSystem.ShowNotification("已重置为默认路径", NotificationType.Info);
-            }
-            
-            EditorGUILayout.EndVertical();
             
             EditorGUILayout.Space();
             
-            // 配置导入导出
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            GUILayout.Label("配置管理", EditorStyles.boldLabel);
+            // EditorConfig设置
+            EditorGUILayout.LabelField("EditorConfig设置", EditorStyles.boldLabel);
             
-            EditorGUILayout.BeginHorizontal();
+            bool hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
             
-            if (GUILayout.Button("导出配置"))
+            if (hasEditorConfig)
             {
-                string path = EditorUtility.SaveFilePanel("导出配置", "", "TBydCodeStyleConfig.json", "json");
-                if (!string.IsNullOrEmpty(path))
+                EditorGUILayout.LabelField("EditorConfig状态:", "已启用");
+                EditorGUILayout.LabelField("规则数量:", EditorConfigManager.GetRules().Count.ToString());
+                
+                EditorGUILayout.Space();
+                
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("查看EditorConfig设置"))
                 {
-                    ConfigProvider.ExportConfig(path);
-                    NotificationSystem.ShowNotification($"配置已导出到: {path}", NotificationType.Success);
+                    SettingsService.OpenProjectSettings("Project/TByd/EditorConfig");
                 }
+                
+                if (GUILayout.Button("编辑EditorConfig文件"))
+                {
+                    string editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
+                    if (System.IO.File.Exists(editorConfigPath))
+                    {
+                        EditorUtility.OpenWithDefaultApp(editorConfigPath);
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+            }
+            else
+            {
+                EditorGUILayout.LabelField("EditorConfig状态:", "未启用");
+                EditorGUILayout.HelpBox("当前项目未配置EditorConfig，建议添加以保持代码风格一致性。", MessageType.Info);
+                
+                EditorGUILayout.Space();
+                
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("创建默认配置"))
+                {
+                    EditorConfigManager.CreateDefaultEditorConfig();
+                }
+                
+                if (GUILayout.Button("创建Unity项目配置"))
+                {
+                    EditorConfigManager.CreateUnityProjectEditorConfig();
+                }
+                
+                if (GUILayout.Button("导入配置"))
+                {
+                    string path = EditorUtility.OpenFilePanel("导入EditorConfig", "", "");
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        EditorConfigManager.ImportEditorConfig(path);
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
             }
             
-            if (GUILayout.Button("导入配置"))
+            EditorGUILayout.Space();
+            
+            // 保存按钮
+            if (EditorGUI.EndChangeCheck())
             {
-                string path = EditorUtility.OpenFilePanel("导入配置", "", "json");
-                if (!string.IsNullOrEmpty(path))
-                {
-                    ConfigProvider.ImportConfig(path);
-                    NotificationSystem.ShowNotification("配置导入成功", NotificationType.Success);
-                    
-                    // 刷新Git提交相关数据
-                    InitializeGitCommitData();
-                }
+                ConfigManager.SaveConfig();
+                NotificationSystem.ShowNotification("设置已保存", NotificationType.Success);
             }
             
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space();
             
-            if (GUILayout.Button("重置配置"))
+            // 重置按钮
+            if (GUILayout.Button("重置所有设置"))
             {
-                if (EditorUtility.DisplayDialog("重置配置", "确定要重置所有配置吗？此操作不可撤销。", "重置", "取消"))
+                if (EditorUtility.DisplayDialog("重置设置", "确定要重置所有设置吗？这将恢复默认配置。", "确定", "取消"))
                 {
-                    ConfigProvider.ResetConfig();
-                    NotificationSystem.ShowNotification("配置已重置为默认值", NotificationType.Info);
-                    
-                    // 刷新Git提交相关数据
-                    InitializeGitCommitData();
+                    ConfigManager.ResetConfig();
+                    NotificationSystem.ShowNotification("设置已重置为默认值", NotificationType.Info);
                 }
             }
-            
-            EditorGUILayout.EndVertical();
             
             EditorGUILayout.EndVertical();
         }

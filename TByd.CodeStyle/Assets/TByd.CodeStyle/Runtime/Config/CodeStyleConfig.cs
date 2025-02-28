@@ -29,6 +29,12 @@ namespace TByd.CodeStyle.Runtime.Config
         private bool m_EnableCodeStyleCheck = true;
         
         /// <summary>
+        /// 是否启用EditorConfig支持
+        /// </summary>
+        [SerializeField] 
+        private bool m_EnableEditorConfig = true;
+        
+        /// <summary>
         /// 是否在编译时自动检查代码风格
         /// </summary>
         [SerializeField] 
@@ -89,6 +95,15 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             get => m_EnableCodeStyleCheck;
             set => m_EnableCodeStyleCheck = value;
+        }
+        
+        /// <summary>
+        /// 是否启用EditorConfig支持
+        /// </summary>
+        public bool EnableEditorConfig
+        {
+            get => m_EnableEditorConfig;
+            set => m_EnableEditorConfig = value;
         }
         
         /// <summary>
