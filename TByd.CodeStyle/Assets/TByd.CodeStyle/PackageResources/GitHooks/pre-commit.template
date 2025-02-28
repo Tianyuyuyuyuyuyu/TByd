@@ -7,12 +7,15 @@
 
 echo "TByd.CodeStyle: 正在执行代码检查..."
 
-# 获取暂存区中的C#文件
-staged_cs_files=$(git diff --cached --name-only --diff-filter=ACM | grep "\.cs$")
+# 获取暂存区中的所有文件
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
 
-# 如果没有C#文件，则跳过检查
-if [ -z "$staged_cs_files" ]; then
-    echo "没有C#文件需要检查，跳过代码检查"
+# 获取暂存区中的C#文件
+staged_cs_files=$(echo "$staged_files" | grep "\.cs$")
+
+# 如果没有任何文件，则跳过检查
+if [ -z "$staged_files" ]; then
+    echo "没有文件需要检查，跳过代码检查"
     exit 0
 fi
 
@@ -20,9 +23,9 @@ fi
 if [ -n "$UNITY_EDITOR" ]; then
     echo "在Unity编辑器中运行Git钩子，使用高级代码检查"
     
-    # 将暂存区中的C#文件列表保存到临时文件
+    # 将暂存区中的文件列表保存到临时文件
     temp_file=$(mktemp)
-    echo "$staged_cs_files" > "$temp_file"
+    echo "$staged_files" > "$temp_file"
     
     # 调用Unity编辑器中的代码检查器
     # 这里会由C#代码接管检查过程
@@ -43,27 +46,30 @@ fi
 
 # 如果不在Unity编辑器中运行，则执行简单的检查
 
-# 检查文件是否包含TODO注释
-echo "检查TODO注释..."
-for file in $staged_cs_files; do
-    if grep -q "TODO" "$file"; then
-        echo "错误: 文件 $file 包含TODO注释，请在提交前解决"
-        exit 1
-    fi
-done
+# 如果有C#文件，则进行C#特定的检查
+if [ -n "$staged_cs_files" ]; then
+    # 检查文件是否包含TODO注释
+    echo "检查TODO注释..."
+    for file in $staged_cs_files; do
+        if grep -q "TODO" "$file"; then
+            echo "错误: 文件 $file 包含TODO注释，请在提交前解决"
+            exit 1
+        fi
+    done
 
-# 检查文件是否包含调试日志
-echo "检查调试日志..."
-for file in $staged_cs_files; do
-    if grep -q "Debug\.Log" "$file"; then
-        echo "警告: 文件 $file 包含调试日志，建议在提交前移除"
-        # 这里只是警告，不阻止提交
-    fi
-done
+    # 检查文件是否包含调试日志
+    echo "检查调试日志..."
+    for file in $staged_cs_files; do
+        if grep -q "Debug\.Log" "$file"; then
+            echo "警告: 文件 $file 包含调试日志，建议在提交前移除"
+            # 这里只是警告，不阻止提交
+        fi
+    done
+fi
 
-# 检查文件是否包含合并冲突标记
+# 检查所有文件是否包含合并冲突标记
 echo "检查合并冲突标记..."
-for file in $staged_cs_files; do
+for file in $staged_files; do
     if grep -q "<<<<<<< HEAD" "$file" || grep -q "=======" "$file" || grep -q ">>>>>>> " "$file"; then
         echo "错误: 文件 $file 包含未解决的合并冲突，请在提交前解决"
         exit 1
@@ -72,7 +78,7 @@ done
 
 # 检查文件是否包含大型二进制数据
 echo "检查大型二进制数据..."
-for file in $staged_cs_files; do
+for file in $staged_files; do
     # 检查文件大小是否超过1MB
     file_size=$(stat -c %s "$file" 2>/dev/null || stat -f %z "$file" 2>/dev/null)
     if [ "$file_size" -gt 1048576 ]; then

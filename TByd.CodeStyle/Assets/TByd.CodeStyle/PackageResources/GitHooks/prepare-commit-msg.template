@@ -50,7 +50,7 @@ cat > "$commit_msg_file.tmp" << EOF
 #   chore:    其他修改
 #   revert:   回退提交
 #
-# 作用域(scope)说明:
+# 作用域(scope)说明: [重要：作用域是必填项]
 #   core:     核心功能
 #   ui:       用户界面
 #   config:   配置相关
