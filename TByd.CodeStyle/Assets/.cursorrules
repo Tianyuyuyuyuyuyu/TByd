@@ -26,6 +26,7 @@
   - 避免在Update方法中执行重量级操作
   - 不使用GameObject.Find()等性能低下的方法进行对象查找
   - 需要使用仓库链接时，使用当前仓库的URL
+  - 注意变量名命名不要与C#的关键字冲突，不然会导致编译错误
 - OutputFormat: 代码实现应遵循以下格式和命名规范：
   - 变量：`m_VariableName`（私有成员）
   - 常量：`c_ConstantName`

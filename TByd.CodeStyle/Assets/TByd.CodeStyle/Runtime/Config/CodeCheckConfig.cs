@@ -185,6 +185,30 @@ namespace TByd.CodeStyle.Runtime.Config
         private bool m_IgnoreTestCode = false;
         
         /// <summary>
+        /// 是否在保存时检查代码
+        /// </summary>
+        [SerializeField] 
+        private bool m_CheckOnSave = true;
+        
+        /// <summary>
+        /// 是否在构建时检查代码
+        /// </summary>
+        [SerializeField] 
+        private bool m_CheckOnBuild = true;
+        
+        /// <summary>
+        /// 是否在提交时检查代码
+        /// </summary>
+        [SerializeField] 
+        private bool m_CheckOnCommit = true;
+        
+        /// <summary>
+        /// 是否在保存时自动修复代码
+        /// </summary>
+        [SerializeField] 
+        private bool m_FixOnSave = false;
+        
+        /// <summary>
         /// 忽略的文件或目录
         /// </summary>
         [SerializeField] 
@@ -264,6 +288,42 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             get => m_IgnoreTestCode;
             set => m_IgnoreTestCode = value;
+        }
+        
+        /// <summary>
+        /// 是否在保存时检查代码
+        /// </summary>
+        public bool CheckOnSave
+        {
+            get => m_CheckOnSave;
+            set => m_CheckOnSave = value;
+        }
+        
+        /// <summary>
+        /// 是否在构建时检查代码
+        /// </summary>
+        public bool CheckOnBuild
+        {
+            get => m_CheckOnBuild;
+            set => m_CheckOnBuild = value;
+        }
+        
+        /// <summary>
+        /// 是否在提交时检查代码
+        /// </summary>
+        public bool CheckOnCommit
+        {
+            get => m_CheckOnCommit;
+            set => m_CheckOnCommit = value;
+        }
+        
+        /// <summary>
+        /// 是否在保存时自动修复代码
+        /// </summary>
+        public bool FixOnSave
+        {
+            get => m_FixOnSave;
+            set => m_FixOnSave = value;
         }
         
         /// <summary>
