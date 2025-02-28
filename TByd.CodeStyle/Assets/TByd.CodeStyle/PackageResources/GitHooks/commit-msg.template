@@ -19,13 +19,26 @@ if [ -z "$commit_msg" ]; then
     exit 1
 fi
 
+# 移除注释行
+clean_msg=$(echo "$commit_msg" | grep -v "^#")
+
+# 检查清理后的提交消息是否为空
+if [ -z "$clean_msg" ]; then
+    echo "错误: 提交消息不能只包含注释"
+    exit 1
+fi
+
 # 检查提交消息格式
 # 格式: <type>(<scope>): <subject>
 # 例如: feat(ui): 添加登录界面
 
-# 提取类型
-type=$(echo "$commit_msg" | grep -E "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?:" | cut -d "(" -f1)
+# 提取类型和作用域
+type_scope_subject=$(echo "$clean_msg" | head -1)
+type=$(echo "$type_scope_subject" | grep -oE "^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)")
+scope=$(echo "$type_scope_subject" | grep -oE "\([a-zA-Z0-9_\-\.]+\)" | tr -d "()")
+subject=$(echo "$type_scope_subject" | sed -E "s/^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_\-\.]+\))?:\s*//")
 
+# 检查类型
 if [ -z "$type" ]; then
     echo "错误: 提交消息格式不正确"
     echo "正确格式: <type>(<scope>): <subject>"
@@ -34,12 +47,32 @@ if [ -z "$type" ]; then
     exit 1
 fi
 
+# 检查主题
+if [ -z "$subject" ]; then
+    echo "错误: 提交消息缺少主题描述"
+    echo "正确格式: <type>(<scope>): <subject>"
+    exit 1
+fi
+
 # 检查提交消息长度
-subject_length=$(echo "$commit_msg" | head -1 | wc -c)
+subject_length=$(echo "$type_scope_subject" | wc -c)
 if [ $subject_length -gt 100 ]; then
     echo "错误: 提交消息第一行不能超过100个字符"
     echo "当前长度: $subject_length"
     exit 1
+fi
+
+# 检查主题是否以句号结尾
+if echo "$subject" | grep -q "\.$"; then
+    echo "警告: 主题描述不应以句号结尾"
+fi
+
+# 如果是在Unity编辑器中运行，则可以使用更高级的检查
+if [ -n "$UNITY_EDITOR" ]; then
+    echo "在Unity编辑器中运行Git钩子，使用高级提交消息检查"
+    # 在Unity编辑器中，会使用C#代码进行更高级的检查
+    # 这里不需要额外的逻辑，因为编辑器会处理
+    exit 0
 fi
 
 echo "提交消息格式检查通过"

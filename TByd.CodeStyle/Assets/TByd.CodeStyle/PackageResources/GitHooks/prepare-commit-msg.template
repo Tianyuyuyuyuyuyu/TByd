@@ -15,6 +15,14 @@ if [ "$commit_source" = "merge" ] || [ "$commit_source" = "message" ]; then
     exit 0
 fi
 
+# 如果是在Unity编辑器中运行，则可以使用更高级的模板生成
+if [ -n "$UNITY_EDITOR" ]; then
+    echo "在Unity编辑器中运行Git钩子，使用高级提交消息模板生成"
+    # 在Unity编辑器中，会使用C#代码生成更高级的模板
+    # 这里不需要额外的逻辑，因为编辑器会处理
+    exit 0
+fi
+
 # 检查是否已经有提交模板
 if grep -q "^# 请按照以下格式填写提交信息" "$commit_msg_file"; then
     exit 0
