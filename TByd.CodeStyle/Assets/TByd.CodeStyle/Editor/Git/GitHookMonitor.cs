@@ -86,6 +86,9 @@ namespace TByd.CodeStyle.Editor.Git
         /// </summary>
         private static void OnConfigChanged()
         {
+            // 重新初始化Git钩子管理器，以应用可能的Git仓库路径变更
+            GitHookManager.Reinitialize();
+            
             // 检查是否需要自动安装钩子
             CheckAutoInstallHooks();
         }
@@ -256,7 +259,13 @@ namespace TByd.CodeStyle.Editor.Git
         /// <returns>钩子状态字典</returns>
         public static Dictionary<GitHookType, bool> GetHookStatus()
         {
-            return new Dictionary<GitHookType, bool>(s_HookStatusCache);
+            // 如果不是Git仓库，则返回空字典
+            if (!GitRepository.IsProjectGitRepository())
+            {
+                return new Dictionary<GitHookType, bool>();
+            }
+            
+            return GitHookManager.GetAllHookStatus();
         }
     }
 } 

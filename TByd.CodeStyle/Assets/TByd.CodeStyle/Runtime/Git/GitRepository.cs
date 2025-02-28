@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using UnityEngine;
+using TByd.CodeStyle.Runtime.Config;
 
 namespace TByd.CodeStyle.Runtime.Git
 {
@@ -137,15 +138,55 @@ namespace TByd.CodeStyle.Runtime.Git
         }
         
         /// <summary>
+        /// 获取Git仓库路径
+        /// </summary>
+        /// <returns>Git仓库路径</returns>
+        private static string GetGitRepositoryPath()
+        {
+            // 获取配置
+            CodeStyleConfig config = null;
+            
+            try
+            {
+                config = ConfigManager.GetConfig();
+            }
+            catch (Exception)
+            {
+                // 配置未初始化，使用默认路径
+            }
+            
+            // 如果配置了自定义路径且不为空，则使用自定义路径
+            if (config != null && !string.IsNullOrEmpty(config.CustomGitRepositoryPath))
+            {
+                return config.CustomGitRepositoryPath;
+            }
+            
+            // 否则使用Unity项目根目录
+            return Path.GetDirectoryName(Application.dataPath);
+        }
+        
+        /// <summary>
+        /// 检测是否是Git仓库
+        /// </summary>
+        /// <param name="_path">路径</param>
+        /// <returns>是否是Git仓库</returns>
+        public static bool IsGitRepository(string _path)
+        {
+            if (string.IsNullOrEmpty(_path))
+                return false;
+                
+            string gitDirPath = Path.Combine(_path, c_GitDirName);
+            return Directory.Exists(gitDirPath);
+        }
+        
+        /// <summary>
         /// 检测项目根目录是否是Git仓库
         /// </summary>
         /// <returns>是否是Git仓库</returns>
         public static bool IsProjectGitRepository()
         {
-            string projectPath = Path.GetDirectoryName(Application.dataPath);
-            string gitDirPath = Path.Combine(projectPath, c_GitDirName);
-            
-            return Directory.Exists(gitDirPath);
+            string repositoryPath = GetGitRepositoryPath();
+            return IsGitRepository(repositoryPath);
         }
         
         /// <summary>
@@ -154,8 +195,8 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <returns>Git仓库</returns>
         public static GitRepository GetProjectRepository()
         {
-            string projectPath = Path.GetDirectoryName(Application.dataPath);
-            return new GitRepository(projectPath);
+            string repositoryPath = GetGitRepositoryPath();
+            return new GitRepository(repositoryPath);
         }
     }
 } 

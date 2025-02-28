@@ -4,6 +4,7 @@
     "m_EnableCodeStyleCheck": true,
     "m_CheckOnCompile": false,
     "m_CheckBeforeCommit": true,
+    "m_CustomGitRepositoryPath": "H:/TYPersonal/TByd",
     "m_GitCommitConfig": {
         "m_ForceUseTemplate": true,
         "m_RequireType": true,
@@ -82,6 +83,10 @@
         "m_IgnoreGeneratedCode": true,
         "m_IgnoreThirdPartyCode": true,
         "m_IgnoreTestCode": false,
+        "m_CheckOnSave": true,
+        "m_CheckOnBuild": true,
+        "m_CheckOnCommit": true,
+        "m_FixOnSave": false,
         "m_IgnoredPaths": [
             "Assets/Plugins/",
             "Assets/ThirdParty/",
@@ -159,6 +164,24 @@
                 "m_Name": "避免使用SendMessage",
                 "m_Description": "应该避免使用SendMessage，因为它性能较低",
                 "m_Severity": 2
+            }
+        ]
+    },
+    "m_GitHookConfig": {
+        "m_AutoInstallHooks": true,
+        "m_CheckHooksOnStartup": true,
+        "m_HookConfigs": [
+            {
+                "m_HookType": 0,
+                "m_Enabled": true
+            },
+            {
+                "m_HookType": 1,
+                "m_Enabled": true
+            },
+            {
+                "m_HookType": 14,
+                "m_Enabled": true
             }
         ]
     }

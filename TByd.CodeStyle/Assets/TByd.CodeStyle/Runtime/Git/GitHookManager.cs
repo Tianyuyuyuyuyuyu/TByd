@@ -38,18 +38,44 @@ namespace TByd.CodeStyle.Runtime.Git
             if (!GitRepository.IsProjectGitRepository())
             {
                 Debug.LogWarning("[TByd.CodeStyle] 项目不是Git仓库，Git钩子管理器初始化失败");
+                // 确保仓库和缓存为空
+                s_Repository = null;
+                s_InstalledHooksCache.Clear();
                 return;
             }
             
-            // 获取项目Git仓库
-            s_Repository = GitRepository.GetProjectRepository();
-            
-            // 刷新钩子状态缓存
-            RefreshHookStatusCache();
-            
-            s_Initialized = true;
-            
-            Debug.Log("[TByd.CodeStyle] Git钩子管理器初始化成功");
+            try
+            {
+                // 获取项目Git仓库
+                s_Repository = GitRepository.GetProjectRepository();
+                
+                // 刷新钩子状态缓存
+                RefreshHookStatusCache();
+                
+                s_Initialized = true;
+                
+                Debug.Log("[TByd.CodeStyle] Git钩子管理器初始化成功");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[TByd.CodeStyle] Git钩子管理器初始化失败: {e.Message}");
+                s_Repository = null;
+                s_InstalledHooksCache.Clear();
+            }
+        }
+        
+        /// <summary>
+        /// 重新初始化Git钩子管理器
+        /// </summary>
+        /// <remarks>
+        /// 当Git仓库路径变更时调用此方法重新初始化
+        /// </remarks>
+        public static void Reinitialize()
+        {
+            s_Initialized = false;
+            s_Repository = null;
+            s_InstalledHooksCache.Clear();
+            Initialize();
         }
         
         /// <summary>
@@ -57,18 +83,30 @@ namespace TByd.CodeStyle.Runtime.Git
         /// </summary>
         public static void RefreshHookStatusCache()
         {
-            if (s_Repository == null || !s_Repository.IsValid)
-                return;
-                
-            s_InstalledHooksCache.Clear();
-            
-            // 检查所有钩子类型
-            foreach (GitHookType hookType in Enum.GetValues(typeof(GitHookType)))
+            // 如果未初始化或仓库无效，则清空缓存并返回
+            if (!s_Initialized || s_Repository == null || !s_Repository.IsValid)
             {
-                string hookFileName = hookType.GetFileName();
-                bool isInstalled = s_Repository.IsManagedHook(hookFileName);
+                s_InstalledHooksCache.Clear();
+                return;
+            }
+            
+            try
+            {
+                s_InstalledHooksCache.Clear();
                 
-                s_InstalledHooksCache[hookType] = isInstalled;
+                // 检查所有钩子类型
+                foreach (GitHookType hookType in Enum.GetValues(typeof(GitHookType)))
+                {
+                    string hookFileName = hookType.GetFileName();
+                    bool isInstalled = s_Repository.IsManagedHook(hookFileName);
+                    
+                    s_InstalledHooksCache[hookType] = isInstalled;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[TByd.CodeStyle] 刷新钩子状态缓存失败: {e.Message}");
+                s_InstalledHooksCache.Clear();
             }
         }
         
@@ -98,7 +136,8 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <returns>是否安装成功</returns>
         public static bool InstallHook(GitHookType _hookType)
         {
-            if (s_Repository == null || !s_Repository.IsValid)
+            // 如果未初始化或仓库无效，则返回失败
+            if (!s_Initialized || s_Repository == null || !s_Repository.IsValid)
             {
                 Debug.LogError("[TByd.CodeStyle] Git仓库无效，无法安装钩子");
                 return false;
@@ -156,7 +195,8 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <returns>是否卸载成功</returns>
         public static bool UninstallHook(GitHookType _hookType)
         {
-            if (s_Repository == null || !s_Repository.IsValid)
+            // 如果未初始化或仓库无效，则返回失败
+            if (!s_Initialized || s_Repository == null || !s_Repository.IsValid)
             {
                 Debug.LogError("[TByd.CodeStyle] Git仓库无效，无法卸载钩子");
                 return false;
@@ -331,8 +371,11 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <returns>钩子状态字典</returns>
         public static Dictionary<GitHookType, bool> GetAllHookStatus()
         {
-            if (s_Repository == null || !s_Repository.IsValid)
+            // 如果未初始化或仓库无效，则返回空字典
+            if (!s_Initialized || s_Repository == null || !s_Repository.IsValid)
+            {
                 return new Dictionary<GitHookType, bool>();
+            }
                 
             // 刷新缓存
             RefreshHookStatusCache();
@@ -372,21 +415,36 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <returns>是否全部卸载成功</returns>
         public static bool UninstallAllHooks()
         {
+            // 如果未初始化或仓库无效，则返回失败
+            if (!s_Initialized || s_Repository == null || !s_Repository.IsValid)
+            {
+                Debug.LogError("[TByd.CodeStyle] Git仓库无效，无法卸载钩子");
+                return false;
+            }
+            
             bool allSuccess = true;
             
-            // 获取所有已安装的钩子
-            Dictionary<GitHookType, bool> hookStatus = GetAllHookStatus();
-            
-            // 卸载所有已安装的钩子
-            foreach (var pair in hookStatus)
+            try
             {
-                if (pair.Value)
+                // 获取所有已安装的钩子
+                Dictionary<GitHookType, bool> hookStatus = GetAllHookStatus();
+                
+                // 卸载所有已安装的钩子
+                foreach (var pair in hookStatus)
                 {
-                    if (!UninstallHook(pair.Key))
+                    if (pair.Value)
                     {
-                        allSuccess = false;
+                        if (!UninstallHook(pair.Key))
+                        {
+                            allSuccess = false;
+                        }
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[TByd.CodeStyle] 卸载所有钩子失败: {e.Message}");
+                allSuccess = false;
             }
             
             return allSuccess;

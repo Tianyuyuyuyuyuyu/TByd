@@ -41,6 +41,12 @@ namespace TByd.CodeStyle.Runtime.Config
         private bool m_CheckBeforeCommit = true;
         
         /// <summary>
+        /// 自定义Git仓库路径，为空则使用Unity项目根目录
+        /// </summary>
+        [SerializeField]
+        private string m_CustomGitRepositoryPath = string.Empty;
+        
+        /// <summary>
         /// Git提交规范配置
         /// </summary>
         [SerializeField] 
@@ -101,6 +107,15 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             get => m_CheckBeforeCommit;
             set => m_CheckBeforeCommit = value;
+        }
+        
+        /// <summary>
+        /// 自定义Git仓库路径，为空则使用Unity项目根目录
+        /// </summary>
+        public string CustomGitRepositoryPath
+        {
+            get => m_CustomGitRepositoryPath;
+            set => m_CustomGitRepositoryPath = value;
         }
         
         /// <summary>

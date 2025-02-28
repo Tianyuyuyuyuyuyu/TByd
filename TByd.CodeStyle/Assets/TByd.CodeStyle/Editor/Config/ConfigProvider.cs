@@ -66,7 +66,12 @@ namespace TByd.CodeStyle.Editor.Config
             ConfigChanged?.Invoke();
             
             // 刷新编辑器窗口
-            EditorUtility.SetDirty(null);
+            // 注意：不要使用EditorUtility.SetDirty(null)，这会导致ArgumentNullException
+            // 使用EditorWindow.RepaintAll()来刷新所有编辑器窗口
+            if (EditorWindow.focusedWindow != null)
+            {
+                EditorWindow.focusedWindow.Repaint();
+            }
         }
         
         /// <summary>
