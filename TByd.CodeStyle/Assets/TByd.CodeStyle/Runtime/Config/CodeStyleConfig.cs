@@ -1,4 +1,5 @@
 using System;
+using TByd.CodeStyle.Runtime.Git;
 using UnityEngine;
 
 namespace TByd.CodeStyle.Runtime.Config
@@ -50,6 +51,12 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         [SerializeField] 
         private CodeCheckConfig m_CodeCheckConfig = new CodeCheckConfig();
+        
+        /// <summary>
+        /// Git钩子配置
+        /// </summary>
+        [SerializeField] 
+        private GitHookConfig m_GitHookConfig = new GitHookConfig();
         
         /// <summary>
         /// 配置版本号
@@ -112,6 +119,15 @@ namespace TByd.CodeStyle.Runtime.Config
         {
             get => m_CodeCheckConfig;
             set => m_CodeCheckConfig = value;
+        }
+        
+        /// <summary>
+        /// Git钩子配置
+        /// </summary>
+        public GitHookConfig GitHookConfig
+        {
+            get => m_GitHookConfig;
+            set => m_GitHookConfig = value;
         }
     }
 } 
