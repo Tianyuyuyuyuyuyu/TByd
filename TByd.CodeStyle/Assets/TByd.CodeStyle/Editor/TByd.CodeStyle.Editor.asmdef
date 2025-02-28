@@ -1,7 +1,9 @@
 {
-    "name": "TByd.Template.Editor",
+    "name": "TByd.CodeStyle.Editor",
     "rootNamespace": "TByd.CodeStyle.Editor",
-    "references": [],
+    "references": [
+        "TByd.CodeStyle.Runtime"
+    ],
     "includePlatforms": [
         "Editor"
     ],

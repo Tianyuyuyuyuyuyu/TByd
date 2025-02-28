@@ -2,7 +2,6 @@
     "name": "TByd.CodeStyle.Runtime",
     "rootNamespace": "TByd.CodeStyle.Runtime",
     "references": [
-        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -12,11 +11,6 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
-        {
-            "name": "com.cysharp.unitask",
-            "expression": "2.0.0",
-            "define": "TBYD_UNITASK_SUPPORT"
-        }
     ],
     "noEngineReferences": false
 }

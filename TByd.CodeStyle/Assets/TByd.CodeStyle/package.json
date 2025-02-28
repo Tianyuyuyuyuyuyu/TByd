@@ -1,16 +1,16 @@
 {
-  "name": "com.tbyd.template",
-  "displayName": "TByd Template",
+  "name": "com.tbyd.codestyle",
+  "displayName": "TByd CodeStyle",
   "version": "0.0.1",
   "unity": "2021.3",
   "unityRelease": "8f1",
-  "description": "Unity UPM包开发模板，提供标准的包结构和基础功能",  
-  "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate/Documentation~",
-  "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate/CHANGELOG.md",
+  "description": "Unity代码风格规范工具，提供代码检查、Git提交规范和EditorConfig支持",  
+  "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.CodeStyle/Documentation~",
+  "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.CodeStyle/CHANGELOG.md",
   "license": "MIT",
   "keywords": [
     "TByd",
-    "Template",
+    "CodeStyle",
     "UPM",
     "Package"
   ],
@@ -24,18 +24,17 @@
       "email": "zhaoqing343@gmail.com"
     }
   ],
-  "category": "UpmTemplate",
+  "category": "CodeStyle",
   "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.UpmTemplate"
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.CodeStyle"
   },
   "bugs": {
     "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
   },
   "relatedPackages": {},
   "dependencies": {
-	"com.cysharp.unitask": "2.5.10"
   },
   "samples": [
     {
