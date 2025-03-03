@@ -317,7 +317,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 if (IsFileMatchPattern(fileName, relativePath, rule.Pattern))
                 {
                     Debug.Log($"文件 {fileName} 匹配规则 {rule.Pattern}");
-                    
+
                     // 合并属性，后面的规则会覆盖前面的规则
                     foreach (var prop in rule.Properties)
                     {
@@ -406,25 +406,25 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     bool matchStart = Regex.IsMatch(normalizedPath, "^" + patternRegex + "$", RegexOptions.IgnoreCase);
                     bool matchEnd = Regex.IsMatch(normalizedPath, patternRegex + "$", RegexOptions.IgnoreCase);
                     bool matchAny = normalizedPath.Contains(normalizedPattern.Replace("**", "").Replace("*", ""));
-                    
+
                     Debug.Log($"通配符匹配结果: 完全匹配={matchStart}, 结尾匹配={matchEnd}, 包含匹配={matchAny}, 正则表达式: {patternRegex}");
-                    
+
                     // 如果是测试环境（路径包含临时目录），则使用更宽松的匹配规则
                     if (normalizedPath.Contains("Temp") || normalizedPath.Contains("EditorConfigTest"))
                     {
                         // 提取模式中的关键部分（如lib/**.js中的lib和.js）
                         string patternDir = normalizedPattern.Split('/')[0];
                         string patternExt = Path.GetExtension(normalizedPattern.Replace("*", ""));
-                        
+
                         // 检查路径是否包含关键目录和扩展名
                         bool containsDir = normalizedPath.Contains("/" + patternDir + "/");
                         bool hasExt = !string.IsNullOrEmpty(patternExt) && normalizedPath.EndsWith(patternExt, StringComparison.OrdinalIgnoreCase);
-                        
+
                         Debug.Log($"测试环境匹配: 包含目录={containsDir}, 扩展名匹配={hasExt}, 目录={patternDir}, 扩展名={patternExt}");
-                        
+
                         return containsDir && hasExt;
                     }
-                    
+
                     return matchStart || matchEnd;
                 }
 
@@ -734,7 +734,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             {
                 // 处理文件编码
                 Encoding encoding = Encoding.UTF8;
-                bool hasBom = false;
 
                 if (properties.TryGetValue("charset", out string charset))
                 {
@@ -749,7 +748,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                             break;
                         case "utf-8-bom":
                             encoding = new UTF8Encoding(true);
-                            hasBom = true;
                             break;
                         case "utf-16le":
                         case "utf16le":

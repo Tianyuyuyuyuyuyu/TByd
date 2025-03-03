@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.TestTools.TestRunner.Api;
 using UnityEngine;
-using UnityEditor.TestTools.TestRunner.Api;
 
 namespace TByd.CodeStyle.Tests.Editor
 {
