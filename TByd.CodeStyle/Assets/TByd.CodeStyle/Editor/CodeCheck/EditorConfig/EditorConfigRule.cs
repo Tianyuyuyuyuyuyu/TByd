@@ -20,7 +20,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// 规则属性
         /// </summary>
         [SerializeField]
-        private Dictionary<string, string> m_Properties = new Dictionary<string, string>();
+        private Dictionary<string, string> m_Properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 构造函数
@@ -68,41 +68,29 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 return;
             }
 
-            // EditorConfig属性名不区分大小写
-            _key = _key.ToLowerInvariant();
-
-            if (m_Properties.ContainsKey(_key))
-            {
-                m_Properties[_key] = _value;
-            }
-            else
-            {
-                m_Properties.Add(_key, _value);
-            }
+            // 使用大小写不敏感的字典，无需转换为小写
+            m_Properties[_key] = _value;
         }
 
         /// <summary>
         /// 获取属性
         /// </summary>
         /// <param name="_key">属性名</param>
-        /// <param name="_defaultValue">默认值</param>
-        /// <returns>属性值</returns>
-        public string GetProperty(string _key, string _defaultValue = "")
+        /// <returns>属性值，如果不存在则返回空字符串</returns>
+        public string GetProperty(string _key)
         {
             if (string.IsNullOrEmpty(_key))
             {
-                return _defaultValue;
+                return string.Empty;
             }
 
-            // EditorConfig属性名不区分大小写
-            _key = _key.ToLowerInvariant();
-
+            // 使用大小写不敏感的字典，无需转换为小写
             if (m_Properties.TryGetValue(_key, out string value))
             {
                 return value;
             }
 
-            return _defaultValue;
+            return string.Empty;
         }
 
         /// <summary>
@@ -116,9 +104,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 return;
             }
 
-            // EditorConfig属性名不区分大小写
-            _key = _key.ToLowerInvariant();
-
+            // 使用大小写不敏感的字典，无需转换为小写
             if (m_Properties.ContainsKey(_key))
             {
                 m_Properties.Remove(_key);
