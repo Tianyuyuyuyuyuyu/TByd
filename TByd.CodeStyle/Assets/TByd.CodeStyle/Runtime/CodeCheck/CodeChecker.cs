@@ -49,6 +49,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             // Unity规则
             RegisterRule(new AvoidGameObjectFindRule());
             RegisterRule(new AvoidFindInUpdateRule());
+            RegisterRule(new AvoidGetComponentInUpdateRule());
             RegisterRule(new AvoidSendMessageRule());
             RegisterRule(new AvoidCoroutineStringRule());
             RegisterRule(new AvoidHardcodedPathRule());
@@ -63,17 +64,40 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <param name="_rule">规则</param>
         public void RegisterRule(ICodeCheckRule _rule)
         {
-            // 检查规则是否已存在
-            if (m_Rules.Any(r => r.Id == _rule.Id))
-            {
-                Debug.LogWarning($"[TByd.CodeStyle] 规则 '{_rule.Id}' 已存在，将被替换");
+            if (_rule == null)
+                return;
 
-                // 移除已存在的规则
-                m_Rules.RemoveAll(r => r.Id == _rule.Id);
+            // 检查是否已注册同ID的规则
+            var existingRule = m_Rules.FirstOrDefault(r => r.Id == _rule.Id);
+            if (existingRule != null)
+            {
+                Debug.LogWarning($"[TByd.CodeStyle] 规则'{_rule.Id}'已经注册，将被跳过");
+                return;
             }
 
             // 添加规则
             m_Rules.Add(_rule);
+
+            // 从配置中获取规则设置
+            var ruleConfig = m_Config.GetRule(_rule.Id);
+            if (ruleConfig != null)
+            {
+                _rule.Enabled = ruleConfig.Severity != CodeCheckConfig.RuleSeverity.Disabled;
+                
+                // 转换严重程度
+                switch (ruleConfig.Severity)
+                {
+                    case CodeCheckConfig.RuleSeverity.Info:
+                        _rule.Severity = CodeCheckRuleSeverity.Info;
+                        break;
+                    case CodeCheckConfig.RuleSeverity.Warning:
+                        _rule.Severity = CodeCheckRuleSeverity.Warning;
+                        break;
+                    case CodeCheckConfig.RuleSeverity.Error:
+                        _rule.Severity = CodeCheckRuleSeverity.Error;
+                        break;
+                }
+            }
         }
 
         /// <summary>

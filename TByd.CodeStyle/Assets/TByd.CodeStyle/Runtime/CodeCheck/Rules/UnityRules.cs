@@ -50,7 +50,53 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
     }
 
     /// <summary>
-    /// 避免在Update中使用查找方法规则
+    /// 避免在Update中使用GetComponent规则
+    /// </summary>
+    public class AvoidGetComponentInUpdateRule : RegexCodeCheckRule
+    {
+        /// <summary>
+        /// 规则ID
+        /// </summary>
+        public override string Id => "unity-avoid-getcomponent-in-update";
+
+        /// <summary>
+        /// 规则名称
+        /// </summary>
+        public override string Name => "避免在Update中使用GetComponent规则";
+
+        /// <summary>
+        /// 规则描述
+        /// </summary>
+        public override string Description => "避免在Update方法中使用GetComponent，因为它性能较低";
+
+        /// <summary>
+        /// 规则类别
+        /// </summary>
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+
+        /// <summary>
+        /// 规则严重程度
+        /// </summary>
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+
+        /// <summary>
+        /// 正则表达式模式
+        /// </summary>
+        protected override string Pattern => @"void\s+Update\s*\(\s*\)[^}]*GetComponent\s*<";
+
+        /// <summary>
+        /// 问题消息模板
+        /// </summary>
+        protected override string IssueMessageTemplate => "避免在Update方法中使用GetComponent，这会导致性能问题";
+
+        /// <summary>
+        /// 修复建议模板
+        /// </summary>
+        protected override string FixSuggestionTemplate => "在Awake或Start方法中缓存组件引用，而不是在Update中重复获取";
+    }
+
+    /// <summary>
+    /// 避免在Update中使用Find规则
     /// </summary>
     public class AvoidFindInUpdateRule : RegexCodeCheckRule
     {
@@ -62,12 +108,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则名称
         /// </summary>
-        public override string Name => "避免在Update中使用查找方法规则";
+        public override string Name => "避免在Update中使用Find规则";
 
         /// <summary>
         /// 规则描述
         /// </summary>
-        public override string Description => "避免在Update、FixedUpdate或LateUpdate方法中使用查找方法";
+        public override string Description => "避免在Update方法中使用Find方法，因为它性能较低";
 
         /// <summary>
         /// 规则类别
@@ -77,26 +123,26 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Error;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
 
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"(void\s+(Update|FixedUpdate|LateUpdate)\s*\(\s*\)\s*\{[^}]*)(Find|GetComponent)";
+        protected override string Pattern => @"void\s+Update\s*\(\s*\)[^}]*\.Find\s*\(";
 
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "避免在{1}方法中使用{2}方法，这会导致性能问题";
+        protected override string IssueMessageTemplate => "避免在Update方法中使用Find方法，这会导致性能问题";
 
         /// <summary>
         /// 修复建议模板
         /// </summary>
-        protected override string FixSuggestionTemplate => "将{2}方法移到Awake或Start方法中，并缓存结果";
+        protected override string FixSuggestionTemplate => "在Awake或Start方法中查找并缓存对象引用，而不是在Update中重复查找";
     }
 
     /// <summary>
-    /// 避免使用字符串比较的SendMessage规则
+    /// 避免使用SendMessage规则
     /// </summary>
     public class AvoidSendMessageRule : RegexCodeCheckRule
     {
@@ -113,7 +159,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则描述
         /// </summary>
-        public override string Description => "避免使用SendMessage方法，因为它使用字符串比较且性能较低";
+        public override string Description => "避免使用SendMessage方法，因为它性能较低和类型不安全";
 
         /// <summary>
         /// 规则类别
@@ -128,21 +174,21 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"\.(SendMessage|BroadcastMessage|SendMessageUpwards)\s*\(";
+        protected override string Pattern => @"\.SendMessage\s*\(";
 
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "避免使用{0}方法，因为它使用字符串比较且性能较低";
+        protected override string IssueMessageTemplate => "避免使用SendMessage方法，它性能较低且类型不安全";
 
         /// <summary>
         /// 修复建议模板
         /// </summary>
-        protected override string FixSuggestionTemplate => "考虑使用直接方法调用、事件或接口代替{0}";
+        protected override string FixSuggestionTemplate => "考虑使用事件、接口或直接方法调用代替SendMessage";
     }
 
     /// <summary>
-    /// 避免使用协程字符串规则
+    /// 避免使用字符串版本协程规则
     /// </summary>
     public class AvoidCoroutineStringRule : RegexCodeCheckRule
     {
@@ -154,12 +200,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则名称
         /// </summary>
-        public override string Name => "避免使用协程字符串规则";
+        public override string Name => "避免使用字符串版本协程规则";
 
         /// <summary>
         /// 规则描述
         /// </summary>
-        public override string Description => "避免使用字符串名称启动协程，应使用方法引用";
+        public override string Description => "避免使用字符串版本的StartCoroutine方法，因为它性能较低和类型不安全";
 
         /// <summary>
         /// 规则类别
@@ -174,21 +220,21 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"StartCoroutine\s*\(\s*""";
+        protected override string Pattern => @"StartCoroutine\s*\(\s*""[^""]+";
 
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "避免使用字符串名称启动协程，这不是类型安全的";
+        protected override string IssueMessageTemplate => "避免使用字符串版本的StartCoroutine方法，它性能较低且类型不安全";
 
         /// <summary>
         /// 修复建议模板
         /// </summary>
-        protected override string FixSuggestionTemplate => "使用方法引用代替字符串，例如：StartCoroutine(MethodName())";
+        protected override string FixSuggestionTemplate => "使用方法引用版本的StartCoroutine代替字符串版本";
     }
 
     /// <summary>
-    /// 避免使用硬编码路径规则
+    /// 避免硬编码路径规则
     /// </summary>
     public class AvoidHardcodedPathRule : RegexCodeCheckRule
     {
@@ -200,12 +246,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则名称
         /// </summary>
-        public override string Name => "避免使用硬编码路径规则";
+        public override string Name => "避免硬编码路径规则";
 
         /// <summary>
         /// 规则描述
         /// </summary>
-        public override string Description => "避免在代码中使用硬编码的资源路径";
+        public override string Description => "避免在代码中硬编码资源路径，这不利于维护和重构";
 
         /// <summary>
         /// 规则类别
@@ -220,17 +266,17 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"(Resources\.Load|AssetDatabase\.LoadAssetAtPath)\s*\(\s*""[^""]+""";
+        protected override string Pattern => @"(Resources\.Load|AssetDatabase\.LoadAssetAtPath|File\.Open|File\.Read|File\.Write|Directory\.(Create|Delete)|Path\.Combine)\s*\(\s*""[^""]*(/|\\)[^""]*""";
 
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "避免使用硬编码的资源路径，这会导致维护问题";
+        protected override string IssueMessageTemplate => "避免硬编码资源路径，这会导致维护困难和重构风险";
 
         /// <summary>
         /// 修复建议模板
         /// </summary>
-        protected override string FixSuggestionTemplate => "使用常量或配置文件存储路径，或考虑使用Addressables系统";
+        protected override string FixSuggestionTemplate => "使用常量或配置文件存储路径，或考虑使用资源引用";
     }
 
     /// <summary>
@@ -251,7 +297,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则描述
         /// </summary>
-        public override string Description => "避免使用OnGUI方法，因为它性能较低";
+        public override string Description => "避免使用OnGUI方法，它在每帧都会创建GC垃圾并且性能较低";
 
         /// <summary>
         /// 规则类别
@@ -266,12 +312,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"void\s+OnGUI\s*\(\s*\)";
+        protected override string Pattern => @"void\s+OnGUI\s*\(";
 
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "避免使用OnGUI方法，因为它性能较低";
+        protected override string IssueMessageTemplate => "避免使用OnGUI方法，它会产生大量GC垃圾并影响性能";
 
         /// <summary>
         /// 修复建议模板
@@ -297,7 +343,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则描述
         /// </summary>
-        public override string Description => "避免频繁使用Camera.main，因为它在内部使用FindGameObjectWithTag";
+        public override string Description => "避免频繁使用Camera.main，它在内部使用FindGameObjectWithTag";
 
         /// <summary>
         /// 规则类别
@@ -317,16 +363,16 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "避免频繁使用Camera.main，因为它在内部使用FindGameObjectWithTag";
+        protected override string IssueMessageTemplate => "避免频繁使用Camera.main，它在内部使用FindGameObjectWithTag导致性能开销";
 
         /// <summary>
         /// 修复建议模板
         /// </summary>
-        protected override string FixSuggestionTemplate => "在Awake或Start中缓存主摄像机引用";
+        protected override string FixSuggestionTemplate => "在Awake或Start中缓存对主摄像机的引用，而不是重复访问Camera.main";
     }
 
     /// <summary>
-    /// 避免使用空MonoBehaviour方法规则
+    /// 避免空MonoBehaviour方法规则
     /// </summary>
     public class AvoidEmptyMonoBehaviourMethodsRule : RegexCodeCheckRule
     {
@@ -338,12 +384,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则名称
         /// </summary>
-        public override string Name => "避免使用空MonoBehaviour方法规则";
+        public override string Name => "避免空MonoBehaviour方法规则";
 
         /// <summary>
         /// 规则描述
         /// </summary>
-        public override string Description => "避免使用空的MonoBehaviour方法，如空的Update或Start";
+        public override string Description => "避免使用空的MonoBehaviour方法，它们仍会被Unity调用并产生额外开销";
 
         /// <summary>
         /// 规则类别
@@ -358,16 +404,16 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"void\s+(Start|Update|FixedUpdate|LateUpdate|Awake)\s*\(\s*\)\s*\{\s*\}";
+        protected override string Pattern => @"void\s+(Awake|Start|Update|FixedUpdate|LateUpdate)\s*\(\s*\)\s*{\s*}";
 
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "避免使用空的{1}方法，这会导致不必要的性能开销";
+        protected override string IssueMessageTemplate => "空的MonoBehaviour方法仍会被Unity调用，产生额外开销";
 
         /// <summary>
         /// 修复建议模板
         /// </summary>
-        protected override string FixSuggestionTemplate => "移除空的{1}方法";
+        protected override string FixSuggestionTemplate => "移除空的MonoBehaviour方法以减少开销";
     }
 }

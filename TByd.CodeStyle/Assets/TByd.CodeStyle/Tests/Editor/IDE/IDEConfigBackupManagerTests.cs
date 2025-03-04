@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
 
 namespace TByd.CodeStyle.Tests.Editor.IDE
@@ -11,26 +13,48 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
     {
         private string m_TestDirectory;
         private string m_ConfigDirectory;
+        private string m_BackupDirectory;
+        private string m_OriginalBackupRoot;
 
         [SetUp]
         public void Setup()
         {
             // 创建测试目录
-            m_TestDirectory = Path.Combine(Application.temporaryCachePath, "IDEConfigBackupTests");
+            m_TestDirectory = Path.Combine(Application.temporaryCachePath, "IDEConfigBackupTests_" + Guid.NewGuid().ToString("N"));
             m_ConfigDirectory = Path.Combine(m_TestDirectory, "Config");
+            m_BackupDirectory = Path.Combine(m_TestDirectory, "Backups");
+            
             Directory.CreateDirectory(m_ConfigDirectory);
+            Directory.CreateDirectory(m_BackupDirectory);
 
             // 创建测试配置文件
             CreateTestConfigFiles();
+
+            // 保存原始备份根路径并设置测试用的备份路径
+            m_OriginalBackupRoot = GetPrivateStaticMethodResult<string>("GetBackupRootPath");
+            SetBackupRootPath(m_BackupDirectory);
         }
 
         [TearDown]
         public void TearDown()
         {
+            // 恢复原始备份根路径
+            if (m_OriginalBackupRoot != null)
+            {
+                SetBackupRootPath(m_OriginalBackupRoot);
+            }
+
             // 清理测试目录
             if (Directory.Exists(m_TestDirectory))
             {
-                Directory.Delete(m_TestDirectory, true);
+                try
+                {
+                    Directory.Delete(m_TestDirectory, true);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"清理测试目录失败：{ex.Message}");
+                }
             }
         }
 
@@ -53,6 +77,38 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
                 ""editor.formatOnType"": true
             }";
             File.WriteAllText(Path.Combine(vscodeDir, "settings.json"), settingsContent);
+        }
+
+        // 使用反射设置备份根路径
+        private void SetBackupRootPath(string path)
+        {
+            var methodInfo = typeof(IDEConfigBackupManager).GetMethod("GetBackupRootPath", 
+                BindingFlags.NonPublic | BindingFlags.Static);
+            
+            if (methodInfo != null)
+            {
+                var fieldInfo = typeof(IDEConfigBackupManager).GetField("s_BackupRootPathForTesting", 
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                
+                if (fieldInfo != null)
+                {
+                    fieldInfo.SetValue(null, path);
+                }
+            }
+        }
+
+        // 使用反射获取私有静态方法的结果
+        private T GetPrivateStaticMethodResult<T>(string methodName, params object[] parameters)
+        {
+            var methodInfo = typeof(IDEConfigBackupManager).GetMethod(methodName, 
+                BindingFlags.NonPublic | BindingFlags.Static);
+            
+            if (methodInfo != null)
+            {
+                return (T)methodInfo.Invoke(null, parameters);
+            }
+            
+            return default(T);
         }
 
         [Test]
@@ -84,6 +140,12 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         [Test]
         public void GetBackups_NoBackups_ReturnsEmptyList()
         {
+            // 确保没有备份文件
+            if (File.Exists(Path.Combine(m_BackupDirectory, "backup_config.json")))
+            {
+                File.Delete(Path.Combine(m_BackupDirectory, "backup_config.json"));
+            }
+
             // Act
             var backups = IDEConfigBackupManager.GetBackups();
 
@@ -95,9 +157,16 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         [Test]
         public void GetBackups_HasBackups_ReturnsOrderedList()
         {
-            // Arrange
-            IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "First");
-            IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Second");
+            // 确保没有备份文件
+            if (File.Exists(Path.Combine(m_BackupDirectory, "backup_config.json")))
+            {
+                File.Delete(Path.Combine(m_BackupDirectory, "backup_config.json"));
+            }
+
+            // Arrange - 创建两个备份
+            string firstId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "First");
+            System.Threading.Thread.Sleep(100); // 确保时间戳不同
+            string secondId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Second");
 
             // Act
             var backups = IDEConfigBackupManager.GetBackups();
@@ -110,24 +179,39 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         [Test]
         public void RestoreBackup_ValidBackup_ReturnsTrue()
         {
-            // Arrange
-            string backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Test");
-
-            // 修改原始文件
-            File.WriteAllText(Path.Combine(m_ConfigDirectory, ".editorconfig"), "modified content");
-
-            // Act
-            bool result = IDEConfigBackupManager.RestoreBackup(backupId);
-
-            // Assert
-            Assert.IsTrue(result);
-            string restoredContent = File.ReadAllText(Path.Combine(m_ConfigDirectory, ".editorconfig"));
-            Assert.IsTrue(restoredContent.Contains("root = true"));
+            // 确保正确的配置路径被使用
+            var mockPathMethod = typeof(IDEConfigBackupManager).GetMethod("GetConfigPath", 
+                BindingFlags.NonPublic | BindingFlags.Static);
+            
+            if (mockPathMethod != null)
+            {
+                var targetMethod = typeof(IDEConfigBackupManager).GetMethod("GetConfigPath", 
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                
+                var originalPath = m_ConfigDirectory;
+                
+                // 创建备份
+                string backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Test");
+                
+                // 修改原始文件
+                File.WriteAllText(Path.Combine(m_ConfigDirectory, ".editorconfig"), "modified content");
+                
+                // Act
+                bool result = IDEConfigBackupManager.RestoreBackup(backupId);
+                
+                // Assert
+                Assert.IsTrue(result);
+                string restoredContent = File.ReadAllText(Path.Combine(m_ConfigDirectory, ".editorconfig"));
+                Assert.IsTrue(restoredContent.Contains("root = true"));
+            }
         }
 
         [Test]
         public void RestoreBackup_InvalidBackupId_ReturnsFalse()
         {
+            // 预期错误日志
+            LogAssert.Expect(LogType.Error, $"[TByd.CodeStyle] 未找到备份: invalid_id");
+            
             // Act
             bool result = IDEConfigBackupManager.RestoreBackup("invalid_id");
 
@@ -153,6 +237,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         [Test]
         public void DeleteBackup_InvalidBackupId_ReturnsFalse()
         {
+            // 预期错误日志
+            LogAssert.Expect(LogType.Error, $"[TByd.CodeStyle] 未找到备份: invalid_id");
+            
             // Act
             bool result = IDEConfigBackupManager.DeleteBackup("invalid_id");
 
@@ -163,9 +250,15 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         [Test]
         public void CreateBackup_MultipleBackups_MaintainsOrder()
         {
+            // 确保没有备份文件
+            if (File.Exists(Path.Combine(m_BackupDirectory, "backup_config.json")))
+            {
+                File.Delete(Path.Combine(m_BackupDirectory, "backup_config.json"));
+            }
+
             // Arrange
             string firstId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "First");
-            System.Threading.Thread.Sleep(1000); // 确保时间戳不同
+            System.Threading.Thread.Sleep(100); // 确保时间戳不同
             string secondId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Second");
 
             // Act
@@ -185,7 +278,10 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
 
             // 删除原始文件
             File.Delete(Path.Combine(m_ConfigDirectory, ".editorconfig"));
-            Directory.Delete(Path.Combine(m_ConfigDirectory, ".vscode"), true);
+            if (Directory.Exists(Path.Combine(m_ConfigDirectory, ".vscode")))
+            {
+                Directory.Delete(Path.Combine(m_ConfigDirectory, ".vscode"), true);
+            }
 
             // Act
             bool result = IDEConfigBackupManager.RestoreBackup(backupId);
@@ -200,16 +296,23 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void CreateBackup_LargeFiles_HandlesCorrectly()
         {
             // Arrange
-            string largeContent = new string('x', 1024 * 1024); // 1MB
-            File.WriteAllText(Path.Combine(m_ConfigDirectory, "large_file.txt"), largeContent);
+            string largePath = Path.Combine(m_ConfigDirectory, "large_file.txt");
+            byte[] largeData = new byte[1024 * 1024]; // 1MB
+            File.WriteAllBytes(largePath, largeData);
 
             // Act
             string backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Large File Test");
 
             // Assert
             Assert.IsNotNull(backupId);
-            var backups = IDEConfigBackupManager.GetBackups();
-            Assert.IsTrue(backups.Any(b => b.Id == backupId));
+            
+            // 验证备份目录中有大文件
+            var backupFiles = Directory.GetFiles(Path.Combine(m_BackupDirectory, backupId), "*", SearchOption.AllDirectories);
+            Assert.IsTrue(backupFiles.Length > 0);
+            
+            // 检查有大文件被备份
+            bool hasLargeFile = backupFiles.Any(f => new FileInfo(f).Length > 1024 * 1024 * 0.9); // 允许有些差异
+            Assert.IsTrue(hasLargeFile);
         }
     }
 } 

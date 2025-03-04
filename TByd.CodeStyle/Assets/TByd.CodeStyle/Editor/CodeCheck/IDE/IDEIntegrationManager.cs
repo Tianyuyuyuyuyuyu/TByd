@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
+using TByd.CodeStyle.Runtime.Config;
 using UnityEditor;
 using UnityEngine;
 
@@ -58,6 +59,29 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         }
 
         /// <summary>
+        /// 注册IDE集成 (用于测试和扩展)
+        /// </summary>
+        /// <param name="_integration">要注册的IDE集成</param>
+        public static void RegisterIntegration(IDEIntegration _integration)
+        {
+            // 确保集成不为空
+            if (_integration == null)
+                return;
+
+            // 确保已初始化
+            if (!s_Initialized)
+            {
+                Initialize();
+            }
+
+            // 确保不重复添加
+            if (!s_Integrations.Any(i => i.Name == _integration.Name))
+            {
+                s_Integrations.Add(_integration);
+            }
+        }
+
+        /// <summary>
         /// 获取当前使用的IDE集成
         /// </summary>
         /// <returns>当前IDE集成</returns>
@@ -92,7 +116,41 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <returns>已安装的IDE集成列表</returns>
         public static List<IDEIntegration> GetInstalledIntegrations()
         {
+            // 确保已初始化
+            if (!s_Initialized)
+            {
+                Initialize();
+            }
+
             return s_Integrations.FindAll(i => i.IsInstalled);
+        }
+
+        /// <summary>
+        /// 获取特定类型的IDE集成
+        /// </summary>
+        /// <param name="_ideType">IDE类型</param>
+        /// <returns>IDE集成</returns>
+        public static IDEIntegration GetIntegration(IDEType _ideType)
+        {
+            // 确保已初始化
+            if (!s_Initialized)
+            {
+                Initialize();
+            }
+
+            // 基于IDE类型查找对应的集成
+            return s_Integrations.Find(i => i.GetType().Name.Contains(_ideType.ToString()));
+        }
+
+        /// <summary>
+        /// 检查特定IDE是否已安装
+        /// </summary>
+        /// <param name="_ideType">IDE类型</param>
+        /// <returns>是否已安装</returns>
+        public static bool IsIDEInstalled(IDEType _ideType)
+        {
+            var integration = GetIntegration(_ideType);
+            return integration != null && integration.IsInstalled;
         }
 
         /// <summary>
@@ -107,27 +165,59 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 return currentIDE.ExportConfig(_rules);
             }
+            return false;
+        }
 
-            Debug.LogWarning("[TByd.CodeStyle] 未检测到当前使用的IDE，无法导出配置");
+        /// <summary>
+        /// 导出配置到特定IDE
+        /// </summary>
+        /// <param name="_ideType">IDE类型</param>
+        /// <param name="_config">代码风格配置</param>
+        /// <returns>是否成功</returns>
+        public static bool ExportConfigToIDE(IDEType _ideType, CodeStyleConfig _config)
+        {
+            // 获取EditorConfig规则列表
+            var rules = EditorConfigManager.GetRules();
+
+            var integration = GetIntegration(_ideType);
+            if (integration != null && integration.IsInstalled)
+            {
+                return integration.ExportConfig(rules);
+            }
             return false;
         }
 
         /// <summary>
         /// 导出配置到所有已安装的IDE
         /// </summary>
+        /// <param name="_config">代码风格配置</param>
+        /// <returns>是否成功</returns>
+        public static bool ExportConfigToAllIDEs(CodeStyleConfig _config)
+        {
+            // 获取EditorConfig规则列表
+            var rules = EditorConfigManager.GetRules();
+            return ExportConfigToAllIDEs(rules);
+        }
+
+        /// <summary>
+        /// 导出配置到所有已安装的IDE
+        /// </summary>
         /// <param name="_rules">EditorConfig规则列表</param>
-        /// <returns>是否全部成功</returns>
+        /// <returns>是否成功</returns>
         public static bool ExportConfigToAllIDEs(List<EditorConfigRule> _rules)
         {
             bool allSuccess = true;
-            foreach (var ide in GetInstalledIntegrations())
+            var integrations = GetInstalledIntegrations();
+
+            foreach (var integration in integrations)
             {
-                if (!ide.ExportConfig(_rules))
+                if (!integration.ExportConfig(_rules))
                 {
                     allSuccess = false;
                 }
             }
+
             return allSuccess;
         }
     }
-} 
+}

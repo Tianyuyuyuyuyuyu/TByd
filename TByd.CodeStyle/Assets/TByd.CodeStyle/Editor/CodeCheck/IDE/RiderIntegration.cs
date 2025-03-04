@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
 using UnityEngine;
-using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
@@ -55,26 +55,24 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             try
             {
-                // 获取Rider配置目录
-                var configPath = GetRiderConfigPath();
-                if (string.IsNullOrEmpty(configPath))
-                {
-                    Debug.LogError("[TByd.CodeStyle] 未找到Rider配置目录");
-                    return false;
-                }
+                // 获取项目根目录
+                string projectRoot = Path.GetDirectoryName(Application.dataPath);
 
-                // 确保配置目录存在
-                Directory.CreateDirectory(configPath);
-
-                // 导出EditorConfig规则
-                var editorConfigPath = Path.Combine(configPath, c_RiderConfigFileName);
+                // EditorConfig应该放在项目根目录，而不是.idea文件夹内
+                var editorConfigPath = Path.Combine(projectRoot, c_RiderConfigFileName);
                 EditorConfigManager.SaveRulesToFile(_rules, editorConfigPath);
 
+                // 获取Rider配置目录
+                var ideaConfigPath = Path.Combine(projectRoot, c_RiderConfigDirectory);
+
+                // 确保.idea目录存在
+                Directory.CreateDirectory(ideaConfigPath);
+
                 // 创建Rider代码风格配置
-                CreateRiderCodeStyleConfig(configPath);
+                CreateRiderCodeStyleConfig(ideaConfigPath);
 
                 // 创建Rider C#设置
-                CreateRiderCSharpSettings(configPath);
+                CreateRiderCSharpSettings(ideaConfigPath);
 
                 Debug.Log($"[TByd.CodeStyle] 成功导出配置到Rider: {editorConfigPath}");
                 return true;
@@ -440,7 +438,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         {
                             // 按版本号排序，获取最新版本
                             Array.Sort(versionKeys, (a, b) => string.Compare(b, a, StringComparison.Ordinal));
-                            
+
                             using (Microsoft.Win32.RegistryKey versionKey = key.OpenSubKey(versionKeys[0]))
                             {
                                 if (versionKey != null)
@@ -495,4 +493,4 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             return Path.Combine(projectRoot, c_RiderConfigDirectory);
         }
     }
-} 
+}

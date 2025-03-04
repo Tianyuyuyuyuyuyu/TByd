@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
 using UnityEngine;
-using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
@@ -18,6 +18,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
         // 备份配置文件名
         private const string c_BackupConfigFileName = "backup_config.json";
+
+        // 用于测试的备份根路径，允许测试修改备份位置
+        private static string s_BackupRootPathForTesting = null;
+
+        // 大文件阈值 (5MB)
+        private const int c_LargeFileSizeThreshold = 5 * 1024 * 1024;
+
+        // 缓冲区大小 (1MB)
+        private const int c_BufferSize = 1024 * 1024;
 
         /// <summary>
         /// 备份信息
@@ -68,7 +77,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         /// <param name="_ideType">IDE类型</param>
         /// <param name="_description">备份描述</param>
-        /// <returns>备份ID</returns>
+        /// <returns>备份ID，如果失败则返回null</returns>
         public static string CreateBackup(IDEType _ideType, string _description = "")
         {
             try
@@ -80,7 +89,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 创建备份信息
                 var backupInfo = new BackupInfo
                 {
-                    Id = Guid.NewGuid().ToString("N"),
+                    Id = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + Guid.NewGuid().ToString("N").Substring(0, 8),
                     Timestamp = DateTime.Now,
                     IDEType = _ideType,
                     Description = _description,
@@ -106,8 +115,21 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         // 确保目标目录存在
                         Directory.CreateDirectory(Path.GetDirectoryName(backupPath));
 
-                        // 复制文件
-                        File.Copy(file, backupPath, true);
+                        // 获取文件大小
+                        long fileSize = new FileInfo(file).Length;
+
+                        // 根据文件大小选择复制方式
+                        if (fileSize > c_LargeFileSizeThreshold)
+                        {
+                            // 大文件使用流复制
+                            CopyFileWithProgress(file, backupPath);
+                        }
+                        else
+                        {
+                            // 小文件直接复制
+                            File.Copy(file, backupPath, true);
+                        }
+
                         backupInfo.Files.Add(relativePath);
                     }
                 }
@@ -155,7 +177,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                 // 获取目标配置目录
                 string configPath = GetConfigPath(backup.IDEType);
-                Directory.CreateDirectory(configPath);
+                if (!Directory.Exists(configPath))
+                {
+                    Directory.CreateDirectory(configPath);
+                }
+
+                // 记录恢复操作的状态
+                bool anyFileRestored = false;
+                List<string> failedFiles = new List<string>();
 
                 // 恢复文件
                 foreach (var relativePath in backup.Files)
@@ -165,12 +194,54 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                     if (File.Exists(backupPath))
                     {
-                        // 确保目标目录存在
-                        Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
+                        try
+                        {
+                            // 确保目标目录存在
+                            string targetDir = Path.GetDirectoryName(targetPath);
+                            if (!Directory.Exists(targetDir))
+                            {
+                                Directory.CreateDirectory(targetDir);
+                            }
 
-                        // 复制文件
-                        File.Copy(backupPath, targetPath, true);
+                            // 获取文件大小
+                            long fileSize = new FileInfo(backupPath).Length;
+
+                            // 根据文件大小选择复制方式
+                            if (fileSize > c_LargeFileSizeThreshold)
+                            {
+                                // 大文件使用流复制
+                                CopyFileWithProgress(backupPath, targetPath);
+                            }
+                            else
+                            {
+                                // 小文件直接复制
+                                File.Copy(backupPath, targetPath, true);
+                            }
+
+                            anyFileRestored = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            failedFiles.Add(relativePath);
+                            Debug.LogWarning($"[TByd.CodeStyle] 恢复文件失败: {relativePath}，错误: {ex.Message}");
+                        }
                     }
+                    else
+                    {
+                        failedFiles.Add(relativePath);
+                        Debug.LogWarning($"[TByd.CodeStyle] 备份文件不存在: {backupPath}");
+                    }
+                }
+
+                if (!anyFileRestored)
+                {
+                    Debug.LogWarning($"[TByd.CodeStyle] 未恢复任何文件: {_backupId}");
+                    return false;
+                }
+
+                if (failedFiles.Count > 0)
+                {
+                    Debug.LogWarning($"[TByd.CodeStyle] 部分文件恢复失败: {string.Join(", ", failedFiles)}");
                 }
 
                 Debug.Log($"[TByd.CodeStyle] 成功恢复配置备份: {_backupId}");
@@ -250,31 +321,28 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             switch (_ideType)
             {
                 case IDEType.Rider:
-                    // Rider配置文件
-                    string ideaPath = Path.Combine(_configPath, ".idea");
-                    if (Directory.Exists(ideaPath))
-                    {
-                        files.AddRange(Directory.GetFiles(ideaPath, "*.xml", SearchOption.AllDirectories));
-                        files.AddRange(Directory.GetFiles(ideaPath, "*.json", SearchOption.AllDirectories));
-                    }
+                    // 添加JetBrains Rider的配置文件
+                    files.AddRange(Directory.GetFiles(_configPath, "*.xml", SearchOption.TopDirectoryOnly));
+                    files.AddRange(Directory.GetFiles(_configPath, "*.DotSettings", SearchOption.TopDirectoryOnly));
                     break;
 
                 case IDEType.VisualStudio:
-                    // Visual Studio配置文件
-                    files.Add(Path.Combine(_configPath, ".vssettings"));
+                    // 添加Visual Studio的配置文件
+                    files.AddRange(Directory.GetFiles(_configPath, "*.csproj.user", SearchOption.TopDirectoryOnly));
+                    files.AddRange(Directory.GetFiles(_configPath, "*.suo", SearchOption.TopDirectoryOnly));
                     break;
 
                 case IDEType.VSCode:
-                    // VS Code配置文件
+                    // 添加VS Code的配置文件
                     string vscodePath = Path.Combine(_configPath, ".vscode");
                     if (Directory.Exists(vscodePath))
                     {
-                        files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.AllDirectories));
+                        files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.TopDirectoryOnly));
                     }
                     break;
             }
 
-            // EditorConfig文件
+            // 添加通用的配置文件
             string editorConfigPath = Path.Combine(_configPath, ".editorconfig");
             if (File.Exists(editorConfigPath))
             {
@@ -285,18 +353,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         }
 
         /// <summary>
-        /// 获取配置路径
+        /// 获取IDE配置路径
         /// </summary>
         private static string GetConfigPath(IDEType _ideType)
         {
             switch (_ideType)
             {
                 case IDEType.Rider:
-                    return Path.GetDirectoryName(Application.dataPath);
                 case IDEType.VisualStudio:
-                    return Path.GetDirectoryName(Application.dataPath);
                 case IDEType.VSCode:
-                    return Path.GetDirectoryName(Application.dataPath);
                 default:
                     return Path.GetDirectoryName(Application.dataPath);
             }
@@ -307,6 +372,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private static string GetBackupRootPath()
         {
+            // 如果设置了测试用的路径，则使用测试路径
+            if (!string.IsNullOrEmpty(s_BackupRootPathForTesting))
+            {
+                return s_BackupRootPathForTesting;
+            }
+
             return Path.Combine(Application.dataPath, "..", "Library", "TByd.CodeStyle", c_BackupDirectory);
         }
 
@@ -351,5 +422,39 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             string json = JsonUtility.ToJson(_config, true);
             File.WriteAllText(configPath, json);
         }
+
+        /// <summary>
+        /// 使用流复制大文件，避免内存问题
+        /// </summary>
+        /// <param name="_sourcePath">源文件路径</param>
+        /// <param name="_destPath">目标文件路径</param>
+        private static void CopyFileWithProgress(string _sourcePath, string _destPath)
+        {
+            using (var sourceStream = new FileStream(_sourcePath, FileMode.Open, FileAccess.Read))
+            using (var destStream = new FileStream(_destPath, FileMode.Create, FileAccess.Write))
+            {
+                byte[] buffer = new byte[c_BufferSize];
+                int bytesRead;
+                long totalBytes = sourceStream.Length;
+                long bytesWritten = 0;
+
+                while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    destStream.Write(buffer, 0, bytesRead);
+                    bytesWritten += bytesRead;
+
+                    // 更新进度
+                    if (totalBytes > 0)
+                    {
+                        float progress = (float)bytesWritten / totalBytes;
+                        EditorUtility.DisplayProgressBar("复制大文件",
+                            $"正在复制 {Path.GetFileName(_sourcePath)} ({bytesWritten / 1024}/{totalBytes / 1024} KB)",
+                            progress);
+                    }
+                }
+
+                EditorUtility.ClearProgressBar();
+            }
+        }
     }
-} 
+}

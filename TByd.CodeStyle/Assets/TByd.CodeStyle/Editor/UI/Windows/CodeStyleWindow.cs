@@ -1,8 +1,7 @@
-using UnityEditor;
-using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
+using TByd.CodeStyle.Editor.CodeCheck.IDE;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.Git;
 using TByd.CodeStyle.Editor.Git.Commit;
@@ -10,7 +9,8 @@ using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Config;
 using TByd.CodeStyle.Runtime.Git;
 using TByd.CodeStyle.Runtime.Git.Commit;
-using TByd.CodeStyle.Editor.CodeCheck.IDE;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Windows
 {
@@ -998,7 +998,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             if (!m_IsIDEConfigured)
             {
                 EditorGUILayout.HelpBox("当前IDE未配置，建议配置以获得更好的开发体验。", MessageType.Info);
-                
+
                 if (GUILayout.Button("配置IDE"))
                 {
                     IDEDetector.ConfigureIDE(m_CurrentIDEType);
@@ -1049,7 +1049,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             if (GUILayout.Button("验证配置"))
             {
                 var result = IDEConfigValidator.ValidateConfig(m_CurrentIDEType, Path.GetDirectoryName(Application.dataPath));
-                
+
                 if (result.IsValid)
                 {
                     NotificationSystem.ShowNotification("配置验证通过", NotificationType.Success);
@@ -1079,7 +1079,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.HelpBox("检测到配置冲突：\n" + string.Join("\n", conflicts), MessageType.Warning);
-                
+
                 if (GUILayout.Button("解决冲突"))
                 {
                     bool useLocal = EditorUtility.DisplayDialog("解决冲突",
@@ -1344,7 +1344,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
                 if (GUILayout.Button("重置IDE配置"))
                 {
-                    if (EditorUtility.DisplayDialog("重置IDE配置", 
+                    if (EditorUtility.DisplayDialog("重置IDE配置",
                         "确定要重置IDE配置吗？这将清除所有IDE特定的设置。", "确定", "取消"))
                     {
                         IDEDetector.ResetIDEConfiguration(m_CurrentIDEType);

@@ -29,19 +29,24 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
 
         /// <summary>
+        /// 规则严重程度
+        /// </summary>
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+
+        /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"private\s+(?!static\s+)(?<type>[\w<>[\],\s]+)\s+(?!m_[A-Z])(?<name>\w+)\s*[;=]";
+        protected override string Pattern => @"private\s+(?!static|const)(?<type>[\w<>[\],\s]+)\s+(?!m_)(?<n>\w+)\s*([;=]|{)";
 
         /// <summary>
         /// 问题消息模板
         /// </summary>
-        protected override string IssueMessageTemplate => "私有字段 '{name}' 应使用m_前缀加PascalCase命名";
+        protected override string IssueMessageTemplate => "私有成员变量 '{name}' 应使用m_前缀加PascalCase命名";
 
         /// <summary>
         /// 修复建议模板
         /// </summary>
-        protected override string FixSuggestionTemplate => "将 '{name}' 重命名为 'm_{PascalName}'";
+        protected override string FixSuggestionTemplate => "将 '{name}' 重命名为 'm_{pascalName}'";
 
         /// <summary>
         /// 格式化消息
@@ -58,7 +63,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
                 string name = _match.Groups["name"].Value;
                 string pascalName = ToPascalCase(name);
 
-                result = result.Replace("{PascalName}", pascalName);
+                result = result.Replace("{pascalName}", pascalName);
             }
 
             return result;
@@ -449,9 +454,14 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
 
         /// <summary>
+        /// 规则严重程度
+        /// </summary>
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+
+        /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"\(\s*(?:(?<type>[\w<>[\],\s]+)\s+(?!_)(?<name>\w+)(?:,|\))";
+        protected override string Pattern => @"\(\s*(?:(?<type>[\w<>[\],\s]+)\s+(?!_)(?<name>\w+)(?:,|\)))";
 
         /// <summary>
         /// 问题消息模板
