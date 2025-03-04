@@ -353,13 +353,13 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             }
 
             // 提取参数名
-            Match match = Regex.Match(codeSnippet, @"\(\s*(?:(?<type>[\w<>[\],\s]+)\s+(?<name>\w+)(?:,|\))");
+            Match match = Regex.Match(codeSnippet, @"\(\s*(?<type>[\w<>\[\],\s]+)\s+(?<n>\w+)(?:,|\))");
             if (!match.Success)
             {
                 return _code;
             }
 
-            string paramName = match.Groups["name"].Value;
+            string paramName = match.Groups["n"].Value;
             string camelName = ToCamelCase(paramName);
             string newParamName = $"_{camelName}";
 
