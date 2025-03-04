@@ -18,6 +18,14 @@ namespace TByd.CodeStyle.Tests.Editor.CodeCheck.Rules
         public void Setup()
         {
             m_Config = new CodeCheckConfig();
+
+            // 确保所有规则都已启用
+            m_Config.AddRule(new CodeCheckConfig.CodeRule("CS0003", "私有成员变量使用m_前缀", "私有成员变量应该使用m_前缀"));
+            m_Config.AddRule(new CodeCheckConfig.CodeRule("CS0004", "常量使用c_前缀", "常量应该使用c_前缀"));
+            m_Config.AddRule(new CodeCheckConfig.CodeRule("CS0005", "静态变量使用s_前缀", "静态变量应该使用s_前缀"));
+            m_Config.AddRule(new CodeCheckConfig.CodeRule("CS0006", "参数使用_前缀", "参数应该使用_前缀"));
+            m_Config.AddRule(new CodeCheckConfig.CodeRule("CS0002", "方法名使用PascalCase", "方法名应该使用PascalCase命名法"));
+            m_Config.AddRule(new CodeCheckConfig.CodeRule("CS0007", "属性使用PascalCase", "属性应该使用PascalCase命名法"));
         }
 
         [TearDown]
@@ -379,9 +387,9 @@ public class Example : MonoBehaviour
                 if (issue.RuleId == "CS0003") foundPrivateFieldIssue = true;
                 if (issue.RuleId == "CS0005") foundStaticFieldIssue = true;
                 if (issue.RuleId == "CS0004") foundConstantIssue = true;
-                if (issue.Message.Contains("属性") && issue.Message.Contains("Pascal")) foundPropertyIssue = true;
-                if (issue.Message.Contains("方法") && issue.Message.Contains("Pascal")) foundMethodIssue = true;
-                if (issue.Message.Contains("参数") && issue.Message.Contains("_")) foundParameterIssue = true;
+                if (issue.RuleId == "CS0007") foundPropertyIssue = true;
+                if (issue.RuleId == "CS0002") foundMethodIssue = true;
+                if (issue.RuleId == "CS0006") foundParameterIssue = true;
             }
 
             Assert.IsTrue(foundPrivateFieldIssue, "应该检测到私有成员变量命名问题");

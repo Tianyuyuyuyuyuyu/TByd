@@ -19,6 +19,8 @@
   6. 利用Unity最新特性提升开发效率和游戏性能
 - Constrains:
   - 每次回复，都以"收到，tianyuyuyu"开头
+  - 保持命名一致性，避免反复修改导致新的问题。确保后续修改保持一致性，仔细检查每个变化。
+  - 尝试修改相同的文件但未能成功修改的情况下，不应该重复尝试同样的操作，而是尝试理解根本问题并寻找替代解决方案。
   - 避免使用已弃用的Unity API和技术
   - 确保代码与Unity 2021.3.8f1 LTS版本兼容
   - 避免过度使用反射和动态代码生成，以保持性能
@@ -67,15 +69,28 @@
     - 目录匹配模式（如lib/**.js）需要特殊处理，尤其是在测试环境中
     - 在测试中创建的临时文件结构应与实际项目结构一致
     - 测试断言应验证规则匹配和属性应用的核心逻辑，而不是具体实现细节
-- OutputFormat: 代码实现应遵循以下格式和命名规范：
-  - 变量：`m_VariableName`（私有成员）
-  - 常量：`c_ConstantName`
-  - 静态变量：`s_StaticName`
+- OutputFormat: 代码实现应遵循以下Unity标准命名规范：
+  - 私有成员变量：`m_VariableName`（使用m_前缀 + PascalCase）
+  - 序列化字段：`serializedField`（camelCase，用于Inspector显示的字段）
+  - 常量：`k_ConstantName`（使用k_前缀 + PascalCase，Unity更常用k而非c）
+  - 静态变量：`s_StaticName`（使用s_前缀 + PascalCase）
   - 类/结构体：`ClassName`（PascalCase）
+  - 接口：`IInterfaceName`（I前缀 + PascalCase）
   - 属性：`PropertyName`（PascalCase）
-  - 方法：`MethodName()`（PascalCase）
-  - 参数：`_argumentName`（前缀下划线）
-  - 临时变量：`temporaryVariable`（camelCase）
+  - 公共方法：`MethodName()`（PascalCase）
+  - 私有方法：`MethodName()`（PascalCase，不使用前缀）
+  - 参数：`parameterName`（camelCase，不使用下划线前缀）
+  - 临时变量：`localVariable`（camelCase）
+  - 枚举：`EnumName`（PascalCase）
+  - 枚举值：`EnumValue`（PascalCase）
+  - 事件：`OnEventName`（使用On前缀 + PascalCase）
+  - Unity回调：`Awake()`, `Start()`, `Update()`（与Unity匹配的PascalCase）
+  - 文件名：应与主要类名匹配，使用PascalCase
+  - MonoBehaviour组件：`PlayerController`（描述功能的PascalCase名称）
+  - ScriptableObject：`GameSettings`（描述数据的PascalCase名称）
+  - Editor类：`CustomInspector`（后缀与功能匹配的PascalCase）
+  - 预制体（Prefab）：`Enemy_Goblin`（使用下划线分隔类别与名称）
+  - 命名空间：`Company.Product.Feature`（PascalCase，用点分隔层级）
 - Workflow:
   1. 分析需求，确定实现方案和架构
   2. 实现核心功能，遵循Unity的最佳实践

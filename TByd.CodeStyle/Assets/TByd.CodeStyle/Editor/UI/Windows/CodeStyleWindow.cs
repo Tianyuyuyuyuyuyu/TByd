@@ -1088,7 +1088,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                         "- 使用标准版本：使用推荐的配置",
                         "使用本地版本", "使用标准版本");
 
-                    if (IDEConfigSyncManager.ResolveConflicts(m_CurrentIDEType, conflicts, useLocal))
+                    if (IDEConfigSyncManager.ResolveConflicts(useLocal))
                     {
                         NotificationSystem.ShowNotification("配置冲突已解决", NotificationType.Success);
                     }

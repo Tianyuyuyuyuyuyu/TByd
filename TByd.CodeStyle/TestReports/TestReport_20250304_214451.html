@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TByd.CodeStyle 测试报告</title>
+    <style>
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; margin: 0; padding: 20px; color: #333; }
+        h1, h2 { color: #0078d7; }
+        .summary { background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .summary-item { margin-bottom: 10px; }
+        .passed { color: #5cb85c; }
+        .failed { color: #d9534f; }
+        .ignored { color: #f0ad4e; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #0078d7; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        .details { margin-top: 5px; padding: 10px; background-color: #f8f8f8; border-left: 3px solid #d9534f; display: none; }
+        .test-row { cursor: pointer; }
+        .test-row.failed { background-color: #ffeeee; }
+        .test-row.passed { background-color: #eeffee; }
+        .test-row.ignored { background-color: #ffffee; }
+    </style>
+    <script>
+        function toggleDetails(id) {
+            var details = document.getElementById('details-' + id);
+            if (details.style.display === 'block') {
+                details.style.display = 'none';
+            } else {
+                details.style.display = 'block';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>TByd.CodeStyle 测试报告</h1>
+    <div class="summary">
+        <h2>测试摘要</h2>
+        <div class="summary-item">总测试数: <strong>77</strong></div>
+        <div class="summary-item">通过: <strong class="passed">60</strong></div>
+        <div class="summary-item">失败: <strong class="failed">17</strong></div>
+        <div class="summary-item">忽略: <strong class="ignored">0</strong></div>
+        <div class="summary-item">测试时间: <strong>271.29秒</strong></div>
+        <div class="summary-item">生成时间: <strong>2025/3/4 21:44:51</strong></div>
+    </div>
+    <h2>测试结果</h2>
+    <table>
+        <tr>
+            <th>测试名称</th>
+            <th>状态</th>
+            <th>时间(秒)</th>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(0)">
+            <td>EdgeCase_CommentsOnlyFile_HandledGracefully</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.029</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-0" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests.EdgeCase_CommentsOnlyFile_HandledGracefully</div>
+                    <div><strong>错误信息:</strong> Unhandled log message: '[Error] [TByd.CodeStyle] 规则 'unity-avoid-coroutine-string' 执行异常: parsing "StartCoroutine\s*\(\s*"[^"]+")" - Too many )'s.'. Use UnityEngine.TestTools.LogAssert.Expect</div>
+                    <div><strong>堆栈跟踪:</strong><pre>TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckCode (string,string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:200)
+TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckFile (string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:234)
+TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests:EdgeCase_CommentsOnlyFile_HandledGracefully () (at Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/CodeStyleIntegrationTests.cs:278)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(1)">
+            <td>EdgeCase_EmptyFile_HandledGracefully</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.015</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(2)">
+            <td>EdgeCase_NonCSharpFile_HandledGracefully</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.007</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(3)">
+            <td>FullWorkflow_ValidAndInvalidCode_CorrectlyDetectsIssues</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.061</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-3" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests.FullWorkflow_ValidAndInvalidCode_CorrectlyDetectsIssues</div>
+                    <div><strong>错误信息:</strong> Unhandled log message: '[Error] [TByd.CodeStyle] 规则 'unity-avoid-coroutine-string' 执行异常: parsing "StartCoroutine\s*\(\s*"[^"]+")" - Too many )'s.'. Use UnityEngine.TestTools.LogAssert.Expect</div>
+                    <div><strong>堆栈跟踪:</strong><pre>TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckCode (string,string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:200)
+TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckFile (string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:234)
+TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests:FullWorkflow_ValidAndInvalidCode_CorrectlyDetectsIssues () (at Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/CodeStyleIntegrationTests.cs:208)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(4)">
+            <td>ConstantNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.002</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(5)">
+            <td>MethodNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(6)">
+            <td>MultipleNamingRules_ComplexCode_DetectsAllIssues</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.010</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-6" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.NamingRulesTests.MultipleNamingRules_ComplexCode_DetectsAllIssues</div>
+                    <div><strong>错误信息:</strong>   应该检测到私有成员变量命名问题
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.NamingRulesTests.MultipleNamingRules_ComplexCode_DetectsAllIssues () [0x0017b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\CodeCheck\Rules\NamingRulesTests.cs:387
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(7)">
+            <td>ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(8)">
+            <td>PrivateFieldNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(9)">
+            <td>PropertyNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(10)">
+            <td>StaticFieldNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(11)">
+            <td>AvoidEmptyMonoBehaviourMethodsRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(12)">
+            <td>AvoidFindInUpdateRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(13)">
+            <td>AvoidGameObjectFindRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(14)">
+            <td>AvoidGetComponentInUpdate_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(15)">
+            <td>AvoidHardcodedPathRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.002</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-15" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.AvoidHardcodedPathRule_ValidAndInvalidCases_ReturnsCorrectResults</div>
+                    <div><strong>错误信息:</strong> System.ArgumentException : parsing "(Resources\.Load|AssetDatabase\.LoadAssetAtPath|File\.(Open|Read|Write|Exists|ReadAllText|WriteAllText|ReadAllBytes|WriteAllBytes|Copy|Move|Delete)|Directory\.(Create|Delete|Exists|GetFiles|GetDirectories)|Path\.Combine)\s*\(\s*"[^"]*(/|\\)[^"]*")" - Too many )'s.</div>
+                    <div><strong>堆栈跟踪:</strong><pre>  at System.Text.RegularExpressions.RegexParser.ScanRegex () [0x001f1] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at System.Text.RegularExpressions.RegexParser.Parse (System.String re, System.Text.RegularExpressions.RegexOptions op) [0x00036] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at System.Text.RegularExpressions.Regex..ctor (System.String pattern, System.Text.RegularExpressions.RegexOptions options, System.TimeSpan matchTimeout, System.Boolean addToCache) [0x00097] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at System.Text.RegularExpressions.Regex..ctor (System.String pattern, System.Text.RegularExpressions.RegexOptions options) [0x00000] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at TByd.CodeStyle.Runtime.CodeCheck.RegexCodeCheckRule.GetRegex () [0x0000f] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Runtime\CodeCheck\CodeCheckRule.cs:384 
+  at TByd.CodeStyle.Runtime.CodeCheck.RegexCodeCheckRule.Check (System.String _code, System.String _filePath, TByd.CodeStyle.Runtime.Config.CodeCheckConfig _config) [0x00017] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Runtime\CodeCheck\CodeCheckRule.cs:405 
+  at TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.AvoidHardcodedPathRule_ValidAndInvalidCases_ReturnsCorrectResults () [0x0001b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\CodeCheck\Rules\UnityRulesTests.cs:348 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 </pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(16)">
+            <td>AvoidSendMessageRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(17)">
+            <td>MultipleUnityRules_ComplexCode_DetectsAllIssues</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.004</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-17" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.MultipleUnityRules_ComplexCode_DetectsAllIssues</div>
+                    <div><strong>错误信息:</strong>   应该检测到硬编码路径的问题
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.MultipleUnityRules_ComplexCode_DetectsAllIssues () [0x001a9] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\CodeCheck\Rules\UnityRulesTests.cs:507
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(18)">
+            <td>FormatCommitMessage_ValidComponents_ReturnsFormattedMessage</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(19)">
+            <td>ParseCommitMessage_ValidMessage_ReturnsComponents</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(20)">
+            <td>ValidateCommitMessage_EmptySubject_ReturnsInvalid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.019</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(21)">
+            <td>ValidateCommitMessage_InvalidType_ReturnsInvalid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.008</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(22)">
+            <td>ValidateCommitMessage_MissingColon_ReturnsInvalid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.008</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(23)">
+            <td>ValidateCommitMessage_ValidMessage_ReturnsValid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.005</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(24)">
+            <td>ConfigChanged_EventTriggered</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.272</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(25)">
+            <td>GetConfig_ReturnsValidConfig</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.114</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(26)">
+            <td>SaveConfig_SavesConfigToFile</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.253</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(27)">
+            <td>GetFileProperties_MatchesCorrectRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.111</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(28)">
+            <td>ValidateFile_ChecksCorrectRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.042</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(29)">
+            <td>EditorConfigRule_PropertyOperations_WorksCorrectly</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(30)">
+            <td>EditorConfigTemplate_GetDefaultRules_ReturnsValidRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(31)">
+            <td>GenerateContent_ValidRules_ReturnsCorrectContent</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(32)">
+            <td>ParseContent_ValidContent_ReturnsCorrectRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(33)">
+            <td>GetHookPath_ValidType_ReturnsCorrectPath</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.003</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(34)">
+            <td>InstallHook_HookNotExists_InstallsHook</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.007</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(35)">
+            <td>IsHookInstalled_HookExists_ReturnsTrue</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.006</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(36)">
+            <td>IsHookInstalled_HookNotExists_ReturnsFalse</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.003</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(37)">
+            <td>UninstallHook_HookExists_UninstallsHook</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.008</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(38)">
+            <td>CreateBackup_EmptyDescription_CreatesBackup</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.039</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(39)">
+            <td>CreateBackup_LargeFiles_HandlesCorrectly</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.031</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-39" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_LargeFiles_HandlesCorrectly</div>
+                    <div><strong>错误信息:</strong>   Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_LargeFiles_HandlesCorrectly () [0x00082] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:315
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(40)">
+            <td>CreateBackup_MultipleBackups_MaintainsOrder</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.152</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-40" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_MultipleBackups_MaintainsOrder</div>
+                    <div><strong>错误信息:</strong>   String lengths are both 23. Strings differ at index 15.
+  Expected: "20250304213720_d06646ed"
+  But was:  "20250304213720_85fccb51"
+  --------------------------^
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_MultipleBackups_MaintainsOrder () [0x0006f] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:269
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(41)">
+            <td>CreateBackup_ValidConfig_ReturnsBackupId</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.025</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(42)">
+            <td>DeleteBackup_InvalidBackupId_ReturnsFalse</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.014</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(43)">
+            <td>DeleteBackup_ValidBackup_ReturnsTrue</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.030</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(44)">
+            <td>GetBackups_HasBackups_ReturnsOrderedList</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.155</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(45)">
+            <td>GetBackups_NoBackups_ReturnsEmptyList</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(46)">
+            <td>RestoreBackup_DeletedFiles_RecreatesFiles</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.053</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-46" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_DeletedFiles_RecreatesFiles</div>
+                    <div><strong>错误信息:</strong>   Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_DeletedFiles_RecreatesFiles () [0x00063] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:291
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(47)">
+            <td>RestoreBackup_InvalidBackupId_ReturnsFalse</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(48)">
+            <td>RestoreBackup_ValidBackup_ReturnsTrue</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.055</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-48" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_ValidBackup_ReturnsTrue</div>
+                    <div><strong>错误信息:</strong>   Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_ValidBackup_ReturnsTrue () [0x00095] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:205
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(49)">
+            <td>ResolveConflicts_UseLocal_UpdatesConfig</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.055</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(50)">
+            <td>ResolveConflicts_UseRemote_UpdatesFiles</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.048</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-50" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.ResolveConflicts_UseRemote_UpdatesFiles</div>
+                    <div><strong>错误信息:</strong>   文件内容应该被更新为远程版本
+  Expected: String containing "tabSize"
+  But was:  "{
+                "editor.formatOnSave": true,
+                "editor.formatOnType": true
+            }"
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at NUnit.Framework.StringAssert.Contains (System.String expected, System.String actual, System.String message, System.Object[] args) [0x00008] in <10b6135e63434fdba4fc6c109928ab3b>:0
+at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.ResolveConflicts_UseRemote_UpdatesFiles () [0x00063] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:286
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(51)">
+            <td>SynchronizeConfig_ConcurrentSync_HandlesLock</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.030</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-51" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ConcurrentSync_HandlesLock</div>
+                    <div><strong>错误信息:</strong>   错误消息应该提及锁: 无法获取同步锁，可能有其他同步操作正在进行
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ConcurrentSync_HandlesLock () [0x00076] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:218
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(52)">
+            <td>SynchronizeConfig_DeletedFiles_HandlesGracefully</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.029</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(53)">
+            <td>SynchronizeConfig_DetectsChanges_UpdatesFiles</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.031</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-53" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_DetectsChanges_UpdatesFiles</div>
+                    <div><strong>错误信息:</strong>   Expected: collection containing "C:/Users/admin/AppData/Local/Temp/tbyd/codestyle\IDEConfigSyncTests_c7a70b56c451436b9dbc25268df150c5\Config\.vscode\settings.json"
+  But was:  < "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\omnisharp.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\settings.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.editorconfig" >
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_DetectsChanges_UpdatesFiles () [0x00051] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:195
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(54)">
+            <td>SynchronizeConfig_InvalidDirectory_ReturnsError</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.020</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-54" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_InvalidDirectory_ReturnsError</div>
+                    <div><strong>错误信息:</strong>   当目录不存在时，同步不应该成功
+  Expected: False
+  But was:  True
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_InvalidDirectory_ReturnsError () [0x0003d] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:170
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(55)">
+            <td>SynchronizeConfig_LockTimeout_ReleasesLock</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.025</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(56)">
+            <td>SynchronizeConfig_NewFiles_DetectsAndSyncs</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.034</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-56" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NewFiles_DetectsAndSyncs</div>
+                    <div><strong>错误信息:</strong>   Expected: collection containing "C:/Users/admin/AppData/Local/Temp/tbyd/codestyle\IDEConfigSyncTests_c0b7bfec4f0849678784bbc30b3fa3e0\Config\.vscode\launch.json"
+  But was:  < "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\omnisharp.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\settings.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.editorconfig" >
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NewFiles_DetectsAndSyncs () [0x0004b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:348
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(57)">
+            <td>SynchronizeConfig_NoChanges_ReturnsSuccess</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.037</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-57" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NoChanges_ReturnsSuccess</div>
+                    <div><strong>错误信息:</strong>   没有变化时不应该更新任何文件
+  Expected: 0
+  But was:  3
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NoChanges_ReturnsSuccess () [0x0003b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:324
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(58)">
+            <td>SynchronizeConfig_ValidConfig_ReturnsSuccess</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-58" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ValidConfig_ReturnsSuccess</div>
+                    <div><strong>错误信息:</strong> System.Reflection.AmbiguousMatchException : Ambiguous match found.</div>
+                    <div><strong>堆栈跟踪:</strong><pre>  at System.RuntimeType.GetMethodImplCommon (System.String name, System.Int32 genericParameterCount, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConv, System.Type[] types, System.Reflection.ParameterModifier[] modifiers) [0x00050] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 
+  at System.RuntimeType.GetMethodImpl (System.String name, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConv, System.Type[] types, System.Reflection.ParameterModifier[] modifiers) [0x00000] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 
+  at System.Type.GetMethod (System.String name, System.Reflection.BindingFlags bindingAttr) [0x0000e] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 
+  at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.CallPrivateStaticMethod (System.String methodName, System.Object[] parameters) [0x00001] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:109 
+  at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ValidConfig_ReturnsSuccess () [0x00018] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:143 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 </pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(59)">
+            <td>ExportConfigToAllIDEs_ValidConfig_ExportsToInstalledIDEs</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.047</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(60)">
+            <td>ExportConfigToIDE_ValidConfig_CallsExportMethod</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.042</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(61)">
+            <td>GetInstalledIDEs_WithMixedInstallations_ReturnsCorrectIDEs</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.013</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(62)">
+            <td>IsIDEInstalled_CheckMultipleIDEs_ReturnsExpectedResults</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.014</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-62" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEIntegrationTests.IsIDEInstalled_CheckMultipleIDEs_ReturnsExpectedResults</div>
+                    <div><strong>错误信息:</strong>   Rider应该被检测为已安装
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEIntegrationTests.IsIDEInstalled_CheckMultipleIDEs_ReturnsExpectedResults () [0x0004f] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEIntegrationTests.cs:217
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(63)">
+            <td>RegisterAndGetIntegrations_ValidIntegrations_SuccessfullyRegistered</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.013</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(64)">
+            <td>ClearNotification_ClearsCurrentNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.002</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(65)">
+            <td>ClearProgress_ClearsCurrentProgress</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(66)">
+            <td>DrawNotification_WhenHasNotification_DrawsNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(67)">
+            <td>DrawNotification_WhenNoNotification_DoesNotDrawNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(68)">
+            <td>Notification_ExpiresAfterTime</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(69)">
+            <td>ShowNotification_SetsCurrentNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.002</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(70)">
+            <td>ShowProgress_SetsCurrentProgress</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(71)">
+            <td>UpdateProgress_UpdatesCurrentProgress</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.002</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(72)">
+            <td>Constructor_SetsProperties</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(73)">
+            <td>Draw_WhenCollapsible_TogglesFoldout</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(74)">
+            <td>Draw_WhenNotVisible_DoesNotCallDrawContent</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(75)">
+            <td>Draw_WhenVisible_CallsDrawContent</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(76)">
+            <td>InfoBox_Constructor_SetsProperties</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(77)">
+            <td>ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(78)">
+            <td>ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(79)">
+            <td>ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(80)">
+            <td>ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(81)">
+            <td>ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(82)">
+            <td>EdgeCase_CommentsOnlyFile_HandledGracefully</td>
+            <td><span class="failed">失败</span></td>
+            <td>268.880</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-82" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests.EdgeCase_CommentsOnlyFile_HandledGracefully</div>
+                    <div><strong>错误信息:</strong> Unhandled log message: '[Error] [TByd.CodeStyle] 规则 'unity-avoid-coroutine-string' 执行异常: parsing "StartCoroutine\s*\(\s*"[^"]+")" - Too many )'s.'. Use UnityEngine.TestTools.LogAssert.Expect</div>
+                    <div><strong>堆栈跟踪:</strong><pre>TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckCode (string,string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:200)
+TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckFile (string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:234)
+TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests:EdgeCase_CommentsOnlyFile_HandledGracefully () (at Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/CodeStyleIntegrationTests.cs:278)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(83)">
+            <td>EdgeCase_EmptyFile_HandledGracefully</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.010</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(84)">
+            <td>EdgeCase_NonCSharpFile_HandledGracefully</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.008</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(85)">
+            <td>FullWorkflow_ValidAndInvalidCode_CorrectlyDetectsIssues</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.025</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-85" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests.FullWorkflow_ValidAndInvalidCode_CorrectlyDetectsIssues</div>
+                    <div><strong>错误信息:</strong> Unhandled log message: '[Error] [TByd.CodeStyle] 规则 'unity-avoid-coroutine-string' 执行异常: parsing "StartCoroutine\s*\(\s*"[^"]+")" - Too many )'s.'. Use UnityEngine.TestTools.LogAssert.Expect</div>
+                    <div><strong>堆栈跟踪:</strong><pre>TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckCode (string,string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:200)
+TByd.CodeStyle.Runtime.CodeCheck.CodeChecker:CheckFile (string) (at Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs:234)
+TByd.CodeStyle.Tests.Editor.CodeCheck.CodeStyleIntegrationTests:FullWorkflow_ValidAndInvalidCode_CorrectlyDetectsIssues () (at Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/CodeStyleIntegrationTests.cs:208)
+System.Reflection.MethodBase:Invoke (object,object[])
+NUnit.Framework.Internal.Reflect:InvokeMethod (System.Reflection.MethodInfo,object,object[])
+NUnit.Framework.Internal.MethodWrapper:Invoke (object,object[])
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunNonAsyncTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:RunTestMethod (NUnit.Framework.Internal.ITestExecutionContext)
+NUnit.Framework.Internal.Commands.TestMethodCommand:Execute (NUnit.Framework.Internal.ITestExecutionContext)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(86)">
+            <td>ConstantNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.005</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(87)">
+            <td>MethodNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.004</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(88)">
+            <td>MultipleNamingRules_ComplexCode_DetectsAllIssues</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.005</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-88" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.NamingRulesTests.MultipleNamingRules_ComplexCode_DetectsAllIssues</div>
+                    <div><strong>错误信息:</strong>   应该检测到私有成员变量命名问题
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.NamingRulesTests.MultipleNamingRules_ComplexCode_DetectsAllIssues () [0x0017b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\CodeCheck\Rules\NamingRulesTests.cs:387
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(89)">
+            <td>ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(90)">
+            <td>PrivateFieldNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(91)">
+            <td>PropertyNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(92)">
+            <td>StaticFieldNamingRule_ValidAndInvalidNames_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(93)">
+            <td>AvoidEmptyMonoBehaviourMethodsRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(94)">
+            <td>AvoidFindInUpdateRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(95)">
+            <td>AvoidGameObjectFindRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.005</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(96)">
+            <td>AvoidGetComponentInUpdate_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(97)">
+            <td>AvoidHardcodedPathRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-97" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.AvoidHardcodedPathRule_ValidAndInvalidCases_ReturnsCorrectResults</div>
+                    <div><strong>错误信息:</strong> System.ArgumentException : parsing "(Resources\.Load|AssetDatabase\.LoadAssetAtPath|File\.(Open|Read|Write|Exists|ReadAllText|WriteAllText|ReadAllBytes|WriteAllBytes|Copy|Move|Delete)|Directory\.(Create|Delete|Exists|GetFiles|GetDirectories)|Path\.Combine)\s*\(\s*"[^"]*(/|\\)[^"]*")" - Too many )'s.</div>
+                    <div><strong>堆栈跟踪:</strong><pre>  at System.Text.RegularExpressions.RegexParser.ScanRegex () [0x001f1] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at System.Text.RegularExpressions.RegexParser.Parse (System.String re, System.Text.RegularExpressions.RegexOptions op) [0x00036] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at System.Text.RegularExpressions.Regex..ctor (System.String pattern, System.Text.RegularExpressions.RegexOptions options, System.TimeSpan matchTimeout, System.Boolean addToCache) [0x00097] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at System.Text.RegularExpressions.Regex..ctor (System.String pattern, System.Text.RegularExpressions.RegexOptions options) [0x00000] in <a6f433c7914f4a8aa11562de443cf6c1>:0 
+  at TByd.CodeStyle.Runtime.CodeCheck.RegexCodeCheckRule.GetRegex () [0x0000f] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Runtime\CodeCheck\CodeCheckRule.cs:384 
+  at TByd.CodeStyle.Runtime.CodeCheck.RegexCodeCheckRule.Check (System.String _code, System.String _filePath, TByd.CodeStyle.Runtime.Config.CodeCheckConfig _config) [0x00017] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Runtime\CodeCheck\CodeCheckRule.cs:405 
+  at TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.AvoidHardcodedPathRule_ValidAndInvalidCases_ReturnsCorrectResults () [0x0001b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\CodeCheck\Rules\UnityRulesTests.cs:348 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 </pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(98)">
+            <td>AvoidSendMessageRule_ValidAndInvalidCases_ReturnsCorrectResults</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(99)">
+            <td>MultipleUnityRules_ComplexCode_DetectsAllIssues</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.003</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-99" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.MultipleUnityRules_ComplexCode_DetectsAllIssues</div>
+                    <div><strong>错误信息:</strong>   应该检测到硬编码路径的问题
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.CodeCheck.Rules.UnityRulesTests.MultipleUnityRules_ComplexCode_DetectsAllIssues () [0x001a9] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\CodeCheck\Rules\UnityRulesTests.cs:507
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(100)">
+            <td>FormatCommitMessage_ValidComponents_ReturnsFormattedMessage</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(101)">
+            <td>ParseCommitMessage_ValidMessage_ReturnsComponents</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(102)">
+            <td>ValidateCommitMessage_EmptySubject_ReturnsInvalid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.013</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(103)">
+            <td>ValidateCommitMessage_InvalidType_ReturnsInvalid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.006</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(104)">
+            <td>ValidateCommitMessage_MissingColon_ReturnsInvalid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.008</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(105)">
+            <td>ValidateCommitMessage_ValidMessage_ReturnsValid</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.005</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(106)">
+            <td>ConfigChanged_EventTriggered</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.225</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(107)">
+            <td>GetConfig_ReturnsValidConfig</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.136</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(108)">
+            <td>SaveConfig_SavesConfigToFile</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.226</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(109)">
+            <td>GetFileProperties_MatchesCorrectRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.148</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(110)">
+            <td>ValidateFile_ChecksCorrectRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.055</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(111)">
+            <td>EditorConfigRule_PropertyOperations_WorksCorrectly</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(112)">
+            <td>EditorConfigTemplate_GetDefaultRules_ReturnsValidRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(113)">
+            <td>GenerateContent_ValidRules_ReturnsCorrectContent</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(114)">
+            <td>ParseContent_ValidContent_ReturnsCorrectRules</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(115)">
+            <td>GetHookPath_ValidType_ReturnsCorrectPath</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.003</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(116)">
+            <td>InstallHook_HookNotExists_InstallsHook</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.008</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(117)">
+            <td>IsHookInstalled_HookExists_ReturnsTrue</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.007</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(118)">
+            <td>IsHookInstalled_HookNotExists_ReturnsFalse</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.004</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(119)">
+            <td>UninstallHook_HookExists_UninstallsHook</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.008</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(120)">
+            <td>CreateBackup_EmptyDescription_CreatesBackup</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.048</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(121)">
+            <td>CreateBackup_LargeFiles_HandlesCorrectly</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.056</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-121" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_LargeFiles_HandlesCorrectly</div>
+                    <div><strong>错误信息:</strong>   Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_LargeFiles_HandlesCorrectly () [0x00082] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:315
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(122)">
+            <td>CreateBackup_MultipleBackups_MaintainsOrder</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.159</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-122" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_MultipleBackups_MaintainsOrder</div>
+                    <div><strong>错误信息:</strong>   String lengths are both 23. Strings differ at index 15.
+  Expected: "20250304214450_c7e6b5fc"
+  But was:  "20250304214450_f78ca77e"
+  --------------------------^
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.CreateBackup_MultipleBackups_MaintainsOrder () [0x0006f] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:269
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(123)">
+            <td>CreateBackup_ValidConfig_ReturnsBackupId</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.040</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(124)">
+            <td>DeleteBackup_InvalidBackupId_ReturnsFalse</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.015</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(125)">
+            <td>DeleteBackup_ValidBackup_ReturnsTrue</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.033</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(126)">
+            <td>GetBackups_HasBackups_ReturnsOrderedList</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.151</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(127)">
+            <td>GetBackups_NoBackups_ReturnsEmptyList</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(128)">
+            <td>RestoreBackup_DeletedFiles_RecreatesFiles</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.054</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-128" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_DeletedFiles_RecreatesFiles</div>
+                    <div><strong>错误信息:</strong>   Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_DeletedFiles_RecreatesFiles () [0x00063] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:291
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(129)">
+            <td>RestoreBackup_InvalidBackupId_ReturnsFalse</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(130)">
+            <td>RestoreBackup_ValidBackup_ReturnsTrue</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.064</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-130" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_ValidBackup_ReturnsTrue</div>
+                    <div><strong>错误信息:</strong>   Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigBackupManagerTests.RestoreBackup_ValidBackup_ReturnsTrue () [0x00095] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigBackupManagerTests.cs:205
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(131)">
+            <td>ResolveConflicts_UseLocal_UpdatesConfig</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.043</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(132)">
+            <td>ResolveConflicts_UseRemote_UpdatesFiles</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.051</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-132" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.ResolveConflicts_UseRemote_UpdatesFiles</div>
+                    <div><strong>错误信息:</strong>   文件内容应该被更新为远程版本
+  Expected: String containing "tabSize"
+  But was:  "{
+                "editor.formatOnSave": true,
+                "editor.formatOnType": true
+            }"
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at NUnit.Framework.StringAssert.Contains (System.String expected, System.String actual, System.String message, System.Object[] args) [0x00008] in <10b6135e63434fdba4fc6c109928ab3b>:0
+at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.ResolveConflicts_UseRemote_UpdatesFiles () [0x00063] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:286
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(133)">
+            <td>SynchronizeConfig_ConcurrentSync_HandlesLock</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.017</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-133" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ConcurrentSync_HandlesLock</div>
+                    <div><strong>错误信息:</strong>   错误消息应该提及锁: 无法获取同步锁，可能有其他同步操作正在进行
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ConcurrentSync_HandlesLock () [0x00076] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:218
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(134)">
+            <td>SynchronizeConfig_DeletedFiles_HandlesGracefully</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.035</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(135)">
+            <td>SynchronizeConfig_DetectsChanges_UpdatesFiles</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.032</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-135" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_DetectsChanges_UpdatesFiles</div>
+                    <div><strong>错误信息:</strong>   Expected: collection containing "C:/Users/admin/AppData/Local/Temp/tbyd/codestyle\IDEConfigSyncTests_b6773aa6b4204e47982383e4a4c6994a\Config\.vscode\settings.json"
+  But was:  < "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\omnisharp.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\settings.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.editorconfig" >
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_DetectsChanges_UpdatesFiles () [0x00051] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:195
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(136)">
+            <td>SynchronizeConfig_InvalidDirectory_ReturnsError</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.022</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-136" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_InvalidDirectory_ReturnsError</div>
+                    <div><strong>错误信息:</strong>   当目录不存在时，同步不应该成功
+  Expected: False
+  But was:  True
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_InvalidDirectory_ReturnsError () [0x0003d] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:170
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(137)">
+            <td>SynchronizeConfig_LockTimeout_ReleasesLock</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.025</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(138)">
+            <td>SynchronizeConfig_NewFiles_DetectsAndSyncs</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.032</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-138" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NewFiles_DetectsAndSyncs</div>
+                    <div><strong>错误信息:</strong>   Expected: collection containing "C:/Users/admin/AppData/Local/Temp/tbyd/codestyle\IDEConfigSyncTests_f6453d0eb17a41a9ae0addd546ecc057\Config\.vscode\launch.json"
+  But was:  < "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\omnisharp.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.vscode\settings.json", "H:\TYPersonal\TByd\TByd.CodeStyle\.editorconfig" >
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NewFiles_DetectsAndSyncs () [0x0004b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:348
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(139)">
+            <td>SynchronizeConfig_NoChanges_ReturnsSuccess</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.030</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-139" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NoChanges_ReturnsSuccess</div>
+                    <div><strong>错误信息:</strong>   没有变化时不应该更新任何文件
+  Expected: 0
+  But was:  3
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_NoChanges_ReturnsSuccess () [0x0003b] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:324
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(140)">
+            <td>SynchronizeConfig_ValidConfig_ReturnsSuccess</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.013</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-140" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ValidConfig_ReturnsSuccess</div>
+                    <div><strong>错误信息:</strong> System.Reflection.AmbiguousMatchException : Ambiguous match found.</div>
+                    <div><strong>堆栈跟踪:</strong><pre>  at System.RuntimeType.GetMethodImplCommon (System.String name, System.Int32 genericParameterCount, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConv, System.Type[] types, System.Reflection.ParameterModifier[] modifiers) [0x00050] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 
+  at System.RuntimeType.GetMethodImpl (System.String name, System.Reflection.BindingFlags bindingAttr, System.Reflection.Binder binder, System.Reflection.CallingConventions callConv, System.Type[] types, System.Reflection.ParameterModifier[] modifiers) [0x00000] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 
+  at System.Type.GetMethod (System.String name, System.Reflection.BindingFlags bindingAttr) [0x0000e] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 
+  at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.CallPrivateStaticMethod (System.String methodName, System.Object[] parameters) [0x00001] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:109 
+  at TByd.CodeStyle.Tests.Editor.IDE.IDEConfigSyncManagerTests.SynchronizeConfig_ValidConfig_ReturnsSuccess () [0x00018] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEConfigSyncManagerTests.cs:143 
+  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)
+  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <c2a97e0383e8404c9fc0ae19d58f57f1>:0 </pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(141)">
+            <td>ExportConfigToAllIDEs_ValidConfig_ExportsToInstalledIDEs</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(142)">
+            <td>ExportConfigToIDE_ValidConfig_CallsExportMethod</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.011</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(143)">
+            <td>GetInstalledIDEs_WithMixedInstallations_ReturnsCorrectIDEs</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row failed" onclick="toggleDetails(144)">
+            <td>IsIDEInstalled_CheckMultipleIDEs_ReturnsExpectedResults</td>
+            <td><span class="failed">失败</span></td>
+            <td>0.013</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <div id="details-144" class="details">
+                    <div><strong>完整名称:</strong> TByd.CodeStyle.Tests.Editor.IDE.IDEIntegrationTests.IsIDEInstalled_CheckMultipleIDEs_ReturnsExpectedResults</div>
+                    <div><strong>错误信息:</strong>   Rider应该被检测为已安装
+  Expected: True
+  But was:  False
+</div>
+                    <div><strong>堆栈跟踪:</strong><pre>at TByd.CodeStyle.Tests.Editor.IDE.IDEIntegrationTests.IsIDEInstalled_CheckMultipleIDEs_ReturnsExpectedResults () [0x0004f] in H:\TYPersonal\TByd\TByd.CodeStyle\Assets\TByd.CodeStyle\Tests\Editor\IDE\IDEIntegrationTests.cs:217
+</pre></div>
+                </div>
+            </td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(145)">
+            <td>RegisterAndGetIntegrations_ValidIntegrations_SuccessfullyRegistered</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.011</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(146)">
+            <td>ClearNotification_ClearsCurrentNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(147)">
+            <td>ClearProgress_ClearsCurrentProgress</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(148)">
+            <td>DrawNotification_WhenHasNotification_DrawsNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(149)">
+            <td>DrawNotification_WhenNoNotification_DoesNotDrawNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(150)">
+            <td>Notification_ExpiresAfterTime</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.012</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(151)">
+            <td>ShowNotification_SetsCurrentNotification</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.001</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(152)">
+            <td>ShowProgress_SetsCurrentProgress</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(153)">
+            <td>UpdateProgress_UpdatesCurrentProgress</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(154)">
+            <td>Constructor_SetsProperties</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(155)">
+            <td>Draw_WhenCollapsible_TogglesFoldout</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(156)">
+            <td>Draw_WhenNotVisible_DoesNotCallDrawContent</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(157)">
+            <td>Draw_WhenVisible_CallsDrawContent</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+        <tr class="test-row passed" onclick="toggleDetails(158)">
+            <td>InfoBox_Constructor_SetsProperties</td>
+            <td><span class="passed">通过</span></td>
+            <td>0.000</td>
+        </tr>
+    </table>
+</body>
+</html>

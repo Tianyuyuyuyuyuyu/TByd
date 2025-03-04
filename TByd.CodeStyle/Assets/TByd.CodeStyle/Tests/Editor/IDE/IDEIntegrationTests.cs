@@ -196,6 +196,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         [Test]
         public void IsIDEInstalled_CheckMultipleIDEs_ReturnsExpectedResults()
         {
+            // 清理所有已注册的集成
+            ClearIntegrations();
+
             // 注册测试IDE集成（使用模拟数据）
             var mockRiderIntegration = new MockIDEIntegration(IDEType.Rider, true); // 模拟已安装
             var mockVSIntegration = new MockIDEIntegration(IDEType.VisualStudio, false); // 模拟未安装
@@ -222,11 +225,15 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         [Test]
         public void GetInstalledIDEs_WithMixedInstallations_ReturnsCorrectIDEs()
         {
-            // 注册测试IDE集成（使用模拟数据）
-            var mockRiderIntegration = new MockIDEIntegration(IDEType.Rider, true); // 模拟已安装
-            var mockVSIntegration = new MockIDEIntegration(IDEType.VisualStudio, false); // 模拟未安装
-            var mockVSCodeIntegration = new MockIDEIntegration(IDEType.VSCode, true); // 模拟已安装
+            // 清除现有集成
+            ClearIntegrations();
 
+            // 创建模拟IDE集成
+            var mockRiderIntegration = new MockIDEIntegration(IDEType.Rider, true);
+            var mockVSIntegration = new MockIDEIntegration(IDEType.VisualStudio, false);
+            var mockVSCodeIntegration = new MockIDEIntegration(IDEType.VSCode, true);
+
+            // 注册测试IDE集成
             RegisterIntegration(mockRiderIntegration);
             RegisterIntegration(mockVSIntegration);
             RegisterIntegration(mockVSCodeIntegration);
@@ -330,6 +337,18 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             public string GetExecutablePath()
             {
                 return $"C:\\Mock\\{IDEType}.exe";
+            }
+        }
+
+        // 清除所有注册的集成
+        private void ClearIntegrations()
+        {
+            var field = typeof(IDEIntegrationManager).GetField("s_Integrations",
+                BindingFlags.NonPublic | BindingFlags.Static);
+
+            if (field != null && field.GetValue(null) is List<IDEIntegration> integrations)
+            {
+                integrations.Clear();
             }
         }
     }

@@ -220,7 +220,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"StartCoroutine\s*\(\s*""[^""]+";
+        protected override string Pattern => @"StartCoroutine\s*\(\s*""[^""]+""";
 
         /// <summary>
         /// 问题消息模板
@@ -266,7 +266,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"(Resources\.Load|AssetDatabase\.LoadAssetAtPath|File\.Open|File\.Read|File\.Write|Directory\.(Create|Delete)|Path\.Combine)\s*\(\s*""[^""]*(/|\\)[^""]*""";
+        protected override string Pattern => @"(Resources\.Load|AssetDatabase\.LoadAssetAtPath|File\.(Open|Read|Write|Exists|ReadAllText|WriteAllText|ReadAllBytes|WriteAllBytes|Copy|Move|Delete)|Directory\.(Create|Delete|Exists|GetFiles|GetDirectories)|Path\.Combine)\s*\(\s*""[^""]*(/|\\)[^""]*""";
 
         /// <summary>
         /// 问题消息模板

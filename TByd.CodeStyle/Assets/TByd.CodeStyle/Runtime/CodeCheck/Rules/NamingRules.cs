@@ -11,7 +11,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则ID
         /// </summary>
-        public override string Id => "naming-private-field";
+        public override string Id => "CS0003";
 
         /// <summary>
         /// 规则名称
@@ -36,7 +36,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 正则表达式模式
         /// </summary>
-        protected override string Pattern => @"private\s+(?!static|const)(?<type>[\w<>[\],\s]+)\s+(?!m_)(?<n>\w+)\s*([;=]|{)";
+        protected override string Pattern => @"private\s+(?!static|const)(?<type>[\w<>[\],\s]+)\s+(?!m_)(?<name>\w+)\s*([;=]|{)";
 
         /// <summary>
         /// 问题消息模板
@@ -56,17 +56,11 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <returns>格式化后的消息</returns>
         protected override string FormatMessage(string _template, Match _match)
         {
-            string result = base.FormatMessage(_template, _match);
+            string name = _match.Groups["name"].Value;
+            string pascalName = ToPascalCase(name);
 
-            if (_match != null && _match.Groups["name"].Success)
-            {
-                string name = _match.Groups["name"].Value;
-                string pascalName = ToPascalCase(name);
-
-                result = result.Replace("{pascalName}", pascalName);
-            }
-
-            return result;
+            return _template.Replace("{name}", name)
+                           .Replace("{pascalName}", pascalName);
         }
 
         /// <summary>
@@ -100,7 +94,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则ID
         /// </summary>
-        public override string Id => "naming-static-field";
+        public override string Id => "CS0005";
 
         /// <summary>
         /// 规则名称
@@ -184,7 +178,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则ID
         /// </summary>
-        public override string Id => "naming-constant";
+        public override string Id => "CS0004";
 
         /// <summary>
         /// 规则名称
@@ -268,7 +262,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则ID
         /// </summary>
-        public override string Id => "naming-property";
+        public override string Id => "CS0007";
 
         /// <summary>
         /// 规则名称
@@ -352,7 +346,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则ID
         /// </summary>
-        public override string Id => "naming-method";
+        public override string Id => "CS0002";
 
         /// <summary>
         /// 规则名称
@@ -436,7 +430,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则ID
         /// </summary>
-        public override string Id => "naming-parameter";
+        public override string Id => "CS0006";
 
         /// <summary>
         /// 规则名称
