@@ -1178,5 +1178,75 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             Debug.Log($"计算相对路径: 原始路径={_filePath}, 项目根目录={projectRoot}, 相对路径={relativePath}");
             return relativePath;
         }
+
+        /// <summary>
+        /// 保存规则到文件
+        /// </summary>
+        /// <param name="_rules">规则列表</param>
+        /// <param name="_filePath">文件路径</param>
+        /// <returns>是否成功</returns>
+        public static bool SaveRulesToFile(List<EditorConfigRule> _rules, string _filePath)
+        {
+            try
+            {
+                // 确保目录存在
+                string directory = Path.GetDirectoryName(_filePath);
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                // 生成EditorConfig内容
+                string content = GenerateEditorConfigContent(_rules);
+
+                // 保存到文件
+                File.WriteAllText(_filePath, content);
+
+                Debug.Log($"[TByd.CodeStyle] 成功保存EditorConfig规则到: {_filePath}");
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[TByd.CodeStyle] 保存EditorConfig规则失败: {e.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 生成EditorConfig内容
+        /// </summary>
+        /// <param name="_rules">规则列表</param>
+        /// <returns>生成的内容</returns>
+        private static string GenerateEditorConfigContent(List<EditorConfigRule> _rules)
+        {
+            if (_rules == null || _rules.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            using (StringWriter writer = new StringWriter())
+            {
+                // 写入根设置标记
+                writer.WriteLine("root = true");
+                writer.WriteLine();
+
+                // 写入每个规则
+                foreach (var rule in _rules)
+                {
+                    // 写入规则模式
+                    writer.WriteLine($"[{rule.Pattern}]");
+
+                    // 写入规则属性
+                    foreach (var property in rule.Properties)
+                    {
+                        writer.WriteLine($"{property.Key} = {property.Value}");
+                    }
+
+                    writer.WriteLine();
+                }
+
+                return writer.ToString();
+            }
+        }
     }
 }

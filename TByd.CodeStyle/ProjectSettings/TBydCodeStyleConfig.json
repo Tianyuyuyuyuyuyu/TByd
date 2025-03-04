@@ -185,5 +185,23 @@
                 "m_Enabled": true
             }
         ]
+    },
+    "m_EnableIDEIntegration": true,
+    "m_AutoConfigureIDE": true,
+    "m_SyncEditorConfigWithIDE": true,
+    "m_RiderConfig": {
+        "m_EnableCodeAnalysis": true,
+        "m_EnableStyleCop": true,
+        "m_EnableReSharper": true
+    },
+    "m_VisualStudioConfig": {
+        "m_EnableRoslynAnalyzers": true,
+        "m_EnableStyleCop": true,
+        "m_EnableCodeAnalysis": true
+    },
+    "m_VSCodeConfig": {
+        "m_EnableOmniSharp": true,
+        "m_EnableRoslynAnalyzers": true,
+        "m_EnableEditorConfig": true
     }
 }

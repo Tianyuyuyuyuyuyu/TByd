@@ -5,10 +5,9 @@ using UnityEngine;
 namespace TByd.CodeStyle.Runtime.Config
 {
     /// <summary>
-    /// 代码风格配置数据
+    /// 代码风格配置
     /// </summary>
-    [Serializable]
-    public class CodeStyleConfig
+    public class CodeStyleConfig : ScriptableObject
     {
         /// <summary>
         /// 配置版本号，用于配置迁移
@@ -69,6 +68,42 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         [SerializeField]
         private GitHookConfig m_GitHookConfig = new GitHookConfig();
+
+        /// <summary>
+        /// 是否启用IDE集成
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableIDEIntegration = true;
+
+        /// <summary>
+        /// 是否自动配置IDE
+        /// </summary>
+        [SerializeField]
+        private bool m_AutoConfigureIDE = true;
+
+        /// <summary>
+        /// 是否同步EditorConfig到IDE
+        /// </summary>
+        [SerializeField]
+        private bool m_SyncEditorConfigWithIDE = true;
+
+        /// <summary>
+        /// Rider配置
+        /// </summary>
+        [SerializeField]
+        private RiderConfig m_RiderConfig = new RiderConfig();
+
+        /// <summary>
+        /// Visual Studio配置
+        /// </summary>
+        [SerializeField]
+        private VisualStudioConfig m_VisualStudioConfig = new VisualStudioConfig();
+
+        /// <summary>
+        /// VS Code配置
+        /// </summary>
+        [SerializeField]
+        private VSCodeConfig m_VSCodeConfig = new VSCodeConfig();
 
         /// <summary>
         /// 配置版本号
@@ -174,6 +209,216 @@ namespace TByd.CodeStyle.Runtime.Config
         public GitCommitConfig CommitMessageSettings
         {
             get => m_GitCommitConfig;
+        }
+
+        /// <summary>
+        /// 是否启用IDE集成
+        /// </summary>
+        public bool EnableIDEIntegration
+        {
+            get => m_EnableIDEIntegration;
+            set => m_EnableIDEIntegration = value;
+        }
+
+        /// <summary>
+        /// 是否自动配置IDE
+        /// </summary>
+        public bool AutoConfigureIDE
+        {
+            get => m_AutoConfigureIDE;
+            set => m_AutoConfigureIDE = value;
+        }
+
+        /// <summary>
+        /// 是否同步EditorConfig到IDE
+        /// </summary>
+        public bool SyncEditorConfigWithIDE
+        {
+            get => m_SyncEditorConfigWithIDE;
+            set => m_SyncEditorConfigWithIDE = value;
+        }
+
+        /// <summary>
+        /// Rider配置
+        /// </summary>
+        public RiderConfig RiderConfig
+        {
+            get => m_RiderConfig;
+            set => m_RiderConfig = value;
+        }
+
+        /// <summary>
+        /// Visual Studio配置
+        /// </summary>
+        public VisualStudioConfig VisualStudioConfig
+        {
+            get => m_VisualStudioConfig;
+            set => m_VisualStudioConfig = value;
+        }
+
+        /// <summary>
+        /// VS Code配置
+        /// </summary>
+        public VSCodeConfig VSCodeConfig
+        {
+            get => m_VSCodeConfig;
+            set => m_VSCodeConfig = value;
+        }
+    }
+
+    /// <summary>
+    /// Rider配置
+    /// </summary>
+    [Serializable]
+    public class RiderConfig
+    {
+        /// <summary>
+        /// 是否启用代码分析
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableCodeAnalysis = true;
+
+        /// <summary>
+        /// 是否启用StyleCop
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableStyleCop = true;
+
+        /// <summary>
+        /// 是否启用ReSharper
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableReSharper = true;
+
+        /// <summary>
+        /// 是否启用代码分析
+        /// </summary>
+        public bool EnableCodeAnalysis
+        {
+            get => m_EnableCodeAnalysis;
+            set => m_EnableCodeAnalysis = value;
+        }
+
+        /// <summary>
+        /// 是否启用StyleCop
+        /// </summary>
+        public bool EnableStyleCop
+        {
+            get => m_EnableStyleCop;
+            set => m_EnableStyleCop = value;
+        }
+
+        /// <summary>
+        /// 是否启用ReSharper
+        /// </summary>
+        public bool EnableReSharper
+        {
+            get => m_EnableReSharper;
+            set => m_EnableReSharper = value;
+        }
+    }
+
+    /// <summary>
+    /// Visual Studio配置
+    /// </summary>
+    [Serializable]
+    public class VisualStudioConfig
+    {
+        /// <summary>
+        /// 是否启用Roslyn分析器
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableRoslynAnalyzers = true;
+
+        /// <summary>
+        /// 是否启用StyleCop
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableStyleCop = true;
+
+        /// <summary>
+        /// 是否启用代码分析
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableCodeAnalysis = true;
+
+        /// <summary>
+        /// 是否启用Roslyn分析器
+        /// </summary>
+        public bool EnableRoslynAnalyzers
+        {
+            get => m_EnableRoslynAnalyzers;
+            set => m_EnableRoslynAnalyzers = value;
+        }
+
+        /// <summary>
+        /// 是否启用StyleCop
+        /// </summary>
+        public bool EnableStyleCop
+        {
+            get => m_EnableStyleCop;
+            set => m_EnableStyleCop = value;
+        }
+
+        /// <summary>
+        /// 是否启用代码分析
+        /// </summary>
+        public bool EnableCodeAnalysis
+        {
+            get => m_EnableCodeAnalysis;
+            set => m_EnableCodeAnalysis = value;
+        }
+    }
+
+    /// <summary>
+    /// VS Code配置
+    /// </summary>
+    [Serializable]
+    public class VSCodeConfig
+    {
+        /// <summary>
+        /// 是否启用OmniSharp
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableOmniSharp = true;
+
+        /// <summary>
+        /// 是否启用Roslyn分析器
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableRoslynAnalyzers = true;
+
+        /// <summary>
+        /// 是否启用EditorConfig
+        /// </summary>
+        [SerializeField]
+        private bool m_EnableEditorConfig = true;
+
+        /// <summary>
+        /// 是否启用OmniSharp
+        /// </summary>
+        public bool EnableOmniSharp
+        {
+            get => m_EnableOmniSharp;
+            set => m_EnableOmniSharp = value;
+        }
+
+        /// <summary>
+        /// 是否启用Roslyn分析器
+        /// </summary>
+        public bool EnableRoslynAnalyzers
+        {
+            get => m_EnableRoslynAnalyzers;
+            set => m_EnableRoslynAnalyzers = value;
+        }
+
+        /// <summary>
+        /// 是否启用EditorConfig
+        /// </summary>
+        public bool EnableEditorConfig
+        {
+            get => m_EnableEditorConfig;
+            set => m_EnableEditorConfig = value;
         }
     }
 }

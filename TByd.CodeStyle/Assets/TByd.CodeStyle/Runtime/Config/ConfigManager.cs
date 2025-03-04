@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace TByd.CodeStyle.Runtime.Config
 {
@@ -11,12 +14,14 @@ namespace TByd.CodeStyle.Runtime.Config
     {
         // 配置文件名
         private const string c_ConfigFileName = "TBydCodeStyleConfig.json";
+        private const string c_AssetPath = "Assets/TByd.CodeStyle/Resources/CodeStyleConfig.asset";
 
         // 配置文件路径
         private static string s_ConfigFilePath;
 
         // 当前配置
         private static CodeStyleConfig s_CurrentConfig;
+        private static CodeStyleConfig s_RuntimeConfig;
 
         // 配置是否已加载
         private static bool s_IsConfigLoaded;
@@ -79,7 +84,33 @@ namespace TByd.CodeStyle.Runtime.Config
                 LoadConfig();
             }
 
+#if UNITY_EDITOR
+            // 在编辑器中，如果需要序列化，返回ScriptableObject实例
+            if (s_RuntimeConfig == null)
+            {
+                s_RuntimeConfig = AssetDatabase.LoadAssetAtPath<CodeStyleConfig>(c_AssetPath);
+                if (s_RuntimeConfig == null)
+                {
+                    s_RuntimeConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
+                    
+                    // 确保目录存在
+                    string directory = Path.GetDirectoryName(c_AssetPath);
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+
+                    AssetDatabase.CreateAsset(s_RuntimeConfig, c_AssetPath);
+                    AssetDatabase.SaveAssets();
+                }
+            }
+
+            // 同步配置数据
+            CopyConfigData(s_CurrentConfig, s_RuntimeConfig);
+            return s_RuntimeConfig;
+#else
             return s_CurrentConfig;
+#endif
         }
 
         /// <summary>
@@ -87,6 +118,16 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public static void SaveConfig()
         {
+#if UNITY_EDITOR
+            if (s_RuntimeConfig != null)
+            {
+                // 同步配置数据
+                CopyConfigData(s_RuntimeConfig, s_CurrentConfig);
+                EditorUtility.SetDirty(s_RuntimeConfig);
+                AssetDatabase.SaveAssets();
+            }
+#endif
+
             if (s_CurrentConfig == null)
             {
                 Debug.LogError("[TByd.CodeStyle] 保存配置失败: 当前配置为空");
@@ -106,38 +147,12 @@ namespace TByd.CodeStyle.Runtime.Config
                     Debug.Log($"[TByd.CodeStyle] 创建配置目录: {directoryPath}");
                     Directory.CreateDirectory(directoryPath);
                 }
-                else
-                {
-                    Debug.Log($"[TByd.CodeStyle] 配置目录已存在: {directoryPath}");
-                }
-
-                // 确保有写入权限
-                try
-                {
-                    // 创建一个临时文件来测试写入权限
-                    string testFile = Path.Combine(directoryPath, "test_write.tmp");
-                    File.WriteAllText(testFile, "test");
-                    Debug.Log($"[TByd.CodeStyle] 成功写入测试文件: {testFile}");
-                    File.Delete(testFile);
-                    Debug.Log($"[TByd.CodeStyle] 成功删除测试文件: {testFile}");
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError($"[TByd.CodeStyle] 无法写入配置目录: {e.Message}");
-                    throw; // 重新抛出异常，让上层处理
-                }
 
                 File.WriteAllText(s_ConfigFilePath, configJson);
+                Debug.Log($"[TByd.CodeStyle] 配置已成功保存到: {s_ConfigFilePath}");
 
-                // 验证文件是否成功写入
-                if (File.Exists(s_ConfigFilePath))
-                {
-                    Debug.Log($"[TByd.CodeStyle] 配置已成功保存到: {s_ConfigFilePath}");
-                }
-                else
-                {
-                    Debug.LogError($"[TByd.CodeStyle] 配置文件保存后不存在: {s_ConfigFilePath}");
-                }
+                // 触发配置变更事件
+                ConfigChanged?.Invoke();
             }
             catch (Exception e)
             {
@@ -155,7 +170,8 @@ namespace TByd.CodeStyle.Runtime.Config
                 if (File.Exists(s_ConfigFilePath))
                 {
                     string configJson = File.ReadAllText(s_ConfigFilePath);
-                    s_CurrentConfig = JsonUtility.FromJson<CodeStyleConfig>(configJson);
+                    s_CurrentConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
+                    JsonUtility.FromJsonOverwrite(configJson, s_CurrentConfig);
 
                     // 检查配置版本并进行迁移
                     MigrateConfigIfNeeded();
@@ -163,7 +179,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 else
                 {
                     // 创建默认配置
-                    s_CurrentConfig = new CodeStyleConfig();
+                    s_CurrentConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
                     SaveConfig();
                 }
 
@@ -172,7 +188,7 @@ namespace TByd.CodeStyle.Runtime.Config
             catch (Exception e)
             {
                 Debug.LogError($"[TByd.CodeStyle] 加载配置失败: {e.Message}");
-                s_CurrentConfig = new CodeStyleConfig();
+                s_CurrentConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
                 s_IsConfigLoaded = true;
             }
         }
@@ -182,11 +198,17 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public static void ResetConfig()
         {
-            s_CurrentConfig = new CodeStyleConfig();
-            SaveConfig();
+#if UNITY_EDITOR
+            if (s_RuntimeConfig != null)
+            {
+                UnityEngine.Object.DestroyImmediate(s_RuntimeConfig, true);
+                AssetDatabase.DeleteAsset(c_AssetPath);
+                s_RuntimeConfig = null;
+            }
+#endif
 
-            // 触发配置变更事件
-            ConfigChanged?.Invoke();
+            s_CurrentConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
+            SaveConfig();
         }
 
         /// <summary>
@@ -238,12 +260,17 @@ namespace TByd.CodeStyle.Runtime.Config
             }
         }
 
+#if UNITY_EDITOR
         /// <summary>
-        /// 通知配置变更
+        /// 复制配置数据
         /// </summary>
-        public static void NotifyConfigChanged()
+        private static void CopyConfigData(CodeStyleConfig _source, CodeStyleConfig _target)
         {
-            ConfigChanged?.Invoke();
+            if (_source == null || _target == null)
+                return;
+
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(_source), _target);
         }
+#endif
     }
 }

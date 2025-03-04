@@ -10,6 +10,7 @@ using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Config;
 using TByd.CodeStyle.Runtime.Git;
 using TByd.CodeStyle.Runtime.Git.Commit;
+using TByd.CodeStyle.Editor.CodeCheck.IDE;
 
 namespace TByd.CodeStyle.Editor.UI.Windows
 {
@@ -32,7 +33,14 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         private int m_SelectedTabIndex;
 
         // 标签页名称
-        private readonly string[] m_TabNames = { "概览", "Git提交规范", "代码检查", "设置" };
+        private readonly string[] m_TabNames = new string[]
+        {
+            "概览",
+            "Git提交",
+            "代码检查",
+            "IDE集成",
+            "设置"
+        };
 
         // Git提交相关
         private string m_CommitMessage = string.Empty;
@@ -56,6 +64,21 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         // Git仓库状态
         private bool m_IsGitRepository = false;
         private bool m_AreHooksInstalled = false;
+
+        /// <summary>
+        /// 当前IDE类型
+        /// </summary>
+        private IDEType m_CurrentIDEType;
+
+        /// <summary>
+        /// IDE配置是否已初始化
+        /// </summary>
+        private bool m_IsIDEConfigured;
+
+        /// <summary>
+        /// IDE自动配置是否已提示
+        /// </summary>
+        private bool m_HasPromptedIDEConfig;
 
         /// <summary>
         /// 打开窗口的菜单项
@@ -84,6 +107,9 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             // 检查Git仓库状态
             CheckGitRepositoryStatus();
+
+            // 检查IDE状态
+            CheckIDEStatus();
         }
 
         /// <summary>
@@ -146,6 +172,22 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         }
 
         /// <summary>
+        /// 检查IDE状态
+        /// </summary>
+        private void CheckIDEStatus()
+        {
+            m_CurrentIDEType = IDEDetector.DetectCurrentIDE();
+            m_IsIDEConfigured = IDEDetector.IsIDEConfigured(m_CurrentIDEType);
+
+            // 如果IDE未配置且未提示过，显示自动配置提示
+            if (!m_IsIDEConfigured && !m_HasPromptedIDEConfig)
+            {
+                m_HasPromptedIDEConfig = true;
+                IDEDetector.PromptIDEConfiguration(m_CurrentIDEType);
+            }
+        }
+
+        /// <summary>
         /// 绘制窗口内容
         /// </summary>
         private void OnGUI()
@@ -177,6 +219,9 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     DrawCodeCheckTab();
                     break;
                 case 3:
+                    DrawIDEIntegrationTab();
+                    break;
+                case 4:
                     DrawSettingsTab();
                     break;
             }
@@ -237,6 +282,37 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             {
                 EditorGUILayout.LabelField("Git仓库:", "未检测到");
                 EditorGUILayout.HelpBox("当前项目不是Git仓库，无法使用Git提交规范功能。", MessageType.Warning);
+            }
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // 显示IDE状态
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("IDE状态", EditorStyles.boldLabel);
+
+            EditorGUILayout.LabelField("当前IDE:", m_CurrentIDEType.ToString());
+            EditorGUILayout.LabelField("配置状态:", m_IsIDEConfigured ? "已配置" : "未配置");
+
+            if (!m_IsIDEConfigured)
+            {
+                EditorGUILayout.HelpBox("当前IDE未配置，建议配置以获得更好的开发体验。", MessageType.Info);
+
+                EditorGUILayout.Space();
+                if (GUILayout.Button("配置IDE"))
+                {
+                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
+                    CheckIDEStatus();
+                }
+            }
+            else
+            {
+                EditorGUILayout.Space();
+                if (GUILayout.Button("查看IDE设置"))
+                {
+                    m_SelectedTabIndex = 3; // 切换到IDE集成标签页
+                }
             }
 
             EditorGUILayout.EndVertical();
@@ -903,6 +979,323 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         }
 
         /// <summary>
+        /// 绘制IDE集成标签页
+        /// </summary>
+        private void DrawIDEIntegrationTab()
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            GUILayout.Label("IDE集成", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+
+            // 显示当前IDE信息
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("当前IDE", EditorStyles.boldLabel);
+
+            EditorGUILayout.LabelField("检测到的IDE:", m_CurrentIDEType.ToString());
+            EditorGUILayout.LabelField("配置状态:", m_IsIDEConfigured ? "已配置" : "未配置");
+
+            if (!m_IsIDEConfigured)
+            {
+                EditorGUILayout.HelpBox("当前IDE未配置，建议配置以获得更好的开发体验。", MessageType.Info);
+                
+                if (GUILayout.Button("配置IDE"))
+                {
+                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
+                    CheckIDEStatus();
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("重新配置IDE"))
+                {
+                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
+                    CheckIDEStatus();
+                }
+            }
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // IDE特定设置
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("IDE特定设置", EditorStyles.boldLabel);
+
+            switch (m_CurrentIDEType)
+            {
+                case IDEType.Rider:
+                    DrawRiderSettings();
+                    break;
+                case IDEType.VisualStudio:
+                    DrawVisualStudioSettings();
+                    break;
+                case IDEType.VSCode:
+                    DrawVSCodeSettings();
+                    break;
+                default:
+                    EditorGUILayout.HelpBox("未检测到支持的IDE。", MessageType.Warning);
+                    break;
+            }
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // 配置验证
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("配置验证", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("验证配置"))
+            {
+                var result = IDEConfigValidator.ValidateConfig(m_CurrentIDEType, Path.GetDirectoryName(Application.dataPath));
+                
+                if (result.IsValid)
+                {
+                    NotificationSystem.ShowNotification("配置验证通过", NotificationType.Success);
+                }
+                else
+                {
+                    string message = "配置验证失败：\n";
+                    if (result.Errors.Count > 0)
+                    {
+                        message += "\n错误：\n" + string.Join("\n", result.Errors);
+                    }
+                    if (result.Warnings.Count > 0)
+                    {
+                        message += "\n警告：\n" + string.Join("\n", result.Warnings);
+                    }
+                    if (result.Suggestions.Count > 0)
+                    {
+                        message += "\n建议：\n" + string.Join("\n", result.Suggestions);
+                    }
+                    EditorUtility.DisplayDialog("配置验证", message, "确定");
+                }
+            }
+
+            // 检查配置冲突
+            var conflicts = IDEConfigValidator.CheckConfigConflicts(m_CurrentIDEType, Path.GetDirectoryName(Application.dataPath));
+            if (conflicts.Count > 0)
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.HelpBox("检测到配置冲突：\n" + string.Join("\n", conflicts), MessageType.Warning);
+                
+                if (GUILayout.Button("解决冲突"))
+                {
+                    bool useLocal = EditorUtility.DisplayDialog("解决冲突",
+                        "选择要使用的配置版本：\n\n" +
+                        "- 使用本地版本：保留当前的配置\n" +
+                        "- 使用标准版本：使用推荐的配置",
+                        "使用本地版本", "使用标准版本");
+
+                    if (IDEConfigSyncManager.ResolveConflicts(m_CurrentIDEType, conflicts, useLocal))
+                    {
+                        NotificationSystem.ShowNotification("配置冲突已解决", NotificationType.Success);
+                    }
+                    else
+                    {
+                        NotificationSystem.ShowNotification("解决配置冲突失败", NotificationType.Error);
+                    }
+                }
+            }
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // 配置备份
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("配置备份", EditorStyles.boldLabel);
+
+            // 显示备份列表
+            var backups = IDEConfigBackupManager.GetBackups();
+            if (backups.Count > 0)
+            {
+                EditorGUILayout.LabelField("备份历史：");
+                foreach (var backup in backups)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"{backup.Timestamp:yyyy-MM-dd HH:mm:ss} - {backup.Description}");
+
+                    if (GUILayout.Button("恢复", GUILayout.Width(60)))
+                    {
+                        if (EditorUtility.DisplayDialog("恢复备份",
+                            $"确定要恢复此备份吗？\n时间：{backup.Timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.Description}",
+                            "确定", "取消"))
+                        {
+                            if (IDEConfigBackupManager.RestoreBackup(backup.Id))
+                            {
+                                NotificationSystem.ShowNotification("配置已恢复", NotificationType.Success);
+                                CheckIDEStatus();
+                            }
+                            else
+                            {
+                                NotificationSystem.ShowNotification("恢复配置失败", NotificationType.Error);
+                            }
+                        }
+                    }
+
+                    if (GUILayout.Button("删除", GUILayout.Width(60)))
+                    {
+                        if (EditorUtility.DisplayDialog("删除备份",
+                            $"确定要删除此备份吗？\n时间：{backup.Timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.Description}",
+                            "确定", "取消"))
+                        {
+                            if (IDEConfigBackupManager.DeleteBackup(backup.Id))
+                            {
+                                NotificationSystem.ShowNotification("备份已删除", NotificationType.Success);
+                            }
+                            else
+                            {
+                                NotificationSystem.ShowNotification("删除备份失败", NotificationType.Error);
+                            }
+                        }
+                    }
+
+                    EditorGUILayout.EndHorizontal();
+                }
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("暂无备份记录", MessageType.Info);
+            }
+
+            EditorGUILayout.Space();
+
+            // 创建备份
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("创建备份"))
+            {
+                string description = "";
+                if (EditorUtility.DisplayDialog("创建备份",
+                    "是否要创建配置备份？",
+                    "确定", "取消"))
+                {
+                    description = EditorInputDialog.Show("备份描述", "请输入备份描述（可选）：", "");
+                    string backupId = IDEConfigBackupManager.CreateBackup(m_CurrentIDEType, description);
+                    if (!string.IsNullOrEmpty(backupId))
+                    {
+                        NotificationSystem.ShowNotification("配置已备份", NotificationType.Success);
+                    }
+                    else
+                    {
+                        NotificationSystem.ShowNotification("创建备份失败", NotificationType.Error);
+                    }
+                }
+            }
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // 配置同步
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("配置同步", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("同步配置"))
+            {
+                var result = IDEConfigSyncManager.SynchronizeConfig(m_CurrentIDEType);
+                if (result.Success)
+                {
+                    string message = "配置同步成功";
+                    if (result.UpdatedFiles.Count > 0)
+                    {
+                        message += $"\n\n更新的文件：\n{string.Join("\n", result.UpdatedFiles)}";
+                    }
+                    if (result.ConflictFiles.Count > 0)
+                    {
+                        message += $"\n\n存在冲突的文件：\n{string.Join("\n", result.ConflictFiles)}";
+                    }
+                    EditorUtility.DisplayDialog("同步结果", message, "确定");
+                    CheckIDEStatus();
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("同步失败", result.Error, "确定");
+                }
+            }
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space();
+
+            // 导出设置
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.Label("导出设置", EditorStyles.boldLabel);
+
+            if (GUILayout.Button("导出到所有支持的IDE"))
+            {
+                IDEIntegrationManager.ExportConfigToAllIDEs(EditorConfigManager.GetRules());
+                NotificationSystem.ShowNotification("已导出设置到所有支持的IDE", NotificationType.Success);
+            }
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// 绘制Rider特定设置
+        /// </summary>
+        private void DrawRiderSettings()
+        {
+            var config = ConfigManager.GetConfig();
+            var riderConfig = config.RiderConfig;
+
+            EditorGUI.BeginChangeCheck();
+
+            riderConfig.EnableCodeAnalysis = EditorGUILayout.Toggle("启用代码分析", riderConfig.EnableCodeAnalysis);
+            riderConfig.EnableStyleCop = EditorGUILayout.Toggle("启用StyleCop", riderConfig.EnableStyleCop);
+            riderConfig.EnableReSharper = EditorGUILayout.Toggle("启用ReSharper", riderConfig.EnableReSharper);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                ConfigManager.SaveConfig();
+            }
+        }
+
+        /// <summary>
+        /// 绘制Visual Studio特定设置
+        /// </summary>
+        private void DrawVisualStudioSettings()
+        {
+            var config = ConfigManager.GetConfig();
+            var vsConfig = config.VisualStudioConfig;
+
+            EditorGUI.BeginChangeCheck();
+
+            vsConfig.EnableRoslynAnalyzers = EditorGUILayout.Toggle("启用Roslyn分析器", vsConfig.EnableRoslynAnalyzers);
+            vsConfig.EnableStyleCop = EditorGUILayout.Toggle("启用StyleCop", vsConfig.EnableStyleCop);
+            vsConfig.EnableCodeAnalysis = EditorGUILayout.Toggle("启用代码分析", vsConfig.EnableCodeAnalysis);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                ConfigManager.SaveConfig();
+            }
+        }
+
+        /// <summary>
+        /// 绘制VS Code特定设置
+        /// </summary>
+        private void DrawVSCodeSettings()
+        {
+            var config = ConfigManager.GetConfig();
+            var vscodeConfig = config.VSCodeConfig;
+
+            EditorGUI.BeginChangeCheck();
+
+            vscodeConfig.EnableOmniSharp = EditorGUILayout.Toggle("启用OmniSharp", vscodeConfig.EnableOmniSharp);
+            vscodeConfig.EnableRoslynAnalyzers = EditorGUILayout.Toggle("启用Roslyn分析器", vscodeConfig.EnableRoslynAnalyzers);
+            vscodeConfig.EnableEditorConfig = EditorGUILayout.Toggle("启用EditorConfig", vscodeConfig.EnableEditorConfig);
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                ConfigManager.SaveConfig();
+            }
+        }
+
+        /// <summary>
         /// 绘制设置标签页
         /// </summary>
         private void DrawSettingsTab()
@@ -930,6 +1323,37 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             config.CheckOnCompile = EditorGUILayout.ToggleLeft("在编译时检查代码风格", config.CheckOnCompile);
             config.CheckBeforeCommit = EditorGUILayout.ToggleLeft("在提交前检查代码风格", config.CheckBeforeCommit);
+
+            EditorGUILayout.Space();
+
+            // IDE集成设置
+            EditorGUILayout.LabelField("IDE集成设置", EditorStyles.boldLabel);
+
+            config.EnableIDEIntegration = EditorGUILayout.ToggleLeft("启用IDE集成", config.EnableIDEIntegration);
+            config.AutoConfigureIDE = EditorGUILayout.ToggleLeft("自动配置IDE", config.AutoConfigureIDE);
+            config.SyncEditorConfigWithIDE = EditorGUILayout.ToggleLeft("同步EditorConfig到IDE", config.SyncEditorConfigWithIDE);
+
+            if (config.EnableIDEIntegration)
+            {
+                EditorGUILayout.Space();
+                EditorGUILayout.BeginHorizontal();
+                if (GUILayout.Button("重新检测IDE"))
+                {
+                    CheckIDEStatus();
+                }
+
+                if (GUILayout.Button("重置IDE配置"))
+                {
+                    if (EditorUtility.DisplayDialog("重置IDE配置", 
+                        "确定要重置IDE配置吗？这将清除所有IDE特定的设置。", "确定", "取消"))
+                    {
+                        IDEDetector.ResetIDEConfiguration(m_CurrentIDEType);
+                        CheckIDEStatus();
+                        NotificationSystem.ShowNotification("IDE配置已重置", NotificationType.Info);
+                    }
+                }
+                EditorGUILayout.EndHorizontal();
+            }
 
             EditorGUILayout.Space();
 
