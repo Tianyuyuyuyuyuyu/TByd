@@ -1,0 +1,56 @@
+{
+  "name": "com.tbyd.codestyle",
+  "displayName": "TByd PackageCreator",
+  "version": "0.0.1",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "Unity代码风格规范工具，提供代码检查、Git提交规范和EditorConfig支持",
+  "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.PackageCreator/Documentation~",
+  "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.PackageCreator/CHANGELOG.md",
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "PackageCreator",
+    "UPM",
+    "Package"
+  ],
+  "author": {
+    "name": "TByd",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "BeiDa",
+      "email": "zhaoqing343@gmail.com"
+    }
+  ],
+  "category": "PackageCreator",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.PackageCreator"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {
+  },
+  "samples": [
+    {
+      "displayName": "基础用法",
+      "description": "展示包的基本功能和用法",
+      "path": "Samples~/BasicUsage"
+    },
+    {
+      "displayName": "高级功能",
+      "description": "展示包的高级功能和扩展用法",
+      "path": "Samples~/AdvancedFeatures"
+    },
+    {
+      "displayName": "示例场景",
+      "description": "包含完整功能演示的示例场景",
+      "path": "Samples~/ExampleScene"
+    }
+  ]
+}

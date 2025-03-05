@@ -1,0 +1,16 @@
+{
+    "name": "TByd.PackageCreator.Runtime",
+    "rootNamespace": "TByd.PackageCreator.Runtime",
+    "references": [
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+    ],
+    "noEngineReferences": false
+}
