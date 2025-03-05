@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RiderNamespaceProgressions">
+    <item path="Assets/TByd.CodeStyle/Editor" namespace="TByd.CodeStyle.Editor" />
+    <item path="Assets/TByd.CodeStyle/Runtime" namespace="TByd.CodeStyle.Runtime" />
+    <item path="Assets/TByd.CodeStyle/Tests/Editor" namespace="TByd.CodeStyle.Tests.Editor" />
+    <item path="Assets/TByd.CodeStyle/Tests/Runtime" namespace="TByd.CodeStyle.Tests.Runtime" />
+  </component>
+</project>

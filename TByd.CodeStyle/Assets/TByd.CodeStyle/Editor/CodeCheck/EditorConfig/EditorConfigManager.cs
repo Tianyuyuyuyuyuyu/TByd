@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
-using System.Text;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 {
@@ -357,7 +357,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 处理确切文件名匹配
-            if (!_pattern.Contains("/") && !_pattern.Contains("*") && !_pattern.Contains("?") && !_pattern.Contains("["))
+            if (!_pattern.Contains("/") && !_pattern.Contains("*") && !_pattern.Contains("?") &&
+                !_pattern.Contains("["))
             {
                 return string.Equals(_fileName, _pattern, StringComparison.OrdinalIgnoreCase);
             }
@@ -418,7 +419,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                         // 检查路径是否包含关键目录和扩展名
                         bool containsDir = normalizedPath.Contains("/" + patternDir + "/");
-                        bool hasExt = !string.IsNullOrEmpty(patternExt) && normalizedPath.EndsWith(patternExt, StringComparison.OrdinalIgnoreCase);
+                        bool hasExt = !string.IsNullOrEmpty(patternExt) &&
+                                      normalizedPath.EndsWith(patternExt, StringComparison.OrdinalIgnoreCase);
 
                         Debug.Log($"测试环境匹配: 包含目录={containsDir}, 扩展名匹配={hasExt}, 目录={patternDir}, 扩展名={patternExt}");
 
@@ -547,7 +549,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         case "utf-8":
                         case "utf8":
                             isCorrectEncoding = detectedEncoding == Encoding.UTF8 ||
-                                            (detectedEncoding == null && IsValidUtf8(fileBytes));
+                                                (detectedEncoding == null && IsValidUtf8(fileBytes));
                             break;
                         case "utf-8-bom":
                             isCorrectEncoding = detectedEncoding == Encoding.UTF8 && HasUtf8Bom(fileBytes);
@@ -674,7 +676,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                 if (int.TryParse(indentSize, out size) || indentSize.ToLowerInvariant() == "tab")
                 {
-                    if (indentSize.ToLowerInvariant() == "tab" && properties.TryGetValue("tab_width", out string tabWidth))
+                    if (indentSize.ToLowerInvariant() == "tab" &&
+                        properties.TryGetValue("tab_width", out string tabWidth))
                     {
                         int.TryParse(tabWidth, out size);
                     }
@@ -906,7 +909,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                     if (int.TryParse(indentSize, out size) || indentSize.ToLowerInvariant() == "tab")
                     {
-                        if (indentSize.ToLowerInvariant() == "tab" && properties.TryGetValue("tab_width", out string tabWidth))
+                        if (indentSize.ToLowerInvariant() == "tab" &&
+                            properties.TryGetValue("tab_width", out string tabWidth))
                         {
                             int.TryParse(tabWidth, out size);
                         }
@@ -1128,7 +1132,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         private static bool HasUtf8Bom(byte[] _bytes)
         {
             return _bytes != null && _bytes.Length >= 3 &&
-                _bytes[0] == 0xEF && _bytes[1] == 0xBB && _bytes[2] == 0xBF;
+                   _bytes[0] == 0xEF && _bytes[1] == 0xBB && _bytes[2] == 0xBF;
         }
 
         /// <summary>
@@ -1149,7 +1153,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             // 如果文件路径以项目根目录开头，则转换为相对路径
             if (_filePath.StartsWith(projectRoot))
             {
-                relativePath = _filePath.Substring(projectRoot.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                relativePath = _filePath.Substring(projectRoot.Length)
+                    .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             }
             // 处理测试环境中的临时路径
             else if (_filePath.Contains("Temp") || _filePath.Contains("EditorConfigTest"))
@@ -1205,7 +1210,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 Debug.Log($"[TByd.CodeStyle] 成功保存EditorConfig规则到: {_filePath}");
                 return true;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Debug.LogError($"[TByd.CodeStyle] 保存EditorConfig规则失败: {e.Message}");
                 return false;
