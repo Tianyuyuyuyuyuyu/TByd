@@ -37,7 +37,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private Vector2 m_ScrollPosition;
 
         // 规则分类折叠状态
-        private Dictionary<CodeCheckRuleCategory, bool> m_CategoryFoldouts = new Dictionary<CodeCheckRuleCategory, bool>();
+        private Dictionary<CodeCheckRuleCategory, bool> m_CategoryFoldouts = new();
 
         // 新忽略路径
         private string m_NewIgnorePath = string.Empty;

@@ -35,7 +35,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private Vector2 m_ScrollPosition;
 
         // 钩子状态
-        private Dictionary<GitHookType, bool> m_HookStatus = new Dictionary<GitHookType, bool>();
+        private Dictionary<GitHookType, bool> m_HookStatus = new();
 
         /// <summary>
         /// 构造函数

@@ -69,7 +69,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 备份列表
             /// </summary>
-            [FormerlySerializedAs("Backups")] public List<BackupInfo> backups = new List<BackupInfo>();
+            [FormerlySerializedAs("Backups")] public List<BackupInfo> backups = new();
         }
 
         /// <summary>
@@ -502,6 +502,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 case IdeType.k_Rider:
                 case IdeType.k_VisualStudio:
                 case IdeType.k_VSCode:
+                case IdeType.k_Unknown:
                 default:
                     return Path.GetDirectoryName(Application.dataPath);
             }

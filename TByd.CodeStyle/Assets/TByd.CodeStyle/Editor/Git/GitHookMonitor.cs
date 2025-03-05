@@ -25,7 +25,7 @@ namespace TByd.CodeStyle.Editor.Git
         private static bool s_Initialized;
 
         // 钩子状态缓存
-        private static Dictionary<GitHookType, bool> s_HookStatusCache = new Dictionary<GitHookType, bool>();
+        private static Dictionary<GitHookType, bool> s_HookStatusCache = new();
 
         /// <summary>
         /// 静态构造函数，在编辑器加载时初始化

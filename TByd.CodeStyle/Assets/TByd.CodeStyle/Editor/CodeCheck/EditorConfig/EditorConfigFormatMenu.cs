@@ -194,7 +194,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 {
                     return true;
                 }
-                else if (File.Exists(assetPath) && Path.GetExtension(assetPath).ToLowerInvariant() == ".cs")
+
+                if (File.Exists(assetPath) && Path.GetExtension(assetPath).ToLowerInvariant() == ".cs")
                 {
                     return true;
                 }

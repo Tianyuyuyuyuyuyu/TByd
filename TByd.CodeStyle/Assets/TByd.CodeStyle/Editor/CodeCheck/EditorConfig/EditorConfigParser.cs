@@ -12,9 +12,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
     public static class EditorConfigParser
     {
         // 部分正则表达式
-        private static readonly Regex s_SectionRegex = new Regex(@"^\s*\[(.*)\]\s*$", RegexOptions.Compiled);
-        private static readonly Regex s_PropertyRegex = new Regex(@"^\s*([\w\-\.]+)\s*=\s*(.*?)\s*$", RegexOptions.Compiled);
-        private static readonly Regex s_CommentRegex = new Regex(@"^\s*[#;].*$", RegexOptions.Compiled);
+        private static readonly Regex s_SectionRegex = new(@"^\s*\[(.*)\]\s*$", RegexOptions.Compiled);
+        private static readonly Regex s_PropertyRegex = new(@"^\s*([\w\-\.]+)\s*=\s*(.*?)\s*$", RegexOptions.Compiled);
+        private static readonly Regex s_CommentRegex = new(@"^\s*[#;].*$", RegexOptions.Compiled);
 
         /// <summary>
         /// 解析EditorConfig文件

@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Runtime.Git.Commit;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.Git.Commit
 {
@@ -116,20 +116,25 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             Debug.Log($"[TByd.CodeStyle] 验证提交消息: '{messageText}'");
 
             // 解析提交消息
-            var message = Runtime.Git.Commit.CommitMessageParser.Parse(messageText);
+            var message = CommitMessageParser.Parse(messageText);
             Debug.Log($"[TByd.CodeStyle] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
 
             // 验证提交消息
-            var result = s_Validator.ValidateText(messageText);
-
-            // 输出验证结果
-            Debug.Log($"[TByd.CodeStyle] 验证结果: IsValid={result.IsValid}, Errors.Count={result.Errors.Count}");
-            foreach (var error in result.Errors)
+            if (s_Validator != null)
             {
-                Debug.Log($"[TByd.CodeStyle] 错误: {error}");
+                var result = s_Validator.ValidateText(messageText);
+
+                // 输出验证结果
+                Debug.Log($"[TByd.CodeStyle] 验证结果: IsValid={result.IsValid}, Errors.Count={result.Errors.Count}");
+                foreach (var error in result.Errors)
+                {
+                    Debug.Log($"[TByd.CodeStyle] 错误: {error}");
+                }
+
+                return result;
             }
 
-            return result;
+            return null;
         }
 
         /// <summary>
@@ -154,7 +159,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 InitializeValidatorAndFixer();
             }
 
-            return s_Validator.ValidateFile(filePath);
+            return s_Validator?.ValidateFile(filePath);
         }
 
         /// <summary>
@@ -169,7 +174,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 InitializeValidatorAndFixer();
             }
 
-            return s_Fixer.FixText(messageText);
+            return s_Fixer?.FixText(messageText);
         }
 
         /// <summary>
@@ -184,7 +189,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 InitializeValidatorAndFixer();
             }
 
-            return s_Fixer.FixFile(filePath);
+            return s_Fixer != null && s_Fixer.FixFile(filePath);
         }
 
         /// <summary>
@@ -198,7 +203,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 InitializeValidatorAndFixer();
             }
 
-            return s_Fixer.GenerateTemplate();
+            return s_Fixer?.GenerateTemplate();
         }
 
         /// <summary>
@@ -213,7 +218,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 InitializeValidatorAndFixer();
             }
 
-            return s_Fixer.WriteTemplateToFile(filePath);
+            return s_Fixer != null && s_Fixer.WriteTemplateToFile(filePath);
         }
 
         /// <summary>
@@ -329,7 +334,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 isBreakingChange = header.Contains("!") || (footer.Contains("BREAKING CHANGE"));
 
                 // 解析头部
-                var colonIndex = header.IndexOf(": ");
+                var colonIndex = header.IndexOf(": ", StringComparison.Ordinal);
                 if (colonIndex < 0)
                 {
                     return false;
@@ -345,7 +350,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 typeScope = typeScope.Replace("!", "");
 
                 // 解析类型和范围
-                var scopeStartIndex = typeScope.IndexOf("(");
+                var scopeStartIndex = typeScope.IndexOf("(", StringComparison.Ordinal);
                 if (scopeStartIndex < 0)
                 {
                     // 没有范围
@@ -356,7 +361,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                     // 有范围
                     type = typeScope.Substring(0, scopeStartIndex).Trim();
 
-                    var scopeEndIndex = typeScope.IndexOf(")", scopeStartIndex);
+                    var scopeEndIndex = typeScope.IndexOf(")", scopeStartIndex, StringComparison.Ordinal);
                     if (scopeEndIndex > scopeStartIndex)
                     {
                         scope = typeScope.Substring(scopeStartIndex + 1, scopeEndIndex - scopeStartIndex - 1).Trim();
@@ -401,12 +406,15 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 }
 
                 // 验证提交消息
-                var result = s_Validator.ValidateFile(filePath);
-
-                if (!result.IsValid)
+                if (s_Validator != null)
                 {
-                    Console.Error.WriteLine(result.GetFormattedErrorMessage());
-                    return 1;
+                    var result = s_Validator.ValidateFile(filePath);
+
+                    if (!result.IsValid)
+                    {
+                        Console.Error.WriteLine(result.GetFormattedErrorMessage());
+                        return 1;
+                    }
                 }
 
                 Console.WriteLine("提交消息验证通过");

@@ -1401,7 +1401,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 if (GUILayout.Button("编辑EditorConfig文件"))
                 {
                     var editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
-                    if (System.IO.File.Exists(editorConfigPath))
+                    if (File.Exists(editorConfigPath))
                     {
                         EditorUtility.OpenWithDefaultApp(editorConfigPath);
                     }

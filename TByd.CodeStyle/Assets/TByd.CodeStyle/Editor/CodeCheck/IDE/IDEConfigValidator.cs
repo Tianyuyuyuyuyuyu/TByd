@@ -23,17 +23,17 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 错误信息列表
             /// </summary>
-            public List<string> Errors { get; } = new List<string>();
+            public List<string> Errors { get; } = new();
 
             /// <summary>
             /// 警告信息列表
             /// </summary>
-            public List<string> Warnings { get; } = new List<string>();
+            public List<string> Warnings { get; } = new();
 
             /// <summary>
             /// 建议信息列表
             /// </summary>
-            public List<string> Suggestions { get; } = new List<string>();
+            public List<string> Suggestions { get; } = new();
         }
 
         /// <summary>
@@ -68,6 +68,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     case IdeType.k_VSCode:
                         ValidateVSCodeConfig(configPath, result);
                         break;
+                    case IdeType.k_Unknown:
                     default:
                         result.Errors.Add($"不支持的IDE类型: {ideType}");
                         result.IsValid = false;
@@ -386,6 +387,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                         }
                                     }
                                     break;
+                                case IdeType.k_Unknown:
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(ideType), ideType, null);
                             }
                         }
                     }

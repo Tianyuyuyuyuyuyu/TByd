@@ -21,7 +21,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         public static event Action OnConfigChanged;
 
         // 当前项目的EditorConfig规则
-        private static List<EditorConfigRule> s_Rules = new List<EditorConfigRule>();
+        private static List<EditorConfigRule> s_Rules = new();
 
         // 是否已初始化
         private static bool s_Initialized = false;
@@ -460,24 +460,22 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                     return false;
                 }
-                else
+
+                // 从根目录开始匹配
+                if (pathParts.Length < patternParts.Length)
                 {
-                    // 从根目录开始匹配
-                    if (pathParts.Length < patternParts.Length)
+                    return false;
+                }
+
+                for (var i = 0; i < patternParts.Length; i++)
+                {
+                    if (!SimplePatternMatch(pathParts[i], patternParts[i]))
                     {
                         return false;
                     }
-
-                    for (var i = 0; i < patternParts.Length; i++)
-                    {
-                        if (!SimplePatternMatch(pathParts[i], patternParts[i]))
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
                 }
+
+                return true;
             }
 
             // 处理简单的通配符匹配
@@ -699,7 +697,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                             Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的第 {i + 1} 行使用了制表符缩进，但应该使用空格");
                             return false;
                         }
-                        else if (!useSpaces && line.StartsWith(" "))
+
+                        if (!useSpaces && line.StartsWith(" "))
                         {
                             Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的第 {i + 1} 行使用了空格缩进，但应该使用制表符");
                             return false;

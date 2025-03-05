@@ -13,7 +13,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     public static class IdeIntegrationManager
     {
         // IDE集成列表
-        private static readonly List<IDeIntegration> s_Integrations = new List<IDeIntegration>();
+        private static readonly List<IDeIntegration> s_Integrations = new();
 
         // 是否已初始化
         private static bool s_Initialized;

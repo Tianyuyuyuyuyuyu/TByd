@@ -24,7 +24,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private Vector2 m_RulesScrollPosition;
 
         // 是否显示规则详情
-        private Dictionary<string, bool> m_ShowRuleDetails = new Dictionary<string, bool>();
+        private Dictionary<string, bool> m_ShowRuleDetails = new();
 
         /// <summary>
         /// 构造函数

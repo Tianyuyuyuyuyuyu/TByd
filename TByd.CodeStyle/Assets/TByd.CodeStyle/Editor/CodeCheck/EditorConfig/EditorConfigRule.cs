@@ -21,7 +21,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// 规则属性
         /// </summary>
         [SerializeField]
-        private Dictionary<string, string> m_Properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<string, string> m_Properties = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// 构造函数

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
@@ -91,7 +92,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.CheckCode(code, filePath);
+            return s_Checker?.CheckCode(code, filePath);
         }
 
         /// <summary>
@@ -106,7 +107,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.CheckFile(filePath);
+            return s_Checker?.CheckFile(filePath);
         }
 
         /// <summary>
@@ -122,7 +123,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.CheckDirectory(directoryPath, recursive);
+            return s_Checker?.CheckDirectory(directoryPath, recursive);
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Fixer.FixCode(code, filePath);
+            return s_Fixer?.FixCode(code, filePath);
         }
 
         /// <summary>
@@ -153,7 +154,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Fixer.FixFile(filePath);
+            return s_Fixer != null && s_Fixer.FixFile(filePath);
         }
 
         /// <summary>
@@ -169,7 +170,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Fixer.FixDirectory(directoryPath, recursive);
+            if (s_Fixer != null)
+            {
+                return s_Fixer.FixDirectory(directoryPath, recursive);
+            }
+
+            return 0;
         }
 
         /// <summary>
@@ -184,7 +190,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.GenerateReport(result);
+            return s_Checker?.GenerateReport(result);
         }
 
         /// <summary>
@@ -198,7 +204,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.GetRules();
+            return s_Checker?.GetRules();
         }
 
         /// <summary>
@@ -256,7 +262,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                     Console.WriteLine("代码检查通过");
                     return 0;
                 }
-                else if (Directory.Exists(filePath))
+
+                if (Directory.Exists(filePath))
                 {
                     // 如果是目录，检查目录
                     var result = CheckDirectory(filePath);
@@ -270,7 +277,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                     Console.WriteLine("代码检查通过");
                     return 0;
                 }
-                else if (File.Exists(filePath))
+
+                if (File.Exists(filePath))
                 {
                     // 如果是文件，检查文件
                     var result = CheckFile(filePath);
@@ -284,11 +292,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                     Console.WriteLine("代码检查通过");
                     return 0;
                 }
-                else
-                {
-                    Console.Error.WriteLine($"错误: 文件或目录不存在: {filePath}");
-                    return 1;
-                }
+
+                Console.Error.WriteLine($"错误: 文件或目录不存在: {filePath}");
+                return 1;
             }
             catch (Exception e)
             {
@@ -387,7 +393,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 var projectPath = Path.GetDirectoryName(Application.dataPath);
 
                 // 检查.git目录是否存在
-                if (Directory.Exists(Path.Combine(projectPath, ".git")))
+                if (projectPath != null && Directory.Exists(Path.Combine(projectPath, ".git")))
                 {
                     return projectPath;
                 }
@@ -432,13 +438,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
                 // 过滤C#文件
-                foreach (var line in lines)
-                {
-                    if (line.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
-                    {
-                        stagedFiles.Add(line);
-                    }
-                }
+                stagedFiles.AddRange(lines.Where(line => line.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)));
             }
             catch (Exception e)
             {

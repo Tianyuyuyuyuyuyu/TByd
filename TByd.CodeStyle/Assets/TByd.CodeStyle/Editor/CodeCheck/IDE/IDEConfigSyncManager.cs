@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 冲突文件列表
         /// </summary>
-        private static List<string> s_ConflictFiles = new List<string>();
+        private static List<string> s_ConflictFiles = new();
 
         /// <summary>
         /// 同步配置
@@ -38,7 +39,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 同步状态
             /// </summary>
-            public Dictionary<string, string> fileHashes = new Dictionary<string, string>();
+            public Dictionary<string, string> fileHashes = new();
         }
 
         /// <summary>
@@ -54,12 +55,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 更新的文件列表
             /// </summary>
-            public List<string> updatedFiles = new List<string>();
+            public List<string> updatedFiles = new();
 
             /// <summary>
             /// 冲突的文件列表
             /// </summary>
-            public List<string> conflictFiles = new List<string>();
+            public List<string> conflictFiles = new();
 
             /// <summary>
             /// 错误信息
@@ -130,15 +131,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 加载同步配置
-                var config = LoadSyncConfig();
-                if (config == null)
+                var config = LoadSyncConfig() ?? new SyncConfig
                 {
-                    config = new SyncConfig
-                    {
-                        lastSyncTime = DateTime.MinValue,
-                        fileHashes = new Dictionary<string, string>()
-                    };
-                }
+                    lastSyncTime = DateTime.MinValue,
+                    fileHashes = new Dictionary<string, string>()
+                };
 
                 // 获取当前所有配置文件
                 var currentFiles = GetConfigFiles(ideType);
@@ -330,15 +327,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                 foreach (var file in s_ConflictFiles)
                 {
-                    var localPath = file;
                     var remotePath = GetRemoteConfigPath(file);
 
                     if (useLocal)
                     {
-                        if (File.Exists(localPath))
+                        if (File.Exists(file))
                         {
                             // 使用本地版本，更新配置
-                            config.fileHashes[file] = CalculateFileHash(localPath);
+                            config.fileHashes[file] = CalculateFileHash(file);
                             Debug.Log($"[TByd.CodeStyle] 已使用本地版本: {file}");
                         }
                     }
@@ -347,7 +343,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         if (File.Exists(remotePath))
                         {
                             // 使用远程版本，复制到本地
-                            var dir = Path.GetDirectoryName(localPath);
+                            var dir = Path.GetDirectoryName(file);
                             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                             {
                                 Directory.CreateDirectory(dir);
@@ -366,8 +362,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                 }
                             }
 
-                            File.Copy(remotePath, localPath, true);
-                            config.fileHashes[file] = CalculateFileHash(localPath);
+                            File.Copy(remotePath, file, true);
+                            config.fileHashes[file] = CalculateFileHash(file);
                             Debug.Log($"[TByd.CodeStyle] 已使用远程版本: {file}");
                         }
                     }
@@ -415,7 +411,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             try
             {
-                var remotePath = string.Empty;
+                string remotePath;
 
                 // 处理测试路径
                 if (localPath.Contains("TByd.CodeStyle\\Assets") || localPath.Contains("TByd.CodeStyle/Assets"))
@@ -426,7 +422,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         var remoteTestDir = Path.Combine(Path.GetTempPath(), "tbyd", "codestyle", "RemoteConfigs");
                         var fileName = Path.GetFileName(localPath);
                         var subDir = Path.GetFileName(Path.GetDirectoryName(localPath));
-                        remotePath = Path.Combine(remoteTestDir, subDir, fileName);
+                        remotePath = Path.Combine(remoteTestDir, subDir ?? string.Empty, fileName);
                     }
                     else
                     {
@@ -438,7 +434,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 else if (localPath.Contains("AppData\\Local\\Temp") || localPath.Contains("AppData/Local/Temp"))
                 {
                     // 临时目录处理
-                    var parts = localPath.Split(new[] { "\\Config\\", "/Config/" }, StringSplitOptions.None);
+                    var parts = localPath.Split(new[] { @"\Config\", "/Config/" }, StringSplitOptions.None);
                     if (parts.Length > 1)
                     {
                         var basePath = parts[0];
@@ -539,6 +535,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.AllDirectories));
                     }
                     break;
+                case IdeType.k_Unknown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(ideType), ideType, null);
             }
 
             // EditorConfig文件
@@ -556,17 +556,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private static string GetConfigPath(IdeType ideType)
         {
-            switch (ideType)
+            return ideType switch
             {
-                case IdeType.k_Rider:
-                    return Path.GetDirectoryName(Application.dataPath);
-                case IdeType.k_VisualStudio:
-                    return Path.GetDirectoryName(Application.dataPath);
-                case IdeType.k_VSCode:
-                    return Path.GetDirectoryName(Application.dataPath);
-                default:
-                    return Path.GetDirectoryName(Application.dataPath);
-            }
+                IdeType.k_Rider => Path.GetDirectoryName(Application.dataPath),
+                IdeType.k_VisualStudio => Path.GetDirectoryName(Application.dataPath),
+                IdeType.k_VSCode => Path.GetDirectoryName(Application.dataPath),
+                _ => Path.GetDirectoryName(Application.dataPath)
+            };
         }
 
         /// <summary>
@@ -756,10 +752,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 {
                     // 读取锁文件内容
                     var content = File.ReadAllText(lockPath);
-                    DateTime lockTime;
 
                     // 尝试解析锁时间
-                    if (DateTime.TryParse(content, out lockTime))
+                    if (DateTime.TryParse(content, out var lockTime))
                     {
                         // 检查锁是否过期（10分钟超时）
                         if ((DateTime.Now - lockTime).TotalMinutes < 10)
@@ -790,8 +785,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 确保目录存在
-                Directory.CreateDirectory(Path.GetDirectoryName(lockPath));
-                File.WriteAllText(lockPath, DateTime.Now.ToString());
+                Directory.CreateDirectory(Path.GetDirectoryName(lockPath) ?? string.Empty);
+                File.WriteAllText(lockPath, DateTime.Now.ToString(CultureInfo.InvariantCulture));
                 return true;
             }
             catch
@@ -843,11 +838,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 return IdeType.k_Rider;
             }
-            else if (filePath.Contains("VisualStudio"))
+
+            if (filePath.Contains("VisualStudio"))
             {
                 return IdeType.k_VisualStudio;
             }
-            else if (filePath.Contains("VSCode"))
+
+            if (filePath.Contains("VSCode"))
             {
                 return IdeType.k_VSCode;
             }
@@ -858,11 +855,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 return IdeType.k_Rider;
             }
-            else if (extension == ".vssettings" || extension == ".vsconfig")
+
+            if (extension == ".vssettings" || extension == ".vsconfig")
             {
                 return IdeType.k_VisualStudio;
             }
-            else if (extension == ".json")
+
+            if (extension == ".json")
             {
                 return IdeType.k_VSCode;
             }
