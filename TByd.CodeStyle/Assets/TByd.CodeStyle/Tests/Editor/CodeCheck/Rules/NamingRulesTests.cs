@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using NUnit.Framework;
 using TByd.CodeStyle.Runtime.CodeCheck;
 using TByd.CodeStyle.Runtime.CodeCheck.Rules;
 using TByd.CodeStyle.Runtime.Config;
-using UnityEngine;
 
 namespace TByd.CodeStyle.Tests.Editor.CodeCheck.Rules
 {
@@ -45,7 +43,7 @@ namespace TByd.CodeStyle.Tests.Editor.CodeCheck.Rules
             rule.Enabled = true;
 
             // 有效的代码示例，使用m_前缀
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -56,7 +54,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，没有使用m_前缀
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -94,7 +92,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，使用s_前缀
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -105,7 +103,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，没有使用s_前缀
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -143,7 +141,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，使用c_前缀
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -154,7 +152,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，没有使用c_前缀
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -192,7 +190,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，使用PascalCase
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -203,7 +201,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，没有使用PascalCase
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -241,7 +239,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，使用PascalCase
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -252,7 +250,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，没有使用PascalCase
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -290,7 +288,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，使用_前缀
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -300,7 +298,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，没有使用_前缀
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -336,7 +334,7 @@ public class BadExample : MonoBehaviour
             var checker = new CodeChecker(m_Config);
 
             // 复杂代码示例，包含多种命名问题
-            string complexCode = @"
+            var complexCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -375,12 +373,12 @@ public class Example : MonoBehaviour
             Assert.Greater(result.Issues.Count, 0, "应该检测到多个命名问题");
 
             // 验证检测到了不同类型的命名问题
-            bool foundPrivateFieldIssue = false;
-            bool foundStaticFieldIssue = false;
-            bool foundConstantIssue = false;
-            bool foundPropertyIssue = false;
-            bool foundMethodIssue = false;
-            bool foundParameterIssue = false;
+            var foundPrivateFieldIssue = false;
+            var foundStaticFieldIssue = false;
+            var foundConstantIssue = false;
+            var foundPropertyIssue = false;
+            var foundMethodIssue = false;
+            var foundParameterIssue = false;
 
             foreach (var issue in result.Issues)
             {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
@@ -83,7 +82,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <param name="_configPath">配置目录路径</param>
         private void CreateVisualStudioSettings(string _configPath)
         {
-            string configContent = @"<?xml version=""1.0"" encoding=""utf-8""?>
+            var configContent = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <UserSettings>
   <ApplicationIdentity version=""16.0""/>
   <ToolsOptions>
@@ -155,7 +154,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
   </ToolsOptions>
 </UserSettings>";
 
-            string configPath = Path.Combine(_configPath, c_VSSettingsFileName);
+            var configPath = Path.Combine(_configPath, c_VSSettingsFileName);
             File.WriteAllText(configPath, configContent);
         }
 
@@ -166,7 +165,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private bool IsVSScriptEditor()
         {
             // 方法1：检查EditorPrefs
-            string scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
+            var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
             if (!string.IsNullOrEmpty(scriptEditorPref) && 
                 (scriptEditorPref.IndexOf("Visual Studio", StringComparison.OrdinalIgnoreCase) >= 0 ||
                  scriptEditorPref.IndexOf("devenv", StringComparison.OrdinalIgnoreCase) >= 0))
@@ -203,7 +202,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private string GetVSExecutablePath()
         {
             // 首先尝试从Unity编辑器设置中获取
-            string vsPathFromUnity = GetVSPathFromUnityPrefs();
+            var vsPathFromUnity = GetVSPathFromUnityPrefs();
             if (!string.IsNullOrEmpty(vsPathFromUnity) && File.Exists(vsPathFromUnity))
             {
                 return vsPathFromUnity;
@@ -213,31 +212,31 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 // 尝试从注册表获取
-                string pathFromRegistry = GetVSPathFromRegistry();
+                var pathFromRegistry = GetVSPathFromRegistry();
                 if (!string.IsNullOrEmpty(pathFromRegistry) && File.Exists(pathFromRegistry))
                 {
                     return pathFromRegistry;
                 }
 
-                string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-                string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
                 // 查找Visual Studio 2022
-                string[] vs2022Paths = new string[]
+                var vs2022Paths = new string[]
                 {
                     Path.Combine(programFiles, "Microsoft Visual Studio", "2022"),
                     Path.Combine(programFilesX86, "Microsoft Visual Studio", "2022")
                 };
 
-                foreach (string basePath in vs2022Paths)
+                foreach (var basePath in vs2022Paths)
                 {
                     if (Directory.Exists(basePath))
                     {
-                        string[] editions = new string[] { "Enterprise", "Professional", "Community" };
-                        foreach (string edition in editions)
+                        var editions = new string[] { "Enterprise", "Professional", "Community" };
+                        foreach (var edition in editions)
                         {
-                            string exePath = Path.Combine(basePath, edition, "Common7", "IDE", "devenv.exe");
+                            var exePath = Path.Combine(basePath, edition, "Common7", "IDE", "devenv.exe");
                             if (File.Exists(exePath))
                             {
                                 return exePath;
@@ -247,20 +246,20 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 查找Visual Studio 2019
-                string[] vs2019Paths = new string[]
+                var vs2019Paths = new string[]
                 {
                     Path.Combine(programFiles, "Microsoft Visual Studio", "2019"),
                     Path.Combine(programFilesX86, "Microsoft Visual Studio", "2019")
                 };
 
-                foreach (string basePath in vs2019Paths)
+                foreach (var basePath in vs2019Paths)
                 {
                     if (Directory.Exists(basePath))
                     {
-                        string[] editions = new string[] { "Enterprise", "Professional", "Community" };
-                        foreach (string edition in editions)
+                        var editions = new string[] { "Enterprise", "Professional", "Community" };
+                        foreach (var edition in editions)
                         {
-                            string exePath = Path.Combine(basePath, edition, "Common7", "IDE", "devenv.exe");
+                            var exePath = Path.Combine(basePath, edition, "Common7", "IDE", "devenv.exe");
                             if (File.Exists(exePath))
                             {
                                 return exePath;
@@ -270,7 +269,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查常见的自定义安装位置
-                string[] commonCustomPaths = new string[]
+                var commonCustomPaths = new string[]
                 {
                     @"C:\VisualStudio",
                     @"D:\VisualStudio",
@@ -285,23 +284,23 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     @"G:\Program Files\VisualStudio"
                 };
 
-                foreach (string basePath in commonCustomPaths)
+                foreach (var basePath in commonCustomPaths)
                 {
                     if (Directory.Exists(basePath))
                     {
                         // 查找所有可能的Visual Studio目录
-                        string[] vsDirs = Directory.GetDirectories(basePath, "*Visual Studio*");
-                        foreach (string vsDir in vsDirs)
+                        var vsDirs = Directory.GetDirectories(basePath, "*Visual Studio*");
+                        foreach (var vsDir in vsDirs)
                         {
                             // 检查常见的路径模式
-                            string[] possiblePaths = new string[]
+                            var possiblePaths = new string[]
                             {
                                 Path.Combine(vsDir, "Common7", "IDE", "devenv.exe"),
                                 Path.Combine(vsDir, "IDE", "devenv.exe"),
                                 Path.Combine(vsDir, "devenv.exe")
                             };
 
-                            foreach (string path in possiblePaths)
+                            foreach (var path in possiblePaths)
                             {
                                 if (File.Exists(path))
                                 {
@@ -312,15 +311,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             // 检查子目录
                             try
                             {
-                                string[] subDirs = Directory.GetDirectories(vsDir);
-                                foreach (string subDir in subDirs)
+                                var subDirs = Directory.GetDirectories(vsDir);
+                                foreach (var subDir in subDirs)
                                 {
-                                    string[] editions = new string[] { "Enterprise", "Professional", "Community" };
-                                    foreach (string edition in editions)
+                                    var editions = new string[] { "Enterprise", "Professional", "Community" };
+                                    foreach (var edition in editions)
                                     {
                                         if (subDir.EndsWith(edition, StringComparison.OrdinalIgnoreCase))
                                         {
-                                            string exePath = Path.Combine(subDir, "Common7", "IDE", "devenv.exe");
+                                            var exePath = Path.Combine(subDir, "Common7", "IDE", "devenv.exe");
                                             if (File.Exists(exePath))
                                             {
                                                 return exePath;
@@ -338,24 +337,24 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查所有逻辑驱动器的根目录
-                foreach (string drive in Directory.GetLogicalDrives())
+                foreach (var drive in Directory.GetLogicalDrives())
                 {
                     try
                     {
                         // 检查驱动器根目录下的Microsoft Visual Studio目录
-                        string vsPath = Path.Combine(drive, "Microsoft Visual Studio");
+                        var vsPath = Path.Combine(drive, "Microsoft Visual Studio");
                         if (Directory.Exists(vsPath))
                         {
-                            string[] versionDirs = Directory.GetDirectories(vsPath);
-                            foreach (string versionDir in versionDirs)
+                            var versionDirs = Directory.GetDirectories(vsPath);
+                            foreach (var versionDir in versionDirs)
                             {
-                                string[] editions = new string[] { "Enterprise", "Professional", "Community" };
-                                foreach (string edition in editions)
+                                var editions = new string[] { "Enterprise", "Professional", "Community" };
+                                foreach (var edition in editions)
                                 {
-                                    string editionPath = Path.Combine(versionDir, edition);
+                                    var editionPath = Path.Combine(versionDir, edition);
                                     if (Directory.Exists(editionPath))
                                     {
-                                        string exePath = Path.Combine(editionPath, "Common7", "IDE", "devenv.exe");
+                                        var exePath = Path.Combine(editionPath, "Common7", "IDE", "devenv.exe");
                                         if (File.Exists(exePath))
                                         {
                                             return exePath;
@@ -366,12 +365,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         }
 
                         // 递归搜索驱动器根目录下的所有目录（限制深度为2）
-                        string[] rootDirs = Directory.GetDirectories(drive);
-                        foreach (string rootDir in rootDirs)
+                        var rootDirs = Directory.GetDirectories(drive);
+                        foreach (var rootDir in rootDirs)
                         {
                             if (rootDir.Contains("Visual Studio", StringComparison.OrdinalIgnoreCase))
                             {
-                                string exePath = Path.Combine(rootDir, "Common7", "IDE", "devenv.exe");
+                                var exePath = Path.Combine(rootDir, "Common7", "IDE", "devenv.exe");
                                 if (File.Exists(exePath))
                                 {
                                     return exePath;
@@ -381,12 +380,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             // 检查子目录
                             try
                             {
-                                string[] subDirs = Directory.GetDirectories(rootDir);
-                                foreach (string subDir in subDirs)
+                                var subDirs = Directory.GetDirectories(rootDir);
+                                foreach (var subDir in subDirs)
                                 {
                                     if (subDir.Contains("Visual Studio", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        string exePath = Path.Combine(subDir, "Common7", "IDE", "devenv.exe");
+                                        var exePath = Path.Combine(subDir, "Common7", "IDE", "devenv.exe");
                                         if (File.Exists(exePath))
                                         {
                                             return exePath;
@@ -409,13 +408,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在macOS上查找Visual Studio for Mac
             else if (Application.platform == RuntimePlatform.OSXEditor)
             {
-                string[] macPaths = new string[]
+                var macPaths = new string[]
                 {
                     "/Applications/Visual Studio.app/Contents/MacOS/VisualStudio",
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/Applications/Visual Studio.app/Contents/MacOS/VisualStudio"
                 };
 
-                foreach (string path in macPaths)
+                foreach (var path in macPaths)
                 {
                     if (File.Exists(path))
                     {
@@ -436,7 +435,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从Unity编辑器设置中获取Visual Studio路径
-                string editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
+                var editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
                 if (!string.IsNullOrEmpty(editorPath) && 
                     (editorPath.Contains("devenv.exe", StringComparison.OrdinalIgnoreCase) || 
                      editorPath.Contains("Visual Studio", StringComparison.OrdinalIgnoreCase)))
@@ -461,18 +460,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从注册表获取Visual Studio 2022路径
-                using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\SxS\VS7"))
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\SxS\VS7"))
                 {
                     if (key != null)
                     {
                         // 尝试获取最新版本的Visual Studio
                         string[] versionKeys = { "17.0", "16.0", "15.0" }; // VS2022, VS2019, VS2017
-                        foreach (string version in versionKeys)
+                        foreach (var version in versionKeys)
                         {
-                            string installDir = key.GetValue(version) as string;
+                            var installDir = key.GetValue(version) as string;
                             if (!string.IsNullOrEmpty(installDir))
                             {
-                                string exePath = Path.Combine(installDir, "Common7", "IDE", "devenv.exe");
+                                var exePath = Path.Combine(installDir, "Common7", "IDE", "devenv.exe");
                                 if (File.Exists(exePath))
                                 {
                                     return exePath;
@@ -483,11 +482,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 尝试从另一个注册表位置获取
-                using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\devenv.exe"))
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\devenv.exe"))
                 {
                     if (key != null)
                     {
-                        string path = key.GetValue(null) as string;
+                        var path = key.GetValue(null) as string;
                         if (!string.IsNullOrEmpty(path) && File.Exists(path))
                         {
                             return path;

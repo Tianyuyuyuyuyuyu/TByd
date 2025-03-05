@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
@@ -75,7 +74,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         public static IDEType DetectCurrentIDE()
         {
             // 获取当前使用的IDE
-            IDEIntegration currentIDE = IDEIntegrationManager.GetCurrentIntegration();
+            var currentIDE = IDEIntegrationManager.GetCurrentIntegration();
 
             if (currentIDE != null)
             {
@@ -290,7 +289,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void DetectIDE()
         {
             // 获取当前IDE类型
-            IDEType currentType = DetectCurrentIDE();
+            var currentType = DetectCurrentIDE();
 
             if (currentType != IDEType.Unknown)
             {

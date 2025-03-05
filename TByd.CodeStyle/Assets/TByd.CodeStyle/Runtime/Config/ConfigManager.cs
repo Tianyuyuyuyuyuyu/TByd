@@ -94,7 +94,7 @@ namespace TByd.CodeStyle.Runtime.Config
                     s_RuntimeConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
                     
                     // 确保目录存在
-                    string directory = Path.GetDirectoryName(c_AssetPath);
+                    var directory = Path.GetDirectoryName(c_AssetPath);
                     if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
@@ -136,8 +136,8 @@ namespace TByd.CodeStyle.Runtime.Config
 
             try
             {
-                string configJson = JsonUtility.ToJson(s_CurrentConfig, true);
-                string directoryPath = Path.GetDirectoryName(s_ConfigFilePath);
+                var configJson = JsonUtility.ToJson(s_CurrentConfig, true);
+                var directoryPath = Path.GetDirectoryName(s_ConfigFilePath);
 
                 Debug.Log($"[TByd.CodeStyle] 准备保存配置到: {s_ConfigFilePath}");
                 Debug.Log($"[TByd.CodeStyle] 配置目录: {directoryPath}");
@@ -169,7 +169,7 @@ namespace TByd.CodeStyle.Runtime.Config
             {
                 if (File.Exists(s_ConfigFilePath))
                 {
-                    string configJson = File.ReadAllText(s_ConfigFilePath);
+                    var configJson = File.ReadAllText(s_ConfigFilePath);
                     s_CurrentConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
                     JsonUtility.FromJsonOverwrite(configJson, s_CurrentConfig);
 
@@ -217,15 +217,15 @@ namespace TByd.CodeStyle.Runtime.Config
         private static void MigrateConfigIfNeeded()
         {
             // 当前配置版本
-            int currentVersion = s_CurrentConfig.ConfigVersion;
+            var currentVersion = s_CurrentConfig.ConfigVersion;
 
             // 最新配置版本
-            int latestVersion = 1;
+            var latestVersion = 1;
 
             if (currentVersion < latestVersion)
             {
                 // 执行迁移
-                for (int version = currentVersion + 1; version <= latestVersion; version++)
+                for (var version = currentVersion + 1; version <= latestVersion; version++)
                 {
                     MigrateConfig(version);
                 }

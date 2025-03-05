@@ -86,18 +86,18 @@ namespace TByd.CodeStyle.Tests.Editor
             public void RunFinished(ITestResultAdaptor result)
             {
                 // 计算测试时间
-                TimeSpan duration = DateTime.Now - m_StartTime;
+                var duration = DateTime.Now - m_StartTime;
 
                 // 生成报告
-                string reportContent = GenerateHtmlReport(result, m_TestResults, duration);
+                var reportContent = GenerateHtmlReport(result, m_TestResults, duration);
 
                 // 确保报告目录存在
-                string reportDir = Path.Combine(Application.dataPath, "..", c_ReportPath);
+                var reportDir = Path.Combine(Application.dataPath, "..", c_ReportPath);
                 Directory.CreateDirectory(reportDir);
 
                 // 保存报告
-                string reportFileName = string.Format(c_ReportFileName, DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-                string reportPath = Path.Combine(reportDir, reportFileName);
+                var reportFileName = string.Format(c_ReportFileName, DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+                var reportPath = Path.Combine(reportDir, reportFileName);
                 File.WriteAllText(reportPath, reportContent);
 
                 Debug.Log($"测试报告已生成: {reportPath}");
@@ -140,7 +140,7 @@ namespace TByd.CodeStyle.Tests.Editor
             /// <returns>HTML报告内容</returns>
             private string GenerateHtmlReport(ITestResultAdaptor _result, List<TestResult> _testResults, TimeSpan _duration)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
 
                 // HTML头部
                 sb.AppendLine("<!DOCTYPE html>");
@@ -204,11 +204,11 @@ namespace TByd.CodeStyle.Tests.Editor
                 sb.AppendLine("        </tr>");
 
                 // 测试结果行
-                for (int i = 0; i < _testResults.Count; i++)
+                for (var i = 0; i < _testResults.Count; i++)
                 {
                     var testResult = _testResults[i];
-                    string rowClass = "test-row ";
-                    string statusText = "";
+                    var rowClass = "test-row ";
+                    var statusText = "";
 
                     switch (testResult.PassState)
                     {

@@ -41,7 +41,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             get
             {
                 // 检查是否是测试环境
-                bool isTestEnvironment = false;
+                var isTestEnvironment = false;
                 try
                 {
                     var testAssemblies = AppDomain.CurrentDomain.GetAssemblies()
@@ -81,7 +81,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 获取项目根目录
-                string projectRoot = Path.GetDirectoryName(Application.dataPath);
+                var projectRoot = Path.GetDirectoryName(Application.dataPath);
 
                 // EditorConfig应该放在项目根目录，而不是.idea文件夹内
                 var editorConfigPath = Path.Combine(projectRoot, c_RiderConfigFileName);
@@ -115,7 +115,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <param name="_configPath">配置目录路径</param>
         private void CreateRiderCodeStyleConfig(string _configPath)
         {
-            string configContent = @"<code_scheme name=""TByd.CodeStyle"" version=""173"">
+            var configContent = @"<code_scheme name=""TByd.CodeStyle"" version=""173"">
   <option name=""LINE_SEPARATOR"" value=""&#10;"" />
   <option name=""RIGHT_MARGIN"" value=""120"" />
   <CSharpCodeStyleSettings>
@@ -147,7 +147,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
   </CSharpCodeStyleSettings>
 </code_scheme>";
 
-            string configPath = Path.Combine(_configPath, c_RiderCodeStyleFileName);
+            var configPath = Path.Combine(_configPath, c_RiderCodeStyleFileName);
             File.WriteAllText(configPath, configContent);
         }
 
@@ -157,7 +157,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <param name="_configPath">配置目录路径</param>
         private void CreateRiderCSharpSettings(string _configPath)
         {
-            string configContent = @"{
+            var configContent = @"{
     ""fileHeader"": {
         ""enabled"": true,
         ""template"": ""/*\\n * @Author: TByd\\n * @Description: $FILENAME$\\n */""
@@ -198,7 +198,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     }
 }";
 
-            string configPath = Path.Combine(_configPath, c_RiderCSharpSettingsFileName);
+            var configPath = Path.Combine(_configPath, c_RiderCSharpSettingsFileName);
             File.WriteAllText(configPath, configContent);
         }
 
@@ -209,7 +209,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private bool IsRiderScriptEditor()
         {
             // 方法1：检查EditorPrefs
-            string scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
+            var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
             if (!string.IsNullOrEmpty(scriptEditorPref) && scriptEditorPref.IndexOf("Rider", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;
@@ -244,7 +244,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private string GetRiderExecutablePath()
         {
             // 首先尝试从Unity编辑器设置中获取
-            string riderPathFromUnity = GetRiderPathFromUnityPrefs();
+            var riderPathFromUnity = GetRiderPathFromUnityPrefs();
             if (!string.IsNullOrEmpty(riderPathFromUnity) && File.Exists(riderPathFromUnity))
             {
                 return riderPathFromUnity;
@@ -254,26 +254,26 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 // 尝试从注册表获取
-                string pathFromRegistry = GetRiderPathFromRegistry();
+                var pathFromRegistry = GetRiderPathFromRegistry();
                 if (!string.IsNullOrEmpty(pathFromRegistry) && File.Exists(pathFromRegistry))
                 {
                     return pathFromRegistry;
                 }
 
-                string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
                 // 查找JetBrains Toolbox安装的Rider
-                string[] jetbrainsToolboxPaths = new string[]
+                var jetbrainsToolboxPaths = new string[]
                 {
                     Path.Combine(localAppData, "JetBrains", "Toolbox", "apps", "Rider"),
                     Path.Combine(programFiles, "JetBrains", "Toolbox", "apps", "Rider"),
                     Path.Combine(programFilesX86, "JetBrains", "Toolbox", "apps", "Rider")
                 };
 
-                foreach (string path in jetbrainsToolboxPaths)
+                foreach (var path in jetbrainsToolboxPaths)
                 {
                     if (Directory.Exists(path))
                     {
@@ -281,9 +281,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             .OrderByDescending(d => d)
                             .ToArray();
 
-                        foreach (string riderDir in riderDirs)
+                        foreach (var riderDir in riderDirs)
                         {
-                            string exePath = Path.Combine(riderDir, "bin", "rider64.exe");
+                            var exePath = Path.Combine(riderDir, "bin", "rider64.exe");
                             if (File.Exists(exePath))
                             {
                                 return exePath;
@@ -293,20 +293,20 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 查找常规安装的Rider
-                string[] standardPaths = new string[]
+                var standardPaths = new string[]
                 {
                     Path.Combine(programFiles, "JetBrains"),
                     Path.Combine(programFilesX86, "JetBrains")
                 };
 
-                foreach (string basePath in standardPaths)
+                foreach (var basePath in standardPaths)
                 {
                     if (Directory.Exists(basePath))
                     {
-                        string[] riderDirs = Directory.GetDirectories(basePath, "Rider*");
-                        foreach (string riderDir in riderDirs)
+                        var riderDirs = Directory.GetDirectories(basePath, "Rider*");
+                        foreach (var riderDir in riderDirs)
                         {
-                            string exePath = Path.Combine(riderDir, "bin", "rider64.exe");
+                            var exePath = Path.Combine(riderDir, "bin", "rider64.exe");
                             if (File.Exists(exePath))
                             {
                                 return exePath;
@@ -316,7 +316,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查常见的自定义安装位置
-                string[] commonCustomPaths = new string[]
+                var commonCustomPaths = new string[]
                 {
                     @"C:\JetBrains",
                     @"D:\JetBrains",
@@ -331,15 +331,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     @"G:\Program Files\JetBrains"
                 };
 
-                foreach (string basePath in commonCustomPaths)
+                foreach (var basePath in commonCustomPaths)
                 {
                     if (Directory.Exists(basePath))
                     {
                         // 查找所有Rider目录
-                        string[] riderDirs = Directory.GetDirectories(basePath, "JetBrains Rider*");
-                        foreach (string riderDir in riderDirs)
+                        var riderDirs = Directory.GetDirectories(basePath, "JetBrains Rider*");
+                        foreach (var riderDir in riderDirs)
                         {
-                            string exePath = Path.Combine(riderDir, "bin", "rider64.exe");
+                            var exePath = Path.Combine(riderDir, "bin", "rider64.exe");
                             if (File.Exists(exePath))
                             {
                                 return exePath;
@@ -347,13 +347,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         }
 
                         // 查找子目录中的Rider
-                        string[] subDirs = Directory.GetDirectories(basePath);
-                        foreach (string subDir in subDirs)
+                        var subDirs = Directory.GetDirectories(basePath);
+                        foreach (var subDir in subDirs)
                         {
-                            string[] subRiderDirs = Directory.GetDirectories(subDir, "JetBrains Rider*");
-                            foreach (string riderDir in subRiderDirs)
+                            var subRiderDirs = Directory.GetDirectories(subDir, "JetBrains Rider*");
+                            foreach (var riderDir in subRiderDirs)
                             {
-                                string exePath = Path.Combine(riderDir, "bin", "rider64.exe");
+                                var exePath = Path.Combine(riderDir, "bin", "rider64.exe");
                                 if (File.Exists(exePath))
                                 {
                                     return exePath;
@@ -364,15 +364,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查所有逻辑驱动器的根目录
-                foreach (string drive in Directory.GetLogicalDrives())
+                foreach (var drive in Directory.GetLogicalDrives())
                 {
-                    string jetBrainsPath = Path.Combine(drive, "JetBrains");
+                    var jetBrainsPath = Path.Combine(drive, "JetBrains");
                     if (Directory.Exists(jetBrainsPath))
                     {
-                        string[] riderDirs = Directory.GetDirectories(jetBrainsPath, "JetBrains Rider*");
-                        foreach (string riderDir in riderDirs)
+                        var riderDirs = Directory.GetDirectories(jetBrainsPath, "JetBrains Rider*");
+                        foreach (var riderDir in riderDirs)
                         {
-                            string exePath = Path.Combine(riderDir, "bin", "rider64.exe");
+                            var exePath = Path.Combine(riderDir, "bin", "rider64.exe");
                             if (File.Exists(exePath))
                             {
                                 return exePath;
@@ -384,13 +384,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在macOS上查找Rider
             else if (Application.platform == RuntimePlatform.OSXEditor)
             {
-                string[] macPaths = new string[]
+                var macPaths = new string[]
                 {
                     "/Applications/Rider.app/Contents/MacOS/rider",
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/Applications/Rider.app/Contents/MacOS/rider"
                 };
 
-                foreach (string path in macPaths)
+                foreach (var path in macPaths)
                 {
                     if (File.Exists(path))
                     {
@@ -401,7 +401,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在Linux上查找Rider
             else if (Application.platform == RuntimePlatform.LinuxEditor)
             {
-                string[] linuxPaths = new string[]
+                var linuxPaths = new string[]
                 {
                     "/usr/bin/rider",
                     "/usr/local/bin/rider",
@@ -409,7 +409,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/rider/bin/rider.sh"
                 };
 
-                foreach (string path in linuxPaths)
+                foreach (var path in linuxPaths)
                 {
                     if (File.Exists(path))
                     {
@@ -430,7 +430,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从Unity编辑器设置中获取Rider路径
-                string editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
+                var editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
                 if (!string.IsNullOrEmpty(editorPath) && editorPath.Contains("Rider", StringComparison.OrdinalIgnoreCase))
                 {
                     return editorPath;
@@ -453,25 +453,25 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从注册表获取JetBrains Rider路径
-                using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\JetBrains\Rider"))
+                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\JetBrains\Rider"))
                 {
                     if (key != null)
                     {
                         // 获取最新版本的Rider
-                        string[] versionKeys = key.GetSubKeyNames();
+                        var versionKeys = key.GetSubKeyNames();
                         if (versionKeys.Length > 0)
                         {
                             // 按版本号排序，获取最新版本
                             Array.Sort(versionKeys, (a, b) => string.Compare(b, a, StringComparison.Ordinal));
 
-                            using (Microsoft.Win32.RegistryKey versionKey = key.OpenSubKey(versionKeys[0]))
+                            using (var versionKey = key.OpenSubKey(versionKeys[0]))
                             {
                                 if (versionKey != null)
                                 {
-                                    string installDir = versionKey.GetValue("InstallDir") as string;
+                                    var installDir = versionKey.GetValue("InstallDir") as string;
                                     if (!string.IsNullOrEmpty(installDir))
                                     {
-                                        string exePath = Path.Combine(installDir, "bin", "rider64.exe");
+                                        var exePath = Path.Combine(installDir, "bin", "rider64.exe");
                                         if (File.Exists(exePath))
                                         {
                                             return exePath;
@@ -496,7 +496,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private string GetRiderPath()
         {
-            string exePath = GetRiderExecutablePath();
+            var exePath = GetRiderExecutablePath();
             if (string.IsNullOrEmpty(exePath))
             {
                 return string.Empty;
@@ -512,7 +512,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private string GetRiderConfigPath()
         {
             // 获取项目根目录
-            string projectRoot = Path.GetDirectoryName(Application.dataPath);
+            var projectRoot = Path.GetDirectoryName(Application.dataPath);
 
             // 返回.idea目录路径
             return Path.Combine(projectRoot, c_RiderConfigDirectory);

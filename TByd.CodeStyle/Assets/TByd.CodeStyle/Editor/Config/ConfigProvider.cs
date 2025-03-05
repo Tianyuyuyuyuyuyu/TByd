@@ -91,7 +91,7 @@ namespace TByd.CodeStyle.Editor.Config
         {
             try
             {
-                string configJson = JsonUtility.ToJson(GetConfig(), true);
+                var configJson = JsonUtility.ToJson(GetConfig(), true);
                 System.IO.File.WriteAllText(_path, configJson);
                 Debug.Log($"[TByd.CodeStyle] 配置已导出到: {_path}");
             }
@@ -109,8 +109,8 @@ namespace TByd.CodeStyle.Editor.Config
         {
             try
             {
-                string configJson = System.IO.File.ReadAllText(_path);
-                CodeStyleConfig config = JsonUtility.FromJson<CodeStyleConfig>(configJson);
+                var configJson = System.IO.File.ReadAllText(_path);
+                var config = JsonUtility.FromJson<CodeStyleConfig>(configJson);
 
                 // 更新当前配置
                 ConfigManager.GetConfig().ConfigVersion = config.ConfigVersion;

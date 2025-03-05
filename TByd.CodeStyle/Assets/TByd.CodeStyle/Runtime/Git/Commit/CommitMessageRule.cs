@@ -116,7 +116,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
 
             // 检查提交类型是否在配置的有效类型列表中
-            bool isValidType = false;
+            var isValidType = false;
             foreach (var commitType in _config.CommitTypes)
             {
                 if (commitType.Enabled && commitType.Type.Equals(_message.Type, StringComparison.OrdinalIgnoreCase))
@@ -129,7 +129,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             if (!isValidType)
             {
                 // 构建有效类型列表
-                List<string> validTypes = new List<string>();
+                var validTypes = new List<string>();
                 foreach (var commitType in _config.CommitTypes)
                 {
                     if (commitType.Enabled)
@@ -138,7 +138,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     }
                 }
 
-                string validTypesStr = string.Join(", ", validTypes);
+                var validTypesStr = string.Join(", ", validTypes);
 
                 return CommitMessageRuleResult.Failure(
                     $"提交类型 '{_message.Type}' 无效",
@@ -187,7 +187,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
 
             // 检查作用域是否在配置的有效作用域列表中
-            bool isValidScope = false;
+            var isValidScope = false;
 
             // 如果作用域列表为空，则任何非空作用域都是有效的
             if (_config.Scopes == null || _config.Scopes.Count == 0)
@@ -201,7 +201,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
 
             if (!isValidScope)
             {
-                string validScopesStr = _config.Scopes != null && _config.Scopes.Count > 0
+                var validScopesStr = _config.Scopes != null && _config.Scopes.Count > 0
                     ? string.Join(", ", _config.Scopes)
                     : "未配置有效作用域";
 

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using NUnit.Framework;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
 using UnityEngine;
@@ -59,7 +58,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         private void CreateTestConfigFiles()
         {
             // 创建.editorconfig
-            string editorConfigContent = @"root = true
+            var editorConfigContent = @"root = true
             [*]
             charset = utf-8
             end_of_line = lf
@@ -68,9 +67,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             File.WriteAllText(Path.Combine(m_ConfigDirectory, ".editorconfig"), editorConfigContent);
 
             // 创建VS Code配置
-            string vscodeDir = Path.Combine(m_ConfigDirectory, ".vscode");
+            var vscodeDir = Path.Combine(m_ConfigDirectory, ".vscode");
             Directory.CreateDirectory(vscodeDir);
-            string settingsContent = @"{
+            var settingsContent = @"{
                 ""editor.formatOnSave"": true,
                 ""editor.formatOnType"": true
             }";
@@ -136,8 +135,6 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void SynchronizeConfig_ValidConfig_ReturnsSuccess()
         {
             // 设置模拟的配置路径
-            var originalMethod = typeof(IDEConfigSyncManager).GetMethod("GetConfigPath",
-                BindingFlags.NonPublic | BindingFlags.Static);
 
             // 创建一个快照，以便在真实IDE环境中不会影响实际配置
             CallPrivateStaticMethod("SaveSyncConfig", new object[] { new Dictionary<string, string>() });
@@ -160,8 +157,6 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             }
 
             // 模拟配置目录不存在的情况
-            var originalGetConfigPath = typeof(IDEConfigSyncManager).GetMethod("GetConfigPath",
-                BindingFlags.NonPublic | BindingFlags.Static);
 
             // Act
             var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
@@ -179,8 +174,8 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
 
             // 修改文件
-            string settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
-            string newContent = @"{
+            var settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
+            var newContent = @"{
                 ""editor.formatOnSave"": false,
                 ""editor.formatOnType"": false
             }";
@@ -223,7 +218,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         {
             // Arrange
             CreateTestConfigFiles();
-            string settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
+            var settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
             Assert.IsTrue(File.Exists(settingsPath), "设置文件应该存在");
 
             // 创建冲突
@@ -233,7 +228,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             SetPrivateStaticFieldValue("_conflictFiles", conflictFiles);
 
             // Act
-            bool result = IDEConfigSyncManager.ResolveConflicts(true);
+            var result = IDEConfigSyncManager.ResolveConflicts(true);
 
             // Assert
             Assert.IsTrue(result);
@@ -247,11 +242,11 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         {
             // Arrange
             CreateTestConfigFiles();
-            string settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
-            string remoteSettingsPath = GetPrivateStaticMethodResult<string>("GetRemoteConfigPath", settingsPath);
+            var settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
+            var remoteSettingsPath = GetPrivateStaticMethodResult<string>("GetRemoteConfigPath", settingsPath);
 
             // 确保远程目录存在
-            string remoteDir = Path.GetDirectoryName(remoteSettingsPath);
+            var remoteDir = Path.GetDirectoryName(remoteSettingsPath);
             Directory.CreateDirectory(remoteDir);
 
             // 创建不同内容的远程文件
@@ -268,13 +263,13 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             SetPrivateStaticFieldValue("_conflictFiles", conflictFiles);
 
             // Act - 选择使用远程版本解决冲突
-            bool result = IDEConfigSyncManager.ResolveConflicts(false);
+            var result = IDEConfigSyncManager.ResolveConflicts(false);
 
             // Assert
             Assert.IsTrue(result);
 
             // 验证文件内容已更改为远程版本
-            string newContent = File.ReadAllText(settingsPath);
+            var newContent = File.ReadAllText(settingsPath);
             StringAssert.Contains("tabSize", newContent, "文件内容应该被更新为远程版本");
         }
 
@@ -357,8 +352,8 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
 
             // 添加新文件
-            string newFilePath = Path.Combine(m_ConfigDirectory, ".vscode", "launch.json");
-            string newContent = @"{
+            var newFilePath = Path.Combine(m_ConfigDirectory, ".vscode", "launch.json");
+            var newContent = @"{
                 ""version"": ""0.2.0"",
                 ""configurations"": []
             }";
@@ -381,7 +376,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
 
             // 删除文件
-            string settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
+            var settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
             File.Delete(settingsPath);
 
             // Act

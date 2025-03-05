@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.CodeCheck;
-using TByd.CodeStyle.Runtime.Config;
 
 namespace TByd.CodeStyle.Editor.CodeCheck
 {
@@ -69,7 +67,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         private static void InitializeCheckerAndFixer()
         {
             // 获取当前配置
-            CodeStyleConfig config = ConfigProvider.GetConfig();
+            var config = ConfigProvider.GetConfig();
 
             // 初始化检查器
             s_Checker = new CodeChecker(config.CodeCheckConfig);
@@ -216,16 +214,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                     return 1;
                 }
 
-                string filePath = _args[0];
+                var filePath = _args[0];
 
                 if (filePath.EndsWith(".txt") && File.Exists(filePath))
                 {
                     // 如果是文本文件，读取文件列表
-                    string[] files = File.ReadAllLines(filePath);
+                    var files = File.ReadAllLines(filePath);
 
-                    List<CodeCheckIssue> allIssues = new List<CodeCheckIssue>();
+                    var allIssues = new List<CodeCheckIssue>();
 
-                    foreach (string file in files)
+                    foreach (var file in files)
                     {
                         if (string.IsNullOrEmpty(file.Trim()))
                         {
@@ -238,7 +236,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                             continue;
                         }
 
-                        CodeCheckResult result = CheckFile(file);
+                        var result = CheckFile(file);
 
                         if (!result.IsValid)
                         {
@@ -248,7 +246,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
 
                     if (allIssues.Count > 0)
                     {
-                        CodeCheckResult combinedResult = CodeCheckResult.Failure(allIssues);
+                        var combinedResult = CodeCheckResult.Failure(allIssues);
                         Console.Error.WriteLine(GenerateReport(combinedResult));
                         return 1;
                     }
@@ -259,7 +257,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 else if (Directory.Exists(filePath))
                 {
                     // 如果是目录，检查目录
-                    CodeCheckResult result = CheckDirectory(filePath);
+                    var result = CheckDirectory(filePath);
 
                     if (!result.IsValid)
                     {
@@ -273,7 +271,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 else if (File.Exists(filePath))
                 {
                     // 如果是文件，检查文件
-                    CodeCheckResult result = CheckFile(filePath);
+                    var result = CheckFile(filePath);
 
                     if (!result.IsValid)
                     {
@@ -306,7 +304,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
             try
             {
                 // 获取Git仓库路径
-                string repoPath = GetGitRepositoryPath();
+                var repoPath = GetGitRepositoryPath();
                 if (string.IsNullOrEmpty(repoPath))
                 {
                     Debug.LogError("[TByd.CodeStyle] 无法获取Git仓库路径");
@@ -314,19 +312,19 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 }
 
                 // 获取暂存区中的C#文件
-                List<string> stagedFiles = GetStagedCSharpFiles(repoPath);
+                var stagedFiles = GetStagedCSharpFiles(repoPath);
                 if (stagedFiles.Count == 0)
                 {
                     Debug.Log("[TByd.CodeStyle] 没有暂存的C#文件需要检查");
                     return true;
                 }
 
-                List<CodeCheckIssue> allIssues = new List<CodeCheckIssue>();
+                var allIssues = new List<CodeCheckIssue>();
 
                 // 检查每个文件
-                foreach (string file in stagedFiles)
+                foreach (var file in stagedFiles)
                 {
-                    string fullPath = Path.Combine(repoPath, file);
+                    var fullPath = Path.Combine(repoPath, file);
 
                     if (!File.Exists(fullPath))
                     {
@@ -334,7 +332,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                         continue;
                     }
 
-                    CodeCheckResult result = CheckFile(fullPath);
+                    var result = CheckFile(fullPath);
 
                     if (!result.IsValid)
                     {
@@ -345,10 +343,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 if (allIssues.Count > 0)
                 {
                     // 创建组合结果
-                    CodeCheckResult combinedResult = CodeCheckResult.Failure(allIssues);
+                    var combinedResult = CodeCheckResult.Failure(allIssues);
 
                     // 生成报告
-                    string report = GenerateReport(combinedResult);
+                    var report = GenerateReport(combinedResult);
 
                     // 显示通知
                     NotificationSystem.ShowNotification(
@@ -384,7 +382,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
             try
             {
                 // 获取项目路径
-                string projectPath = Path.GetDirectoryName(Application.dataPath);
+                var projectPath = Path.GetDirectoryName(Application.dataPath);
 
                 // 检查.git目录是否存在
                 if (Directory.Exists(Path.Combine(projectPath, ".git")))
@@ -408,12 +406,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         /// <returns>文件列表</returns>
         private static List<string> GetStagedCSharpFiles(string _repoPath)
         {
-            List<string> stagedFiles = new List<string>();
+            var stagedFiles = new List<string>();
 
             try
             {
                 // 创建Git命令
-                System.Diagnostics.Process process = new System.Diagnostics.Process();
+                var process = new System.Diagnostics.Process();
                 process.StartInfo.FileName = "git";
                 process.StartInfo.Arguments = "diff --cached --name-only --diff-filter=ACM";
                 process.StartInfo.UseShellExecute = false;
@@ -425,14 +423,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 process.Start();
 
                 // 读取输出
-                string output = process.StandardOutput.ReadToEnd();
+                var output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
 
                 // 分割输出为行
-                string[] lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
                 // 过滤C#文件
-                foreach (string line in lines)
+                foreach (var line in lines)
                 {
                     if (line.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
                     {
@@ -466,7 +464,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         /// <param name="_report">报告文本</param>
         public static void ShowWindow(string _report)
         {
-            CodeCheckReportWindow window = GetWindow<CodeCheckReportWindow>("代码检查报告");
+            var window = GetWindow<CodeCheckReportWindow>("代码检查报告");
             window.m_Report = _report;
             window.Show();
         }

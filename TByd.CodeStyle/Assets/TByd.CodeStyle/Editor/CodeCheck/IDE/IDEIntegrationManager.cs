@@ -206,7 +206,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <returns>是否成功</returns>
         public static bool ExportConfigToAllIDEs(List<EditorConfigRule> _rules)
         {
-            bool allSuccess = true;
+            var allSuccess = true;
             var integrations = GetInstalledIntegrations();
 
             foreach (var integration in integrations)

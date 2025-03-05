@@ -151,7 +151,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            bool enableCodeCheck = EditorGUILayout.Toggle("启用代码检查", m_Config.EnableCodeStyleCheck);
+            var enableCodeCheck = EditorGUILayout.Toggle("启用代码检查", m_Config.EnableCodeStyleCheck);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -169,10 +169,10 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            bool checkOnSave = EditorGUILayout.Toggle("保存时检查", m_Config.CodeCheckConfig.CheckOnSave);
-            bool checkOnBuild = EditorGUILayout.Toggle("构建时检查", m_Config.CodeCheckConfig.CheckOnBuild);
-            bool checkOnCommit = EditorGUILayout.Toggle("提交时检查", m_Config.CodeCheckConfig.CheckOnCommit);
-            bool fixOnSave = EditorGUILayout.Toggle("保存时自动修复", m_Config.CodeCheckConfig.FixOnSave);
+            var checkOnSave = EditorGUILayout.Toggle("保存时检查", m_Config.CodeCheckConfig.CheckOnSave);
+            var checkOnBuild = EditorGUILayout.Toggle("构建时检查", m_Config.CodeCheckConfig.CheckOnBuild);
+            var checkOnCommit = EditorGUILayout.Toggle("提交时检查", m_Config.CodeCheckConfig.CheckOnCommit);
+            var fixOnSave = EditorGUILayout.Toggle("保存时自动修复", m_Config.CodeCheckConfig.FixOnSave);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -197,15 +197,15 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.Space();
 
             // 绘制忽略路径列表
-            for (int i = 0; i < m_Config.CodeCheckConfig.IgnoredPaths.Count; i++)
+            for (var i = 0; i < m_Config.CodeCheckConfig.IgnoredPaths.Count; i++)
             {
-                string path = m_Config.CodeCheckConfig.IgnoredPaths[i];
+                var path = m_Config.CodeCheckConfig.IgnoredPaths[i];
 
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUI.BeginChangeCheck();
 
-                string newPath = EditorGUILayout.TextField(path);
+                var newPath = EditorGUILayout.TextField(path);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -260,7 +260,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.Space();
 
             // 获取所有规则
-            List<ICodeCheckRule> rules = CodeCheckRunner.GetRules();
+            var rules = CodeCheckRunner.GetRules();
 
             // 按分类分组
             var rulesByCategory = rules
@@ -269,7 +269,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             foreach (var categoryGroup in rulesByCategory)
             {
-                CodeCheckRuleCategory category = categoryGroup.Key;
+                var category = categoryGroup.Key;
 
                 // 绘制分类折叠标题
                 m_CategoryFoldouts[category] = EditorGUILayout.Foldout(m_CategoryFoldouts[category], GetCategoryName(category), true);
@@ -285,10 +285,10 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
                         EditorGUI.BeginChangeCheck();
 
-                        bool enabled = EditorGUILayout.Toggle(rule.Enabled, GUILayout.Width(20));
+                        var enabled = EditorGUILayout.Toggle(rule.Enabled, GUILayout.Width(20));
                         EditorGUILayout.LabelField(rule.Name, GUILayout.Width(200));
 
-                        CodeCheckRuleSeverity severity = (CodeCheckRuleSeverity)EditorGUILayout.EnumPopup(rule.Severity, GUILayout.Width(100));
+                        var severity = (CodeCheckRuleSeverity)EditorGUILayout.EnumPopup(rule.Severity, GUILayout.Width(100));
 
                         if (EditorGUI.EndChangeCheck())
                         {
@@ -330,7 +330,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             if (GUILayout.Button("浏览", GUILayout.Width(60)))
             {
-                string path = EditorUtility.OpenFilePanel("选择C#文件", Application.dataPath, "cs");
+                var path = EditorUtility.OpenFilePanel("选择C#文件", Application.dataPath, "cs");
                 if (!string.IsNullOrEmpty(path))
                 {
                     m_TestFilePath = path;
@@ -345,7 +345,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 if (!string.IsNullOrEmpty(m_TestFilePath))
                 {
-                    CodeCheckResult result = CodeCheckRunner.CheckFile(m_TestFilePath);
+                    var result = CodeCheckRunner.CheckFile(m_TestFilePath);
                     m_TestResult = CodeCheckRunner.GenerateReport(result);
                 }
                 else
@@ -358,7 +358,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 if (!string.IsNullOrEmpty(m_TestFilePath))
                 {
-                    bool isFixed = CodeCheckRunner.FixFile(m_TestFilePath);
+                    var isFixed = CodeCheckRunner.FixFile(m_TestFilePath);
                     m_TestResult = isFixed ? "文件已修复" : "文件无需修复";
                 }
                 else

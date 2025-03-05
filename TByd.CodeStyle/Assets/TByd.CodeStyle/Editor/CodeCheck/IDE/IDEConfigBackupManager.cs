@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
 using UnityEngine;
 
@@ -83,12 +82,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 确保备份目录存在
-                string backupRoot = GetBackupRootPath();
+                var backupRoot = GetBackupRootPath();
                 Directory.CreateDirectory(backupRoot);
 
                 // 创建备份ID - 在测试环境中使用固定的ID
                 string backupId;
-                bool isTestEnvironment = backupRoot.Contains("Test") || backupRoot.Contains("test");
+                var isTestEnvironment = backupRoot.Contains("Test") || backupRoot.Contains("test");
                 if (isTestEnvironment && _description.Contains("测试") || isTestEnvironment && _description.Contains("test"))
                 {
                     // 为测试创建固定的ID
@@ -110,15 +109,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 };
 
                 // 创建备份目录
-                string backupDir = Path.Combine(backupRoot, backupInfo.Id);
+                var backupDir = Path.Combine(backupRoot, backupInfo.Id);
                 Directory.CreateDirectory(backupDir);
 
                 // 获取需要备份的文件
-                string configPath = GetConfigPath(_ideType);
+                var configPath = GetConfigPath(_ideType);
                 var filesToBackup = GetFilesToBackup(_ideType, configPath);
 
                 // 检查是否为大文件测试
-                bool isLargeFileTest = false;
+                var isLargeFileTest = false;
                 if (isTestEnvironment && _description.Contains("LargeFile"))
                 {
                     isLargeFileTest = true;
@@ -129,18 +128,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 {
                     if (File.Exists(file))
                     {
-                        string relativePath = GetRelativePath(file, configPath);
-                        string backupPath = Path.Combine(backupDir, relativePath);
+                        var relativePath = GetRelativePath(file, configPath);
+                        var backupPath = Path.Combine(backupDir, relativePath);
 
                         // 确保目标目录存在
-                        string targetDir = Path.GetDirectoryName(backupPath);
+                        var targetDir = Path.GetDirectoryName(backupPath);
                         if (!string.IsNullOrEmpty(targetDir))
                         {
                             Directory.CreateDirectory(targetDir);
                         }
 
                         // 获取文件大小
-                        long fileSize = new FileInfo(file).Length;
+                        var fileSize = new FileInfo(file).Length;
 
                         // 对于大文件测试，强制将所有文件视为大文件
                         if (isLargeFileTest || fileSize > c_LargeFileSizeThreshold)
@@ -169,9 +168,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 如果是测试环境且没有文件被备份，创建示例文件
                 if (isTestEnvironment && backupInfo.Files.Count == 0)
                 {
-                    string relativePath = ".vscode/settings.json";
-                    string sampleDir = Path.Combine(backupDir, ".vscode");
-                    string samplePath = Path.Combine(sampleDir, "settings.json");
+                    var relativePath = ".vscode/settings.json";
+                    var sampleDir = Path.Combine(backupDir, ".vscode");
+                    var samplePath = Path.Combine(sampleDir, "settings.json");
 
                     if (!Directory.Exists(sampleDir))
                     {
@@ -217,7 +216,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 获取备份目录
-                string backupDir = Path.Combine(GetBackupRootPath(), backup.Id);
+                var backupDir = Path.Combine(GetBackupRootPath(), backup.Id);
                 if (!Directory.Exists(backupDir))
                 {
                     // 尝试创建目录，如果是测试环境
@@ -234,7 +233,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                 Directory.CreateDirectory(Path.Combine(backupDir, ".vscode"));
                             }
 
-                            string sampleFilePath = Path.Combine(backupDir, ".vscode", "settings.json");
+                            var sampleFilePath = Path.Combine(backupDir, ".vscode", "settings.json");
                             File.WriteAllText(sampleFilePath, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
                         }
                         catch (Exception ex)
@@ -251,7 +250,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 获取目标配置目录
-                string configPath = GetConfigPath(backup.IDEType);
+                var configPath = GetConfigPath(backup.IDEType);
 
                 // 确保配置目录存在
                 if (!Directory.Exists(configPath))
@@ -269,28 +268,28 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 记录恢复操作的状态
-                bool anyFileRestored = false;
-                List<string> failedFiles = new List<string>();
+                var anyFileRestored = false;
+                var failedFiles = new List<string>();
 
                 // 在测试环境中，如果没有文件可以恢复，创建示例文件
                 if (backup.Files.Count == 0 && (configPath.Contains("Test") || configPath.Contains("test")))
                 {
-                    string relativePath = ".vscode/settings.json";
+                    var relativePath = ".vscode/settings.json";
                     backup.Files.Add(relativePath);
 
-                    string targetDir = Path.Combine(backupDir, ".vscode");
+                    var targetDir = Path.Combine(backupDir, ".vscode");
                     if (!Directory.Exists(targetDir))
                     {
                         Directory.CreateDirectory(targetDir);
                     }
 
-                    string sampleFilePath = Path.Combine(backupDir, relativePath);
+                    var sampleFilePath = Path.Combine(backupDir, relativePath);
                     File.WriteAllText(sampleFilePath, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
                     Debug.Log($"[TByd.CodeStyle] 已为测试创建示例文件: {sampleFilePath}");
                 }
 
                 // 恢复文件前进行备份，避免恢复中断导致部分文件损坏
-                string tempBackupId = string.Empty;
+                var tempBackupId = string.Empty;
                 try
                 {
                     tempBackupId = CreateBackup(backup.IDEType, "恢复操作前的自动备份");
@@ -308,13 +307,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 恢复文件
                 foreach (var relativePath in backup.Files)
                 {
-                    string backupPath = Path.Combine(backupDir, relativePath);
-                    string targetPath = Path.Combine(configPath, relativePath);
+                    var backupPath = Path.Combine(backupDir, relativePath);
+                    var targetPath = Path.Combine(configPath, relativePath);
 
                     try
                     {
                         // 确保目标目录存在
-                        string targetDir = Path.GetDirectoryName(targetPath);
+                        var targetDir = Path.GetDirectoryName(targetPath);
                         if (!string.IsNullOrEmpty(targetDir) && !Directory.Exists(targetDir))
                         {
                             Directory.CreateDirectory(targetDir);
@@ -324,7 +323,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         // 如果文件不存在于备份中，但处于测试环境，则创建一个示例文件
                         if (!File.Exists(backupPath) && (backupDir.Contains("Test") || backupDir.Contains("test")))
                         {
-                            string sampleDir = Path.GetDirectoryName(backupPath);
+                            var sampleDir = Path.GetDirectoryName(backupPath);
                             if (!string.IsNullOrEmpty(sampleDir) && !Directory.Exists(sampleDir))
                             {
                                 Directory.CreateDirectory(sampleDir);
@@ -343,7 +342,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             }
 
                             // 获取文件大小
-                            long fileSize = new FileInfo(backupPath).Length;
+                            var fileSize = new FileInfo(backupPath).Length;
 
                             // 根据文件大小选择复制方式
                             if (fileSize > c_LargeFileSizeThreshold)
@@ -413,7 +412,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 删除备份目录
-                string backupDir = Path.Combine(GetBackupRootPath(), backup.Id);
+                var backupDir = Path.Combine(GetBackupRootPath(), backup.Id);
                 if (Directory.Exists(backupDir))
                 {
                     Directory.Delete(backupDir, true);
@@ -474,7 +473,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                 case IDEType.VSCode:
                     // 添加VS Code的配置文件
-                    string vscodePath = Path.Combine(_configPath, ".vscode");
+                    var vscodePath = Path.Combine(_configPath, ".vscode");
                     if (Directory.Exists(vscodePath))
                     {
                         files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.TopDirectoryOnly));
@@ -483,7 +482,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // 添加通用的配置文件
-            string editorConfigPath = Path.Combine(_configPath, ".editorconfig");
+            var editorConfigPath = Path.Combine(_configPath, ".editorconfig");
             if (File.Exists(editorConfigPath))
             {
                 files.Add(editorConfigPath);
@@ -526,8 +525,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private static string GetRelativePath(string _fullPath, string _basePath)
         {
-            Uri baseUri = new Uri(_basePath + Path.DirectorySeparatorChar);
-            Uri fullUri = new Uri(_fullPath);
+            var baseUri = new Uri(_basePath + Path.DirectorySeparatorChar);
+            var fullUri = new Uri(_fullPath);
             return Uri.UnescapeDataString(baseUri.MakeRelativeUri(fullUri).ToString());
         }
 
@@ -536,12 +535,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private static BackupConfig LoadBackupConfig()
         {
-            string configPath = Path.Combine(GetBackupRootPath(), c_BackupConfigFileName);
+            var configPath = Path.Combine(GetBackupRootPath(), c_BackupConfigFileName);
             if (File.Exists(configPath))
             {
                 try
                 {
-                    string json = File.ReadAllText(configPath);
+                    var json = File.ReadAllText(configPath);
                     return JsonUtility.FromJson<BackupConfig>(json);
                 }
                 catch
@@ -558,8 +557,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private static void SaveBackupConfig(BackupConfig _config)
         {
-            string configPath = Path.Combine(GetBackupRootPath(), c_BackupConfigFileName);
-            string json = JsonUtility.ToJson(_config, true);
+            var configPath = Path.Combine(GetBackupRootPath(), c_BackupConfigFileName);
+            var json = JsonUtility.ToJson(_config, true);
             File.WriteAllText(configPath, json);
         }
 
@@ -573,7 +572,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 确保目标目录存在
-                string targetDir = Path.GetDirectoryName(_destPath);
+                var targetDir = Path.GetDirectoryName(_destPath);
                 if (!string.IsNullOrEmpty(targetDir) && !Directory.Exists(targetDir))
                 {
                     Directory.CreateDirectory(targetDir);
@@ -588,9 +587,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 using (var sourceStream = new FileStream(_sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var destStream = new FileStream(_destPath, FileMode.Create, FileAccess.Write))
                 {
-                    byte[] buffer = new byte[c_BufferSize];
+                    var buffer = new byte[c_BufferSize];
                     int bytesRead;
-                    long totalBytes = sourceStream.Length;
+                    var totalBytes = sourceStream.Length;
                     long bytesWritten = 0;
 
                     while ((bytesRead = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
@@ -601,7 +600,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         // 更新进度
                         if (totalBytes > 0)
                         {
-                            float progress = (float)bytesWritten / totalBytes;
+                            var progress = (float)bytesWritten / totalBytes;
                             EditorUtility.DisplayProgressBar("复制大文件",
                                 $"正在复制 {Path.GetFileName(_sourcePath)} ({bytesWritten / 1024}/{totalBytes / 1024} KB)",
                                 progress);
@@ -619,8 +618,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 验证文件大小匹配
-                long sourceSize = new FileInfo(_sourcePath).Length;
-                long destSize = new FileInfo(_destPath).Length;
+                var sourceSize = new FileInfo(_sourcePath).Length;
+                var destSize = new FileInfo(_destPath).Length;
                 if (sourceSize != destSize)
                 {
                     throw new IOException($"文件复制失败，大小不匹配: 源文件 {sourceSize} 字节，目标文件 {destSize} 字节");

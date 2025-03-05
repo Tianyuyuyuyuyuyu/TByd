@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.IO;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Config;
@@ -141,10 +139,10 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            bool enableGitCommitCheck = EditorGUILayout.Toggle("启用Git提交规范检查", m_Config.EnableGitCommitCheck);
-            bool enableCodeStyleCheck = EditorGUILayout.Toggle("启用代码风格检查", m_Config.EnableCodeStyleCheck);
-            bool checkOnCompile = EditorGUILayout.Toggle("编译时检查代码风格", m_Config.CheckOnCompile);
-            bool checkBeforeCommit = EditorGUILayout.Toggle("提交前检查代码风格", m_Config.CheckBeforeCommit);
+            var enableGitCommitCheck = EditorGUILayout.Toggle("启用Git提交规范检查", m_Config.EnableGitCommitCheck);
+            var enableCodeStyleCheck = EditorGUILayout.Toggle("启用代码风格检查", m_Config.EnableCodeStyleCheck);
+            var checkOnCompile = EditorGUILayout.Toggle("编译时检查代码风格", m_Config.CheckOnCompile);
+            var checkBeforeCommit = EditorGUILayout.Toggle("提交前检查代码风格", m_Config.CheckBeforeCommit);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -177,16 +175,16 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            GitCommitConfig gitConfig = m_Config.GitCommitConfig;
+            var gitConfig = m_Config.GitCommitConfig;
 
-            bool forceUseTemplate = EditorGUILayout.Toggle("强制使用提交模板", gitConfig.ForceUseTemplate);
-            bool requireType = EditorGUILayout.Toggle("要求提交类型", gitConfig.RequireType);
-            bool requireScope = EditorGUILayout.Toggle("要求作用域", gitConfig.RequireScope);
-            bool requireSubject = EditorGUILayout.Toggle("要求简短描述", gitConfig.RequireSubject);
-            bool requireBody = EditorGUILayout.Toggle("要求详细描述", gitConfig.RequireBody);
-            bool requireFooter = EditorGUILayout.Toggle("要求关闭的问题", gitConfig.RequireFooter);
+            var forceUseTemplate = EditorGUILayout.Toggle("强制使用提交模板", gitConfig.ForceUseTemplate);
+            var requireType = EditorGUILayout.Toggle("要求提交类型", gitConfig.RequireType);
+            var requireScope = EditorGUILayout.Toggle("要求作用域", gitConfig.RequireScope);
+            var requireSubject = EditorGUILayout.Toggle("要求简短描述", gitConfig.RequireSubject);
+            var requireBody = EditorGUILayout.Toggle("要求详细描述", gitConfig.RequireBody);
+            var requireFooter = EditorGUILayout.Toggle("要求关闭的问题", gitConfig.RequireFooter);
 
-            int subjectMaxLength = EditorGUILayout.IntSlider("简短描述最大长度", gitConfig.SubjectMaxLength, 10, 200);
+            var subjectMaxLength = EditorGUILayout.IntSlider("简短描述最大长度", gitConfig.SubjectMaxLength, 10, 200);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -205,17 +203,17 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.LabelField("提交类型", EditorStyles.boldLabel);
 
             // 绘制提交类型列表
-            for (int i = 0; i < gitConfig.CommitTypes.Count; i++)
+            for (var i = 0; i < gitConfig.CommitTypes.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUI.BeginChangeCheck();
 
-                GitCommitConfig.CommitType commitType = gitConfig.CommitTypes[i];
+                var commitType = gitConfig.CommitTypes[i];
 
-                bool enabled = EditorGUILayout.Toggle(commitType.Enabled, GUILayout.Width(20));
-                string type = EditorGUILayout.TextField(commitType.Type, GUILayout.Width(100));
-                string description = EditorGUILayout.TextField(commitType.Description);
+                var enabled = EditorGUILayout.Toggle(commitType.Enabled, GUILayout.Width(20));
+                var type = EditorGUILayout.TextField(commitType.Type, GUILayout.Width(100));
+                var description = EditorGUILayout.TextField(commitType.Description);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -247,13 +245,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.LabelField("作用域", EditorStyles.boldLabel);
 
             // 绘制作用域列表
-            for (int i = 0; i < gitConfig.Scopes.Count; i++)
+            for (var i = 0; i < gitConfig.Scopes.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUI.BeginChangeCheck();
 
-                string scope = EditorGUILayout.TextField(gitConfig.Scopes[i]);
+                var scope = EditorGUILayout.TextField(gitConfig.Scopes[i]);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -299,11 +297,11 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            CodeCheckConfig codeConfig = m_Config.CodeCheckConfig;
+            var codeConfig = m_Config.CodeCheckConfig;
 
-            bool ignoreGeneratedCode = EditorGUILayout.Toggle("忽略生成的代码", codeConfig.IgnoreGeneratedCode);
-            bool ignoreThirdPartyCode = EditorGUILayout.Toggle("忽略第三方代码", codeConfig.IgnoreThirdPartyCode);
-            bool ignoreTestCode = EditorGUILayout.Toggle("忽略测试代码", codeConfig.IgnoreTestCode);
+            var ignoreGeneratedCode = EditorGUILayout.Toggle("忽略生成的代码", codeConfig.IgnoreGeneratedCode);
+            var ignoreThirdPartyCode = EditorGUILayout.Toggle("忽略第三方代码", codeConfig.IgnoreThirdPartyCode);
+            var ignoreTestCode = EditorGUILayout.Toggle("忽略测试代码", codeConfig.IgnoreTestCode);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -318,13 +316,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.LabelField("忽略的路径", EditorStyles.boldLabel);
 
             // 绘制忽略的路径列表
-            for (int i = 0; i < codeConfig.IgnoredPaths.Count; i++)
+            for (var i = 0; i < codeConfig.IgnoredPaths.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUI.BeginChangeCheck();
 
-                string path = EditorGUILayout.TextField(codeConfig.IgnoredPaths[i]);
+                var path = EditorGUILayout.TextField(codeConfig.IgnoredPaths[i]);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -353,22 +351,22 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.LabelField("代码规则", EditorStyles.boldLabel);
 
             // 绘制代码规则列表
-            for (int i = 0; i < codeConfig.Rules.Count; i++)
+            for (var i = 0; i < codeConfig.Rules.Count; i++)
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
                 EditorGUI.BeginChangeCheck();
 
-                CodeCheckConfig.CodeRule rule = codeConfig.Rules[i];
+                var rule = codeConfig.Rules[i];
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.LabelField(rule.Id, GUILayout.Width(80));
-                string name = EditorGUILayout.TextField(rule.Name);
+                var name = EditorGUILayout.TextField(rule.Name);
                 EditorGUILayout.EndHorizontal();
 
-                string description = EditorGUILayout.TextField("描述", rule.Description);
+                var description = EditorGUILayout.TextField("描述", rule.Description);
 
-                CodeCheckConfig.RuleSeverity severity = (CodeCheckConfig.RuleSeverity)EditorGUILayout.EnumPopup("严重程度", rule.Severity);
+                var severity = (CodeCheckConfig.RuleSeverity)EditorGUILayout.EnumPopup("严重程度", rule.Severity);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -392,7 +390,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             // 添加新的代码规则
             if (GUILayout.Button("添加代码规则", GUILayout.Width(120)))
             {
-                string newId = "CS" + (1000 + codeConfig.Rules.Count).ToString();
+                var newId = "CS" + (1000 + codeConfig.Rules.Count).ToString();
                 codeConfig.Rules.Add(new CodeCheckConfig.CodeRule(newId, "新规则", "新规则描述"));
                 m_IsDirty = true;
             }
@@ -430,7 +428,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// </summary>
         private void ExportSettings()
         {
-            string path = EditorUtility.SaveFilePanel("导出设置", "", "TBydCodeStyleConfig.json", "json");
+            var path = EditorUtility.SaveFilePanel("导出设置", "", "TBydCodeStyleConfig.json", "json");
             if (!string.IsNullOrEmpty(path))
             {
                 ConfigProvider.ExportConfig(path);
@@ -443,7 +441,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// </summary>
         private void ImportSettings()
         {
-            string path = EditorUtility.OpenFilePanel("导入设置", "", "json");
+            var path = EditorUtility.OpenFilePanel("导入设置", "", "json");
             if (!string.IsNullOrEmpty(path))
             {
                 ConfigProvider.ImportConfig(path);

@@ -1,4 +1,3 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -191,7 +190,7 @@ namespace TByd.CodeStyle.Editor.UI.Utils
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            GUIStyle style = new GUIStyle(EditorStyles.label);
+            var style = new GUIStyle(EditorStyles.label);
             style.normal.textColor = GetNotificationColor(s_CurrentNotificationType);
             style.fontStyle = FontStyle.Bold;
 
@@ -211,7 +210,7 @@ namespace TByd.CodeStyle.Editor.UI.Utils
                 EditorApplication.timeSinceStartup > s_NotificationEndTime)
                 return false;
 
-            GUIStyle style = new GUIStyle(EditorStyles.helpBox);
+            var style = new GUIStyle(EditorStyles.helpBox);
             style.normal.textColor = GetNotificationColor(s_CurrentNotificationType);
             style.fontStyle = FontStyle.Bold;
             style.padding = new RectOffset(10, 10, 5, 5);

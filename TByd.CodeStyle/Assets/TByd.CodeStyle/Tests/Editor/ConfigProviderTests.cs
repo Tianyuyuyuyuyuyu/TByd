@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Runtime.Config;
@@ -47,7 +46,7 @@ namespace TByd.CodeStyle.Tests.Editor
             }
 
             // 确保测试配置目录存在
-            string directoryPath = Path.GetDirectoryName(m_FullTestConfigPath);
+            var directoryPath = Path.GetDirectoryName(m_FullTestConfigPath);
             Debug.Log($"[TByd.CodeStyle.Tests] 测试配置目录: {directoryPath}");
 
             if (!Directory.Exists(directoryPath))
@@ -64,7 +63,7 @@ namespace TByd.CodeStyle.Tests.Editor
             try
             {
                 // 创建一个临时文件来测试写入权限
-                string testFile = Path.Combine(directoryPath, "test_write.tmp");
+                var testFile = Path.Combine(directoryPath, "test_write.tmp");
                 File.WriteAllText(testFile, "test");
                 Debug.Log($"[TByd.CodeStyle.Tests] 成功写入测试文件: {testFile}");
                 File.Delete(testFile);
@@ -141,7 +140,7 @@ namespace TByd.CodeStyle.Tests.Editor
             config.CommitMessageSettings.RequireScope = true;
 
             // 确保测试目录存在
-            string directoryPath = Path.GetDirectoryName(m_FullTestConfigPath);
+            var directoryPath = Path.GetDirectoryName(m_FullTestConfigPath);
             if (!Directory.Exists(directoryPath))
             {
                 Debug.Log($"[TByd.CodeStyle.Tests] 创建测试目录: {directoryPath}");
@@ -156,7 +155,7 @@ namespace TByd.CodeStyle.Tests.Editor
             try
             {
                 // 创建一个临时文件来测试写入权限
-                string testFile = Path.Combine(directoryPath, "test_write.tmp");
+                var testFile = Path.Combine(directoryPath, "test_write.tmp");
                 File.WriteAllText(testFile, "test");
                 Debug.Log($"[TByd.CodeStyle.Tests] 成功写入测试文件: {testFile}");
                 File.Delete(testFile);
@@ -173,18 +172,18 @@ namespace TByd.CodeStyle.Tests.Editor
             ConfigProvider.SaveConfig();
 
             // 验证配置文件存在
-            bool fileExists = File.Exists(m_FullTestConfigPath);
+            var fileExists = File.Exists(m_FullTestConfigPath);
             Debug.Log($"[TByd.CodeStyle.Tests] 配置文件存在: {fileExists}, 路径: {m_FullTestConfigPath}");
             Assert.IsTrue(fileExists, $"配置文件不存在: {m_FullTestConfigPath}");
 
             // 读取配置文件内容，确保内容正确
-            string configContent = File.ReadAllText(m_FullTestConfigPath);
+            var configContent = File.ReadAllText(m_FullTestConfigPath);
             Debug.Log($"[TByd.CodeStyle.Tests] 配置文件内容长度: {configContent.Length}");
             Assert.IsTrue(!string.IsNullOrEmpty(configContent), "配置文件内容为空");
 
             // 验证配置内容包含修改的值
-            bool containsEnableGitHooks = configContent.Contains("\"m_AutoInstallHooks\": true");
-            bool containsRequireScope = configContent.Contains("\"RequireScope\": true") || configContent.Contains("\"m_RequireScope\": true");
+            var containsEnableGitHooks = configContent.Contains("\"m_AutoInstallHooks\": true");
+            var containsRequireScope = configContent.Contains("\"RequireScope\": true") || configContent.Contains("\"m_RequireScope\": true");
             Debug.Log($"[TByd.CodeStyle.Tests] 配置包含m_AutoInstallHooks: {containsEnableGitHooks}, 包含RequireScope: {containsRequireScope}");
             Debug.Log($"[TByd.CodeStyle.Tests] 配置内容: {configContent}");
             Assert.IsTrue(containsEnableGitHooks, "配置文件不包含EnableGitHooks设置");
@@ -207,7 +206,7 @@ namespace TByd.CodeStyle.Tests.Editor
         public void ConfigChanged_EventTriggered()
         {
             // 标记是否触发事件
-            bool eventTriggered = false;
+            var eventTriggered = false;
 
             // 订阅配置变更事件
             ConfigProvider.ConfigChanged += () => eventTriggered = true;

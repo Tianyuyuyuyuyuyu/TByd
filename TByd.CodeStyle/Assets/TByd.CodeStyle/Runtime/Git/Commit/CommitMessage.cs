@@ -134,7 +134,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     return string.Empty;
 
                 // 获取第一行作为头部
-                int newlineIndex = m_RawMessage.IndexOf('\n');
+                var newlineIndex = m_RawMessage.IndexOf('\n');
                 return newlineIndex > 0 ? m_RawMessage.Substring(0, newlineIndex) : m_RawMessage;
             }
         }
@@ -145,7 +145,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>格式化的提交消息</returns>
         public string GetFormattedMessage()
         {
-            string header = string.IsNullOrEmpty(m_Scope) ?
+            var header = string.IsNullOrEmpty(m_Scope) ?
                 $"{m_Type}: {m_Subject}" :
                 $"{m_Type}({m_Scope}): {m_Subject}";
 
@@ -154,7 +154,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 return header;
             }
 
-            string message = header;
+            var message = header;
 
             if (!string.IsNullOrEmpty(m_Body))
             {

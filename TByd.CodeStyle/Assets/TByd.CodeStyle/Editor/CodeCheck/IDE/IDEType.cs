@@ -1,5 +1,3 @@
-using System;
-
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
     /// <summary>

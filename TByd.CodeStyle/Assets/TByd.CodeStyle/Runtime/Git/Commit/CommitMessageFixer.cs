@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using TByd.CodeStyle.Runtime.Config;
 using UnityEngine;
@@ -38,7 +37,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             try
             {
                 // 创建新的提交消息对象
-                CommitMessage fixedMessage = new CommitMessage(
+                var fixedMessage = new CommitMessage(
                     _message.Type,
                     _message.Scope,
                     _message.Subject,
@@ -140,7 +139,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
 
             // 移除末尾的句号
-            string subject = _subject.TrimEnd('.');
+            var subject = _subject.TrimEnd('.');
 
             // 截断过长的简短描述
             if (subject.Length > m_Config.SubjectMaxLength)
@@ -158,8 +157,8 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>修复后的提交消息文本</returns>
         public string FixText(string _messageText)
         {
-            CommitMessage message = CommitMessageParser.Parse(_messageText);
-            CommitMessage fixedMessage = Fix(message);
+            var message = CommitMessageParser.Parse(_messageText);
+            var fixedMessage = Fix(message);
             return fixedMessage.GetFormattedMessage();
         }
 
@@ -178,8 +177,8 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                     return false;
                 }
 
-                string messageText = System.IO.File.ReadAllText(_filePath);
-                string fixedMessageText = FixText(messageText);
+                var messageText = System.IO.File.ReadAllText(_filePath);
+                var fixedMessageText = FixText(messageText);
 
                 System.IO.File.WriteAllText(_filePath, fixedMessageText);
 
@@ -198,7 +197,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>提交消息模板</returns>
         public string GenerateTemplate()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             // 添加模板说明
             sb.AppendLine("# 请按照以下格式填写提交信息:");
@@ -259,10 +258,10 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         {
             try
             {
-                string template = GenerateTemplate();
+                var template = GenerateTemplate();
 
                 // 如果文件已存在，则读取原始内容
-                string originalContent = string.Empty;
+                var originalContent = string.Empty;
                 if (System.IO.File.Exists(_filePath))
                 {
                     originalContent = System.IO.File.ReadAllText(_filePath);

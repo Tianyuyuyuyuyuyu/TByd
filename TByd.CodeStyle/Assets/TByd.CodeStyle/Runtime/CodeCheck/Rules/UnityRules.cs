@@ -1,6 +1,3 @@
-using System.Text.RegularExpressions;
-using TByd.CodeStyle.Runtime.Config;
-
 namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
 {
     /// <summary>

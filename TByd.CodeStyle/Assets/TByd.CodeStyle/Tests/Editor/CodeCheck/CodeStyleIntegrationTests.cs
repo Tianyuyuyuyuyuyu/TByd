@@ -31,7 +31,7 @@ namespace TByd.CodeStyle.Tests.Editor.CodeCheck
 
             // 创建.editorconfig文件
             m_EditorConfigPath = Path.Combine(m_TestDirectory, ".editorconfig");
-            string editorConfigContent = @"root = true
+            var editorConfigContent = @"root = true
 
 [*]
 charset = utf-8
@@ -135,7 +135,7 @@ dotnet_naming_style.prefix_m_.capitalization = pascal_case
         public void FullWorkflow_ValidAndInvalidCode_CorrectlyDetectsIssues()
         {
             // 1. 加载EditorConfig规则
-            List<EditorConfigRule> rules = EditorConfigParser.ParseFile(m_EditorConfigPath);
+            var rules = EditorConfigParser.ParseFile(m_EditorConfigPath);
             Assert.Greater(rules.Count, 0, "应该成功解析EditorConfig规则");
 
             // 注册规则到EditorConfig管理器
@@ -144,11 +144,11 @@ dotnet_naming_style.prefix_m_.capitalization = pascal_case
                 ?.SetValue(null, rules);
 
             // 2. 创建测试代码文件
-            string validCodePath = Path.Combine(m_TestDirectory, "ValidCode.cs");
-            string invalidCodePath = Path.Combine(m_TestDirectory, "InvalidCode.cs");
+            var validCodePath = Path.Combine(m_TestDirectory, "ValidCode.cs");
+            var invalidCodePath = Path.Combine(m_TestDirectory, "InvalidCode.cs");
 
             // 有效的代码示例（符合命名规则）
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class ExampleClass : MonoBehaviour
@@ -174,7 +174,7 @@ public class ExampleClass : MonoBehaviour
 }";
 
             // 无效的代码示例（不符合命名规则）
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExampleClass : MonoBehaviour
@@ -205,8 +205,8 @@ public class BadExampleClass : MonoBehaviour
             File.WriteAllText(invalidCodePath, invalidCode);
 
             // 3. 执行代码检查
-            CodeCheckResult validResult = m_CodeChecker.CheckFile(validCodePath);
-            CodeCheckResult invalidResult = m_CodeChecker.CheckFile(invalidCodePath);
+            var validResult = m_CodeChecker.CheckFile(validCodePath);
+            var invalidResult = m_CodeChecker.CheckFile(invalidCodePath);
 
             // 验证检查结果
             Assert.IsTrue(validResult.IsValid || validResult.Issues.Count == 0,
@@ -216,8 +216,8 @@ public class BadExampleClass : MonoBehaviour
             Assert.Greater(invalidResult.Issues.Count, 0, "不符合规则的代码应该有问题");
 
             // 验证检测到了不同类型的问题
-            bool foundNamingIssue = false;
-            bool foundFindInUpdateIssue = false;
+            var foundNamingIssue = false;
+            var foundFindInUpdateIssue = false;
 
             foreach (var issue in invalidResult.Issues)
             {
@@ -232,7 +232,7 @@ public class BadExampleClass : MonoBehaviour
 
             // 4. 将EditorConfig导出到IDE
             // 直接使用静态类方法
-            bool exportResult = IDEIntegrationManager.ExportConfigToAllIDEs(rules);
+            var exportResult = IDEIntegrationManager.ExportConfigToAllIDEs(rules);
 
             // 验证导出结果
             Assert.IsTrue(exportResult, "配置导出应该成功");
@@ -245,11 +245,11 @@ public class BadExampleClass : MonoBehaviour
         public void EdgeCase_EmptyFile_HandledGracefully()
         {
             // 创建空文件
-            string emptyFilePath = Path.Combine(m_TestDirectory, "EmptyFile.cs");
+            var emptyFilePath = Path.Combine(m_TestDirectory, "EmptyFile.cs");
             File.WriteAllText(emptyFilePath, "");
 
             // 执行代码检查
-            CodeCheckResult result = m_CodeChecker.CheckFile(emptyFilePath);
+            var result = m_CodeChecker.CheckFile(emptyFilePath);
 
             // 验证检查结果（不应抛出异常，应该优雅处理）
             Assert.IsTrue(result.IsValid, "空文件应该被优雅处理");
@@ -263,8 +263,8 @@ public class BadExampleClass : MonoBehaviour
         public void EdgeCase_CommentsOnlyFile_HandledGracefully()
         {
             // 创建仅有注释的文件
-            string commentsFilePath = Path.Combine(m_TestDirectory, "CommentsOnly.cs");
-            string commentsContent = @"
+            var commentsFilePath = Path.Combine(m_TestDirectory, "CommentsOnly.cs");
+            var commentsContent = @"
 // 这是一个仅有注释的文件
 // 没有实际的代码内容
 /*
@@ -275,7 +275,7 @@ public class BadExampleClass : MonoBehaviour
             File.WriteAllText(commentsFilePath, commentsContent);
 
             // 执行代码检查
-            CodeCheckResult result = m_CodeChecker.CheckFile(commentsFilePath);
+            var result = m_CodeChecker.CheckFile(commentsFilePath);
 
             // 验证检查结果（不应抛出异常，应该优雅处理）
             Assert.IsTrue(result.IsValid, "仅有注释的文件应该被优雅处理");
@@ -288,8 +288,8 @@ public class BadExampleClass : MonoBehaviour
         public void EdgeCase_NonCSharpFile_HandledGracefully()
         {
             // 创建JSON文件
-            string jsonFilePath = Path.Combine(m_TestDirectory, "Config.json");
-            string jsonContent = @"{
+            var jsonFilePath = Path.Combine(m_TestDirectory, "Config.json");
+            var jsonContent = @"{
   ""name"": ""TestProject"",
   ""version"": ""1.0.0"",
   ""description"": ""A test project for code style checking""
@@ -297,7 +297,7 @@ public class BadExampleClass : MonoBehaviour
             File.WriteAllText(jsonFilePath, jsonContent);
 
             // 执行代码检查
-            CodeCheckResult result = m_CodeChecker.CheckFile(jsonFilePath);
+            var result = m_CodeChecker.CheckFile(jsonFilePath);
 
             // 验证检查结果（不应抛出异常，应该根据文件类型适当处理）
             Assert.IsTrue(result.IsValid, "非C#文件应该被优雅处理");

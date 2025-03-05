@@ -5,7 +5,6 @@ using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
 using TByd.CodeStyle.Editor.Config;
-using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Config;
 
 namespace TByd.CodeStyle.Editor.UI.Settings
@@ -153,9 +152,9 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            bool enableIDEIntegration = EditorGUILayout.Toggle("启用IDE集成", m_Config.EnableIDEIntegration);
-            bool autoConfigureIDE = EditorGUILayout.Toggle("自动配置IDE", m_Config.AutoConfigureIDE);
-            bool syncEditorConfigWithIDE = EditorGUILayout.Toggle("同步EditorConfig到IDE", m_Config.SyncEditorConfigWithIDE);
+            var enableIDEIntegration = EditorGUILayout.Toggle("启用IDE集成", m_Config.EnableIDEIntegration);
+            var autoConfigureIDE = EditorGUILayout.Toggle("自动配置IDE", m_Config.AutoConfigureIDE);
+            var syncEditorConfigWithIDE = EditorGUILayout.Toggle("同步EditorConfig到IDE", m_Config.SyncEditorConfigWithIDE);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -311,7 +310,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             if (GUILayout.Button("导出配置到当前IDE"))
             {
-                bool success = IDEIntegrationManager.ExportConfigToCurrentIDE(EditorConfigManager.GetRules());
+                var success = IDEIntegrationManager.ExportConfigToCurrentIDE(EditorConfigManager.GetRules());
                 if (success)
                 {
                     EditorUtility.DisplayDialog("导出成功", "配置已成功导出到当前IDE。", "确定");
@@ -324,7 +323,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             if (GUILayout.Button("导出配置到所有IDE"))
             {
-                bool success = IDEIntegrationManager.ExportConfigToAllIDEs(EditorConfigManager.GetRules());
+                var success = IDEIntegrationManager.ExportConfigToAllIDEs(EditorConfigManager.GetRules());
                 if (success)
                 {
                     EditorUtility.DisplayDialog("导出成功", "配置已成功导出到所有IDE。", "确定");
@@ -350,13 +349,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             if (GUILayout.Button("验证当前IDE配置"))
             {
                 // 获取项目根目录
-                string projectPath = Path.GetDirectoryName(Application.dataPath);
+                var projectPath = Path.GetDirectoryName(Application.dataPath);
                 
                 // 验证配置
                 var result = IDEConfigValidator.ValidateConfig(m_CurrentIDEType, projectPath);
                 
                 // 显示验证结果
-                string message = "验证结果:\n\n";
+                var message = "验证结果:\n\n";
                 
                 if (result.IsValid)
                 {

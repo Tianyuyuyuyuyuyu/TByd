@@ -125,7 +125,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <param name="_ruleId">规则ID</param>
         public void EnableRule(string _ruleId)
         {
-            ICodeCheckRule rule = GetRule(_ruleId);
+            var rule = GetRule(_ruleId);
 
             if (rule != null)
             {
@@ -139,7 +139,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <param name="_ruleId">规则ID</param>
         public void DisableRule(string _ruleId)
         {
-            ICodeCheckRule rule = GetRule(_ruleId);
+            var rule = GetRule(_ruleId);
 
             if (rule != null)
             {
@@ -154,7 +154,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <param name="_severity">严重程度</param>
         public void SetRuleSeverity(string _ruleId, CodeCheckRuleSeverity _severity)
         {
-            ICodeCheckRule rule = GetRule(_ruleId);
+            var rule = GetRule(_ruleId);
 
             if (rule != null)
             {
@@ -181,14 +181,14 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 return CodeCheckResult.Success();
             }
 
-            List<CodeCheckIssue> allIssues = new List<CodeCheckIssue>();
+            var allIssues = new List<CodeCheckIssue>();
 
             // 执行所有启用的规则
-            foreach (ICodeCheckRule rule in m_Rules.Where(r => r.Enabled))
+            foreach (var rule in m_Rules.Where(r => r.Enabled))
             {
                 try
                 {
-                    CodeCheckResult result = rule.Check(_code, _filePath, m_Config);
+                    var result = rule.Check(_code, _filePath, m_Config);
 
                     if (!result.IsValid)
                     {
@@ -230,7 +230,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
 
             try
             {
-                string code = File.ReadAllText(_filePath);
+                var code = File.ReadAllText(_filePath);
                 return CheckCode(code, _filePath);
             }
             catch (Exception e)
@@ -254,15 +254,15 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 return CodeCheckResult.Success();
             }
 
-            List<CodeCheckIssue> allIssues = new List<CodeCheckIssue>();
+            var allIssues = new List<CodeCheckIssue>();
 
             // 获取所有C#文件
-            string[] files = Directory.GetFiles(
+            var files = Directory.GetFiles(
                 _directoryPath,
                 "*.cs",
                 _recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
-            foreach (string filePath in files)
+            foreach (var filePath in files)
             {
                 // 检查文件是否应该被忽略
                 if (ShouldIgnoreFile(filePath))
@@ -270,7 +270,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                     continue;
                 }
 
-                CodeCheckResult result = CheckFile(filePath);
+                var result = CheckFile(filePath);
 
                 if (!result.IsValid)
                 {
@@ -305,7 +305,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             }
 
             // 检查忽略路径
-            foreach (string ignorePath in m_Config.IgnoredPaths)
+            foreach (var ignorePath in m_Config.IgnoredPaths)
             {
                 if (string.IsNullOrEmpty(ignorePath))
                 {
@@ -315,7 +315,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 // 支持通配符
                 if (ignorePath.Contains("*"))
                 {
-                    string pattern = "^" + Regex.Escape(ignorePath).Replace("\\*", ".*") + "$";
+                    var pattern = "^" + Regex.Escape(ignorePath).Replace("\\*", ".*") + "$";
                     if (Regex.IsMatch(_filePath, pattern, RegexOptions.IgnoreCase))
                     {
                         return true;
@@ -342,7 +342,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 return "代码检查通过，未发现问题。";
             }
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine("代码检查报告");
             sb.AppendLine("====================");
             sb.AppendLine();
@@ -362,7 +362,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
 
                 foreach (var issue in sortedIssues)
                 {
-                    string severityStr = issue.Severity switch
+                    var severityStr = issue.Severity switch
                     {
                         CodeCheckRuleSeverity.Error => "[错误]",
                         CodeCheckRuleSeverity.Warning => "[警告]",
@@ -387,9 +387,9 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             }
 
             // 添加统计信息
-            int errorCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Error);
-            int warningCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Warning);
-            int infoCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Info);
+            var errorCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Error);
+            var warningCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Warning);
+            var infoCount = _result.Issues.Count(i => i.Severity == CodeCheckRuleSeverity.Info);
 
             sb.AppendLine("====================");
             sb.AppendLine($"总计: {_result.Issues.Count} 个问题");

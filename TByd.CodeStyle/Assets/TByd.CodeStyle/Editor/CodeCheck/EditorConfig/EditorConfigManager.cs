@@ -88,7 +88,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// </summary>
         public static void LoadProjectEditorConfig()
         {
-            string editorConfigPath = GetProjectEditorConfigPath();
+            var editorConfigPath = GetProjectEditorConfigPath();
 
             if (File.Exists(editorConfigPath))
             {
@@ -110,11 +110,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// </summary>
         public static void SaveProjectEditorConfig()
         {
-            string editorConfigPath = GetProjectEditorConfigPath();
+            var editorConfigPath = GetProjectEditorConfigPath();
 
             try
             {
-                string content = EditorConfigParser.GenerateContent(s_Rules);
+                var content = EditorConfigParser.GenerateContent(s_Rules);
                 File.WriteAllText(editorConfigPath, content);
                 Debug.Log($"[TByd.CodeStyle] 已保存EditorConfig文件: {editorConfigPath}");
 
@@ -156,7 +156,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         {
             try
             {
-                string content = EditorConfigParser.GenerateContent(s_Rules);
+                var content = EditorConfigParser.GenerateContent(s_Rules);
                 File.WriteAllText(_path, content);
                 Debug.Log($"[TByd.CodeStyle] EditorConfig已导出到: {_path}");
             }
@@ -217,7 +217,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 检查是否已存在相同模式的规则
-            for (int i = 0; i < s_Rules.Count; i++)
+            for (var i = 0; i < s_Rules.Count; i++)
             {
                 if (s_Rules[i].Pattern == _rule.Pattern)
                 {
@@ -249,7 +249,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 return;
             }
 
-            for (int i = s_Rules.Count - 1; i >= 0; i--)
+            for (var i = s_Rules.Count - 1; i >= 0; i--)
             {
                 if (s_Rules[i].Pattern == _pattern)
                 {
@@ -299,20 +299,20 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <returns>适用的规则属性</returns>
         public static Dictionary<string, string> GetFileProperties(string _filePath)
         {
-            Dictionary<string, string> properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             if (string.IsNullOrEmpty(_filePath) || !File.Exists(_filePath))
             {
                 return properties;
             }
 
-            string fileName = Path.GetFileName(_filePath);
-            string relativePath = GetRelativePath(_filePath);
+            var fileName = Path.GetFileName(_filePath);
+            var relativePath = GetRelativePath(_filePath);
 
             Debug.Log($"获取文件属性: 文件={_filePath}, 相对路径={relativePath}");
 
             // 按照规则顺序应用属性
-            foreach (EditorConfigRule rule in s_Rules)
+            foreach (var rule in s_Rules)
             {
                 if (IsFileMatchPattern(fileName, relativePath, rule.Pattern))
                 {
@@ -352,7 +352,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             // 处理文件名匹配模式
             if (_pattern.StartsWith("*."))
             {
-                string extension = _pattern.Substring(1); // 获取扩展名部分，包括点号
+                var extension = _pattern.Substring(1); // 获取扩展名部分，包括点号
                 return _fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase);
             }
 
@@ -367,13 +367,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             if (_pattern.Contains("{") && _pattern.Contains("}"))
             {
                 // 提取扩展名列表
-                Match match = Regex.Match(_pattern, @"\*\.\{(.*?)\}");
+                var match = Regex.Match(_pattern, @"\*\.\{(.*?)\}");
                 if (match.Success)
                 {
-                    string extensionList = match.Groups[1].Value;
-                    string[] extensions = extensionList.Split(',');
+                    var extensionList = match.Groups[1].Value;
+                    var extensions = extensionList.Split(',');
 
-                    foreach (string ext in extensions)
+                    foreach (var ext in extensions)
                     {
                         if (_fileName.EndsWith("." + ext.Trim(), StringComparison.OrdinalIgnoreCase))
                         {
@@ -389,8 +389,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             if (_pattern.Contains("/"))
             {
                 // 将Windows路径分隔符转换为Unix风格
-                string normalizedPath = _relativePath.Replace('\\', '/');
-                string normalizedPattern = _pattern.Replace('\\', '/');
+                var normalizedPath = _relativePath.Replace('\\', '/');
+                var normalizedPattern = _pattern.Replace('\\', '/');
 
                 Debug.Log($"匹配目录模式: 路径={normalizedPath}, 模式={normalizedPattern}");
 
@@ -398,15 +398,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 if (normalizedPattern.Contains("**"))
                 {
                     // 修改正则表达式，使其能够匹配路径的任何部分，而不仅仅是从开头匹配
-                    string patternRegex = Regex.Escape(normalizedPattern)
+                    var patternRegex = Regex.Escape(normalizedPattern)
                         .Replace(@"\*\*", ".*")
                         .Replace(@"\*", "[^/]*")
                         .Replace(@"\?", ".");
 
                     // 检查路径的任何部分是否匹配模式
-                    bool matchStart = Regex.IsMatch(normalizedPath, "^" + patternRegex + "$", RegexOptions.IgnoreCase);
-                    bool matchEnd = Regex.IsMatch(normalizedPath, patternRegex + "$", RegexOptions.IgnoreCase);
-                    bool matchAny = normalizedPath.Contains(normalizedPattern.Replace("**", "").Replace("*", ""));
+                    var matchStart = Regex.IsMatch(normalizedPath, "^" + patternRegex + "$", RegexOptions.IgnoreCase);
+                    var matchEnd = Regex.IsMatch(normalizedPath, patternRegex + "$", RegexOptions.IgnoreCase);
+                    var matchAny = normalizedPath.Contains(normalizedPattern.Replace("**", "").Replace("*", ""));
 
                     Debug.Log($"通配符匹配结果: 完全匹配={matchStart}, 结尾匹配={matchEnd}, 包含匹配={matchAny}, 正则表达式: {patternRegex}");
 
@@ -414,13 +414,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     if (normalizedPath.Contains("Temp") || normalizedPath.Contains("EditorConfigTest"))
                     {
                         // 提取模式中的关键部分（如lib/**.js中的lib和.js）
-                        string patternDir = normalizedPattern.Split('/')[0];
-                        string patternExt = Path.GetExtension(normalizedPattern.Replace("*", ""));
+                        var patternDir = normalizedPattern.Split('/')[0];
+                        var patternExt = Path.GetExtension(normalizedPattern.Replace("*", ""));
 
                         // 检查路径是否包含关键目录和扩展名
-                        bool containsDir = normalizedPath.Contains("/" + patternDir + "/");
-                        bool hasExt = !string.IsNullOrEmpty(patternExt) &&
-                                      normalizedPath.EndsWith(patternExt, StringComparison.OrdinalIgnoreCase);
+                        var containsDir = normalizedPath.Contains("/" + patternDir + "/");
+                        var hasExt = !string.IsNullOrEmpty(patternExt) &&
+                                     normalizedPath.EndsWith(patternExt, StringComparison.OrdinalIgnoreCase);
 
                         Debug.Log($"测试环境匹配: 包含目录={containsDir}, 扩展名匹配={hasExt}, 目录={patternDir}, 扩展名={patternExt}");
 
@@ -431,19 +431,19 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 处理简单的目录匹配
-                string[] patternParts = normalizedPattern.Split('/');
-                string[] pathParts = normalizedPath.Split('/');
+                var patternParts = normalizedPattern.Split('/');
+                var pathParts = normalizedPath.Split('/');
 
                 // 如果模式以 / 开头，则从根目录开始匹配
-                bool matchFromRoot = normalizedPattern.StartsWith("/");
+                var matchFromRoot = normalizedPattern.StartsWith("/");
 
                 // 如果模式不是从根目录开始，则尝试在路径的任何位置匹配
                 if (!matchFromRoot)
                 {
-                    for (int i = 0; i <= pathParts.Length - patternParts.Length; i++)
+                    for (var i = 0; i <= pathParts.Length - patternParts.Length; i++)
                     {
-                        bool match = true;
-                        for (int j = 0; j < patternParts.Length; j++)
+                        var match = true;
+                        for (var j = 0; j < patternParts.Length; j++)
                         {
                             if (!SimplePatternMatch(pathParts[i + j], patternParts[j]))
                             {
@@ -468,7 +468,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         return false;
                     }
 
-                    for (int i = 0; i < patternParts.Length; i++)
+                    for (var i = 0; i < patternParts.Length; i++)
                     {
                         if (!SimplePatternMatch(pathParts[i], patternParts[i]))
                         {
@@ -493,7 +493,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         private static bool SimplePatternMatch(string _text, string _pattern)
         {
             // 将通配符模式转换为正则表达式
-            string regexPattern = "^" + Regex.Escape(_pattern)
+            var regexPattern = "^" + Regex.Escape(_pattern)
                 .Replace(@"\*", ".*")
                 .Replace(@"\?", ".") + "$";
 
@@ -513,7 +513,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 获取适用于文件的EditorConfig属性
-            Dictionary<string, string> properties = GetFileProperties(_filePath);
+            var properties = GetFileProperties(_filePath);
 
             // 如果没有适用的属性，则认为文件符合规则
             if (properties.Count == 0)
@@ -534,15 +534,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 检查文件编码
-            if (properties.TryGetValue("charset", out string charset))
+            if (properties.TryGetValue("charset", out var charset))
             {
                 try
                 {
                     // 读取文件的前几个字节来检测BOM标记
-                    byte[] fileBytes = File.ReadAllBytes(_filePath);
-                    Encoding detectedEncoding = DetectEncoding(fileBytes);
+                    var fileBytes = File.ReadAllBytes(_filePath);
+                    var detectedEncoding = DetectEncoding(fileBytes);
 
-                    bool isCorrectEncoding = false;
+                    var isCorrectEncoding = false;
 
                     switch (charset.ToLowerInvariant())
                     {
@@ -587,7 +587,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 检查行尾
-            if (properties.TryGetValue("end_of_line", out string endOfLine))
+            if (properties.TryGetValue("end_of_line", out var endOfLine))
             {
                 string lineEnding = null;
 
@@ -607,7 +607,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 if (lineEnding != null)
                 {
                     // 检查文件是否使用指定的行尾
-                    bool hasCorrectLineEnding = true;
+                    var hasCorrectLineEnding = true;
 
                     if (content.Contains("\r\n"))
                     {
@@ -631,13 +631,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 检查最后一行是否有换行符
-            if (properties.TryGetValue("insert_final_newline", out string insertFinalNewline))
+            if (properties.TryGetValue("insert_final_newline", out var insertFinalNewline))
             {
-                bool shouldInsert = insertFinalNewline.ToLowerInvariant() == "true";
+                var shouldInsert = insertFinalNewline.ToLowerInvariant() == "true";
 
                 if (shouldInsert)
                 {
-                    bool hasNewline = content.EndsWith("\n") || content.EndsWith("\r");
+                    var hasNewline = content.EndsWith("\n") || content.EndsWith("\r");
 
                     if (!hasNewline)
                     {
@@ -648,15 +648,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 检查行尾空白字符
-            if (properties.TryGetValue("trim_trailing_whitespace", out string trimTrailingWhitespace))
+            if (properties.TryGetValue("trim_trailing_whitespace", out var trimTrailingWhitespace))
             {
-                bool shouldTrim = trimTrailingWhitespace.ToLowerInvariant() == "true";
+                var shouldTrim = trimTrailingWhitespace.ToLowerInvariant() == "true";
 
                 if (shouldTrim)
                 {
-                    string[] lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-                    for (int i = 0; i < lines.Length; i++)
+                    for (var i = 0; i < lines.Length; i++)
                     {
                         if (lines[i].TrimEnd() != lines[i])
                         {
@@ -668,25 +668,25 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 检查缩进样式和大小
-            if (properties.TryGetValue("indent_style", out string indentStyle) &&
-                properties.TryGetValue("indent_size", out string indentSize))
+            if (properties.TryGetValue("indent_style", out var indentStyle) &&
+                properties.TryGetValue("indent_size", out var indentSize))
             {
-                bool useSpaces = indentStyle.ToLowerInvariant() == "space";
+                var useSpaces = indentStyle.ToLowerInvariant() == "space";
                 int size;
 
                 if (int.TryParse(indentSize, out size) || indentSize.ToLowerInvariant() == "tab")
                 {
                     if (indentSize.ToLowerInvariant() == "tab" &&
-                        properties.TryGetValue("tab_width", out string tabWidth))
+                        properties.TryGetValue("tab_width", out var tabWidth))
                     {
                         int.TryParse(tabWidth, out size);
                     }
 
-                    string[] lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-                    for (int i = 0; i < lines.Length; i++)
+                    for (var i = 0; i < lines.Length; i++)
                     {
-                        string line = lines[i];
+                        var line = lines[i];
 
                         if (string.IsNullOrWhiteSpace(line))
                         {
@@ -725,7 +725,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 获取适用于文件的EditorConfig属性
-            Dictionary<string, string> properties = GetFileProperties(_filePath);
+            var properties = GetFileProperties(_filePath);
 
             // 如果没有适用的属性，则无需格式化
             if (properties.Count == 0)
@@ -736,12 +736,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             try
             {
                 // 处理文件编码
-                Encoding encoding = Encoding.UTF8;
+                var encoding = Encoding.UTF8;
 
-                if (properties.TryGetValue("charset", out string charset))
+                if (properties.TryGetValue("charset", out var charset))
                 {
-                    byte[] fileBytes = File.ReadAllBytes(_filePath);
-                    Encoding detectedEncoding = DetectEncoding(fileBytes);
+                    var fileBytes = File.ReadAllBytes(_filePath);
+                    DetectEncoding(fileBytes);
 
                     switch (charset.ToLowerInvariant())
                     {
@@ -773,10 +773,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 // 如果需要处理BOM，使用字节数组读取
                 if (properties.ContainsKey("charset"))
                 {
-                    byte[] fileBytes = File.ReadAllBytes(_filePath);
+                    var fileBytes = File.ReadAllBytes(_filePath);
 
                     // 如果文件有BOM，跳过BOM字节
-                    int skipBytes = 0;
+                    var skipBytes = 0;
                     if (fileBytes.Length >= 3 && fileBytes[0] == 0xEF && fileBytes[1] == 0xBB && fileBytes[2] == 0xBF)
                     {
                         skipBytes = 3; // UTF-8 BOM
@@ -802,10 +802,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     content = File.ReadAllText(_filePath);
                 }
 
-                string originalContent = content;
+                var originalContent = content;
 
                 // 处理行尾
-                if (properties.TryGetValue("end_of_line", out string endOfLine))
+                if (properties.TryGetValue("end_of_line", out var endOfLine))
                 {
                     string lineEnding = null;
 
@@ -834,22 +834,22 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 处理行尾空白字符
-                if (properties.TryGetValue("trim_trailing_whitespace", out string trimTrailingWhitespace))
+                if (properties.TryGetValue("trim_trailing_whitespace", out var trimTrailingWhitespace))
                 {
-                    bool shouldTrim = trimTrailingWhitespace.ToLowerInvariant() == "true";
+                    var shouldTrim = trimTrailingWhitespace.ToLowerInvariant() == "true";
 
                     if (shouldTrim)
                     {
-                        string[] lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                        var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-                        for (int i = 0; i < lines.Length; i++)
+                        for (var i = 0; i < lines.Length; i++)
                         {
                             lines[i] = lines[i].TrimEnd();
                         }
 
                         // 重新组合内容
-                        string lineEnding = "\n";
-                        if (properties.TryGetValue("end_of_line", out string eol))
+                        var lineEnding = "\n";
+                        if (properties.TryGetValue("end_of_line", out var eol))
                         {
                             switch (eol.ToLowerInvariant())
                             {
@@ -870,14 +870,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 处理最后一行是否有换行符
-                if (properties.TryGetValue("insert_final_newline", out string insertFinalNewline))
+                if (properties.TryGetValue("insert_final_newline", out var insertFinalNewline))
                 {
-                    bool shouldInsert = insertFinalNewline.ToLowerInvariant() == "true";
+                    var shouldInsert = insertFinalNewline.ToLowerInvariant() == "true";
 
                     if (shouldInsert)
                     {
-                        string lineEnding = "\n";
-                        if (properties.TryGetValue("end_of_line", out string eol))
+                        var lineEnding = "\n";
+                        if (properties.TryGetValue("end_of_line", out var eol))
                         {
                             switch (eol.ToLowerInvariant())
                             {
@@ -901,25 +901,25 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 处理缩进样式和大小
-                if (properties.TryGetValue("indent_style", out string indentStyle) &&
-                    properties.TryGetValue("indent_size", out string indentSize))
+                if (properties.TryGetValue("indent_style", out var indentStyle) &&
+                    properties.TryGetValue("indent_size", out var indentSize))
                 {
-                    bool useSpaces = indentStyle.ToLowerInvariant() == "space";
+                    var useSpaces = indentStyle.ToLowerInvariant() == "space";
                     int size;
 
                     if (int.TryParse(indentSize, out size) || indentSize.ToLowerInvariant() == "tab")
                     {
                         if (indentSize.ToLowerInvariant() == "tab" &&
-                            properties.TryGetValue("tab_width", out string tabWidth))
+                            properties.TryGetValue("tab_width", out var tabWidth))
                         {
                             int.TryParse(tabWidth, out size);
                         }
 
-                        string[] lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                        var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
 
-                        for (int i = 0; i < lines.Length; i++)
+                        for (var i = 0; i < lines.Length; i++)
                         {
-                            string line = lines[i];
+                            var line = lines[i];
 
                             if (string.IsNullOrWhiteSpace(line))
                             {
@@ -927,8 +927,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                             }
 
                             // 计算缩进级别
-                            int indentLevel = 0;
-                            int j = 0;
+                            var indentLevel = 0;
+                            var j = 0;
 
                             while (j < line.Length && (line[j] == ' ' || line[j] == '\t'))
                             {
@@ -945,7 +945,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                             }
 
                             // 计算缩进级别（按照缩进大小）
-                            int normalizedLevel = indentLevel / size;
+                            var normalizedLevel = indentLevel / size;
 
                             // 重新生成缩进
                             string indent;
@@ -963,8 +963,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         }
 
                         // 重新组合内容
-                        string lineEnding = "\n";
-                        if (properties.TryGetValue("end_of_line", out string eol))
+                        var lineEnding = "\n";
+                        if (properties.TryGetValue("end_of_line", out var eol))
                         {
                             switch (eol.ToLowerInvariant())
                             {
@@ -1071,9 +1071,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 跳过UTF-8 BOM
-            int start = HasUtf8Bom(_bytes) ? 3 : 0;
+            var start = HasUtf8Bom(_bytes) ? 3 : 0;
 
-            int i = start;
+            var i = start;
             while (i < _bytes.Length)
             {
                 // 单字节ASCII字符 (0xxxxxxx)
@@ -1110,7 +1110,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 检查后续字节是否符合UTF-8格式 (10xxxxxx)
-                for (int j = 1; j <= extraBytes; j++)
+                for (var j = 1; j <= extraBytes; j++)
                 {
                     if ((_bytes[i + j] & 0xC0) != 0x80)
                     {
@@ -1147,8 +1147,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 return string.Empty;
             }
 
-            string projectRoot = GetProjectRootPath();
-            string relativePath = _filePath;
+            var projectRoot = GetProjectRootPath();
+            var relativePath = _filePath;
 
             // 如果文件路径以项目根目录开头，则转换为相对路径
             if (_filePath.StartsWith(projectRoot))
@@ -1160,11 +1160,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             else if (_filePath.Contains("Temp") || _filePath.Contains("EditorConfigTest"))
             {
                 // 尝试提取最后几个目录段作为相对路径
-                string[] pathParts = _filePath.Replace('\\', '/').Split('/');
-                int startIndex = -1;
+                var pathParts = _filePath.Replace('\\', '/').Split('/');
+                var startIndex = -1;
 
                 // 查找关键目录（如lib、Temp、EditorConfigTest）
-                for (int i = 0; i < pathParts.Length; i++)
+                for (var i = 0; i < pathParts.Length; i++)
                 {
                     if (pathParts[i] == "Temp" || pathParts[i] == "EditorConfigTest" || pathParts[i] == "lib")
                     {
@@ -1195,14 +1195,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             try
             {
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(_filePath);
+                var directory = Path.GetDirectoryName(_filePath);
                 if (!string.IsNullOrEmpty(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
 
                 // 生成EditorConfig内容
-                string content = GenerateEditorConfigContent(_rules);
+                var content = GenerateEditorConfigContent(_rules);
 
                 // 保存到文件
                 File.WriteAllText(_filePath, content);
@@ -1229,7 +1229,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 return string.Empty;
             }
 
-            using (StringWriter writer = new StringWriter())
+            using (var writer = new StringWriter())
             {
                 // 写入根设置标记
                 writer.WriteLine("root = true");

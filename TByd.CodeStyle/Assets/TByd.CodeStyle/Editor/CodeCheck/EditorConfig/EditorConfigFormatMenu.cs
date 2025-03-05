@@ -18,7 +18,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         public static void FormatSelected()
         {
             // 获取配置
-            bool enableEditorConfig = ConfigManager.GetConfig().EnableEditorConfig;
+            var enableEditorConfig = ConfigManager.GetConfig().EnableEditorConfig;
 
             // 如果未启用EditorConfig，则显示提示
             if (!enableEditorConfig)
@@ -33,7 +33,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             // 如果项目中没有EditorConfig文件，则显示提示
             if (!EditorConfigManager.HasProjectEditorConfig())
             {
-                bool createConfig = EditorUtility.DisplayDialog(
+                var createConfig = EditorUtility.DisplayDialog(
                     "未找到EditorConfig文件",
                     "项目中未找到EditorConfig文件。是否创建默认配置？",
                     "创建默认配置",
@@ -50,7 +50,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 获取选中的资源路径
-            string[] selectedAssets = GetSelectedAssetPaths();
+            var selectedAssets = GetSelectedAssetPaths();
 
             if (selectedAssets.Length == 0)
             {
@@ -58,15 +58,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 收集需要格式化的文件
-            List<string> filesToFormat = new List<string>();
+            var filesToFormat = new List<string>();
 
-            foreach (string assetPath in selectedAssets)
+            foreach (var assetPath in selectedAssets)
             {
                 // 检查是否是文件夹
                 if (Directory.Exists(assetPath))
                 {
                     // 获取文件夹中的所有C#文件
-                    string[] files = Directory.GetFiles(assetPath, "*.cs", SearchOption.AllDirectories);
+                    var files = Directory.GetFiles(assetPath, "*.cs", SearchOption.AllDirectories);
                     filesToFormat.AddRange(files);
                 }
                 else if (File.Exists(assetPath) && Path.GetExtension(assetPath).ToLowerInvariant() == ".cs")
@@ -86,7 +86,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 显示确认对话框
-            bool confirm = EditorUtility.DisplayDialog(
+            var confirm = EditorUtility.DisplayDialog(
                 "格式化文件",
                 $"将根据EditorConfig规则格式化 {filesToFormat.Count} 个C#文件。\n\n" +
                 "格式化可能会修改文件的缩进、行尾、空白字符等。\n\n" +
@@ -105,15 +105,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
             try
             {
-                int totalFiles = filesToFormat.Count;
-                int formattedFiles = 0;
-                int failedFiles = 0;
-                List<string> failedFilesList = new List<string>();
+                var totalFiles = filesToFormat.Count;
+                var formattedFiles = 0;
+                var failedFiles = 0;
+                var failedFilesList = new List<string>();
 
                 // 格式化每个文件
-                for (int i = 0; i < totalFiles; i++)
+                for (var i = 0; i < totalFiles; i++)
                 {
-                    string file = filesToFormat[i];
+                    var file = filesToFormat[i];
 
                     // 更新进度条
                     EditorUtility.DisplayProgressBar(
@@ -122,7 +122,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         (float)i / totalFiles);
 
                     // 格式化文件
-                    bool success = EditorConfigManager.FormatFile(file);
+                    var success = EditorConfigManager.FormatFile(file);
 
                     if (success)
                     {
@@ -141,20 +141,20 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 // 显示结果
                 EditorUtility.ClearProgressBar();
 
-                string message = $"格式化完成！\n\n" +
-                                $"总文件数: {totalFiles}\n" +
-                                $"成功格式化的文件: {formattedFiles}\n" +
-                                $"格式化失败的文件: {failedFiles}";
+                var message = $"格式化完成！\n\n" +
+                              $"总文件数: {totalFiles}\n" +
+                              $"成功格式化的文件: {formattedFiles}\n" +
+                              $"格式化失败的文件: {failedFiles}";
 
                 if (failedFiles > 0)
                 {
                     message += "\n\n格式化失败的文件:";
 
                     // 最多显示10个文件
-                    int displayCount = Mathf.Min(failedFilesList.Count, 10);
-                    for (int i = 0; i < displayCount; i++)
+                    var displayCount = Mathf.Min(failedFilesList.Count, 10);
+                    for (var i = 0; i < displayCount; i++)
                     {
-                        string relativePath = failedFilesList[i].Replace(Application.dataPath, "Assets");
+                        var relativePath = failedFilesList[i].Replace(Application.dataPath, "Assets");
                         message += $"\n- {relativePath}";
                     }
 
@@ -179,7 +179,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         public static bool ValidateFormatSelected()
         {
             // 获取选中的资源路径
-            string[] selectedAssets = GetSelectedAssetPaths();
+            var selectedAssets = GetSelectedAssetPaths();
 
             if (selectedAssets.Length == 0)
             {
@@ -187,7 +187,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 检查是否有可格式化的文件
-            foreach (string assetPath in selectedAssets)
+            foreach (var assetPath in selectedAssets)
             {
                 // 检查是否是文件夹
                 if (Directory.Exists(assetPath))
@@ -209,26 +209,26 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <returns>选中的资源路径</returns>
         private static string[] GetSelectedAssetPaths()
         {
-            Object[] selectedObjects = Selection.objects;
+            var selectedObjects = Selection.objects;
 
             if (selectedObjects == null || selectedObjects.Length == 0)
             {
                 return new string[0];
             }
 
-            List<string> assetPaths = new List<string>();
+            var assetPaths = new List<string>();
 
-            foreach (Object obj in selectedObjects)
+            foreach (var obj in selectedObjects)
             {
-                string assetPath = AssetDatabase.GetAssetPath(obj);
+                var assetPath = AssetDatabase.GetAssetPath(obj);
 
                 if (!string.IsNullOrEmpty(assetPath))
                 {
                     // 转换为绝对路径
                     if (assetPath.StartsWith("Assets/"))
                     {
-                        string projectPath = Application.dataPath;
-                        string fullPath = Path.Combine(
+                        var projectPath = Application.dataPath;
+                        var fullPath = Path.Combine(
                             projectPath.Substring(0, projectPath.Length - 6), // 移除 "Assets" 部分
                             assetPath);
 

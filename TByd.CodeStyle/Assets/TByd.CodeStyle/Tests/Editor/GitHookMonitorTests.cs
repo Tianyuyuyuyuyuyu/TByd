@@ -1,6 +1,5 @@
 using System.IO;
 using NUnit.Framework;
-using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Git;
 using TByd.CodeStyle.Runtime.Git;
@@ -45,8 +44,8 @@ namespace TByd.CodeStyle.Tests.Editor
         public void GetHookPath_ValidType_ReturnsCorrectPath()
         {
             // 获取钩子路径
-            string commitMsgPath = GitHookMonitor.GetHookPath(GitHookType.CommitMsg, m_TestGitHooksDir);
-            string preCommitPath = GitHookMonitor.GetHookPath(GitHookType.PreCommit, m_TestGitHooksDir);
+            var commitMsgPath = GitHookMonitor.GetHookPath(GitHookType.CommitMsg, m_TestGitHooksDir);
+            var preCommitPath = GitHookMonitor.GetHookPath(GitHookType.PreCommit, m_TestGitHooksDir);
 
             // 验证路径
             Assert.AreEqual(m_TestCommitMsgHook, commitMsgPath);
@@ -57,8 +56,8 @@ namespace TByd.CodeStyle.Tests.Editor
         public void IsHookInstalled_HookNotExists_ReturnsFalse()
         {
             // 检查钩子是否已安装
-            bool isCommitMsgInstalled = GitHookMonitor.IsHookInstalled(GitHookType.CommitMsg, m_TestGitHooksDir);
-            bool isPreCommitInstalled = GitHookMonitor.IsHookInstalled(GitHookType.PreCommit, m_TestGitHooksDir);
+            var isCommitMsgInstalled = GitHookMonitor.IsHookInstalled(GitHookType.CommitMsg, m_TestGitHooksDir);
+            var isPreCommitInstalled = GitHookMonitor.IsHookInstalled(GitHookType.PreCommit, m_TestGitHooksDir);
 
             // 验证结果
             Assert.IsFalse(isCommitMsgInstalled);
@@ -72,8 +71,8 @@ namespace TByd.CodeStyle.Tests.Editor
             File.WriteAllText(m_TestCommitMsgHook, "#!/bin/sh\n# TByd.CodeStyle commit-msg hook");
 
             // 检查钩子是否已安装
-            bool isCommitMsgInstalled = GitHookMonitor.IsHookInstalled(GitHookType.CommitMsg, m_TestGitHooksDir);
-            bool isPreCommitInstalled = GitHookMonitor.IsHookInstalled(GitHookType.PreCommit, m_TestGitHooksDir);
+            var isCommitMsgInstalled = GitHookMonitor.IsHookInstalled(GitHookType.CommitMsg, m_TestGitHooksDir);
+            var isPreCommitInstalled = GitHookMonitor.IsHookInstalled(GitHookType.PreCommit, m_TestGitHooksDir);
 
             // 验证结果
             Assert.IsTrue(isCommitMsgInstalled);
@@ -84,14 +83,14 @@ namespace TByd.CodeStyle.Tests.Editor
         public void InstallHook_HookNotExists_InstallsHook()
         {
             // 安装钩子
-            bool result = GitHookMonitor.InstallHook(GitHookType.CommitMsg, m_TestGitHooksDir);
+            var result = GitHookMonitor.InstallHook(GitHookType.CommitMsg, m_TestGitHooksDir);
 
             // 验证结果
             Assert.IsTrue(result);
             Assert.IsTrue(File.Exists(m_TestCommitMsgHook));
 
             // 验证钩子内容
-            string hookContent = File.ReadAllText(m_TestCommitMsgHook);
+            var hookContent = File.ReadAllText(m_TestCommitMsgHook);
             Assert.IsTrue(hookContent.Contains("TByd.CodeStyle"));
         }
 
@@ -102,7 +101,7 @@ namespace TByd.CodeStyle.Tests.Editor
             File.WriteAllText(m_TestCommitMsgHook, "#!/bin/sh\n# TByd.CodeStyle commit-msg hook");
 
             // 卸载钩子
-            bool result = GitHookMonitor.UninstallHook(GitHookType.CommitMsg, m_TestGitHooksDir);
+            var result = GitHookMonitor.UninstallHook(GitHookType.CommitMsg, m_TestGitHooksDir);
 
             // 验证结果
             Assert.IsTrue(result);

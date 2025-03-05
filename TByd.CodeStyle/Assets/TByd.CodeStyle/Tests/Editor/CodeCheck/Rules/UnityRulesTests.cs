@@ -2,7 +2,6 @@ using NUnit.Framework;
 using TByd.CodeStyle.Runtime.CodeCheck;
 using TByd.CodeStyle.Runtime.CodeCheck.Rules;
 using TByd.CodeStyle.Runtime.Config;
-using UnityEngine;
 
 namespace TByd.CodeStyle.Tests.Editor.CodeCheck.Rules
 {
@@ -36,7 +35,7 @@ namespace TByd.CodeStyle.Tests.Editor.CodeCheck.Rules
             rule.Enabled = true;
 
             // 有效的代码示例，不使用GameObject.Find
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -54,7 +53,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，使用GameObject.Find
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -98,7 +97,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，不在Update中使用Find
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -123,7 +122,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，在Update中使用Find
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -169,7 +168,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，不使用SendMessage
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -198,7 +197,7 @@ public interface IMessageReceiver
 }";
 
             // 无效的代码示例，使用SendMessage
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -246,7 +245,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，不在Update中使用GetComponent
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -270,7 +269,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，在Update中使用GetComponent
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -315,7 +314,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，不使用硬编码路径
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -331,7 +330,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，使用硬编码路径
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -373,7 +372,7 @@ public class BadExample : MonoBehaviour
             rule.Enabled = true;
 
             // 有效的代码示例，没有空的MonoBehaviour方法
-            string validCode = @"
+            var validCode = @"
 using UnityEngine;
 
 public class Example : MonoBehaviour
@@ -392,7 +391,7 @@ public class Example : MonoBehaviour
 }";
 
             // 无效的代码示例，有空的MonoBehaviour方法
-            string invalidCode = @"
+            var invalidCode = @"
 using UnityEngine;
 
 public class BadExample : MonoBehaviour
@@ -436,7 +435,7 @@ public class BadExample : MonoBehaviour
             var checker = new CodeChecker(m_Config);
 
             // 复杂代码示例，包含多种Unity相关问题
-            string complexCode = @"
+            var complexCode = @"
 using UnityEngine;
 
 public class ComplexExample : MonoBehaviour
@@ -481,11 +480,11 @@ public class ComplexExample : MonoBehaviour
             Assert.Greater(result.Issues.Count, 0, "应该检测到多个Unity相关问题");
 
             // 验证检测到了不同类型的Unity问题
-            bool foundFindInUpdateIssue = false;
-            bool foundGetComponentInUpdateIssue = false;
-            bool foundSendMessageIssue = false;
-            bool foundHardcodedPathIssue = false;
-            bool foundEmptyMethodIssue = false;
+            var foundFindInUpdateIssue = false;
+            var foundGetComponentInUpdateIssue = false;
+            var foundSendMessageIssue = false;
+            var foundHardcodedPathIssue = false;
+            var foundEmptyMethodIssue = false;
 
             foreach (var issue in result.Issues)
             {

@@ -92,7 +92,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.Space();
 
             // 检查项目是否存在EditorConfig文件
-            bool hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
+            var hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
 
             // 绘制状态信息
             EditorGUILayout.BeginHorizontal();
@@ -133,7 +133,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     // 编辑按钮
                     if (GUILayout.Button("编辑文件", GUILayout.Width(100)))
                     {
-                        string editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
+                        var editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
                         if (File.Exists(editorConfigPath))
                         {
                             // 使用系统默认编辑器打开文件
@@ -144,7 +144,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     // 导出按钮
                     if (GUILayout.Button("导出", GUILayout.Width(100)))
                     {
-                        string path = EditorUtility.SaveFilePanel(
+                        var path = EditorUtility.SaveFilePanel(
                             "导出EditorConfig",
                             "",
                             ".editorconfig",
@@ -173,7 +173,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     // 导入按钮
                     if (GUILayout.Button("导入", GUILayout.Width(100)))
                     {
-                        string path = EditorUtility.OpenFilePanel(
+                        var path = EditorUtility.OpenFilePanel(
                             "导入EditorConfig",
                             "",
                             "");
@@ -203,7 +203,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         {
             EditorGUILayout.LabelField("规则列表", m_SectionStyle);
 
-            List<EditorConfigRule> rules = EditorConfigManager.GetRules();
+            var rules = EditorConfigManager.GetRules();
 
             if (rules.Count == 0)
             {
@@ -213,9 +213,9 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             m_RulesScrollPosition = EditorGUILayout.BeginScrollView(m_RulesScrollPosition);
             {
-                for (int i = 0; i < rules.Count; i++)
+                for (var i = 0; i < rules.Count; i++)
                 {
-                    EditorConfigRule rule = rules[i];
+                    var rule = rules[i];
 
                     // 确保规则在字典中有一个条目
                     if (!m_ShowRuleDetails.ContainsKey(rule.Pattern))

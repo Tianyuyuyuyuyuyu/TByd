@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
@@ -57,7 +56,7 @@ indent_size = 2
         public void GetFileProperties_MatchesCorrectRules()
         {
             // 解析测试内容
-            List<EditorConfigRule> rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
+            var rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
 
             // 打印规则信息
             Debug.Log($"解析到的规则数量: {rules.Count}");
@@ -71,30 +70,30 @@ indent_size = 2
             }
 
             // 创建临时测试文件
-            string tempDir = Path.Combine(Path.GetTempPath(), "EditorConfigTest");
+            var tempDir = Path.Combine(Path.GetTempPath(), "EditorConfigTest");
             Directory.CreateDirectory(tempDir);
 
             // 创建lib目录，确保目录结构与规则匹配
-            string libDir = Path.Combine(tempDir, "lib");
+            var libDir = Path.Combine(tempDir, "lib");
             Directory.CreateDirectory(libDir);
 
             try
             {
                 // 创建测试文件
-                string csharpFile = Path.Combine(tempDir, "Test.cs");
+                var csharpFile = Path.Combine(tempDir, "Test.cs");
                 File.WriteAllText(csharpFile, "// Test C# file");
 
-                string jsonFile = Path.Combine(tempDir, "Test.json");
+                var jsonFile = Path.Combine(tempDir, "Test.json");
                 File.WriteAllText(jsonFile, "// Test JSON file");
 
-                string makeFile = Path.Combine(tempDir, "Makefile");
+                var makeFile = Path.Combine(tempDir, "Makefile");
                 File.WriteAllText(makeFile, "# Test Makefile");
 
                 // 将JS文件放在lib目录下，确保与lib/**.js规则匹配
-                string jsFile = Path.Combine(libDir, "Test.js");
+                var jsFile = Path.Combine(libDir, "Test.js");
                 File.WriteAllText(jsFile, "// Test JS file");
 
-                string packageJsonFile = Path.Combine(tempDir, "package.json");
+                var packageJsonFile = Path.Combine(tempDir, "package.json");
                 File.WriteAllText(packageJsonFile, "// Test package.json file");
 
                 // 模拟EditorConfigManager.GetRules()
@@ -108,7 +107,7 @@ indent_size = 2
                         ?.SetValue(null, rules);
 
                     // 测试C#文件
-                    Dictionary<string, string> csharpProps = EditorConfigManager.GetFileProperties(csharpFile);
+                    var csharpProps = EditorConfigManager.GetFileProperties(csharpFile);
                     Debug.Log($"C#文件属性数量: {csharpProps.Count}");
                     foreach (var prop in csharpProps)
                     {
@@ -116,7 +115,7 @@ indent_size = 2
                     }
 
                     // 使用动态断言，根据实际情况判断
-                    int expectedCSharpPropCount = csharpProps.Count;
+                    var expectedCSharpPropCount = csharpProps.Count;
                     Assert.GreaterOrEqual(expectedCSharpPropCount, 4, "C#文件至少应该匹配全局规则的4个属性");
                     Assert.AreEqual(expectedCSharpPropCount, csharpProps.Count, $"C#文件应该匹配{expectedCSharpPropCount}个属性");
 
@@ -137,14 +136,14 @@ indent_size = 2
                     }
 
                     // 测试JSON文件
-                    Dictionary<string, string> jsonProps = EditorConfigManager.GetFileProperties(jsonFile);
+                    var jsonProps = EditorConfigManager.GetFileProperties(jsonFile);
                     Debug.Log($"JSON文件属性数量: {jsonProps.Count}");
                     foreach (var prop in jsonProps)
                     {
                         Debug.Log($"JSON属性: {prop.Key} = {prop.Value}");
                     }
 
-                    int expectedJsonPropCount = jsonProps.Count;
+                    var expectedJsonPropCount = jsonProps.Count;
                     Assert.GreaterOrEqual(expectedJsonPropCount, 4, "JSON文件至少应该匹配全局规则的4个属性");
                     Assert.AreEqual(expectedJsonPropCount, jsonProps.Count, $"JSON文件应该匹配{expectedJsonPropCount}个属性");
 
@@ -163,14 +162,14 @@ indent_size = 2
                     }
 
                     // 测试Makefile
-                    Dictionary<string, string> makefileProps = EditorConfigManager.GetFileProperties(makeFile);
+                    var makefileProps = EditorConfigManager.GetFileProperties(makeFile);
                     Debug.Log($"Makefile属性数量: {makefileProps.Count}");
                     foreach (var prop in makefileProps)
                     {
                         Debug.Log($"Makefile属性: {prop.Key} = {prop.Value}");
                     }
 
-                    int expectedMakefilePropCount = makefileProps.Count;
+                    var expectedMakefilePropCount = makefileProps.Count;
                     Assert.GreaterOrEqual(expectedMakefilePropCount, 4, "Makefile至少应该匹配全局规则的4个属性");
                     Assert.AreEqual(expectedMakefilePropCount, makefileProps.Count, $"Makefile应该匹配{expectedMakefilePropCount}个属性");
 
@@ -185,14 +184,14 @@ indent_size = 2
                     }
 
                     // 测试lib目录下的JS文件
-                    Dictionary<string, string> jsProps = EditorConfigManager.GetFileProperties(jsFile);
+                    var jsProps = EditorConfigManager.GetFileProperties(jsFile);
                     Debug.Log($"JS文件属性数量: {jsProps.Count}");
                     foreach (var prop in jsProps)
                     {
                         Debug.Log($"JS属性: {prop.Key} = {prop.Value}");
                     }
 
-                    int expectedJsPropCount = jsProps.Count;
+                    var expectedJsPropCount = jsProps.Count;
                     Assert.GreaterOrEqual(expectedJsPropCount, 4, "lib目录下的JS文件至少应该匹配全局规则的4个属性");
                     Assert.AreEqual(expectedJsPropCount, jsProps.Count, $"lib目录下的JS文件应该匹配{expectedJsPropCount}个属性");
 
@@ -211,14 +210,14 @@ indent_size = 2
                     }
 
                     // 测试package.json文件
-                    Dictionary<string, string> packageJsonProps = EditorConfigManager.GetFileProperties(packageJsonFile);
+                    var packageJsonProps = EditorConfigManager.GetFileProperties(packageJsonFile);
                     Debug.Log($"package.json文件属性数量: {packageJsonProps.Count}");
                     foreach (var prop in packageJsonProps)
                     {
                         Debug.Log($"package.json属性: {prop.Key} = {prop.Value}");
                     }
 
-                    int expectedPackageJsonPropCount = packageJsonProps.Count;
+                    var expectedPackageJsonPropCount = packageJsonProps.Count;
                     Assert.GreaterOrEqual(expectedPackageJsonPropCount, 4, "package.json文件至少应该匹配全局规则的4个属性");
                     Assert.AreEqual(expectedPackageJsonPropCount, packageJsonProps.Count, $"package.json文件应该匹配{expectedPackageJsonPropCount}个属性");
 
@@ -263,20 +262,20 @@ indent_size = 2
         public void ValidateFile_ChecksCorrectRules()
         {
             // 解析测试内容
-            List<EditorConfigRule> rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
+            var rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
 
             // 创建临时测试文件
-            string tempDir = Path.Combine(Path.GetTempPath(), "EditorConfigTest");
+            var tempDir = Path.Combine(Path.GetTempPath(), "EditorConfigTest");
             Directory.CreateDirectory(tempDir);
 
             try
             {
                 // 创建符合规则的C#文件
-                string validCSharpFile = Path.Combine(tempDir, "Valid.cs");
+                var validCSharpFile = Path.Combine(tempDir, "Valid.cs");
                 File.WriteAllText(validCSharpFile, "// Valid C# file\n// Using spaces for indentation\n    public void Test()\n    {\n        // Code\n    }\n");
 
                 // 创建不符合规则的C#文件（使用制表符而非空格）
-                string invalidCSharpFile = Path.Combine(tempDir, "Invalid.cs");
+                var invalidCSharpFile = Path.Combine(tempDir, "Invalid.cs");
                 File.WriteAllText(invalidCSharpFile, "// Invalid C# file\n// Using tabs for indentation\n\tpublic void Test()\n\t{\n\t\t// Code\n\t}\n");
 
                 // 模拟EditorConfigManager.GetRules()
@@ -288,11 +287,11 @@ indent_size = 2
                         ?.SetValue(null, rules);
 
                     // 测试符合规则的文件
-                    bool isValidFileValid = EditorConfigManager.ValidateFile(validCSharpFile);
+                    var isValidFileValid = EditorConfigManager.ValidateFile(validCSharpFile);
                     Assert.IsTrue(isValidFileValid, "符合规则的文件应该通过验证");
 
                     // 测试不符合规则的文件
-                    bool isInvalidFileValid = EditorConfigManager.ValidateFile(invalidCSharpFile);
+                    var isInvalidFileValid = EditorConfigManager.ValidateFile(invalidCSharpFile);
                     Assert.IsFalse(isInvalidFileValid, "不符合规则的文件不应该通过验证");
                 }
                 finally

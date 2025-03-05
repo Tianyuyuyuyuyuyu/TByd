@@ -297,7 +297,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <returns>代码行</returns>
         protected string GetCodeLine(string _code, int _lineNumber)
         {
-            string[] lines = _code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = _code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (_lineNumber <= 0 || _lineNumber > lines.Length)
             {
@@ -320,10 +320,10 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 return (1, 1);
             }
 
-            int lineNumber = 1;
-            int columnNumber = 1;
+            var lineNumber = 1;
+            var columnNumber = 1;
 
-            for (int i = 0; i < _position; i++)
+            for (var i = 0; i < _position; i++)
             {
                 if (_code[i] == '\n')
                 {
@@ -402,23 +402,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             }
 
             // 使用GetRegex方法获取正则表达式对象
-            Regex regex = GetRegex();
-            MatchCollection matches = regex.Matches(_code);
+            var regex = GetRegex();
+            var matches = regex.Matches(_code);
 
             if ((matches.Count > 0 && MatchIsIssue) || (matches.Count == 0 && !MatchIsIssue))
             {
-                List<CodeCheckIssue> issues = new List<CodeCheckIssue>();
+                var issues = new List<CodeCheckIssue>();
 
                 if (MatchIsIssue)
                 {
                     // 匹配为问题
                     foreach (Match match in matches)
                     {
-                        (int lineNumber, int columnNumber) = GetLineAndColumn(_code, match.Index);
-                        string codeSnippet = match.Value;
+                        (var lineNumber, var columnNumber) = GetLineAndColumn(_code, match.Index);
+                        var codeSnippet = match.Value;
 
-                        string message = FormatMessage(IssueMessageTemplate, match);
-                        string fixSuggestion = FixSuggestionTemplate != null ? FormatMessage(FixSuggestionTemplate, match) : null;
+                        var message = FormatMessage(IssueMessageTemplate, match);
+                        var fixSuggestion = FixSuggestionTemplate != null ? FormatMessage(FixSuggestionTemplate, match) : null;
 
                         issues.Add(CreateIssue(_filePath, lineNumber, columnNumber, message, fixSuggestion, codeSnippet));
                     }
@@ -426,7 +426,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 else
                 {
                     // 不匹配为问题
-                    string message = FormatMessage(IssueMessageTemplate, null);
+                    var message = FormatMessage(IssueMessageTemplate, null);
                     issues.Add(CreateIssue(_filePath, 1, 1, message, FixSuggestionTemplate, null));
                 }
 
@@ -449,14 +449,14 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                 return _template;
             }
 
-            string result = _template;
+            var result = _template;
 
             // 替换{0}为完整匹配
             result = result.Replace("{0}", _match.Value);
 
             // 替换{group_name}为命名组
             // 使用GetRegex方法获取正则表达式对象
-            foreach (string groupName in GetRegex().GetGroupNames())
+            foreach (var groupName in GetRegex().GetGroupNames())
             {
                 if (groupName != "0" && _match.Groups[groupName].Success)
                 {

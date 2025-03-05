@@ -3,9 +3,6 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
-using TByd.CodeStyle.Editor.UI.Utils;
-using TByd.CodeStyle.Runtime.Config;
-using TByd.CodeStyle.Runtime.Git;
 using TByd.CodeStyle.Runtime.Git.Commit;
 
 namespace TByd.CodeStyle.Editor.Git.Commit
@@ -74,7 +71,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
         private static void InitializeValidatorAndFixer()
         {
             // 获取当前配置
-            CodeStyleConfig config = ConfigProvider.GetConfig();
+            var config = ConfigProvider.GetConfig();
 
             // 初始化验证器
             s_Validator = new CommitMessageValidator(config.GitCommitConfig);
@@ -241,7 +238,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             }
 
             // 构建头部
-            string header = _type;
+            var header = _type;
 
             // 添加范围
             if (!string.IsNullOrEmpty(_scope))
@@ -259,7 +256,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             header += $": {_subject}";
 
             // 构建完整消息
-            string message = header;
+            var message = header;
 
             // 添加正文
             if (!string.IsNullOrEmpty(_body))
@@ -312,8 +309,8 @@ namespace TByd.CodeStyle.Editor.Git.Commit
             try
             {
                 // 分割消息为头部、正文和页脚
-                string[] parts = _message.Split(new[] { "\n\n" }, StringSplitOptions.None);
-                string header = parts[0].Trim();
+                var parts = _message.Split(new[] { "\n\n" }, StringSplitOptions.None);
+                var header = parts[0].Trim();
 
                 // 解析正文和页脚
                 if (parts.Length > 1)
@@ -330,7 +327,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 _isBreakingChange = header.Contains("!") || (_footer.Contains("BREAKING CHANGE"));
 
                 // 解析头部
-                int colonIndex = header.IndexOf(": ");
+                var colonIndex = header.IndexOf(": ");
                 if (colonIndex < 0)
                 {
                     return false;
@@ -340,13 +337,13 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 _subject = header.Substring(colonIndex + 2).Trim();
 
                 // 提取类型和范围
-                string typeScope = header.Substring(0, colonIndex).Trim();
+                var typeScope = header.Substring(0, colonIndex).Trim();
 
                 // 移除破坏性变更标记
                 typeScope = typeScope.Replace("!", "");
 
                 // 解析类型和范围
-                int scopeStartIndex = typeScope.IndexOf("(");
+                var scopeStartIndex = typeScope.IndexOf("(");
                 if (scopeStartIndex < 0)
                 {
                     // 没有范围
@@ -357,7 +354,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                     // 有范围
                     _type = typeScope.Substring(0, scopeStartIndex).Trim();
 
-                    int scopeEndIndex = typeScope.IndexOf(")", scopeStartIndex);
+                    var scopeEndIndex = typeScope.IndexOf(")", scopeStartIndex);
                     if (scopeEndIndex > scopeStartIndex)
                     {
                         _scope = typeScope.Substring(scopeStartIndex + 1, scopeEndIndex - scopeStartIndex - 1).Trim();
@@ -387,7 +384,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                     return 1;
                 }
 
-                string filePath = _args[0];
+                var filePath = _args[0];
 
                 if (!File.Exists(filePath))
                 {
@@ -402,7 +399,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 }
 
                 // 验证提交消息
-                CommitMessageValidationResult result = s_Validator.ValidateFile(filePath);
+                var result = s_Validator.ValidateFile(filePath);
 
                 if (!result.IsValid)
                 {

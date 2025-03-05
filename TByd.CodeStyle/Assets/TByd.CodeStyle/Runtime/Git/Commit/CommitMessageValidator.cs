@@ -68,14 +68,14 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>验证结果</returns>
         public CommitMessageValidationResult Validate(CommitMessage _message)
         {
-            List<CommitMessageRuleResult> results = new List<CommitMessageRuleResult>();
+            var results = new List<CommitMessageRuleResult>();
 
             // 验证所有规则
             foreach (var rule in m_Rules)
             {
                 try
                 {
-                    CommitMessageRuleResult result = rule.Validate(_message, m_Config);
+                    var result = rule.Validate(_message, m_Config);
                     results.Add(result);
 
                     // 如果验证失败，记录日志
@@ -106,7 +106,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             // 添加调试日志
             Debug.Log($"[TByd.CodeStyle] ValidateText: '{_messageText}'");
 
-            CommitMessage message = CommitMessageParser.Parse(_messageText);
+            var message = CommitMessageParser.Parse(_messageText);
 
             // 添加调试日志
             Debug.Log($"[TByd.CodeStyle] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
@@ -121,7 +121,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>验证结果</returns>
         public CommitMessageValidationResult ValidateFile(string _filePath)
         {
-            CommitMessage message = CommitMessageParser.ParseFromFile(_filePath);
+            var message = CommitMessageParser.ParseFromFile(_filePath);
             return Validate(message);
         }
     }
@@ -188,7 +188,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>错误消息列表</returns>
         public List<string> GetErrorMessages()
         {
-            List<string> errorMessages = new List<string>();
+            var errorMessages = new List<string>();
 
             foreach (var result in m_Results)
             {
@@ -207,7 +207,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <returns>修复建议列表</returns>
         public List<string> GetFixSuggestions()
         {
-            List<string> fixSuggestions = new List<string>();
+            var fixSuggestions = new List<string>();
 
             foreach (var result in m_Results)
             {
@@ -231,7 +231,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 return "提交消息验证通过";
             }
 
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            var sb = new System.Text.StringBuilder();
             sb.AppendLine("提交消息验证失败:");
 
             foreach (var result in m_Results)

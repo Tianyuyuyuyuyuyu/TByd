@@ -5,7 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.UI.Utils;
-using TByd.CodeStyle.Runtime.Config;
 using TByd.CodeStyle.Runtime.Git;
 
 namespace TByd.CodeStyle.Editor.Git
@@ -81,7 +80,7 @@ namespace TByd.CodeStyle.Editor.Git
         private static void OnEditorUpdate()
         {
             // 定期检查钩子状态
-            double currentTime = EditorApplication.timeSinceStartup;
+            var currentTime = EditorApplication.timeSinceStartup;
             if (currentTime - s_LastCheckTime > c_CheckInterval)
             {
                 CheckHookStatus();
@@ -112,8 +111,8 @@ namespace TByd.CodeStyle.Editor.Git
             s_HookStatusCache[_hookType] = _installed;
 
             // 显示通知
-            string hookName = _hookType.GetFileName();
-            string message = _installed ?
+            var hookName = _hookType.GetFileName();
+            var message = _installed ?
                 $"Git钩子 {hookName} 已安装" :
                 $"Git钩子 {hookName} 已卸载";
 
@@ -134,7 +133,7 @@ namespace TByd.CodeStyle.Editor.Git
         private static void CheckHookStatus()
         {
             // 获取当前配置
-            CodeStyleConfig config = ConfigProvider.GetConfig();
+            var config = ConfigProvider.GetConfig();
 
             // 如果未启用Git提交规范检查，则跳过
             if (!config.EnableGitCommitCheck)
@@ -148,13 +147,13 @@ namespace TByd.CodeStyle.Editor.Git
             GitHookManager.RefreshHookStatusCache();
 
             // 获取所有钩子状态
-            Dictionary<GitHookType, bool> hookStatus = GitHookManager.GetAllHookStatus();
+            var hookStatus = GitHookManager.GetAllHookStatus();
 
             // 检查是否有钩子状态变化
-            bool hasChanges = false;
+            var hasChanges = false;
             foreach (var pair in hookStatus)
             {
-                if (s_HookStatusCache.TryGetValue(pair.Key, out bool cachedStatus) && cachedStatus != pair.Value)
+                if (s_HookStatusCache.TryGetValue(pair.Key, out var cachedStatus) && cachedStatus != pair.Value)
                 {
                     hasChanges = true;
                     break;
@@ -167,7 +166,7 @@ namespace TByd.CodeStyle.Editor.Git
                 s_HookStatusCache = hookStatus;
 
                 // 检查是否有钩子被卸载
-                bool hasUninstalledHooks = false;
+                var hasUninstalledHooks = false;
                 foreach (var pair in hookStatus)
                 {
                     if (config.GitHookConfig.IsHookEnabled(pair.Key) && !pair.Value)
@@ -191,7 +190,7 @@ namespace TByd.CodeStyle.Editor.Git
         private static void CheckAutoInstallHooks()
         {
             // 获取当前配置
-            CodeStyleConfig config = ConfigProvider.GetConfig();
+            var config = ConfigProvider.GetConfig();
 
             // 如果未启用Git提交规范检查，则跳过
             if (!config.EnableGitCommitCheck)
@@ -202,14 +201,14 @@ namespace TByd.CodeStyle.Editor.Git
                 return;
 
             // 获取所有钩子状态
-            Dictionary<GitHookType, bool> hookStatus = GitHookManager.GetAllHookStatus();
+            var hookStatus = GitHookManager.GetAllHookStatus();
 
             // 检查是否有需要安装的钩子
-            bool needInstall = false;
+            var needInstall = false;
             foreach (var hookConfig in config.GitHookConfig.HookConfigs)
             {
                 if (hookConfig.Enabled &&
-                    hookStatus.TryGetValue(hookConfig.HookType, out bool installed) &&
+                    hookStatus.TryGetValue(hookConfig.HookType, out var installed) &&
                     !installed)
                 {
                     needInstall = true;
@@ -221,7 +220,7 @@ namespace TByd.CodeStyle.Editor.Git
             if (needInstall)
             {
                 // 显示确认对话框
-                bool install = EditorUtility.DisplayDialog(
+                var install = EditorUtility.DisplayDialog(
                     "安装Git钩子",
                     "检测到部分Git钩子未安装，是否立即安装？\n\n" +
                     "这些钩子用于在Git提交时检查代码风格和提交消息格式。",
@@ -241,7 +240,7 @@ namespace TByd.CodeStyle.Editor.Git
         public static void InstallEnabledHooks()
         {
             // 获取当前配置
-            CodeStyleConfig config = ConfigProvider.GetConfig();
+            var config = ConfigProvider.GetConfig();
 
             // 安装已启用的钩子
             foreach (var hookConfig in config.GitHookConfig.HookConfigs)
@@ -278,7 +277,7 @@ namespace TByd.CodeStyle.Editor.Git
         /// <returns>钩子文件路径</returns>
         public static string GetHookPath(GitHookType _hookType, string _hooksDir)
         {
-            string hookFileName = _hookType.GetFileName();
+            var hookFileName = _hookType.GetFileName();
             return Path.Combine(_hooksDir, hookFileName);
         }
 
@@ -290,14 +289,14 @@ namespace TByd.CodeStyle.Editor.Git
         /// <returns>是否已安装</returns>
         public static bool IsHookInstalled(GitHookType _hookType, string _hooksDir)
         {
-            string hookPath = GetHookPath(_hookType, _hooksDir);
+            var hookPath = GetHookPath(_hookType, _hooksDir);
 
             if (!File.Exists(hookPath))
                 return false;
 
             try
             {
-                string content = File.ReadAllText(hookPath);
+                var content = File.ReadAllText(hookPath);
                 return content.Contains("TByd.CodeStyle");
             }
             catch (Exception e)
@@ -315,7 +314,7 @@ namespace TByd.CodeStyle.Editor.Git
         /// <returns>是否安装成功</returns>
         public static bool InstallHook(GitHookType _hookType, string _hooksDir)
         {
-            string hookPath = GetHookPath(_hookType, _hooksDir);
+            var hookPath = GetHookPath(_hookType, _hooksDir);
 
             try
             {
@@ -323,7 +322,7 @@ namespace TByd.CodeStyle.Editor.Git
                 if (File.Exists(hookPath) && !IsHookInstalled(_hookType, _hooksDir))
                 {
                     // 备份现有钩子
-                    string backupPath = hookPath + ".backup";
+                    var backupPath = hookPath + ".backup";
                     if (File.Exists(backupPath))
                     {
                         File.Delete(backupPath);
@@ -334,10 +333,10 @@ namespace TByd.CodeStyle.Editor.Git
                 }
 
                 // 创建钩子内容
-                string hookContent = $"#!/bin/sh\n# TByd.CodeStyle {_hookType.GetFileName()} hook\n\n" +
-                                    "# 这是一个测试钩子，用于单元测试\n" +
-                                    "echo \"TByd.CodeStyle hook test\"\n" +
-                                    "exit 0\n";
+                var hookContent = $"#!/bin/sh\n# TByd.CodeStyle {_hookType.GetFileName()} hook\n\n" +
+                                  "# 这是一个测试钩子，用于单元测试\n" +
+                                  "echo \"TByd.CodeStyle hook test\"\n" +
+                                  "exit 0\n";
 
                 // 写入钩子文件
                 File.WriteAllText(hookPath, hookContent);
@@ -361,7 +360,7 @@ namespace TByd.CodeStyle.Editor.Git
         /// <returns>是否卸载成功</returns>
         public static bool UninstallHook(GitHookType _hookType, string _hooksDir)
         {
-            string hookPath = GetHookPath(_hookType, _hooksDir);
+            var hookPath = GetHookPath(_hookType, _hooksDir);
 
             try
             {
@@ -376,7 +375,7 @@ namespace TByd.CodeStyle.Editor.Git
                 File.Delete(hookPath);
 
                 // 检查是否有备份，如果有则恢复
-                string backupPath = hookPath + ".backup";
+                var backupPath = hookPath + ".backup";
                 if (File.Exists(backupPath))
                 {
                     File.Move(backupPath, hookPath);

@@ -85,7 +85,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 使用大小写不敏感的字典，无需转换为小写
-            if (m_Properties.TryGetValue(_key, out string value))
+            if (m_Properties.TryGetValue(_key, out var value))
             {
                 return value;
             }

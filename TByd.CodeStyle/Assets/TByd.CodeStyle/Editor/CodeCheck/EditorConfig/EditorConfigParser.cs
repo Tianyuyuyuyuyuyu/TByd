@@ -31,7 +31,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
             try
             {
-                string[] lines = File.ReadAllLines(_filePath);
+                var lines = File.ReadAllLines(_filePath);
                 return ParseLines(lines);
             }
             catch (Exception e)
@@ -55,7 +55,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
             try
             {
-                string[] lines = _content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                var lines = _content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 return ParseLines(lines);
             }
             catch (Exception e)
@@ -72,11 +72,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <returns>EditorConfig规则列表</returns>
         private static List<EditorConfigRule> ParseLines(string[] _lines)
         {
-            List<EditorConfigRule> rules = new List<EditorConfigRule>();
+            var rules = new List<EditorConfigRule>();
             EditorConfigRule currentRule = null;
-            bool isRoot = false;
+            var isRoot = false;
 
-            foreach (string line in _lines)
+            foreach (var line in _lines)
             {
                 // 跳过空行
                 if (string.IsNullOrWhiteSpace(line))
@@ -91,21 +91,21 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 解析节（文件匹配模式）
-                Match sectionMatch = s_SectionRegex.Match(line);
+                var sectionMatch = s_SectionRegex.Match(line);
                 if (sectionMatch.Success)
                 {
-                    string pattern = sectionMatch.Groups[1].Value.Trim();
+                    var pattern = sectionMatch.Groups[1].Value.Trim();
                     currentRule = new EditorConfigRule(pattern);
                     rules.Add(currentRule);
                     continue;
                 }
 
                 // 解析属性
-                Match propertyMatch = s_PropertyRegex.Match(line);
+                var propertyMatch = s_PropertyRegex.Match(line);
                 if (propertyMatch.Success)
                 {
-                    string key = propertyMatch.Groups[1].Value.Trim();
-                    string value = propertyMatch.Groups[2].Value.Trim();
+                    var key = propertyMatch.Groups[1].Value.Trim();
+                    var value = propertyMatch.Groups[2].Value.Trim();
 
                     // 处理root属性（特殊属性，不属于任何节）
                     if (key.ToLowerInvariant() == "root")
@@ -141,7 +141,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 return string.Empty;
             }
 
-            using (StringWriter writer = new StringWriter())
+            using (var writer = new StringWriter())
             {
                 // 添加头部注释
                 writer.WriteLine("# EditorConfig is awesome: https://editorconfig.org/");
@@ -156,13 +156,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 添加规则
-                foreach (EditorConfigRule rule in _rules)
+                foreach (var rule in _rules)
                 {
                     // 添加节
                     writer.WriteLine($"[{rule.Pattern}]");
 
                     // 添加属性
-                    foreach (KeyValuePair<string, string> property in rule.Properties)
+                    foreach (var property in rule.Properties)
                     {
                         writer.WriteLine($"{property.Key} = {property.Value}");
                     }

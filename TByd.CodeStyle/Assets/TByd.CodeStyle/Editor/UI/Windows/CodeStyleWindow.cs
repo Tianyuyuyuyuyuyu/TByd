@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
-using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.Git;
 using TByd.CodeStyle.Editor.Git.Commit;
 using TByd.CodeStyle.Editor.UI.Utils;
@@ -118,10 +117,10 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         private void InitializeGitCommitData()
         {
             // 获取配置
-            CodeStyleConfig config = ConfigManager.GetConfig();
+            var config = ConfigManager.GetConfig();
 
             // 初始化提交类型选项
-            List<string> typeOptions = new List<string>();
+            var typeOptions = new List<string>();
             typeOptions.Add("-- 选择提交类型 --");
 
             foreach (var type in config.GitCommitConfig.CommitTypes)
@@ -132,7 +131,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             m_CommitTypeOptions = typeOptions.ToArray();
 
             // 初始化作用域选项
-            List<string> scopeOptions = new List<string>();
+            var scopeOptions = new List<string>();
             scopeOptions.Add("-- 选择作用域 --");
             scopeOptions.Add("(无作用域)");
 
@@ -156,7 +155,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             if (m_IsGitRepository)
             {
                 // 获取所有钩子状态
-                Dictionary<GitHookType, bool> hookStatus = GitHookMonitor.GetHookStatus();
+                var hookStatus = GitHookMonitor.GetHookStatus();
 
                 // 检查是否所有必要的钩子都已安装
                 m_AreHooksInstalled = hookStatus.Count > 0 &&
@@ -323,7 +322,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("EditorConfig状态", EditorStyles.boldLabel);
 
-            bool hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
+            var hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
 
             if (hasEditorConfig)
             {
@@ -363,11 +362,11 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("功能状态", EditorStyles.boldLabel);
 
-            CodeStyleConfig config = ConfigManager.GetConfig();
+            var config = ConfigManager.GetConfig();
 
-            bool enableGitCommit = config.EnableGitCommitCheck;
-            bool enableCodeCheck = config.EnableCodeStyleCheck;
-            bool enableEditorConfig = config.EnableEditorConfig;
+            var enableGitCommit = config.EnableGitCommitCheck;
+            var enableCodeCheck = config.EnableCodeStyleCheck;
+            var enableEditorConfig = config.EnableEditorConfig;
 
             EditorGUI.BeginChangeCheck();
 
@@ -411,7 +410,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
                 if (GUILayout.Button("启用Git提交规范检查"))
                 {
-                    CodeStyleConfig config = ConfigManager.GetConfig();
+                    var config = ConfigManager.GetConfig();
                     config.EnableGitCommitCheck = true;
                     ConfigManager.SaveConfig();
                 }
@@ -427,7 +426,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             // 提交类型选择
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("提交类型:", GUILayout.Width(80));
-            int newTypeIndex = EditorGUILayout.Popup(m_SelectedCommitTypeIndex, m_CommitTypeOptions);
+            var newTypeIndex = EditorGUILayout.Popup(m_SelectedCommitTypeIndex, m_CommitTypeOptions);
             if (newTypeIndex != m_SelectedCommitTypeIndex)
             {
                 m_SelectedCommitTypeIndex = newTypeIndex;
@@ -446,7 +445,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             // 作用域选择
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("作用域:", GUILayout.Width(80));
-            int newScopeIndex = EditorGUILayout.Popup(m_SelectedScopeIndex, m_ScopeOptions);
+            var newScopeIndex = EditorGUILayout.Popup(m_SelectedScopeIndex, m_ScopeOptions);
             if (newScopeIndex != m_SelectedScopeIndex)
             {
                 m_SelectedScopeIndex = newScopeIndex;
@@ -467,7 +466,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.EndHorizontal();
 
             // 是否是破坏性变更
-            bool newIsBreakingChange = EditorGUILayout.ToggleLeft("破坏性变更", m_CommitIsBreakingChange);
+            var newIsBreakingChange = EditorGUILayout.ToggleLeft("破坏性变更", m_CommitIsBreakingChange);
             if (newIsBreakingChange != m_CommitIsBreakingChange)
             {
                 m_CommitIsBreakingChange = newIsBreakingChange;
@@ -476,7 +475,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             // 主题
             EditorGUILayout.LabelField("主题:");
-            string newSubject = EditorGUILayout.TextField(m_CommitSubject);
+            var newSubject = EditorGUILayout.TextField(m_CommitSubject);
             if (newSubject != m_CommitSubject)
             {
                 m_CommitSubject = newSubject;
@@ -485,7 +484,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             // 正文
             EditorGUILayout.LabelField("正文:");
-            string newBody = EditorGUILayout.TextArea(m_CommitBody, GUILayout.Height(60));
+            var newBody = EditorGUILayout.TextArea(m_CommitBody, GUILayout.Height(60));
             if (newBody != m_CommitBody)
             {
                 m_CommitBody = newBody;
@@ -494,7 +493,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             // 页脚
             EditorGUILayout.LabelField("页脚:");
-            string newFooter = EditorGUILayout.TextArea(m_CommitFooter, GUILayout.Height(40));
+            var newFooter = EditorGUILayout.TextArea(m_CommitFooter, GUILayout.Height(40));
             if (newFooter != m_CommitFooter)
             {
                 m_CommitFooter = newFooter;
@@ -596,7 +595,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         private void UpdateCommitMessage()
         {
             // 构建提交消息
-            string message = string.Empty;
+            var message = string.Empty;
 
             // 类型
             if (!string.IsNullOrEmpty(m_CommitType))
@@ -677,10 +676,10 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 EditorGUILayout.Space();
 
                 // 获取配置
-                CodeStyleConfig config = ConfigManager.GetConfig();
+                var config = ConfigManager.GetConfig();
 
                 // 启用代码风格检查
-                bool enableCodeStyleCheck = EditorGUILayout.Toggle("启用代码风格检查", config.EnableCodeStyleCheck);
+                var enableCodeStyleCheck = EditorGUILayout.Toggle("启用代码风格检查", config.EnableCodeStyleCheck);
                 if (enableCodeStyleCheck != config.EnableCodeStyleCheck)
                 {
                     config.EnableCodeStyleCheck = enableCodeStyleCheck;
@@ -688,7 +687,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 }
 
                 // 启用EditorConfig支持
-                bool enableEditorConfig = EditorGUILayout.Toggle("启用EditorConfig支持", config.EnableEditorConfig);
+                var enableEditorConfig = EditorGUILayout.Toggle("启用EditorConfig支持", config.EnableEditorConfig);
                 if (enableEditorConfig != config.EnableEditorConfig)
                 {
                     config.EnableEditorConfig = enableEditorConfig;
@@ -708,7 +707,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     EditorGUILayout.LabelField("EditorConfig设置", EditorStyles.boldLabel);
 
                     // 检查项目是否存在EditorConfig文件
-                    bool hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
+                    var hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
 
                     EditorGUILayout.BeginHorizontal();
                     {
@@ -748,7 +747,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                             // 编辑按钮
                             if (GUILayout.Button("编辑文件", GUILayout.Width(100)))
                             {
-                                string editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
+                                var editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
                                 if (File.Exists(editorConfigPath))
                                 {
                                     // 使用系统默认编辑器打开文件
@@ -807,18 +806,18 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             try
             {
                 // 获取项目中的所有C#文件
-                string projectPath = Application.dataPath;
-                string[] csharpFiles = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories);
+                var projectPath = Application.dataPath;
+                var csharpFiles = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories);
 
-                int totalFiles = csharpFiles.Length;
-                int validFiles = 0;
-                int invalidFiles = 0;
-                List<string> invalidFilesList = new List<string>();
+                var totalFiles = csharpFiles.Length;
+                var validFiles = 0;
+                var invalidFiles = 0;
+                var invalidFilesList = new List<string>();
 
                 // 验证每个文件
-                for (int i = 0; i < totalFiles; i++)
+                for (var i = 0; i < totalFiles; i++)
                 {
-                    string file = csharpFiles[i];
+                    var file = csharpFiles[i];
 
                     // 更新进度条
                     EditorUtility.DisplayProgressBar(
@@ -827,7 +826,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                         (float)i / totalFiles);
 
                     // 验证文件
-                    bool isValid = EditorConfigManager.ValidateFile(file);
+                    var isValid = EditorConfigManager.ValidateFile(file);
 
                     if (isValid)
                     {
@@ -843,20 +842,20 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 // 显示结果
                 EditorUtility.ClearProgressBar();
 
-                string message = $"验证完成！\n\n" +
-                                $"总文件数: {totalFiles}\n" +
-                                $"符合规则的文件: {validFiles}\n" +
-                                $"不符合规则的文件: {invalidFiles}";
+                var message = $"验证完成！\n\n" +
+                              $"总文件数: {totalFiles}\n" +
+                              $"符合规则的文件: {validFiles}\n" +
+                              $"不符合规则的文件: {invalidFiles}";
 
                 if (invalidFiles > 0)
                 {
                     message += "\n\n不符合规则的文件:";
 
                     // 最多显示10个文件
-                    int displayCount = Mathf.Min(invalidFilesList.Count, 10);
-                    for (int i = 0; i < displayCount; i++)
+                    var displayCount = Mathf.Min(invalidFilesList.Count, 10);
+                    for (var i = 0; i < displayCount; i++)
                     {
-                        string relativePath = invalidFilesList[i].Replace(Application.dataPath, "Assets");
+                        var relativePath = invalidFilesList[i].Replace(Application.dataPath, "Assets");
                         message += $"\n- {relativePath}";
                     }
 
@@ -884,7 +883,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         private void FormatProjectFiles()
         {
             // 显示确认对话框
-            bool confirm = EditorUtility.DisplayDialog(
+            var confirm = EditorUtility.DisplayDialog(
                 "格式化项目文件",
                 "此操作将根据EditorConfig规则格式化项目中的所有C#文件。\n\n" +
                 "格式化可能会修改文件的缩进、行尾、空白字符等。\n\n" +
@@ -904,18 +903,18 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             try
             {
                 // 获取项目中的所有C#文件
-                string projectPath = Application.dataPath;
-                string[] csharpFiles = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories);
+                var projectPath = Application.dataPath;
+                var csharpFiles = Directory.GetFiles(projectPath, "*.cs", SearchOption.AllDirectories);
 
-                int totalFiles = csharpFiles.Length;
-                int formattedFiles = 0;
-                int failedFiles = 0;
-                List<string> failedFilesList = new List<string>();
+                var totalFiles = csharpFiles.Length;
+                var formattedFiles = 0;
+                var failedFiles = 0;
+                var failedFilesList = new List<string>();
 
                 // 格式化每个文件
-                for (int i = 0; i < totalFiles; i++)
+                for (var i = 0; i < totalFiles; i++)
                 {
-                    string file = csharpFiles[i];
+                    var file = csharpFiles[i];
 
                     // 更新进度条
                     EditorUtility.DisplayProgressBar(
@@ -924,7 +923,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                         (float)i / totalFiles);
 
                     // 格式化文件
-                    bool success = EditorConfigManager.FormatFile(file);
+                    var success = EditorConfigManager.FormatFile(file);
 
                     if (success)
                     {
@@ -943,20 +942,20 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 // 显示结果
                 EditorUtility.ClearProgressBar();
 
-                string message = $"格式化完成！\n\n" +
-                                $"总文件数: {totalFiles}\n" +
-                                $"成功格式化的文件: {formattedFiles}\n" +
-                                $"格式化失败的文件: {failedFiles}";
+                var message = $"格式化完成！\n\n" +
+                              $"总文件数: {totalFiles}\n" +
+                              $"成功格式化的文件: {formattedFiles}\n" +
+                              $"格式化失败的文件: {failedFiles}";
 
                 if (failedFiles > 0)
                 {
                     message += "\n\n格式化失败的文件:";
 
                     // 最多显示10个文件
-                    int displayCount = Mathf.Min(failedFilesList.Count, 10);
-                    for (int i = 0; i < displayCount; i++)
+                    var displayCount = Mathf.Min(failedFilesList.Count, 10);
+                    for (var i = 0; i < displayCount; i++)
                     {
-                        string relativePath = failedFilesList[i].Replace(Application.dataPath, "Assets");
+                        var relativePath = failedFilesList[i].Replace(Application.dataPath, "Assets");
                         message += $"\n- {relativePath}";
                     }
 
@@ -1056,7 +1055,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 }
                 else
                 {
-                    string message = "配置验证失败：\n";
+                    var message = "配置验证失败：\n";
                     if (result.Errors.Count > 0)
                     {
                         message += "\n错误：\n" + string.Join("\n", result.Errors);
@@ -1082,7 +1081,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
                 if (GUILayout.Button("解决冲突"))
                 {
-                    bool useLocal = EditorUtility.DisplayDialog("解决冲突",
+                    var useLocal = EditorUtility.DisplayDialog("解决冲突",
                         "选择要使用的配置版本：\n\n" +
                         "- 使用本地版本：保留当前的配置\n" +
                         "- 使用标准版本：使用推荐的配置",
@@ -1166,13 +1165,13 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("创建备份"))
             {
-                string description = "";
+                var description = "";
                 if (EditorUtility.DisplayDialog("创建备份",
                     "是否要创建配置备份？",
                     "确定", "取消"))
                 {
                     description = EditorInputDialog.Show("备份描述", "请输入备份描述（可选）：", "");
-                    string backupId = IDEConfigBackupManager.CreateBackup(m_CurrentIDEType, description);
+                    var backupId = IDEConfigBackupManager.CreateBackup(m_CurrentIDEType, description);
                     if (!string.IsNullOrEmpty(backupId))
                     {
                         NotificationSystem.ShowNotification("配置已备份", NotificationType.Success);
@@ -1198,7 +1197,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 var result = IDEConfigSyncManager.SynchronizeConfig(m_CurrentIDEType);
                 if (result.Success)
                 {
-                    string message = "配置同步成功";
+                    var message = "配置同步成功";
                     if (result.UpdatedFiles.Count > 0)
                     {
                         message += $"\n\n更新的文件：\n{string.Join("\n", result.UpdatedFiles)}";
@@ -1305,7 +1304,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             GUILayout.Label("设置", EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
-            CodeStyleConfig config = ConfigManager.GetConfig();
+            var config = ConfigManager.GetConfig();
 
             EditorGUI.BeginChangeCheck();
 
@@ -1363,12 +1362,12 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("自定义Git仓库路径:", GUILayout.Width(150));
 
-            string repositoryPath = config.CustomGitRepositoryPath;
+            var repositoryPath = config.CustomGitRepositoryPath;
             repositoryPath = EditorGUILayout.TextField(repositoryPath);
 
             if (GUILayout.Button("浏览...", GUILayout.Width(80)))
             {
-                string path = EditorUtility.OpenFolderPanel("选择Git仓库路径", repositoryPath, "");
+                var path = EditorUtility.OpenFolderPanel("选择Git仓库路径", repositoryPath, "");
                 if (!string.IsNullOrEmpty(path))
                 {
                     repositoryPath = path;
@@ -1384,7 +1383,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             // EditorConfig设置
             EditorGUILayout.LabelField("EditorConfig设置", EditorStyles.boldLabel);
 
-            bool hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
+            var hasEditorConfig = EditorConfigManager.HasProjectEditorConfig();
 
             if (hasEditorConfig)
             {
@@ -1401,7 +1400,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
                 if (GUILayout.Button("编辑EditorConfig文件"))
                 {
-                    string editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
+                    var editorConfigPath = EditorConfigManager.GetProjectEditorConfigPath();
                     if (System.IO.File.Exists(editorConfigPath))
                     {
                         EditorUtility.OpenWithDefaultApp(editorConfigPath);
@@ -1429,7 +1428,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
                 if (GUILayout.Button("导入配置"))
                 {
-                    string path = EditorUtility.OpenFilePanel("导入EditorConfig", "", "");
+                    var path = EditorUtility.OpenFilePanel("导入EditorConfig", "", "");
                     if (!string.IsNullOrEmpty(path))
                     {
                         EditorConfigManager.ImportEditorConfig(path);
@@ -1469,9 +1468,9 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         {
             EditorApplication.delayCall += () =>
             {
-                for (int i = 0; i <= 10; i++)
+                for (var i = 0; i <= 10; i++)
                 {
-                    float progress = i / 10f;
+                    var progress = i / 10f;
                     NotificationSystem.ShowProgress("测试进度", $"正在处理... {i * 10}%", progress);
 
                     // 模拟处理时间

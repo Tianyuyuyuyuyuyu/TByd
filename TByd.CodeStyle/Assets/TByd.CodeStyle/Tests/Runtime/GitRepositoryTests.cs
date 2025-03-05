@@ -1,7 +1,6 @@
 using System.IO;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 using TByd.CodeStyle.Runtime.Git;
 
 namespace TByd.CodeStyle.Tests.Runtime
@@ -42,7 +41,7 @@ namespace TByd.CodeStyle.Tests.Runtime
         public void IsGitRepository_ValidRepository_ReturnsTrue()
         {
             // 检查是否是Git仓库
-            bool isGitRepo = GitRepository.IsGitRepository(m_TestGitDir);
+            var isGitRepo = GitRepository.IsGitRepository(m_TestGitDir);
 
             // 验证结果
             Assert.IsTrue(isGitRepo);
@@ -52,13 +51,13 @@ namespace TByd.CodeStyle.Tests.Runtime
         public void IsGitRepository_InvalidRepository_ReturnsFalse()
         {
             // 创建非Git目录
-            string nonGitDir = Path.Combine(Application.temporaryCachePath, "NonGit");
+            var nonGitDir = Path.Combine(Application.temporaryCachePath, "NonGit");
             Directory.CreateDirectory(nonGitDir);
 
             try
             {
                 // 检查是否是Git仓库
-                bool isGitRepo = GitRepository.IsGitRepository(nonGitDir);
+                var isGitRepo = GitRepository.IsGitRepository(nonGitDir);
 
                 // 验证结果
                 Assert.IsFalse(isGitRepo);
@@ -77,7 +76,7 @@ namespace TByd.CodeStyle.Tests.Runtime
         public void GetGitDirectory_ValidRepository_ReturnsGitDir()
         {
             // 获取Git目录
-            string gitDir = GitRepository.GetGitDirectory(m_TestGitDir);
+            var gitDir = GitRepository.GetGitDirectory(m_TestGitDir);
 
             // 验证结果
             Assert.AreEqual(Path.Combine(m_TestGitDir, ".git"), gitDir);
@@ -87,13 +86,13 @@ namespace TByd.CodeStyle.Tests.Runtime
         public void GetGitDirectory_InvalidRepository_ReturnsEmpty()
         {
             // 创建非Git目录
-            string nonGitDir = Path.Combine(Application.temporaryCachePath, "NonGit");
+            var nonGitDir = Path.Combine(Application.temporaryCachePath, "NonGit");
             Directory.CreateDirectory(nonGitDir);
 
             try
             {
                 // 获取Git目录
-                string gitDir = GitRepository.GetGitDirectory(nonGitDir);
+                var gitDir = GitRepository.GetGitDirectory(nonGitDir);
 
                 // 验证结果
                 Assert.AreEqual(string.Empty, gitDir);
@@ -112,7 +111,7 @@ namespace TByd.CodeStyle.Tests.Runtime
         public void GetHooksDirectory_ValidRepository_ReturnsHooksDir()
         {
             // 获取Hooks目录
-            string hooksDir = GitRepository.GetHooksDirectory(m_TestGitDir);
+            var hooksDir = GitRepository.GetHooksDirectory(m_TestGitDir);
 
             // 验证结果
             Assert.AreEqual(Path.Combine(m_TestGitDir, ".git", "hooks"), hooksDir);
@@ -122,13 +121,13 @@ namespace TByd.CodeStyle.Tests.Runtime
         public void GetHooksDirectory_InvalidRepository_ReturnsEmpty()
         {
             // 创建非Git目录
-            string nonGitDir = Path.Combine(Application.temporaryCachePath, "NonGit");
+            var nonGitDir = Path.Combine(Application.temporaryCachePath, "NonGit");
             Directory.CreateDirectory(nonGitDir);
 
             try
             {
                 // 获取Hooks目录
-                string hooksDir = GitRepository.GetHooksDirectory(nonGitDir);
+                var hooksDir = GitRepository.GetHooksDirectory(nonGitDir);
 
                 // 验证结果
                 Assert.AreEqual(string.Empty, hooksDir);

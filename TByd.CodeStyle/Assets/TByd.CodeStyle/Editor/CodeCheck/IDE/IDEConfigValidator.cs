@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
@@ -94,14 +93,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void ValidateRiderConfig(string _configPath, ValidationResult _result)
         {
             // 验证.idea目录
-            string ideaPath = Path.Combine(_configPath, ".idea");
+            var ideaPath = Path.Combine(_configPath, ".idea");
             if (!Directory.Exists(ideaPath))
             {
                 _result.Warnings.Add("未找到.idea目录，可能影响Rider配置");
             }
 
             // 验证codeStyleConfig.xml
-            string codeStylePath = Path.Combine(ideaPath, "codeStyleConfig.xml");
+            var codeStylePath = Path.Combine(ideaPath, "codeStyleConfig.xml");
             if (!File.Exists(codeStylePath))
             {
                 _result.Errors.Add("未找到codeStyleConfig.xml文件");
@@ -112,7 +111,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 验证文件内容
                 try
                 {
-                    string content = File.ReadAllText(codeStylePath);
+                    var content = File.ReadAllText(codeStylePath);
                     if (!content.Contains("TByd.CodeStyle"))
                     {
                         _result.Warnings.Add("codeStyleConfig.xml可能不是TByd.CodeStyle的配置文件");
@@ -126,7 +125,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // 验证csharpier.json
-            string csharpierPath = Path.Combine(ideaPath, "csharpier.json");
+            var csharpierPath = Path.Combine(ideaPath, "csharpier.json");
             if (!File.Exists(csharpierPath))
             {
                 _result.Warnings.Add("未找到csharpier.json文件，代码格式化可能不完整");
@@ -136,7 +135,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 验证文件内容
                 try
                 {
-                    string content = File.ReadAllText(csharpierPath);
+                    var content = File.ReadAllText(csharpierPath);
                     if (!content.Contains("fileHeader") || !content.Contains("formatting"))
                     {
                         _result.Warnings.Add("csharpier.json可能缺少必要的配置项");
@@ -160,7 +159,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void ValidateVisualStudioConfig(string _configPath, ValidationResult _result)
         {
             // 验证.vssettings
-            string vsSettingsPath = Path.Combine(_configPath, ".vssettings");
+            var vsSettingsPath = Path.Combine(_configPath, ".vssettings");
             if (!File.Exists(vsSettingsPath))
             {
                 _result.Errors.Add("未找到.vssettings文件");
@@ -171,7 +170,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 验证文件内容
                 try
                 {
-                    string content = File.ReadAllText(vsSettingsPath);
+                    var content = File.ReadAllText(vsSettingsPath);
                     if (!content.Contains("TextEditor") || !content.Contains("CSharp"))
                     {
                         _result.Warnings.Add(".vssettings可能缺少必要的配置项");
@@ -195,14 +194,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void ValidateVSCodeConfig(string _configPath, ValidationResult _result)
         {
             // 验证.vscode目录
-            string vscodePath = Path.Combine(_configPath, ".vscode");
+            var vscodePath = Path.Combine(_configPath, ".vscode");
             if (!Directory.Exists(vscodePath))
             {
                 _result.Warnings.Add("未找到.vscode目录，可能影响VS Code配置");
             }
 
             // 验证settings.json
-            string settingsPath = Path.Combine(vscodePath, "settings.json");
+            var settingsPath = Path.Combine(vscodePath, "settings.json");
             if (!File.Exists(settingsPath))
             {
                 _result.Errors.Add("未找到settings.json文件");
@@ -213,7 +212,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 验证文件内容
                 try
                 {
-                    string content = File.ReadAllText(settingsPath);
+                    var content = File.ReadAllText(settingsPath);
                     if (!content.Contains("omnisharp.enableEditorConfigSupport"))
                     {
                         _result.Warnings.Add("settings.json可能缺少OmniSharp配置");
@@ -227,7 +226,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // 验证omnisharp.json
-            string omnisharpPath = Path.Combine(vscodePath, "omnisharp.json");
+            var omnisharpPath = Path.Combine(vscodePath, "omnisharp.json");
             if (!File.Exists(omnisharpPath))
             {
                 _result.Warnings.Add("未找到omnisharp.json文件，C#语言服务可能不完整");
@@ -237,7 +236,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 验证文件内容
                 try
                 {
-                    string content = File.ReadAllText(omnisharpPath);
+                    var content = File.ReadAllText(omnisharpPath);
                     if (!content.Contains("FormattingOptions") || !content.Contains("RoslynExtensionsOptions"))
                     {
                         _result.Warnings.Add("omnisharp.json可能缺少必要的配置项");
@@ -261,7 +260,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void ValidateEditorConfig(string _configPath, ValidationResult _result)
         {
             // 验证.editorconfig
-            string editorConfigPath = Path.Combine(_configPath, ".editorconfig");
+            var editorConfigPath = Path.Combine(_configPath, ".editorconfig");
             if (!File.Exists(editorConfigPath))
             {
                 _result.Errors.Add("未找到.editorconfig文件");
@@ -280,7 +279,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     else
                     {
                         // 验证是否包含基本规则
-                        bool hasBasicRules = false;
+                        var hasBasicRules = false;
                         foreach (var rule in rules)
                         {
                             if (rule.Pattern == "*")
@@ -296,7 +295,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         }
 
                         // 验证是否包含C#规则
-                        bool hasCSharpRules = false;
+                        var hasCSharpRules = false;
                         foreach (var rule in rules)
                         {
                             if (rule.Pattern == "*.cs")
@@ -342,17 +341,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         // 检查缩进设置冲突
                         if (rule.Properties.ContainsKey("indent_style") && rule.Properties.ContainsKey("indent_size"))
                         {
-                            string indentStyle = rule.Properties["indent_style"];
-                            string indentSize = rule.Properties["indent_size"];
+                            var indentStyle = rule.Properties["indent_style"];
 
                             switch (_ideType)
                             {
                                 case IDEType.Rider:
                                     // 检查Rider设置
-                                    string riderConfigPath = Path.Combine(_configPath, ".idea", "codeStyleConfig.xml");
+                                    var riderConfigPath = Path.Combine(_configPath, ".idea", "codeStyleConfig.xml");
                                     if (File.Exists(riderConfigPath))
                                     {
-                                        string content = File.ReadAllText(riderConfigPath);
+                                        var content = File.ReadAllText(riderConfigPath);
                                         if ((indentStyle == "space" && content.Contains("USE_TABS")) ||
                                             (indentStyle == "tab" && !content.Contains("USE_TABS")))
                                         {
@@ -363,10 +361,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                                 case IDEType.VisualStudio:
                                     // 检查VS设置
-                                    string vsSettingsPath = Path.Combine(_configPath, ".vssettings");
+                                    var vsSettingsPath = Path.Combine(_configPath, ".vssettings");
                                     if (File.Exists(vsSettingsPath))
                                     {
-                                        string content = File.ReadAllText(vsSettingsPath);
+                                        var content = File.ReadAllText(vsSettingsPath);
                                         if ((indentStyle == "space" && content.Contains("InsertTabs>true")) ||
                                             (indentStyle == "tab" && content.Contains("InsertTabs>false")))
                                         {
@@ -377,10 +375,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                                 case IDEType.VSCode:
                                     // 检查VS Code设置
-                                    string vscodePath = Path.Combine(_configPath, ".vscode", "settings.json");
+                                    var vscodePath = Path.Combine(_configPath, ".vscode", "settings.json");
                                     if (File.Exists(vscodePath))
                                     {
-                                        string content = File.ReadAllText(vscodePath);
+                                        var content = File.ReadAllText(vscodePath);
                                         if ((indentStyle == "space" && content.Contains("\"useTabs\": true")) ||
                                             (indentStyle == "tab" && content.Contains("\"useTabs\": false")))
                                         {

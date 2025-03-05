@@ -7,7 +7,6 @@ using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
 using TByd.CodeStyle.Runtime.Config;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace TByd.CodeStyle.Tests.Editor.IDE
 {
@@ -79,7 +78,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         private void CreateTestConfigFiles()
         {
             // 创建.editorconfig
-            string editorConfigContent = @"root = true
+            var editorConfigContent = @"root = true
             [*]
             charset = utf-8
             end_of_line = lf
@@ -88,9 +87,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             File.WriteAllText(Path.Combine(m_ConfigDirectory, ".editorconfig"), editorConfigContent);
 
             // 创建VS Code配置
-            string vscodeDir = Path.Combine(m_ConfigDirectory, ".vscode");
+            var vscodeDir = Path.Combine(m_ConfigDirectory, ".vscode");
             Directory.CreateDirectory(vscodeDir);
-            string settingsContent = @"{
+            var settingsContent = @"{
                 ""editor.formatOnSave"": true,
                 ""editor.formatOnType"": true
             }";
@@ -209,9 +208,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             RegisterIntegration(mockVSCodeIntegration);
 
             // 检查IDE是否安装
-            bool isRiderInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.Rider);
-            bool isVSInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.VisualStudio);
-            bool isVSCodeInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.VSCode);
+            var isRiderInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.Rider);
+            var isVSInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.VisualStudio);
+            var isVSCodeInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.VSCode);
 
             // 验证结果
             Assert.IsTrue(isRiderInstalled, "Rider应该被检测为已安装");
@@ -264,7 +263,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
                 ?.SetValue(null, m_TestRules);
 
             // 导出配置
-            bool result = IDEIntegrationManager.ExportConfigToAllIDEs(m_TestRules);
+            var result = IDEIntegrationManager.ExportConfigToAllIDEs(m_TestRules);
 
             // 验证结果
             Assert.IsTrue(result, "配置导出应该成功");

@@ -53,7 +53,7 @@ namespace TByd.CodeStyle.Tests.Editor
 
             public void RunFinished(ITestResultAdaptor result)
             {
-                int testCount = result.GetTestCount();
+                var testCount = result.GetTestCount();
                 if (result.PassCount == testCount)
                 {
                     Debug.Log($"所有测试通过! 通过: {result.PassCount}, 总计: {testCount}");

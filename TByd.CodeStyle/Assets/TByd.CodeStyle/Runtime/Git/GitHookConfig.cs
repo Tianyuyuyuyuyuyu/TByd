@@ -196,7 +196,7 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <param name="_enabled">是否启用</param>
         public void SetHookEnabled(GitHookType _hookType, bool _enabled)
         {
-            HookConfig config = GetHookConfig(_hookType);
+            var config = GetHookConfig(_hookType);
             if (config != null)
             {
                 config.Enabled = _enabled;
@@ -214,7 +214,7 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <returns>是否启用</returns>
         public bool IsHookEnabled(GitHookType _hookType)
         {
-            HookConfig config = GetHookConfig(_hookType);
+            var config = GetHookConfig(_hookType);
             return config != null && config.Enabled;
         }
     }

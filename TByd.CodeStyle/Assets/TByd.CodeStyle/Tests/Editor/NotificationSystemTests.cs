@@ -1,7 +1,6 @@
 using System.Collections;
 using NUnit.Framework;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.TestTools;
 using TByd.CodeStyle.Editor.UI.Utils;
 
@@ -24,8 +23,8 @@ namespace TByd.CodeStyle.Tests.Editor
         public void ShowNotification_SetsCurrentNotification()
         {
             // 显示通知
-            string message = "测试通知";
-            NotificationType type = NotificationType.Info;
+            var message = "测试通知";
+            var type = NotificationType.Info;
             NotificationSystem.ShowNotification(message, type);
 
             // 验证当前通知
@@ -51,9 +50,9 @@ namespace TByd.CodeStyle.Tests.Editor
         public void ShowProgress_SetsCurrentProgress()
         {
             // 显示进度
-            string title = "测试进度";
-            string info = "进度信息";
-            float progress = 0.5f;
+            var title = "测试进度";
+            var info = "进度信息";
+            var progress = 0.5f;
             NotificationSystem.ShowProgress(title, info, progress);
 
             // 验证当前进度
@@ -70,8 +69,8 @@ namespace TByd.CodeStyle.Tests.Editor
             NotificationSystem.ShowProgress("测试进度", "进度信息", 0.5f);
 
             // 更新进度
-            string newInfo = "新进度信息";
-            float newProgress = 0.8f;
+            var newInfo = "新进度信息";
+            var newProgress = 0.8f;
             NotificationSystem.UpdateProgress(newInfo, newProgress);
 
             // 验证进度已更新
@@ -133,7 +132,7 @@ namespace TByd.CodeStyle.Tests.Editor
 
             // 我们不能直接调用DrawNotification，因为它包含GUI调用
             // 而是检查通知是否存在，这是DrawNotification返回true的前提条件
-            bool hasNotification = NotificationSystem.HasNotification();
+            var hasNotification = NotificationSystem.HasNotification();
 
             // 验证结果
             Assert.IsTrue(hasNotification);
@@ -149,7 +148,7 @@ namespace TByd.CodeStyle.Tests.Editor
             NotificationSystem.ClearNotification();
 
             // 验证没有通知
-            bool hasNotification = NotificationSystem.HasNotification();
+            var hasNotification = NotificationSystem.HasNotification();
 
             // 验证结果
             Assert.IsFalse(hasNotification);

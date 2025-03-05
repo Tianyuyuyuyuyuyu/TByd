@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using TByd.CodeStyle.Runtime.Config;
 
 namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
 {
@@ -56,8 +55,8 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <returns>格式化后的消息</returns>
         protected override string FormatMessage(string _template, Match _match)
         {
-            string name = _match.Groups["name"].Value;
-            string pascalName = ToPascalCase(name);
+            var name = _match.Groups["name"].Value;
+            var pascalName = ToPascalCase(name);
 
             return _template.Replace("{name}", name)
                            .Replace("{pascalName}", pascalName);
@@ -134,12 +133,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <returns>格式化后的消息</returns>
         protected override string FormatMessage(string _template, Match _match)
         {
-            string result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(_template, _match);
 
             if (_match != null && _match.Groups["name"].Success)
             {
-                string name = _match.Groups["name"].Value;
-                string pascalName = ToPascalCase(name);
+                var name = _match.Groups["name"].Value;
+                var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
             }
@@ -218,12 +217,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <returns>格式化后的消息</returns>
         protected override string FormatMessage(string _template, Match _match)
         {
-            string result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(_template, _match);
 
             if (_match != null && _match.Groups["name"].Success)
             {
-                string name = _match.Groups["name"].Value;
-                string pascalName = ToPascalCase(name);
+                var name = _match.Groups["name"].Value;
+                var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
             }
@@ -302,12 +301,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <returns>格式化后的消息</returns>
         protected override string FormatMessage(string _template, Match _match)
         {
-            string result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(_template, _match);
 
             if (_match != null && _match.Groups["name"].Success)
             {
-                string name = _match.Groups["name"].Value;
-                string pascalName = ToPascalCase(name);
+                var name = _match.Groups["name"].Value;
+                var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
             }
@@ -386,12 +385,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <returns>格式化后的消息</returns>
         protected override string FormatMessage(string _template, Match _match)
         {
-            string result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(_template, _match);
 
             if (_match != null && _match.Groups["name"].Success)
             {
-                string name = _match.Groups["name"].Value;
-                string pascalName = ToPascalCase(name);
+                var name = _match.Groups["name"].Value;
+                var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
             }
@@ -475,12 +474,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <returns>格式化后的消息</returns>
         protected override string FormatMessage(string _template, Match _match)
         {
-            string result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(_template, _match);
 
             if (_match != null && _match.Groups["name"].Success)
             {
-                string name = _match.Groups["name"].Value;
-                string camelName = ToCamelCase(name);
+                var name = _match.Groups["name"].Value;
+                var camelName = ToCamelCase(name);
 
                 result = result.Replace("{camelName}", camelName);
             }

@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.IO;
 using NUnit.Framework;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
-using UnityEngine;
 
 namespace TByd.CodeStyle.Tests.Editor.EditorConfig
 {
@@ -47,13 +45,13 @@ indent_style = tab
         public void ParseContent_ValidContent_ReturnsCorrectRules()
         {
             // 解析测试内容
-            List<EditorConfigRule> rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
+            var rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
 
             // 验证规则数量
             Assert.AreEqual(4, rules.Count, "应该解析出4个规则");
 
             // 验证第一个规则 [*]
-            EditorConfigRule allFilesRule = rules[0];
+            var allFilesRule = rules[0];
             Assert.AreEqual("*", allFilesRule.Pattern, "第一个规则的模式应该是 *");
             Assert.AreEqual(4, allFilesRule.Properties.Count, "第一个规则应该有4个属性");
             Assert.AreEqual("lf", allFilesRule.GetProperty("end_of_line"), "end_of_line 属性值不正确");
@@ -62,7 +60,7 @@ indent_style = tab
             Assert.AreEqual("true", allFilesRule.GetProperty("trim_trailing_whitespace"), "trim_trailing_whitespace 属性值不正确");
 
             // 验证第二个规则 [*.cs]
-            EditorConfigRule csharpRule = rules[1];
+            var csharpRule = rules[1];
             Assert.AreEqual("*.cs", csharpRule.Pattern, "第二个规则的模式应该是 *.cs");
             Assert.AreEqual(3, csharpRule.Properties.Count, "第二个规则应该有3个属性");
             Assert.AreEqual("space", csharpRule.GetProperty("indent_style"), "indent_style 属性值不正确");
@@ -70,14 +68,14 @@ indent_style = tab
             Assert.AreEqual("4", csharpRule.GetProperty("tab_width"), "tab_width 属性值不正确");
 
             // 验证第三个规则 [*.json]
-            EditorConfigRule jsonRule = rules[2];
+            var jsonRule = rules[2];
             Assert.AreEqual("*.json", jsonRule.Pattern, "第三个规则的模式应该是 *.json");
             Assert.AreEqual(2, jsonRule.Properties.Count, "第三个规则应该有2个属性");
             Assert.AreEqual("space", jsonRule.GetProperty("indent_style"), "indent_style 属性值不正确");
             Assert.AreEqual("2", jsonRule.GetProperty("indent_size"), "indent_size 属性值不正确");
 
             // 验证第四个规则 [Makefile]
-            EditorConfigRule makefileRule = rules[3];
+            var makefileRule = rules[3];
             Assert.AreEqual("Makefile", makefileRule.Pattern, "第四个规则的模式应该是 Makefile");
             Assert.AreEqual(1, makefileRule.Properties.Count, "第四个规则应该有1个属性");
             Assert.AreEqual("tab", makefileRule.GetProperty("indent_style"), "indent_style 属性值不正确");
@@ -90,10 +88,10 @@ indent_style = tab
         public void GenerateContent_ValidRules_ReturnsCorrectContent()
         {
             // 创建测试规则
-            List<EditorConfigRule> rules = new List<EditorConfigRule>();
+            var rules = new List<EditorConfigRule>();
 
             // 添加 [*] 规则
-            EditorConfigRule allFilesRule = new EditorConfigRule("*");
+            var allFilesRule = new EditorConfigRule("*");
             allFilesRule.SetProperty("end_of_line", "lf");
             allFilesRule.SetProperty("insert_final_newline", "true");
             allFilesRule.SetProperty("charset", "utf-8");
@@ -101,14 +99,14 @@ indent_style = tab
             rules.Add(allFilesRule);
 
             // 添加 [*.cs] 规则
-            EditorConfigRule csharpRule = new EditorConfigRule("*.cs");
+            var csharpRule = new EditorConfigRule("*.cs");
             csharpRule.SetProperty("indent_style", "space");
             csharpRule.SetProperty("indent_size", "4");
             csharpRule.SetProperty("tab_width", "4");
             rules.Add(csharpRule);
 
             // 生成内容
-            string content = EditorConfigParser.GenerateContent(rules);
+            var content = EditorConfigParser.GenerateContent(rules);
 
             // 验证内容
             Assert.IsTrue(content.Contains("root = true"), "生成的内容应该包含 root = true");
@@ -126,7 +124,7 @@ indent_style = tab
         public void EditorConfigRule_PropertyOperations_WorksCorrectly()
         {
             // 创建测试规则
-            EditorConfigRule rule = new EditorConfigRule("*.cs");
+            var rule = new EditorConfigRule("*.cs");
 
             // 测试添加属性
             rule.SetProperty("indent_style", "space");
@@ -159,14 +157,14 @@ indent_style = tab
         public void EditorConfigTemplate_GetDefaultRules_ReturnsValidRules()
         {
             // 获取默认规则
-            List<EditorConfigRule> rules = EditorConfigTemplate.GetDefaultRules();
+            var rules = EditorConfigTemplate.GetDefaultRules();
 
             // 验证规则数量
             Assert.IsTrue(rules.Count > 0, "默认规则列表不应为空");
 
             // 验证是否包含通用规则
-            bool hasAllFilesRule = false;
-            foreach (EditorConfigRule rule in rules)
+            var hasAllFilesRule = false;
+            foreach (var rule in rules)
             {
                 if (rule.Pattern == "*")
                 {
@@ -178,8 +176,8 @@ indent_style = tab
             Assert.IsTrue(hasAllFilesRule, "默认规则应包含通用规则 [*]");
 
             // 验证是否包含C#规则
-            bool hasCSharpRule = false;
-            foreach (EditorConfigRule rule in rules)
+            var hasCSharpRule = false;
+            foreach (var rule in rules)
             {
                 if (rule.Pattern == "*.cs")
                 {

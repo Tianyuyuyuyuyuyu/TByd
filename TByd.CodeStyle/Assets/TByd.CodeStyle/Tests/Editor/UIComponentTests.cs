@@ -1,6 +1,4 @@
 using NUnit.Framework;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.UI.Components;
 
 namespace TByd.CodeStyle.Tests.Editor
@@ -69,11 +67,11 @@ namespace TByd.CodeStyle.Tests.Editor
         public void Constructor_SetsProperties()
         {
             // 创建测试组件
-            string title = "测试标题";
-            string description = "测试描述";
-            bool isCollapsible = true;
+            var title = "测试标题";
+            var description = "测试描述";
+            var isCollapsible = true;
 
-            TestUIComponent component = new TestUIComponent(title, description, isCollapsible);
+            var component = new TestUIComponent(title, description, isCollapsible);
 
             // 验证属性
             Assert.AreEqual(title, component.Title);
@@ -86,7 +84,7 @@ namespace TByd.CodeStyle.Tests.Editor
         public void Draw_WhenVisible_CallsDrawContent()
         {
             // 创建测试组件
-            TestUIComponent component = new TestUIComponent("测试标题");
+            var component = new TestUIComponent("测试标题");
             component.SetIsVisible(true);
             component.ResetDrawContentCalled();
 
@@ -101,7 +99,7 @@ namespace TByd.CodeStyle.Tests.Editor
         public void Draw_WhenNotVisible_DoesNotCallDrawContent()
         {
             // 创建测试组件
-            TestUIComponent component = new TestUIComponent("测试标题");
+            var component = new TestUIComponent("测试标题");
             component.SetIsVisible(false);
             component.ResetDrawContentCalled();
 
@@ -116,13 +114,13 @@ namespace TByd.CodeStyle.Tests.Editor
         public void Draw_WhenCollapsible_TogglesFoldout()
         {
             // 创建测试组件
-            TestUIComponent component = new TestUIComponent("测试标题", "", true);
+            var component = new TestUIComponent("测试标题", "", true);
             component.SetIsVisible(true);
             component.SetIsCollapsed(false);
             component.ResetDrawContentCalled();
 
             // 模拟点击折叠按钮
-            bool originalIsCollapsed = component.GetIsCollapsed();
+            var originalIsCollapsed = component.GetIsCollapsed();
             component.ToggleCollapsed();
 
             // 验证折叠状态已切换
@@ -133,11 +131,11 @@ namespace TByd.CodeStyle.Tests.Editor
         public void InfoBox_Constructor_SetsProperties()
         {
             // 创建InfoBox
-            string title = "信息标题";
-            string message = "信息内容";
-            InfoBox.InfoType type = InfoBox.InfoType.Warning;
+            var title = "信息标题";
+            var message = "信息内容";
+            var type = InfoBox.InfoType.Warning;
 
-            InfoBox infoBox = new InfoBox(title, message, type);
+            var infoBox = new InfoBox(title, message, type);
 
             // 验证属性
             Assert.AreEqual(title, infoBox.Title);

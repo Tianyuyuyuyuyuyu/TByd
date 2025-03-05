@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Components
 {
@@ -61,7 +60,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// </summary>
         protected override void DrawContent()
         {
-            MessageType messageType = GetMessageType();
+            var messageType = GetMessageType();
             EditorGUILayout.HelpBox(m_Message, messageType);
         }
 

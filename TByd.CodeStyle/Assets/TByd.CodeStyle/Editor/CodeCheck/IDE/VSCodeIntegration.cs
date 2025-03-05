@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
@@ -93,7 +92,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private bool IsVSCodeScriptEditor()
         {
             // 方法1：检查EditorPrefs
-            string scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
+            var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
             if (!string.IsNullOrEmpty(scriptEditorPref) && 
                 (scriptEditorPref.IndexOf("Code", StringComparison.OrdinalIgnoreCase) >= 0 ||
                  scriptEditorPref.IndexOf("VSCode", StringComparison.OrdinalIgnoreCase) >= 0))
@@ -132,10 +131,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 设置文件路径
-                string settingsPath = Path.Combine(_vscodeDir, c_VSCodeSettingsFileName);
+                var settingsPath = Path.Combine(_vscodeDir, c_VSCodeSettingsFileName);
 
                 // 默认设置
-                string defaultSettings = @"{
+                var defaultSettings = @"{
     ""editor.formatOnSave"": true,
     ""editor.formatOnType"": true,
     ""editor.formatOnPaste"": true,
@@ -169,7 +168,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 读取现有设置
-                string existingSettings = File.ReadAllText(settingsPath);
+                var existingSettings = File.ReadAllText(settingsPath);
 
                 // 如果已经包含EditorConfig支持，不需要更新
                 if (existingSettings.Contains("omnisharp.enableEditorConfigSupport"))
@@ -185,7 +184,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     existingSettings = existingSettings.Trim().TrimEnd('}');
 
                     // 添加EditorConfig支持
-                    string updatedSettings = existingSettings + @",
+                    var updatedSettings = existingSettings + @",
     ""omnisharp.enableEditorConfigSupport"": true,
     ""omnisharp.enableRoslynAnalyzers"": true,
     ""omnisharp.useModernNet"": true,
@@ -221,7 +220,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             try
             {
-                string configContent = @"{
+                var configContent = @"{
     ""FormattingOptions"": {
         ""EnableEditorConfigSupport"": true,
         ""OrganizeImports"": true,
@@ -288,7 +287,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     }
 }";
 
-                string configPath = Path.Combine(_vscodeDir, c_VSCodeOmniSharpFileName);
+                var configPath = Path.Combine(_vscodeDir, c_VSCodeOmniSharpFileName);
                 File.WriteAllText(configPath, configContent);
             }
             catch (Exception e)
@@ -304,7 +303,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private string GetVSCodeExecutablePath()
         {
             // 首先尝试从Unity编辑器设置中获取
-            string vscodePathFromUnity = GetVSCodePathFromUnityPrefs();
+            var vscodePathFromUnity = GetVSCodePathFromUnityPrefs();
             if (!string.IsNullOrEmpty(vscodePathFromUnity) && File.Exists(vscodePathFromUnity))
             {
                 return vscodePathFromUnity;
@@ -314,26 +313,26 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             if (Application.platform == RuntimePlatform.WindowsEditor)
             {
                 // 尝试从注册表获取
-                string pathFromRegistry = GetVSCodePathFromRegistry();
+                var pathFromRegistry = GetVSCodePathFromRegistry();
                 if (!string.IsNullOrEmpty(pathFromRegistry) && File.Exists(pathFromRegistry))
                 {
                     return pathFromRegistry;
                 }
 
-                string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-                string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
-                string userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                var programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+                var programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
                 // 标准安装路径
-                string[] windowsPaths = new string[]
+                var windowsPaths = new string[]
                 {
                     Path.Combine(localAppData, "Programs", "Microsoft VS Code", "Code.exe"),
                     Path.Combine(programFiles, "Microsoft VS Code", "Code.exe"),
                     Path.Combine(programFilesX86, "Microsoft VS Code", "Code.exe")
                 };
 
-                foreach (string path in windowsPaths)
+                foreach (var path in windowsPaths)
                 {
                     if (File.Exists(path))
                     {
@@ -342,7 +341,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查常见的自定义安装位置
-                string[] commonCustomPaths = new string[]
+                var commonCustomPaths = new string[]
                 {
                     @"C:\VSCode\Code.exe",
                     @"D:\VSCode\Code.exe",
@@ -357,7 +356,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     @"G:\Program Files\VSCode\Code.exe"
                 };
 
-                foreach (string path in commonCustomPaths)
+                foreach (var path in commonCustomPaths)
                 {
                     if (File.Exists(path))
                     {
@@ -366,13 +365,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查所有逻辑驱动器的根目录
-                foreach (string drive in Directory.GetLogicalDrives())
+                foreach (var drive in Directory.GetLogicalDrives())
                 {
                     // 检查驱动器根目录下的VSCode目录
-                    string vscodePath = Path.Combine(drive, "VSCode");
+                    var vscodePath = Path.Combine(drive, "VSCode");
                     if (Directory.Exists(vscodePath))
                     {
-                        string exePath = Path.Combine(vscodePath, "Code.exe");
+                        var exePath = Path.Combine(vscodePath, "Code.exe");
                         if (File.Exists(exePath))
                         {
                             return exePath;
@@ -380,10 +379,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     }
 
                     // 检查驱动器根目录下的Microsoft VS Code目录
-                    string msvscodePath = Path.Combine(drive, "Microsoft VS Code");
+                    var msvscodePath = Path.Combine(drive, "Microsoft VS Code");
                     if (Directory.Exists(msvscodePath))
                     {
-                        string exePath = Path.Combine(msvscodePath, "Code.exe");
+                        var exePath = Path.Combine(msvscodePath, "Code.exe");
                         if (File.Exists(exePath))
                         {
                             return exePath;
@@ -393,11 +392,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     // 递归搜索驱动器根目录下的所有目录（限制深度为2）
                     try
                     {
-                        string[] rootDirs = Directory.GetDirectories(drive);
-                        foreach (string rootDir in rootDirs)
+                        var rootDirs = Directory.GetDirectories(drive);
+                        foreach (var rootDir in rootDirs)
                         {
                             // 检查是否包含Code.exe
-                            string exePath = Path.Combine(rootDir, "Code.exe");
+                            var exePath = Path.Combine(rootDir, "Code.exe");
                             if (File.Exists(exePath))
                             {
                                 return exePath;
@@ -406,8 +405,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             // 检查子目录
                             try
                             {
-                                string[] subDirs = Directory.GetDirectories(rootDir);
-                                foreach (string subDir in subDirs)
+                                var subDirs = Directory.GetDirectories(rootDir);
+                                foreach (var subDir in subDirs)
                                 {
                                     if (subDir.Contains("VS Code", StringComparison.OrdinalIgnoreCase) || 
                                         subDir.Contains("VSCode", StringComparison.OrdinalIgnoreCase))
@@ -435,14 +434,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在macOS上查找VS Code
             else if (Application.platform == RuntimePlatform.OSXEditor)
             {
-                string[] macPaths = new string[]
+                var macPaths = new string[]
                 {
                     "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
                     "/usr/local/bin/code"
                 };
 
-                foreach (string path in macPaths)
+                foreach (var path in macPaths)
                 {
                     if (File.Exists(path))
                     {
@@ -453,7 +452,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在Linux上查找VS Code
             else if (Application.platform == RuntimePlatform.LinuxEditor)
             {
-                string[] linuxPaths = new string[]
+                var linuxPaths = new string[]
                 {
                     "/usr/bin/code",
                     "/usr/local/bin/code",
@@ -461,7 +460,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/bin/code"
                 };
 
-                foreach (string path in linuxPaths)
+                foreach (var path in linuxPaths)
                 {
                     if (File.Exists(path))
                     {
@@ -482,7 +481,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从Unity编辑器设置中获取VS Code路径
-                string editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
+                var editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
                 if (!string.IsNullOrEmpty(editorPath) && 
                     (editorPath.Contains("Code.exe", StringComparison.OrdinalIgnoreCase) || 
                      editorPath.Contains("Visual Studio Code", StringComparison.OrdinalIgnoreCase)))
@@ -507,23 +506,23 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从注册表获取VS Code路径
-                using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall"))
+                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall"))
                 {
                     if (key != null)
                     {
-                        foreach (string subKeyName in key.GetSubKeyNames())
+                        foreach (var subKeyName in key.GetSubKeyNames())
                         {
-                            using (Microsoft.Win32.RegistryKey subKey = key.OpenSubKey(subKeyName))
+                            using (var subKey = key.OpenSubKey(subKeyName))
                             {
                                 if (subKey != null)
                                 {
-                                    string displayName = subKey.GetValue("DisplayName") as string;
+                                    var displayName = subKey.GetValue("DisplayName") as string;
                                     if (!string.IsNullOrEmpty(displayName) && displayName.Contains("Visual Studio Code", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        string installLocation = subKey.GetValue("InstallLocation") as string;
+                                        var installLocation = subKey.GetValue("InstallLocation") as string;
                                         if (!string.IsNullOrEmpty(installLocation))
                                         {
-                                            string exePath = Path.Combine(installLocation, "Code.exe");
+                                            var exePath = Path.Combine(installLocation, "Code.exe");
                                             if (File.Exists(exePath))
                                             {
                                                 return exePath;
@@ -537,11 +536,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 尝试从另一个注册表位置获取
-                using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Code.exe"))
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Code.exe"))
                 {
                     if (key != null)
                     {
-                        string path = key.GetValue(null) as string;
+                        var path = key.GetValue(null) as string;
                         if (!string.IsNullOrEmpty(path) && File.Exists(path))
                         {
                             return path;
@@ -563,7 +562,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private string GetVSCodeConfigPath()
         {
             // 获取项目根目录
-            string projectRoot = Path.GetDirectoryName(Application.dataPath);
+            var projectRoot = Path.GetDirectoryName(Application.dataPath);
 
             // 返回.vscode目录路径
             return Path.Combine(projectRoot, c_VSCodeSettingsDirectory);

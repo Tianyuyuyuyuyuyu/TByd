@@ -3,7 +3,6 @@ using UnityEditor;
 using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.Git;
-using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Config;
 using TByd.CodeStyle.Runtime.Git;
 
@@ -116,8 +115,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.Space();
 
             // 绘制自动安装钩子设置
-            bool autoInstall = m_Config.GitHookConfig.AutoInstallHooks;
-            bool newAutoInstall = EditorGUILayout.ToggleLeft("自动安装钩子", autoInstall);
+            var autoInstall = m_Config.GitHookConfig.AutoInstallHooks;
+            var newAutoInstall = EditorGUILayout.ToggleLeft("自动安装钩子", autoInstall);
             if (newAutoInstall != autoInstall)
             {
                 m_Config.GitHookConfig.AutoInstallHooks = newAutoInstall;
@@ -125,8 +124,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             }
 
             // 绘制启动时检查钩子状态设置
-            bool checkOnStartup = m_Config.GitHookConfig.CheckHooksOnStartup;
-            bool newCheckOnStartup = EditorGUILayout.ToggleLeft("启动时检查钩子状态", checkOnStartup);
+            var checkOnStartup = m_Config.GitHookConfig.CheckHooksOnStartup;
+            var newCheckOnStartup = EditorGUILayout.ToggleLeft("启动时检查钩子状态", checkOnStartup);
             if (newCheckOnStartup != checkOnStartup)
             {
                 m_Config.GitHookConfig.CheckHooksOnStartup = newCheckOnStartup;
@@ -185,13 +184,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.LabelField("Git仓库路径设置", EditorStyles.boldLabel);
 
             // 显示当前Git仓库路径
-            string currentRepoPath = string.IsNullOrEmpty(m_Config.CustomGitRepositoryPath) ?
+            var currentRepoPath = string.IsNullOrEmpty(m_Config.CustomGitRepositoryPath) ?
                 "使用Unity项目根目录" : m_Config.CustomGitRepositoryPath;
 
             EditorGUILayout.LabelField("当前Git仓库路径:", currentRepoPath);
 
             // 检测当前路径是否有效
-            bool isValidRepo = GitRepository.IsProjectGitRepository();
+            var isValidRepo = GitRepository.IsProjectGitRepository();
             if (isValidRepo)
             {
                 EditorGUILayout.HelpBox("已检测到有效的Git仓库", MessageType.Info);
@@ -206,7 +205,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             // 自定义Git仓库路径
             EditorGUILayout.BeginHorizontal();
 
-            string newPath = EditorGUILayout.TextField("自定义Git仓库路径:", m_Config.CustomGitRepositoryPath);
+            var newPath = EditorGUILayout.TextField("自定义Git仓库路径:", m_Config.CustomGitRepositoryPath);
             if (newPath != m_Config.CustomGitRepositoryPath)
             {
                 m_Config.CustomGitRepositoryPath = newPath;
@@ -215,7 +214,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             if (GUILayout.Button("浏览...", GUILayout.Width(80)))
             {
-                string path = EditorUtility.OpenFolderPanel("选择Git仓库根目录", "", "");
+                var path = EditorUtility.OpenFolderPanel("选择Git仓库根目录", "", "");
                 if (!string.IsNullOrEmpty(path))
                 {
                     // 检查选择的目录是否是有效的Git仓库
@@ -253,11 +252,11 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUI.BeginChangeCheck();
 
             // 获取钩子状态
-            bool isInstalled = false;
+            var isInstalled = false;
             m_HookStatus.TryGetValue(hookConfig.HookType, out isInstalled);
 
             // 显示钩子状态
-            GUIStyle statusStyle = new GUIStyle(EditorStyles.label);
+            var statusStyle = new GUIStyle(EditorStyles.label);
             statusStyle.normal.textColor = isInstalled ? Color.green : Color.red;
 
             EditorGUILayout.LabelField(isInstalled ? "已安装" : "未安装", statusStyle, GUILayout.Width(60));
@@ -269,7 +268,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.LabelField(hookConfig.HookType.GetFileName(), GUILayout.Width(120));
 
             // 显示钩子启用状态
-            bool enabled = EditorGUILayout.Toggle(hookConfig.Enabled, GUILayout.Width(20));
+            var enabled = EditorGUILayout.Toggle(hookConfig.Enabled, GUILayout.Width(20));
 
             if (EditorGUI.EndChangeCheck())
             {

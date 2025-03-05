@@ -13,10 +13,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <returns>默认的EditorConfig规则列表</returns>
         public static List<EditorConfigRule> GetDefaultRules()
         {
-            List<EditorConfigRule> rules = new List<EditorConfigRule>();
+            var rules = new List<EditorConfigRule>();
 
             // 所有文件的通用规则
-            EditorConfigRule allFilesRule = new EditorConfigRule("*");
+            var allFilesRule = new EditorConfigRule("*");
             allFilesRule.SetProperty("charset", "utf-8");
             allFilesRule.SetProperty("end_of_line", "lf");
             allFilesRule.SetProperty("insert_final_newline", "true");
@@ -24,31 +24,31 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             rules.Add(allFilesRule);
 
             // C#文件规则
-            EditorConfigRule csharpRule = new EditorConfigRule("*.cs");
+            var csharpRule = new EditorConfigRule("*.cs");
             csharpRule.SetProperty("indent_style", "space");
             csharpRule.SetProperty("indent_size", "4");
             csharpRule.SetProperty("tab_width", "4");
             rules.Add(csharpRule);
 
             // JSON文件规则
-            EditorConfigRule jsonRule = new EditorConfigRule("*.json");
+            var jsonRule = new EditorConfigRule("*.json");
             jsonRule.SetProperty("indent_style", "space");
             jsonRule.SetProperty("indent_size", "2");
             rules.Add(jsonRule);
 
             // YAML文件规则
-            EditorConfigRule yamlRule = new EditorConfigRule("*.{yml,yaml}");
+            var yamlRule = new EditorConfigRule("*.{yml,yaml}");
             yamlRule.SetProperty("indent_style", "space");
             yamlRule.SetProperty("indent_size", "2");
             rules.Add(yamlRule);
 
             // Markdown文件规则
-            EditorConfigRule markdownRule = new EditorConfigRule("*.md");
+            var markdownRule = new EditorConfigRule("*.md");
             markdownRule.SetProperty("trim_trailing_whitespace", "false");
             rules.Add(markdownRule);
 
             // Unity特定文件规则
-            EditorConfigRule unityRule = new EditorConfigRule("*.{asmdef,asmref}");
+            var unityRule = new EditorConfigRule("*.{asmdef,asmref}");
             unityRule.SetProperty("indent_style", "space");
             unityRule.SetProperty("indent_size", "4");
             rules.Add(unityRule);
@@ -62,10 +62,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <returns>Unity项目推荐的EditorConfig规则列表</returns>
         public static List<EditorConfigRule> GetUnityProjectRules()
         {
-            List<EditorConfigRule> rules = new List<EditorConfigRule>();
+            var rules = new List<EditorConfigRule>();
 
             // 所有文件的通用规则
-            EditorConfigRule allFilesRule = new EditorConfigRule("*");
+            var allFilesRule = new EditorConfigRule("*");
             allFilesRule.SetProperty("charset", "utf-8");
             allFilesRule.SetProperty("end_of_line", "lf");
             allFilesRule.SetProperty("insert_final_newline", "true");
@@ -73,7 +73,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             rules.Add(allFilesRule);
 
             // C#文件规则
-            EditorConfigRule csharpRule = new EditorConfigRule("*.cs");
+            var csharpRule = new EditorConfigRule("*.cs");
             csharpRule.SetProperty("indent_style", "space");
             csharpRule.SetProperty("indent_size", "4");
             csharpRule.SetProperty("tab_width", "4");
@@ -225,46 +225,46 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             rules.Add(csharpRule);
 
             // JSON文件规则
-            EditorConfigRule jsonRule = new EditorConfigRule("*.json");
+            var jsonRule = new EditorConfigRule("*.json");
             jsonRule.SetProperty("indent_style", "space");
             jsonRule.SetProperty("indent_size", "2");
             rules.Add(jsonRule);
 
             // YAML文件规则
-            EditorConfigRule yamlRule = new EditorConfigRule("*.{yml,yaml}");
+            var yamlRule = new EditorConfigRule("*.{yml,yaml}");
             yamlRule.SetProperty("indent_style", "space");
             yamlRule.SetProperty("indent_size", "2");
             rules.Add(yamlRule);
 
             // Markdown文件规则
-            EditorConfigRule markdownRule = new EditorConfigRule("*.md");
+            var markdownRule = new EditorConfigRule("*.md");
             markdownRule.SetProperty("trim_trailing_whitespace", "false");
             rules.Add(markdownRule);
 
             // Unity特定文件规则
-            EditorConfigRule unityRule = new EditorConfigRule("*.{asmdef,asmref}");
+            var unityRule = new EditorConfigRule("*.{asmdef,asmref}");
             unityRule.SetProperty("indent_style", "space");
             unityRule.SetProperty("indent_size", "4");
             rules.Add(unityRule);
 
             // Unity序列化文件规则
-            EditorConfigRule unityYamlRule = new EditorConfigRule("*.unity");
+            var unityYamlRule = new EditorConfigRule("*.unity");
             unityYamlRule.SetProperty("indent_style", "space");
             unityYamlRule.SetProperty("indent_size", "2");
             rules.Add(unityYamlRule);
 
-            EditorConfigRule unityMetaRule = new EditorConfigRule("*.meta");
+            var unityMetaRule = new EditorConfigRule("*.meta");
             unityMetaRule.SetProperty("indent_style", "space");
             unityMetaRule.SetProperty("indent_size", "2");
             rules.Add(unityMetaRule);
 
-            EditorConfigRule unityPrefabRule = new EditorConfigRule("*.prefab");
+            var unityPrefabRule = new EditorConfigRule("*.prefab");
             unityPrefabRule.SetProperty("indent_style", "space");
             unityPrefabRule.SetProperty("indent_size", "2");
             rules.Add(unityPrefabRule);
 
             // Makefile规则
-            EditorConfigRule makefileRule = new EditorConfigRule("Makefile");
+            var makefileRule = new EditorConfigRule("Makefile");
             makefileRule.SetProperty("indent_style", "tab");
             rules.Add(makefileRule);
 

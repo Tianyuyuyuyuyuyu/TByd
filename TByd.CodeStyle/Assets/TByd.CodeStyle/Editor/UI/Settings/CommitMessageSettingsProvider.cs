@@ -154,7 +154,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            bool enableGitCommitCheck = EditorGUILayout.Toggle("启用Git提交规范检查", m_Config.EnableGitCommitCheck);
+            var enableGitCommitCheck = EditorGUILayout.Toggle("启用Git提交规范检查", m_Config.EnableGitCommitCheck);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -172,14 +172,14 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            bool forceUseTemplate = EditorGUILayout.Toggle("强制使用提交模板", m_Config.GitCommitConfig.ForceUseTemplate);
-            bool requireType = EditorGUILayout.Toggle("要求提交类型", m_Config.GitCommitConfig.RequireType);
-            bool requireScope = EditorGUILayout.Toggle("要求作用域", m_Config.GitCommitConfig.RequireScope);
-            bool requireSubject = EditorGUILayout.Toggle("要求简短描述", m_Config.GitCommitConfig.RequireSubject);
-            bool requireBody = EditorGUILayout.Toggle("要求详细描述", m_Config.GitCommitConfig.RequireBody);
-            bool requireFooter = EditorGUILayout.Toggle("要求页脚", m_Config.GitCommitConfig.RequireFooter);
+            var forceUseTemplate = EditorGUILayout.Toggle("强制使用提交模板", m_Config.GitCommitConfig.ForceUseTemplate);
+            var requireType = EditorGUILayout.Toggle("要求提交类型", m_Config.GitCommitConfig.RequireType);
+            var requireScope = EditorGUILayout.Toggle("要求作用域", m_Config.GitCommitConfig.RequireScope);
+            var requireSubject = EditorGUILayout.Toggle("要求简短描述", m_Config.GitCommitConfig.RequireSubject);
+            var requireBody = EditorGUILayout.Toggle("要求详细描述", m_Config.GitCommitConfig.RequireBody);
+            var requireFooter = EditorGUILayout.Toggle("要求页脚", m_Config.GitCommitConfig.RequireFooter);
 
-            int subjectMaxLength = EditorGUILayout.IntSlider("简短描述最大长度", m_Config.GitCommitConfig.SubjectMaxLength, 50, 200);
+            var subjectMaxLength = EditorGUILayout.IntSlider("简短描述最大长度", m_Config.GitCommitConfig.SubjectMaxLength, 50, 200);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -207,7 +207,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.Space();
 
             // 绘制提交类型列表
-            for (int i = 0; i < m_Config.GitCommitConfig.CommitTypes.Count; i++)
+            for (var i = 0; i < m_Config.GitCommitConfig.CommitTypes.Count; i++)
             {
                 var commitType = m_Config.GitCommitConfig.CommitTypes[i];
 
@@ -215,9 +215,9 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
                 EditorGUI.BeginChangeCheck();
 
-                bool enabled = EditorGUILayout.Toggle(commitType.Enabled, GUILayout.Width(20));
-                string type = EditorGUILayout.TextField(commitType.Type, GUILayout.Width(100));
-                string description = EditorGUILayout.TextField(commitType.Description);
+                var enabled = EditorGUILayout.Toggle(commitType.Enabled, GUILayout.Width(20));
+                var type = EditorGUILayout.TextField(commitType.Type, GUILayout.Width(100));
+                var description = EditorGUILayout.TextField(commitType.Description);
 
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -276,7 +276,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.Space();
 
             // 绘制作用域列表
-            for (int i = 0; i < m_Config.GitCommitConfig.Scopes.Count; i++)
+            for (var i = 0; i < m_Config.GitCommitConfig.Scopes.Count; i++)
             {
                 var scope = m_Config.GitCommitConfig.Scopes[i];
 
@@ -284,7 +284,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
                 EditorGUI.BeginChangeCheck();
 
-                string newScope = EditorGUILayout.TextField(scope);
+                var newScope = EditorGUILayout.TextField(scope);
 
                 if (EditorGUI.EndChangeCheck())
                 {
