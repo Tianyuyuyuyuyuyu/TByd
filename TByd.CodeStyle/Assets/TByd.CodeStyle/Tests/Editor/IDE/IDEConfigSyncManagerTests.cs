@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace TByd.CodeStyle.Tests.Editor.IDE
 {
-    public class IDEConfigSyncManagerTests
+    public class IdeConfigSyncManagerTests
     {
         private string m_TestDirectory;
         private string m_ConfigDirectory;

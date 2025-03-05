@@ -9,7 +9,7 @@ using TByd.CodeStyle.Editor.CodeCheck.IDE;
 
 namespace TByd.CodeStyle.Tests.Editor.IDE
 {
-    public class IDEConfigBackupManagerTests
+    public class IdeConfigBackupManagerTests
     {
         private string m_TestDirectory;
         private string m_ConfigDirectory;
@@ -164,9 +164,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             }
 
             // Arrange - 创建两个备份
-            var firstId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "First");
+            IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "First");
             System.Threading.Thread.Sleep(100); // 确保时间戳不同
-            var secondId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Second");
+            IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Second");
 
             // Act
             var backups = IDEConfigBackupManager.GetBackups();
@@ -187,11 +187,6 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             {
                 return;
             }
-
-            var targetMethod = typeof(IDEConfigBackupManager).GetMethod("GetConfigPath",
-                BindingFlags.NonPublic | BindingFlags.Static);
-
-            var originalPath = m_ConfigDirectory;
 
             // 创建备份
             var backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Test");

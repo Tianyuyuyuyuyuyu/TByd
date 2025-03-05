@@ -10,7 +10,7 @@ namespace TByd.CodeStyle.Tests.Editor.EditorConfig
     public class EditorConfigParserTests
     {
         // 测试EditorConfig内容
-        private const string c_TestEditorConfigContent = @"# EditorConfig is awesome: https://editorconfig.org/
+        private const string k_TestEditorConfigContent = @"# EditorConfig is awesome: https://editorconfig.org/
 
 # top-most EditorConfig file
 root = true
@@ -45,7 +45,7 @@ indent_style = tab
         public void ParseContent_ValidContent_ReturnsCorrectRules()
         {
             // 解析测试内容
-            var rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
+            var rules = EditorConfigParser.ParseContent(k_TestEditorConfigContent);
 
             // 验证规则数量
             Assert.AreEqual(4, rules.Count, "应该解析出4个规则");

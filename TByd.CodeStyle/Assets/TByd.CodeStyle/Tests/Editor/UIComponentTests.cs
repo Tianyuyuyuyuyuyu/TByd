@@ -13,8 +13,8 @@ namespace TByd.CodeStyle.Tests.Editor
         {
             public bool DrawContentCalled { get; private set; }
 
-            public TestUIComponent(string _title, string _description = "", bool _isCollapsible = false)
-                : base(_title, _description, _isCollapsible)
+            public TestUIComponent(string title, string description = "", bool isCollapsible = false)
+                : base(title, description, isCollapsible)
             {
                 DrawContentCalled = false;
             }
@@ -34,9 +34,9 @@ namespace TByd.CodeStyle.Tests.Editor
                 return m_IsVisible;
             }
 
-            public void SetIsVisible(bool _isVisible)
+            public void SetIsVisible(bool isVisible)
             {
-                m_IsVisible = _isVisible;
+                m_IsVisible = isVisible;
             }
 
             public bool GetIsCollapsed()
@@ -44,9 +44,9 @@ namespace TByd.CodeStyle.Tests.Editor
                 return m_IsCollapsed;
             }
 
-            public void SetIsCollapsed(bool _isCollapsed)
+            public void SetIsCollapsed(bool isCollapsed)
             {
-                m_IsCollapsed = _isCollapsed;
+                m_IsCollapsed = isCollapsed;
             }
 
             // 添加一个不调用GUI函数的测试方法

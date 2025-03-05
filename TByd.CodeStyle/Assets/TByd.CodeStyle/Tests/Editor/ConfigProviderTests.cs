@@ -13,7 +13,7 @@ namespace TByd.CodeStyle.Tests.Editor
     public class ConfigProviderTests
     {
         // 测试配置路径
-        private const string c_TestConfigPath = "Tests/TestConfig.json";
+        private const string k_TestConfigPath = "Tests/TestConfig.json";
 
         // 原始配置路径
         private string m_OriginalConfigPath;
@@ -27,7 +27,7 @@ namespace TByd.CodeStyle.Tests.Editor
             Debug.Log($"[TByd.CodeStyle.Tests] 开始设置测试环境");
 
             // 构建完整的测试配置路径
-            m_FullTestConfigPath = Path.Combine(Application.dataPath, c_TestConfigPath);
+            m_FullTestConfigPath = Path.Combine(Application.dataPath, k_TestConfigPath);
             Debug.Log($"[TByd.CodeStyle.Tests] 完整的测试配置路径: {m_FullTestConfigPath}");
 
             // 保存原始配置路径

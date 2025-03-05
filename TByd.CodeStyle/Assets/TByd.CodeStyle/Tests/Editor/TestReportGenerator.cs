@@ -14,31 +14,31 @@ namespace TByd.CodeStyle.Tests.Editor
     public static class TestReportGenerator
     {
         // 报告保存路径
-        private const string c_ReportPath = "TestReports";
+        private const string k_ReportPath = "TestReports";
 
         // 报告文件名
-        private const string c_ReportFileName = "TestReport_{0}.html";
+        private const string k_ReportFileName = "TestReport_{0}.html";
 
         /// <summary>
         /// 获取测试总数
         /// </summary>
-        /// <param name="_result">测试结果</param>
+        /// <param name="result">测试结果</param>
         /// <returns>测试总数</returns>
-        private static int GetTestCount(this ITestResultAdaptor _result)
+        private static int GetTestCount(this ITestResultAdaptor result)
         {
-            return _result.PassCount + _result.FailCount + _result.SkipCount + _result.InconclusiveCount;
+            return result.PassCount + result.FailCount + result.SkipCount + result.InconclusiveCount;
         }
 
         /// <summary>
         /// 获取测试状态
         /// </summary>
-        /// <param name="_result">测试结果</param>
+        /// <param name="result">测试结果</param>
         /// <returns>测试状态</returns>
-        private static TestStatus GetPassState(this ITestResultAdaptor _result)
+        private static TestStatus GetPassState(this ITestResultAdaptor result)
         {
-            if (_result.TestStatus == TestStatus.Passed)
+            if (result.TestStatus == TestStatus.Passed)
                 return TestStatus.Passed;
-            else if (_result.TestStatus == TestStatus.Failed)
+            else if (result.TestStatus == TestStatus.Failed)
                 return TestStatus.Failed;
             else
                 return TestStatus.Skipped;
@@ -92,11 +92,11 @@ namespace TByd.CodeStyle.Tests.Editor
                 var reportContent = GenerateHtmlReport(result, m_TestResults, duration);
 
                 // 确保报告目录存在
-                var reportDir = Path.Combine(Application.dataPath, "..", c_ReportPath);
+                var reportDir = Path.Combine(Application.dataPath, "..", k_ReportPath);
                 Directory.CreateDirectory(reportDir);
 
                 // 保存报告
-                var reportFileName = string.Format(c_ReportFileName, DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+                var reportFileName = string.Format(k_ReportFileName, DateTime.Now.ToString("yyyyMMdd_HHmmss"));
                 var reportPath = Path.Combine(reportDir, reportFileName);
                 File.WriteAllText(reportPath, reportContent);
 
@@ -134,11 +134,11 @@ namespace TByd.CodeStyle.Tests.Editor
             /// <summary>
             /// 生成HTML报告
             /// </summary>
-            /// <param name="_result">测试结果</param>
-            /// <param name="_testResults">测试结果列表</param>
-            /// <param name="_duration">测试时间</param>
+            /// <param name="result">测试结果</param>
+            /// <param name="testResults">测试结果列表</param>
+            /// <param name="duration">测试时间</param>
             /// <returns>HTML报告内容</returns>
-            private string GenerateHtmlReport(ITestResultAdaptor _result, List<TestResult> _testResults, TimeSpan _duration)
+            private string GenerateHtmlReport(ITestResultAdaptor result, List<TestResult> testResults, TimeSpan duration)
             {
                 var sb = new StringBuilder();
 
@@ -186,11 +186,11 @@ namespace TByd.CodeStyle.Tests.Editor
                 // 摘要
                 sb.AppendLine("    <div class=\"summary\">");
                 sb.AppendLine("        <h2>测试摘要</h2>");
-                sb.AppendLine($"        <div class=\"summary-item\">总测试数: <strong>{_result.GetTestCount()}</strong></div>");
-                sb.AppendLine($"        <div class=\"summary-item\">通过: <strong class=\"passed\">{_result.PassCount}</strong></div>");
-                sb.AppendLine($"        <div class=\"summary-item\">失败: <strong class=\"failed\">{_result.FailCount}</strong></div>");
-                sb.AppendLine($"        <div class=\"summary-item\">忽略: <strong class=\"ignored\">{_result.SkipCount}</strong></div>");
-                sb.AppendLine($"        <div class=\"summary-item\">测试时间: <strong>{_duration.TotalSeconds:F2}秒</strong></div>");
+                sb.AppendLine($"        <div class=\"summary-item\">总测试数: <strong>{result.GetTestCount()}</strong></div>");
+                sb.AppendLine($"        <div class=\"summary-item\">通过: <strong class=\"passed\">{result.PassCount}</strong></div>");
+                sb.AppendLine($"        <div class=\"summary-item\">失败: <strong class=\"failed\">{result.FailCount}</strong></div>");
+                sb.AppendLine($"        <div class=\"summary-item\">忽略: <strong class=\"ignored\">{result.SkipCount}</strong></div>");
+                sb.AppendLine($"        <div class=\"summary-item\">测试时间: <strong>{duration.TotalSeconds:F2}秒</strong></div>");
                 sb.AppendLine($"        <div class=\"summary-item\">生成时间: <strong>{DateTime.Now}</strong></div>");
                 sb.AppendLine("    </div>");
 
@@ -204,9 +204,9 @@ namespace TByd.CodeStyle.Tests.Editor
                 sb.AppendLine("        </tr>");
 
                 // 测试结果行
-                for (var i = 0; i < _testResults.Count; i++)
+                for (var i = 0; i < testResults.Count; i++)
                 {
-                    var testResult = _testResults[i];
+                    var testResult = testResults[i];
                     var rowClass = "test-row ";
                     var statusText = "";
 

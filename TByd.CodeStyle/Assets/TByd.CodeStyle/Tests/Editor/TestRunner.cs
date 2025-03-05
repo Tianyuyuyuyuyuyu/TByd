@@ -34,11 +34,11 @@ namespace TByd.CodeStyle.Tests.Editor
         /// <summary>
         /// 获取测试总数
         /// </summary>
-        /// <param name="_result">测试结果</param>
+        /// <param name="result">测试结果</param>
         /// <returns>测试总数</returns>
-        private static int GetTestCount(this ITestResultAdaptor _result)
+        private static int GetTestCount(this ITestResultAdaptor result)
         {
-            return _result.PassCount + _result.FailCount + _result.SkipCount + _result.InconclusiveCount;
+            return result.PassCount + result.FailCount + result.SkipCount + result.InconclusiveCount;
         }
 
         /// <summary>

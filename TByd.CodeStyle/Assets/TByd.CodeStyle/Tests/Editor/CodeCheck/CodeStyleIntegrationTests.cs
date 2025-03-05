@@ -66,7 +66,7 @@ dotnet_naming_style.prefix_m_.capitalization = pascal_case
             m_CodeChecker = new CodeChecker(m_CodeCheckConfig);
 
             // 注册测试用的IDE集成
-            RegisterIntegration(new MockIDEIntegration(IDEType.Rider, true));
+            RegisterIntegration(new MockIdeIntegration(IDEType.Rider, true));
         }
 
         [TearDown]
@@ -306,31 +306,31 @@ public class BadExampleClass : MonoBehaviour
         /// <summary>
         /// 模拟IDE集成类，用于测试
         /// </summary>
-        private class MockIDEIntegration : IDEIntegration
+        private class MockIdeIntegration : IDEIntegration
         {
             public bool IsInstalled { get; private set; }
             public string Name { get; private set; }
-            public IDEType IDEType { get; private set; }
+            public IDEType IdeType { get; private set; }
             public bool ExportConfigCalled { get; private set; }
             public bool ExportRulesCalled { get; private set; }
 
-            public MockIDEIntegration(IDEType _ideType, bool _isInstalled)
+            public MockIdeIntegration(IDEType ideType, bool isInstalled)
             {
-                IDEType = _ideType;
-                IsInstalled = _isInstalled;
-                Name = _ideType.ToString();
+                IdeType = ideType;
+                IsInstalled = isInstalled;
+                Name = ideType.ToString();
                 ExportConfigCalled = false;
                 ExportRulesCalled = false;
             }
 
-            public bool ExportConfig(List<EditorConfigRule> _rules)
+            public bool ExportConfig(List<EditorConfigRule> rules)
             {
                 ExportRulesCalled = true;
                 return true;
             }
 
             // 添加用于调用的辅助方法，以保持向后兼容性
-            public bool ExportConfig(CodeStyleConfig _config)
+            public bool ExportConfig(CodeStyleConfig config)
             {
                 ExportConfigCalled = true;
                 return true;

@@ -11,7 +11,7 @@ namespace TByd.CodeStyle.Tests.Editor.EditorConfig
     public class EditorConfigMatchTests
     {
         // 测试EditorConfig内容
-        private const string c_TestEditorConfigContent = @"# EditorConfig is awesome: https://editorconfig.org/
+        private const string k_TestEditorConfigContent = @"# EditorConfig is awesome: https://editorconfig.org/
 
 # top-most EditorConfig file
 root = true
@@ -56,7 +56,7 @@ indent_size = 2
         public void GetFileProperties_MatchesCorrectRules()
         {
             // 解析测试内容
-            var rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
+            var rules = EditorConfigParser.ParseContent(k_TestEditorConfigContent);
 
             // 打印规则信息
             Debug.Log($"解析到的规则数量: {rules.Count}");
@@ -262,7 +262,7 @@ indent_size = 2
         public void ValidateFile_ChecksCorrectRules()
         {
             // 解析测试内容
-            var rules = EditorConfigParser.ParseContent(c_TestEditorConfigContent);
+            var rules = EditorConfigParser.ParseContent(k_TestEditorConfigContent);
 
             // 创建临时测试文件
             var tempDir = Path.Combine(Path.GetTempPath(), "EditorConfigTest");

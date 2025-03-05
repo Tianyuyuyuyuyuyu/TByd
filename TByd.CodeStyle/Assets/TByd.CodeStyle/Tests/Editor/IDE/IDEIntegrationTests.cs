@@ -13,7 +13,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
     /// <summary>
     /// IDE集成测试
     /// </summary>
-    public class IDEIntegrationTests
+    public class IdeIntegrationTests
     {
         private string m_TestDirectory;
         private string m_ConfigDirectory;
@@ -160,9 +160,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void RegisterAndGetIntegrations_ValidIntegrations_SuccessfullyRegistered()
         {
             // 注册测试IDE集成
-            var riderIntegration = new MockIDEIntegration(IDEType.Rider, true);
-            var vsIntegration = new MockIDEIntegration(IDEType.VisualStudio, false);
-            var vscodeIntegration = new MockIDEIntegration(IDEType.VSCode, true);
+            var riderIntegration = new MockIdeIntegration(IDEType.Rider, true);
+            var vsIntegration = new MockIdeIntegration(IDEType.VisualStudio, false);
+            var vscodeIntegration = new MockIdeIntegration(IDEType.VSCode, true);
 
             RegisterIntegration(riderIntegration);
             RegisterIntegration(vsIntegration);
@@ -172,7 +172,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             var integrations = GetAllIntegrations();
 
             // 验证注册的集成数量
-            Assert.AreEqual(3, integrations.Count(i => i is MockIDEIntegration), "应该有3个注册的IDE集成");
+            Assert.AreEqual(3, integrations.Count(i => i is MockIdeIntegration), "应该有3个注册的IDE集成");
         }
 
         // 使用反射获取所有注册的集成
@@ -199,9 +199,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             ClearIntegrations();
 
             // 注册测试IDE集成（使用模拟数据）
-            var mockRiderIntegration = new MockIDEIntegration(IDEType.Rider, true); // 模拟已安装
-            var mockVSIntegration = new MockIDEIntegration(IDEType.VisualStudio, false); // 模拟未安装
-            var mockVSCodeIntegration = new MockIDEIntegration(IDEType.VSCode, true); // 模拟已安装
+            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true); // 模拟已安装
+            var mockVSIntegration = new MockIdeIntegration(IDEType.VisualStudio, false); // 模拟未安装
+            var mockVSCodeIntegration = new MockIdeIntegration(IDEType.VSCode, true); // 模拟已安装
 
             RegisterIntegration(mockRiderIntegration);
             RegisterIntegration(mockVSIntegration);
@@ -228,9 +228,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             ClearIntegrations();
 
             // 创建模拟IDE集成
-            var mockRiderIntegration = new MockIDEIntegration(IDEType.Rider, true);
-            var mockVSIntegration = new MockIDEIntegration(IDEType.VisualStudio, false);
-            var mockVSCodeIntegration = new MockIDEIntegration(IDEType.VSCode, true);
+            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true);
+            var mockVSIntegration = new MockIdeIntegration(IDEType.VisualStudio, false);
+            var mockVSCodeIntegration = new MockIdeIntegration(IDEType.VSCode, true);
 
             // 注册测试IDE集成
             RegisterIntegration(mockRiderIntegration);
@@ -254,7 +254,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void ExportConfigToIDE_ValidConfig_CallsExportMethod()
         {
             // 注册测试IDE集成（使用模拟数据）
-            var mockRiderIntegration = new MockIDEIntegration(IDEType.Rider, true);
+            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true);
             RegisterIntegration(mockRiderIntegration);
 
             // 设置EditorConfig规则
@@ -277,9 +277,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void ExportConfigToAllIDEs_ValidConfig_ExportsToInstalledIDEs()
         {
             // 注册测试IDE集成（使用模拟数据）
-            var mockRiderIntegration = new MockIDEIntegration(IDEType.Rider, true); // 模拟已安装
-            var mockVSIntegration = new MockIDEIntegration(IDEType.VisualStudio, false); // 模拟未安装
-            var mockVSCodeIntegration = new MockIDEIntegration(IDEType.VSCode, true); // 模拟已安装
+            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true); // 模拟已安装
+            var mockVSIntegration = new MockIdeIntegration(IDEType.VisualStudio, false); // 模拟未安装
+            var mockVSCodeIntegration = new MockIdeIntegration(IDEType.VSCode, true); // 模拟已安装
 
             RegisterIntegration(mockRiderIntegration);
             RegisterIntegration(mockVSIntegration);
@@ -302,31 +302,31 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         /// <summary>
         /// 模拟IDE集成类，用于测试
         /// </summary>
-        private class MockIDEIntegration : IDEIntegration
+        private class MockIdeIntegration : IDEIntegration
         {
             public string Name { get; private set; }
             public bool IsInstalled { get; private set; }
-            public IDEType IDEType { get; private set; }
+            public IDEType IdeType { get; private set; }
             public bool ExportConfigCalled { get; private set; }
             public bool ExportRulesCalled { get; private set; }
 
-            public MockIDEIntegration(IDEType _ideType, bool _isInstalled)
+            public MockIdeIntegration(IDEType ideType, bool isInstalled)
             {
-                IDEType = _ideType;
-                IsInstalled = _isInstalled;
-                Name = _ideType.ToString();
+                IdeType = ideType;
+                IsInstalled = isInstalled;
+                Name = ideType.ToString();
                 ExportConfigCalled = false;
                 ExportRulesCalled = false;
             }
 
-            public bool ExportConfig(List<EditorConfigRule> _rules)
+            public bool ExportConfig(List<EditorConfigRule> rules)
             {
                 ExportRulesCalled = true;
                 return true;
             }
 
             // 添加用于调用的辅助方法，以保持向后兼容性
-            public bool ExportConfig(CodeStyleConfig _config)
+            public bool ExportConfig(CodeStyleConfig config)
             {
                 ExportConfigCalled = true;
                 return true;
@@ -335,7 +335,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             // 辅助方法，获取可执行路径
             public string GetExecutablePath()
             {
-                return $"C:\\Mock\\{IDEType}.exe";
+                return $"C:\\Mock\\{IdeType}.exe";
             }
         }
 
