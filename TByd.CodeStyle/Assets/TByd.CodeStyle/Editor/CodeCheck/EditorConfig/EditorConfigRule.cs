@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 {
@@ -13,8 +14,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 规则模式（文件匹配模式）
         /// </summary>
-        [SerializeField]
-        private string m_Pattern;
+        [FormerlySerializedAs("m_Pattern")] [SerializeField]
+        private string mPattern;
 
         /// <summary>
         /// 规则属性
@@ -32,10 +33,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_pattern">规则模式</param>
-        public EditorConfigRule(string _pattern)
+        /// <param name="pattern">规则模式</param>
+        public EditorConfigRule(string pattern)
         {
-            m_Pattern = _pattern;
+            mPattern = pattern;
         }
 
         /// <summary>
@@ -43,8 +44,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// </summary>
         public string Pattern
         {
-            get => m_Pattern;
-            set => m_Pattern = value;
+            get => mPattern;
+            set => mPattern = value;
         }
 
         /// <summary>
@@ -59,33 +60,33 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 设置属性
         /// </summary>
-        /// <param name="_key">属性名</param>
-        /// <param name="_value">属性值</param>
-        public void SetProperty(string _key, string _value)
+        /// <param name="key">属性名</param>
+        /// <param name="value">属性值</param>
+        public void SetProperty(string key, string value)
         {
-            if (string.IsNullOrEmpty(_key))
+            if (string.IsNullOrEmpty(key))
             {
                 return;
             }
 
             // 使用大小写不敏感的字典，无需转换为小写
-            m_Properties[_key] = _value;
+            m_Properties[key] = value;
         }
 
         /// <summary>
         /// 获取属性
         /// </summary>
-        /// <param name="_key">属性名</param>
+        /// <param name="key">属性名</param>
         /// <returns>属性值，如果不存在则返回空字符串</returns>
-        public string GetProperty(string _key)
+        public string GetProperty(string key)
         {
-            if (string.IsNullOrEmpty(_key))
+            if (string.IsNullOrEmpty(key))
             {
                 return string.Empty;
             }
 
             // 使用大小写不敏感的字典，无需转换为小写
-            if (m_Properties.TryGetValue(_key, out var value))
+            if (m_Properties.TryGetValue(key, out var value))
             {
                 return value;
             }
@@ -96,18 +97,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 移除属性
         /// </summary>
-        /// <param name="_key">属性名</param>
-        public void RemoveProperty(string _key)
+        /// <param name="key">属性名</param>
+        public void RemoveProperty(string key)
         {
-            if (string.IsNullOrEmpty(_key))
+            if (string.IsNullOrEmpty(key))
             {
                 return;
             }
 
             // 使用大小写不敏感的字典，无需转换为小写
-            if (m_Properties.ContainsKey(_key))
+            if (m_Properties.ContainsKey(key))
             {
-                m_Properties.Remove(_key);
+                m_Properties.Remove(key);
             }
         }
 

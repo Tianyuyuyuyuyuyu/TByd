@@ -18,17 +18,17 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         /// <summary>
         /// 显示输入对话框
         /// </summary>
-        /// <param name="_title">标题</param>
-        /// <param name="_message">提示信息</param>
-        /// <param name="_defaultValue">默认值</param>
+        /// <param name="title">标题</param>
+        /// <param name="message">提示信息</param>
+        /// <param name="defaultValue">默认值</param>
         /// <returns>用户输入的文本</returns>
-        public static string Show(string _title, string _message, string _defaultValue = "")
+        public static string Show(string title, string message, string defaultValue = "")
         {
             var window = CreateInstance<EditorInputDialog>();
-            window.titleContent = new GUIContent(_title);
-            window.m_Title = _title;
-            window.m_Message = _message;
-            window.m_DefaultValue = _defaultValue;
+            window.titleContent = new GUIContent(title);
+            window.m_Title = title;
+            window.m_Message = message;
+            window.m_DefaultValue = defaultValue;
             window.minSize = new Vector2(300, 100);
             window.maxSize = new Vector2(300, 100);
             window.ShowModal();
@@ -95,4 +95,4 @@ namespace TByd.CodeStyle.Editor.UI.Utils
             EditorGUILayout.EndHorizontal();
         }
     }
-} 
+}

@@ -13,8 +13,8 @@ namespace TByd.CodeStyle.Runtime.Config
     public static class ConfigManager
     {
         // 配置文件名
-        private const string c_ConfigFileName = "TBydCodeStyleConfig.json";
-        private const string c_AssetPath = "Assets/TByd.CodeStyle/Resources/CodeStyleConfig.asset";
+        private const string k_CConfigFileName = "TBydCodeStyleConfig.json";
+        private const string k_CAssetPath = "Assets/TByd.CodeStyle/Resources/CodeStyleConfig.asset";
 
         // 配置文件路径
         private static string s_ConfigFilePath;
@@ -27,7 +27,7 @@ namespace TByd.CodeStyle.Runtime.Config
         private static bool s_IsConfigLoaded;
 
         // 配置变更事件
-        public static event Action ConfigChanged;
+        public static event Action OnConfigChanged;
 
         /// <summary>
         /// 配置文件路径
@@ -41,16 +41,16 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 设置配置文件路径
         /// </summary>
-        /// <param name="_path">配置文件路径</param>
-        public static void SetConfigPath(string _path)
+        /// <param name="path">配置文件路径</param>
+        public static void SetConfigPath(string path)
         {
-            if (string.IsNullOrEmpty(_path))
+            if (string.IsNullOrEmpty(path))
             {
                 Debug.LogError("[TByd.CodeStyle] 配置文件路径不能为空");
                 return;
             }
 
-            s_ConfigFilePath = _path;
+            s_ConfigFilePath = path;
             s_IsConfigLoaded = false; // 重置配置加载状态，以便下次获取配置时重新加载
         }
 
@@ -62,7 +62,7 @@ namespace TByd.CodeStyle.Runtime.Config
             // 只有在未设置路径时才设置默认路径
             if (string.IsNullOrEmpty(s_ConfigFilePath))
             {
-                s_ConfigFilePath = Path.Combine(Application.dataPath, "..", "ProjectSettings", c_ConfigFileName);
+                s_ConfigFilePath = Path.Combine(Application.dataPath, "..", "ProjectSettings", k_CConfigFileName);
                 Debug.Log($"[TByd.CodeStyle] 使用默认配置路径: {s_ConfigFilePath}");
             }
             else
@@ -88,19 +88,19 @@ namespace TByd.CodeStyle.Runtime.Config
             // 在编辑器中，如果需要序列化，返回ScriptableObject实例
             if (s_RuntimeConfig == null)
             {
-                s_RuntimeConfig = AssetDatabase.LoadAssetAtPath<CodeStyleConfig>(c_AssetPath);
+                s_RuntimeConfig = AssetDatabase.LoadAssetAtPath<CodeStyleConfig>(k_CAssetPath);
                 if (s_RuntimeConfig == null)
                 {
                     s_RuntimeConfig = ScriptableObject.CreateInstance<CodeStyleConfig>();
-                    
+
                     // 确保目录存在
-                    var directory = Path.GetDirectoryName(c_AssetPath);
+                    var directory = Path.GetDirectoryName(k_CAssetPath);
                     if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
                     }
 
-                    AssetDatabase.CreateAsset(s_RuntimeConfig, c_AssetPath);
+                    AssetDatabase.CreateAsset(s_RuntimeConfig, k_CAssetPath);
                     AssetDatabase.SaveAssets();
                 }
             }
@@ -152,7 +152,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 Debug.Log($"[TByd.CodeStyle] 配置已成功保存到: {s_ConfigFilePath}");
 
                 // 触发配置变更事件
-                ConfigChanged?.Invoke();
+                OnConfigChanged?.Invoke();
             }
             catch (Exception e)
             {
@@ -202,7 +202,7 @@ namespace TByd.CodeStyle.Runtime.Config
             if (s_RuntimeConfig != null)
             {
                 UnityEngine.Object.DestroyImmediate(s_RuntimeConfig, true);
-                AssetDatabase.DeleteAsset(c_AssetPath);
+                AssetDatabase.DeleteAsset(k_CAssetPath);
                 s_RuntimeConfig = null;
             }
 #endif
@@ -243,10 +243,10 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 迁移配置
         /// </summary>
-        /// <param name="_targetVersion">目标版本</param>
-        private static void MigrateConfig(int _targetVersion)
+        /// <param name="targetVersion">目标版本</param>
+        private static void MigrateConfig(int targetVersion)
         {
-            switch (_targetVersion)
+            switch (targetVersion)
             {
                 case 1:
                     // 版本1的迁移逻辑
@@ -255,7 +255,7 @@ namespace TByd.CodeStyle.Runtime.Config
                 // 添加更多版本的迁移逻辑
 
                 default:
-                    Debug.LogWarning($"[TByd.CodeStyle] 未知的配置版本: {_targetVersion}");
+                    Debug.LogWarning($"[TByd.CodeStyle] 未知的配置版本: {targetVersion}");
                     break;
             }
         }
@@ -264,12 +264,12 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 复制配置数据
         /// </summary>
-        private static void CopyConfigData(CodeStyleConfig _source, CodeStyleConfig _target)
+        private static void CopyConfigData(CodeStyleConfig source, CodeStyleConfig target)
         {
-            if (_source == null || _target == null)
+            if (source == null || target == null)
                 return;
 
-            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(_source), _target);
+            JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(source), target);
         }
 #endif
     }

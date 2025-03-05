@@ -39,10 +39,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         private static void Initialize()
         {
             if (s_Initialized)
+            {
                 return;
+            }
 
             // 订阅配置变更事件
-            ConfigProvider.ConfigChanged += OnConfigChanged;
+            ConfigProvider.OnConfigChanged += OnConfigChanged;
 
             // 初始化检查器和修复器
             InitializeCheckerAndFixer();
@@ -79,110 +81,110 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         /// <summary>
         /// 检查代码
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>检查结果</returns>
-        public static CodeCheckResult CheckCode(string _code, string _filePath)
+        public static CodeCheckResult CheckCode(string code, string filePath)
         {
             if (s_Checker == null)
             {
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.CheckCode(_code, _filePath);
+            return s_Checker.CheckCode(code, filePath);
         }
 
         /// <summary>
         /// 检查文件
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>检查结果</returns>
-        public static CodeCheckResult CheckFile(string _filePath)
+        public static CodeCheckResult CheckFile(string filePath)
         {
             if (s_Checker == null)
             {
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.CheckFile(_filePath);
+            return s_Checker.CheckFile(filePath);
         }
 
         /// <summary>
         /// 检查目录
         /// </summary>
-        /// <param name="_directoryPath">目录路径</param>
-        /// <param name="_recursive">是否递归检查子目录</param>
+        /// <param name="directoryPath">目录路径</param>
+        /// <param name="recursive">是否递归检查子目录</param>
         /// <returns>检查结果</returns>
-        public static CodeCheckResult CheckDirectory(string _directoryPath, bool _recursive = true)
+        public static CodeCheckResult CheckDirectory(string directoryPath, bool recursive = true)
         {
             if (s_Checker == null)
             {
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.CheckDirectory(_directoryPath, _recursive);
+            return s_Checker.CheckDirectory(directoryPath, recursive);
         }
 
         /// <summary>
         /// 修复代码
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>修复后的代码</returns>
-        public static string FixCode(string _code, string _filePath)
+        public static string FixCode(string code, string filePath)
         {
             if (s_Fixer == null)
             {
                 InitializeCheckerAndFixer();
             }
 
-            return s_Fixer.FixCode(_code, _filePath);
+            return s_Fixer.FixCode(code, filePath);
         }
 
         /// <summary>
         /// 修复文件
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>是否修复成功</returns>
-        public static bool FixFile(string _filePath)
+        public static bool FixFile(string filePath)
         {
             if (s_Fixer == null)
             {
                 InitializeCheckerAndFixer();
             }
 
-            return s_Fixer.FixFile(_filePath);
+            return s_Fixer.FixFile(filePath);
         }
 
         /// <summary>
         /// 修复目录
         /// </summary>
-        /// <param name="_directoryPath">目录路径</param>
-        /// <param name="_recursive">是否递归修复子目录</param>
+        /// <param name="directoryPath">目录路径</param>
+        /// <param name="recursive">是否递归修复子目录</param>
         /// <returns>修复的文件数量</returns>
-        public static int FixDirectory(string _directoryPath, bool _recursive = true)
+        public static int FixDirectory(string directoryPath, bool recursive = true)
         {
             if (s_Fixer == null)
             {
                 InitializeCheckerAndFixer();
             }
 
-            return s_Fixer.FixDirectory(_directoryPath, _recursive);
+            return s_Fixer.FixDirectory(directoryPath, recursive);
         }
 
         /// <summary>
         /// 生成检查报告
         /// </summary>
-        /// <param name="_result">检查结果</param>
+        /// <param name="result">检查结果</param>
         /// <returns>报告文本</returns>
-        public static string GenerateReport(CodeCheckResult _result)
+        public static string GenerateReport(CodeCheckResult result)
         {
             if (s_Checker == null)
             {
                 InitializeCheckerAndFixer();
             }
 
-            return s_Checker.GenerateReport(_result);
+            return s_Checker.GenerateReport(result);
         }
 
         /// <summary>
@@ -202,19 +204,19 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         /// <summary>
         /// 从命令行参数检查文件
         /// </summary>
-        /// <param name="_args">命令行参数</param>
+        /// <param name="args">命令行参数</param>
         /// <returns>退出代码</returns>
-        public static int CheckFromCommandLine(string[] _args)
+        public static int CheckFromCommandLine(string[] args)
         {
             try
             {
-                if (_args.Length < 1)
+                if (args.Length < 1)
                 {
                     Console.Error.WriteLine("错误: 缺少文件路径参数");
                     return 1;
                 }
 
-                var filePath = _args[0];
+                var filePath = args[0];
 
                 if (filePath.EndsWith(".txt") && File.Exists(filePath))
                 {
@@ -351,7 +353,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                     // 显示通知
                     NotificationSystem.ShowNotification(
                         "代码检查失败，请修复问题后再提交",
-                        NotificationType.Error);
+                        NotificationType.k_Error);
 
                     // 显示报告窗口
                     CodeCheckReportWindow.ShowWindow(report);
@@ -362,7 +364,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 // 显示通知
                 NotificationSystem.ShowNotification(
                     "代码检查通过",
-                    NotificationType.Success);
+                    NotificationType.k_Success);
 
                 return true;
             }
@@ -402,9 +404,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         /// <summary>
         /// 获取暂存区中的C#文件
         /// </summary>
-        /// <param name="_repoPath">仓库路径</param>
+        /// <param name="repoPath">仓库路径</param>
         /// <returns>文件列表</returns>
-        private static List<string> GetStagedCSharpFiles(string _repoPath)
+        private static List<string> GetStagedCSharpFiles(string repoPath)
         {
             var stagedFiles = new List<string>();
 
@@ -416,7 +418,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
                 process.StartInfo.Arguments = "diff --cached --name-only --diff-filter=ACM";
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.WorkingDirectory = _repoPath;
+                process.StartInfo.WorkingDirectory = repoPath;
                 process.StartInfo.CreateNoWindow = true;
 
                 // 执行命令
@@ -461,11 +463,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         /// <summary>
         /// 显示窗口
         /// </summary>
-        /// <param name="_report">报告文本</param>
-        public static void ShowWindow(string _report)
+        /// <param name="report">报告文本</param>
+        public static void ShowWindow(string report)
         {
             var window = GetWindow<CodeCheckReportWindow>("代码检查报告");
-            window.m_Report = _report;
+            window.m_Report = report;
             window.Show();
         }
 

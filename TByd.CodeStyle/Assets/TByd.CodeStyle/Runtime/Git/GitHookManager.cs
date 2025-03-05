@@ -12,10 +12,10 @@ namespace TByd.CodeStyle.Runtime.Git
     public static class GitHookManager
     {
         // 钩子模板目录
-        private const string c_HookTemplatesDir = "Packages/com.tbyd.codestyle/PackageResources/GitHooks";
+        private const string k_CHookTemplatesDir = "Packages/com.tbyd.codestyle/PackageResources/GitHooks";
 
         // 钩子状态变更事件
-        public static event Action<GitHookType, bool> HookStatusChanged;
+        public static event Action<GitHookType, bool> OnHookStatusChanged;
 
         // 已安装的钩子缓存
         private static Dictionary<GitHookType, bool> s_InstalledHooksCache = new Dictionary<GitHookType, bool>();
@@ -113,28 +113,28 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <summary>
         /// 检查钩子是否已安装
         /// </summary>
-        /// <param name="_hookType">钩子类型</param>
+        /// <param name="hookType">钩子类型</param>
         /// <returns>是否已安装</returns>
-        public static bool IsHookInstalled(GitHookType _hookType)
+        public static bool IsHookInstalled(GitHookType hookType)
         {
             if (s_Repository == null || !s_Repository.IsValid)
                 return false;
 
             // 如果缓存中没有，则刷新缓存
-            if (!s_InstalledHooksCache.ContainsKey(_hookType))
+            if (!s_InstalledHooksCache.ContainsKey(hookType))
             {
                 RefreshHookStatusCache();
             }
 
-            return s_InstalledHooksCache.TryGetValue(_hookType, out var isInstalled) && isInstalled;
+            return s_InstalledHooksCache.TryGetValue(hookType, out var isInstalled) && isInstalled;
         }
 
         /// <summary>
         /// 安装钩子
         /// </summary>
-        /// <param name="_hookType">钩子类型</param>
+        /// <param name="hookType">钩子类型</param>
         /// <returns>是否安装成功</returns>
-        public static bool InstallHook(GitHookType _hookType)
+        public static bool InstallHook(GitHookType hookType)
         {
             // 如果未初始化或仓库无效，则返回失败
             if (!s_Initialized || s_Repository == null || !s_Repository.IsValid)
@@ -143,7 +143,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 return false;
             }
 
-            var hookFileName = _hookType.GetFileName();
+            var hookFileName = hookType.GetFileName();
             var hookPath = s_Repository.GetHookPath(hookFileName);
 
             try
@@ -163,7 +163,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 }
 
                 // 获取钩子模板
-                var hookContent = GetHookTemplate(_hookType);
+                var hookContent = GetHookTemplate(hookType);
 
                 // 写入钩子文件
                 File.WriteAllText(hookPath, hookContent);
@@ -172,10 +172,10 @@ namespace TByd.CodeStyle.Runtime.Git
                 SetExecutablePermission(hookPath);
 
                 // 更新缓存
-                s_InstalledHooksCache[_hookType] = true;
+                s_InstalledHooksCache[hookType] = true;
 
                 // 触发事件
-                HookStatusChanged?.Invoke(_hookType, true);
+                OnHookStatusChanged?.Invoke(hookType, true);
 
                 Debug.Log($"[TByd.CodeStyle] 已安装钩子: {hookFileName}");
 
@@ -191,9 +191,9 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <summary>
         /// 卸载钩子
         /// </summary>
-        /// <param name="_hookType">钩子类型</param>
+        /// <param name="hookType">钩子类型</param>
         /// <returns>是否卸载成功</returns>
-        public static bool UninstallHook(GitHookType _hookType)
+        public static bool UninstallHook(GitHookType hookType)
         {
             // 如果未初始化或仓库无效，则返回失败
             if (!s_Initialized || s_Repository == null || !s_Repository.IsValid)
@@ -202,7 +202,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 return false;
             }
 
-            var hookFileName = _hookType.GetFileName();
+            var hookFileName = hookType.GetFileName();
             var hookPath = s_Repository.GetHookPath(hookFileName);
 
             try
@@ -226,10 +226,10 @@ namespace TByd.CodeStyle.Runtime.Git
                 }
 
                 // 更新缓存
-                s_InstalledHooksCache[_hookType] = false;
+                s_InstalledHooksCache[hookType] = false;
 
                 // 触发事件
-                HookStatusChanged?.Invoke(_hookType, false);
+                OnHookStatusChanged?.Invoke(hookType, false);
 
                 Debug.Log($"[TByd.CodeStyle] 已卸载钩子: {hookFileName}");
 
@@ -245,12 +245,12 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <summary>
         /// 获取钩子模板
         /// </summary>
-        /// <param name="_hookType">钩子类型</param>
+        /// <param name="hookType">钩子类型</param>
         /// <returns>钩子模板内容</returns>
-        private static string GetHookTemplate(GitHookType _hookType)
+        private static string GetHookTemplate(GitHookType hookType)
         {
             // 首先尝试从包路径获取模板
-            var templatePath = Path.Combine(c_HookTemplatesDir, _hookType.GetFileName() + ".template");
+            var templatePath = Path.Combine(k_CHookTemplatesDir, hookType.GetFileName() + ".template");
 
             // 检查包路径模板文件是否存在
             if (File.Exists(templatePath))
@@ -260,7 +260,7 @@ namespace TByd.CodeStyle.Runtime.Git
             }
 
             // 如果包路径不存在，尝试从项目路径获取模板
-            var projectTemplatePath = Path.Combine(Application.dataPath, "TByd.CodeStyle/PackageResources/GitHooks", _hookType.GetFileName() + ".template");
+            var projectTemplatePath = Path.Combine(Application.dataPath, "TByd.CodeStyle/PackageResources/GitHooks", hookType.GetFileName() + ".template");
 
             // 检查项目路径模板文件是否存在
             if (File.Exists(projectTemplatePath))
@@ -270,16 +270,16 @@ namespace TByd.CodeStyle.Runtime.Git
             }
 
             // 如果模板文件不存在，则生成默认模板
-            Debug.LogWarning($"[TByd.CodeStyle] 未找到钩子模板文件，使用默认模板: {_hookType.GetFileName()}");
-            return GenerateDefaultHookTemplate(_hookType);
+            Debug.LogWarning($"[TByd.CodeStyle] 未找到钩子模板文件，使用默认模板: {hookType.GetFileName()}");
+            return GenerateDefaultHookTemplate(hookType);
         }
 
         /// <summary>
         /// 生成默认钩子模板
         /// </summary>
-        /// <param name="_hookType">钩子类型</param>
+        /// <param name="hookType">钩子类型</param>
         /// <returns>默认钩子模板内容</returns>
-        private static string GenerateDefaultHookTemplate(GitHookType _hookType)
+        private static string GenerateDefaultHookTemplate(GitHookType hookType)
         {
             var sb = new StringBuilder();
 
@@ -293,13 +293,13 @@ namespace TByd.CodeStyle.Runtime.Git
             sb.AppendLine();
 
             // 添加钩子描述
-            sb.AppendLine($"# {_hookType.GetDescription()}");
+            sb.AppendLine($"# {hookType.GetDescription()}");
             sb.AppendLine();
 
             // 根据钩子类型添加不同的内容
-            switch (_hookType)
+            switch (hookType)
             {
-                case GitHookType.PreCommit:
+                case GitHookType.k_PreCommit:
                     sb.AppendLine("# 检查是否在Unity编辑器中运行");
                     sb.AppendLine("if [ -n \"$UNITY_EDITOR\" ]; then");
                     sb.AppendLine("    echo \"在Unity编辑器中运行Git钩子\"");
@@ -323,7 +323,7 @@ namespace TByd.CodeStyle.Runtime.Git
                     sb.AppendLine("exit 0");
                     break;
 
-                case GitHookType.CommitMsg:
+                case GitHookType.k_CommitMsg:
                     sb.AppendLine("# 获取提交消息文件路径");
                     sb.AppendLine("commit_msg_file=$1");
                     sb.AppendLine();
@@ -420,8 +420,8 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <summary>
         /// 设置文件的执行权限
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
-        private static void SetExecutablePermission(string _filePath)
+        /// <param name="filePath">文件路径</param>
+        private static void SetExecutablePermission(string filePath)
         {
             // 在Windows上，不需要设置执行权限
             if (Application.platform == RuntimePlatform.WindowsEditor)
@@ -432,7 +432,7 @@ namespace TByd.CodeStyle.Runtime.Git
                 // 在macOS和Linux上，使用chmod命令设置执行权限
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.FileName = "chmod";
-                process.StartInfo.Arguments = $"+x \"{_filePath}\"";
+                process.StartInfo.Arguments = $"+x \"{filePath}\"";
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.CreateNoWindow = true;
 
@@ -441,7 +441,7 @@ namespace TByd.CodeStyle.Runtime.Git
 
                 if (process.ExitCode != 0)
                 {
-                    Debug.LogWarning($"[TByd.CodeStyle] 设置执行权限失败: {_filePath}");
+                    Debug.LogWarning($"[TByd.CodeStyle] 设置执行权限失败: {filePath}");
                 }
             }
             catch (Exception e)
@@ -480,9 +480,9 @@ namespace TByd.CodeStyle.Runtime.Git
             foreach (GitHookType hookType in Enum.GetValues(typeof(GitHookType)))
             {
                 // 目前只关注提交相关的钩子
-                if (hookType == GitHookType.PreCommit ||
-                    hookType == GitHookType.CommitMsg ||
-                    hookType == GitHookType.PrepareCommitMsg)
+                if (hookType == GitHookType.k_PreCommit ||
+                    hookType == GitHookType.k_CommitMsg ||
+                    hookType == GitHookType.k_PrepareCommitMsg)
                 {
                     if (!InstallHook(hookType))
                     {

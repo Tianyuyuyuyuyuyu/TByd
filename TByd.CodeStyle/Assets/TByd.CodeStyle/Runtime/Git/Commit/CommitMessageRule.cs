@@ -23,10 +23,10 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_config">Git提交配置</param>
+        /// <param name="message">提交消息</param>
+        /// <param name="config">Git提交配置</param>
         /// <returns>验证结果</returns>
-        CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config);
+        CommitMessageRuleResult Validate(CommitMessage message, GitCommitConfig config);
     }
 
     /// <summary>
@@ -64,16 +64,16 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 创建失败的验证结果
         /// </summary>
-        /// <param name="_errorMessage">错误消息</param>
-        /// <param name="_fixSuggestion">修复建议</param>
+        /// <param name="errorMessage">错误消息</param>
+        /// <param name="fixSuggestion">修复建议</param>
         /// <returns>验证结果</returns>
-        public static CommitMessageRuleResult Failure(string _errorMessage, string _fixSuggestion = null)
+        public static CommitMessageRuleResult Failure(string errorMessage, string fixSuggestion = null)
         {
             return new CommitMessageRuleResult
             {
                 IsValid = false,
-                ErrorMessage = _errorMessage,
-                FixSuggestion = _fixSuggestion
+                ErrorMessage = errorMessage,
+                FixSuggestion = fixSuggestion
             };
         }
     }
@@ -96,19 +96,19 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_config">Git提交配置</param>
+        /// <param name="message">提交消息</param>
+        /// <param name="config">Git提交配置</param>
         /// <returns>验证结果</returns>
-        public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
+        public CommitMessageRuleResult Validate(CommitMessage message, GitCommitConfig config)
         {
             // 如果不要求提交类型，则跳过验证
-            if (!_config.RequireType)
+            if (!config.RequireType)
             {
                 return CommitMessageRuleResult.Success();
             }
 
             // 如果提交类型为空，则验证失败
-            if (string.IsNullOrEmpty(_message.Type))
+            if (string.IsNullOrEmpty(message.Type))
             {
                 return CommitMessageRuleResult.Failure(
                     "提交类型不能为空",
@@ -117,9 +117,9 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
 
             // 检查提交类型是否在配置的有效类型列表中
             var isValidType = false;
-            foreach (var commitType in _config.CommitTypes)
+            foreach (var commitType in config.CommitTypes)
             {
-                if (commitType.Enabled && commitType.Type.Equals(_message.Type, StringComparison.OrdinalIgnoreCase))
+                if (commitType.Enabled && commitType.Type.Equals(message.Type, StringComparison.OrdinalIgnoreCase))
                 {
                     isValidType = true;
                     break;
@@ -130,7 +130,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 // 构建有效类型列表
                 var validTypes = new List<string>();
-                foreach (var commitType in _config.CommitTypes)
+                foreach (var commitType in config.CommitTypes)
                 {
                     if (commitType.Enabled)
                     {
@@ -141,7 +141,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 var validTypesStr = string.Join(", ", validTypes);
 
                 return CommitMessageRuleResult.Failure(
-                    $"提交类型 '{_message.Type}' 无效",
+                    $"提交类型 '{message.Type}' 无效",
                     $"有效的提交类型: {validTypesStr}");
             }
 
@@ -167,19 +167,19 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_config">Git提交配置</param>
+        /// <param name="message">提交消息</param>
+        /// <param name="config">Git提交配置</param>
         /// <returns>验证结果</returns>
-        public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
+        public CommitMessageRuleResult Validate(CommitMessage message, GitCommitConfig config)
         {
             // 如果不要求作用域，则跳过验证
-            if (!_config.RequireScope)
+            if (!config.RequireScope)
             {
                 return CommitMessageRuleResult.Success();
             }
 
             // 如果作用域为空，则验证失败
-            if (string.IsNullOrEmpty(_message.Scope))
+            if (string.IsNullOrEmpty(message.Scope))
             {
                 return CommitMessageRuleResult.Failure(
                     "作用域不能为空",
@@ -190,23 +190,23 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             var isValidScope = false;
 
             // 如果作用域列表为空，则任何非空作用域都是有效的
-            if (_config.Scopes == null || _config.Scopes.Count == 0)
+            if (config.Scopes == null || config.Scopes.Count == 0)
             {
                 isValidScope = true;
             }
             else
             {
-                isValidScope = _config.Scopes.Contains(_message.Scope);
+                isValidScope = config.Scopes.Contains(message.Scope);
             }
 
             if (!isValidScope)
             {
-                var validScopesStr = _config.Scopes != null && _config.Scopes.Count > 0
-                    ? string.Join(", ", _config.Scopes)
+                var validScopesStr = config.Scopes != null && config.Scopes.Count > 0
+                    ? string.Join(", ", config.Scopes)
                     : "未配置有效作用域";
 
                 return CommitMessageRuleResult.Failure(
-                    $"作用域 '{_message.Scope}' 无效",
+                    $"作用域 '{message.Scope}' 无效",
                     $"有效的作用域: {validScopesStr}");
             }
 
@@ -232,23 +232,23 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_config">Git提交配置</param>
+        /// <param name="message">提交消息</param>
+        /// <param name="config">Git提交配置</param>
         /// <returns>验证结果</returns>
-        public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
+        public CommitMessageRuleResult Validate(CommitMessage message, GitCommitConfig config)
         {
             // 添加调试日志
-            Debug.Log($"[TByd.CodeStyle] SubjectRule.Validate: Subject='{_message.Subject}', RequireSubject={_config.RequireSubject}");
+            Debug.Log($"[TByd.CodeStyle] SubjectRule.Validate: Subject='{message.Subject}', RequireSubject={config.RequireSubject}");
 
             // 如果不要求简短描述，则跳过验证
-            if (!_config.RequireSubject)
+            if (!config.RequireSubject)
             {
                 Debug.Log($"[TByd.CodeStyle] SubjectRule.Validate: 不要求简短描述，跳过验证");
                 return CommitMessageRuleResult.Success();
             }
 
             // 如果简短描述为空或只包含空白字符，则验证失败
-            if (string.IsNullOrWhiteSpace(_message.Subject))
+            if (string.IsNullOrWhiteSpace(message.Subject))
             {
                 Debug.Log($"[TByd.CodeStyle] SubjectRule.Validate: 简短描述为空，验证失败");
                 return CommitMessageRuleResult.Failure(
@@ -257,11 +257,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
 
             // 检查简短描述长度是否超过配置的最大长度
-            if (_message.Subject.Length > _config.SubjectMaxLength)
+            if (message.Subject.Length > config.SubjectMaxLength)
             {
                 return CommitMessageRuleResult.Failure(
-                    $"简短描述长度超过限制（最大{_config.SubjectMaxLength}个字符）",
-                    $"当前长度: {_message.Subject.Length}，请精简描述");
+                    $"简短描述长度超过限制（最大{config.SubjectMaxLength}个字符）",
+                    $"当前长度: {message.Subject.Length}，请精简描述");
             }
 
             return CommitMessageRuleResult.Success();
@@ -286,19 +286,19 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_config">Git提交配置</param>
+        /// <param name="message">提交消息</param>
+        /// <param name="config">Git提交配置</param>
         /// <returns>验证结果</returns>
-        public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
+        public CommitMessageRuleResult Validate(CommitMessage message, GitCommitConfig config)
         {
             // 如果不要求详细描述，则跳过验证
-            if (!_config.RequireBody)
+            if (!config.RequireBody)
             {
                 return CommitMessageRuleResult.Success();
             }
 
             // 如果详细描述为空，则验证失败
-            if (string.IsNullOrEmpty(_message.Body))
+            if (string.IsNullOrEmpty(message.Body))
             {
                 return CommitMessageRuleResult.Failure(
                     "详细描述不能为空",
@@ -327,19 +327,19 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_config">Git提交配置</param>
+        /// <param name="message">提交消息</param>
+        /// <param name="config">Git提交配置</param>
         /// <returns>验证结果</returns>
-        public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
+        public CommitMessageRuleResult Validate(CommitMessage message, GitCommitConfig config)
         {
             // 如果不要求页脚，则跳过验证
-            if (!_config.RequireFooter)
+            if (!config.RequireFooter)
             {
                 return CommitMessageRuleResult.Success();
             }
 
             // 如果页脚为空，则验证失败
-            if (string.IsNullOrEmpty(_message.Footer))
+            if (string.IsNullOrEmpty(message.Footer))
             {
                 return CommitMessageRuleResult.Failure(
                     "页脚不能为空",
@@ -368,13 +368,13 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_config">Git提交配置</param>
+        /// <param name="message">提交消息</param>
+        /// <param name="config">Git提交配置</param>
         /// <returns>验证结果</returns>
-        public CommitMessageRuleResult Validate(CommitMessage _message, GitCommitConfig _config)
+        public CommitMessageRuleResult Validate(CommitMessage message, GitCommitConfig config)
         {
             // 检查原始消息是否包含冒号
-            if (!_message.RawHeader.Contains(":"))
+            if (!message.RawHeader.Contains(":"))
             {
                 return CommitMessageRuleResult.Failure(
                     "提交消息格式错误：缺少冒号",
@@ -382,7 +382,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
 
             // 检查冒号后是否有空格
-            if (_message.RawHeader.Contains(":") && !_message.RawHeader.Contains(": "))
+            if (message.RawHeader.Contains(":") && !message.RawHeader.Contains(": "))
             {
                 return CommitMessageRuleResult.Failure(
                     "提交消息格式错误：冒号后应有空格",
@@ -390,7 +390,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             }
 
             // 检查类型是否为空
-            if (string.IsNullOrEmpty(_message.Type))
+            if (string.IsNullOrEmpty(message.Type))
             {
                 return CommitMessageRuleResult.Failure(
                     "提交消息格式错误：缺少类型",

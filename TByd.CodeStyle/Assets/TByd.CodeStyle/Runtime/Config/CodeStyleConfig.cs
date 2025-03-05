@@ -1,6 +1,7 @@
 using System;
 using TByd.CodeStyle.Runtime.Git;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TByd.CodeStyle.Runtime.Config
 {
@@ -12,106 +13,106 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 配置版本号，用于配置迁移
         /// </summary>
-        [SerializeField]
-        private int m_ConfigVersion = 1;
+        [FormerlySerializedAs("m_ConfigVersion")] [SerializeField]
+        private int mConfigVersion = 1;
 
         /// <summary>
         /// 是否启用Git提交规范检查
         /// </summary>
-        [SerializeField]
-        private bool m_EnableGitCommitCheck = true;
+        [FormerlySerializedAs("m_EnableGitCommitCheck")] [SerializeField]
+        private bool mEnableGitCommitCheck = true;
 
         /// <summary>
         /// 是否启用代码风格检查
         /// </summary>
-        [SerializeField]
-        private bool m_EnableCodeStyleCheck = true;
+        [FormerlySerializedAs("m_EnableCodeStyleCheck")] [SerializeField]
+        private bool mEnableCodeStyleCheck = true;
 
         /// <summary>
         /// 是否启用EditorConfig支持
         /// </summary>
-        [SerializeField]
-        private bool m_EnableEditorConfig = true;
+        [FormerlySerializedAs("m_EnableEditorConfig")] [SerializeField]
+        private bool mEnableEditorConfig = true;
 
         /// <summary>
         /// 是否在编译时自动检查代码风格
         /// </summary>
-        [SerializeField]
-        private bool m_CheckOnCompile = false;
+        [FormerlySerializedAs("m_CheckOnCompile")] [SerializeField]
+        private bool mCheckOnCompile = false;
 
         /// <summary>
         /// 是否在Git提交前检查代码风格
         /// </summary>
-        [SerializeField]
-        private bool m_CheckBeforeCommit = true;
+        [FormerlySerializedAs("m_CheckBeforeCommit")] [SerializeField]
+        private bool mCheckBeforeCommit = true;
 
         /// <summary>
         /// 自定义Git仓库路径，为空则使用Unity项目根目录
         /// </summary>
-        [SerializeField]
-        private string m_CustomGitRepositoryPath = string.Empty;
+        [FormerlySerializedAs("m_CustomGitRepositoryPath")] [SerializeField]
+        private string mCustomGitRepositoryPath = string.Empty;
 
         /// <summary>
         /// Git提交规范配置
         /// </summary>
-        [SerializeField]
-        private GitCommitConfig m_GitCommitConfig = new GitCommitConfig();
+        [FormerlySerializedAs("m_GitCommitConfig")] [SerializeField]
+        private GitCommitConfig mGitCommitConfig = new GitCommitConfig();
 
         /// <summary>
         /// 代码风格检查配置
         /// </summary>
-        [SerializeField]
-        private CodeCheckConfig m_CodeCheckConfig = new CodeCheckConfig();
+        [FormerlySerializedAs("m_CodeCheckConfig")] [SerializeField]
+        private CodeCheckConfig mCodeCheckConfig = new CodeCheckConfig();
 
         /// <summary>
         /// Git钩子配置
         /// </summary>
-        [SerializeField]
-        private GitHookConfig m_GitHookConfig = new GitHookConfig();
+        [FormerlySerializedAs("m_GitHookConfig")] [SerializeField]
+        private GitHookConfig mGitHookConfig = new GitHookConfig();
 
         /// <summary>
         /// 是否启用IDE集成
         /// </summary>
-        [SerializeField]
-        private bool m_EnableIDEIntegration = true;
+        [FormerlySerializedAs("m_EnableIDEIntegration")] [SerializeField]
+        private bool mEnableIdeIntegration = true;
 
         /// <summary>
         /// 是否自动配置IDE
         /// </summary>
-        [SerializeField]
-        private bool m_AutoConfigureIDE = true;
+        [FormerlySerializedAs("m_AutoConfigureIDE")] [SerializeField]
+        private bool mAutoConfigureIde = true;
 
         /// <summary>
         /// 是否同步EditorConfig到IDE
         /// </summary>
-        [SerializeField]
-        private bool m_SyncEditorConfigWithIDE = true;
+        [FormerlySerializedAs("m_SyncEditorConfigWithIDE")] [SerializeField]
+        private bool mSyncEditorConfigWithIde = true;
 
         /// <summary>
         /// Rider配置
         /// </summary>
-        [SerializeField]
-        private RiderConfig m_RiderConfig = new RiderConfig();
+        [FormerlySerializedAs("m_RiderConfig")] [SerializeField]
+        private RiderConfig mRiderConfig = new RiderConfig();
 
         /// <summary>
         /// Visual Studio配置
         /// </summary>
-        [SerializeField]
-        private VisualStudioConfig m_VisualStudioConfig = new VisualStudioConfig();
+        [FormerlySerializedAs("m_VisualStudioConfig")] [SerializeField]
+        private VisualStudioConfig mVisualStudioConfig = new VisualStudioConfig();
 
         /// <summary>
         /// VS Code配置
         /// </summary>
-        [SerializeField]
-        private VSCodeConfig m_VSCodeConfig = new VSCodeConfig();
+        [FormerlySerializedAs("m_VSCodeConfig")] [SerializeField]
+        private VSCodeConfig mVSCodeConfig = new VSCodeConfig();
 
         /// <summary>
         /// 配置版本号
         /// </summary>
         public int ConfigVersion
         {
-            get => m_ConfigVersion;
-            set => m_ConfigVersion = value;
+            get => mConfigVersion;
+            set => mConfigVersion = value;
         }
 
         /// <summary>
@@ -119,8 +120,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableGitCommitCheck
         {
-            get => m_EnableGitCommitCheck;
-            set => m_EnableGitCommitCheck = value;
+            get => mEnableGitCommitCheck;
+            set => mEnableGitCommitCheck = value;
         }
 
         /// <summary>
@@ -128,8 +129,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableCodeStyleCheck
         {
-            get => m_EnableCodeStyleCheck;
-            set => m_EnableCodeStyleCheck = value;
+            get => mEnableCodeStyleCheck;
+            set => mEnableCodeStyleCheck = value;
         }
 
         /// <summary>
@@ -137,8 +138,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableEditorConfig
         {
-            get => m_EnableEditorConfig;
-            set => m_EnableEditorConfig = value;
+            get => mEnableEditorConfig;
+            set => mEnableEditorConfig = value;
         }
 
         /// <summary>
@@ -146,8 +147,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool CheckOnCompile
         {
-            get => m_CheckOnCompile;
-            set => m_CheckOnCompile = value;
+            get => mCheckOnCompile;
+            set => mCheckOnCompile = value;
         }
 
         /// <summary>
@@ -155,8 +156,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool CheckBeforeCommit
         {
-            get => m_CheckBeforeCommit;
-            set => m_CheckBeforeCommit = value;
+            get => mCheckBeforeCommit;
+            set => mCheckBeforeCommit = value;
         }
 
         /// <summary>
@@ -164,8 +165,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public string CustomGitRepositoryPath
         {
-            get => m_CustomGitRepositoryPath;
-            set => m_CustomGitRepositoryPath = value;
+            get => mCustomGitRepositoryPath;
+            set => mCustomGitRepositoryPath = value;
         }
 
         /// <summary>
@@ -173,8 +174,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public GitCommitConfig GitCommitConfig
         {
-            get => m_GitCommitConfig;
-            set => m_GitCommitConfig = value;
+            get => mGitCommitConfig;
+            set => mGitCommitConfig = value;
         }
 
         /// <summary>
@@ -182,8 +183,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public CodeCheckConfig CodeCheckConfig
         {
-            get => m_CodeCheckConfig;
-            set => m_CodeCheckConfig = value;
+            get => mCodeCheckConfig;
+            set => mCodeCheckConfig = value;
         }
 
         /// <summary>
@@ -191,8 +192,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public GitHookConfig GitHookConfig
         {
-            get => m_GitHookConfig;
-            set => m_GitHookConfig = value;
+            get => mGitHookConfig;
+            set => mGitHookConfig = value;
         }
 
         /// <summary>
@@ -200,7 +201,7 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public GitHookConfig GitSettings
         {
-            get => m_GitHookConfig;
+            get => mGitHookConfig;
         }
 
         /// <summary>
@@ -208,34 +209,34 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public GitCommitConfig CommitMessageSettings
         {
-            get => m_GitCommitConfig;
+            get => mGitCommitConfig;
         }
 
         /// <summary>
         /// 是否启用IDE集成
         /// </summary>
-        public bool EnableIDEIntegration
+        public bool EnableIdeIntegration
         {
-            get => m_EnableIDEIntegration;
-            set => m_EnableIDEIntegration = value;
+            get => mEnableIdeIntegration;
+            set => mEnableIdeIntegration = value;
         }
 
         /// <summary>
         /// 是否自动配置IDE
         /// </summary>
-        public bool AutoConfigureIDE
+        public bool AutoConfigureIde
         {
-            get => m_AutoConfigureIDE;
-            set => m_AutoConfigureIDE = value;
+            get => mAutoConfigureIde;
+            set => mAutoConfigureIde = value;
         }
 
         /// <summary>
         /// 是否同步EditorConfig到IDE
         /// </summary>
-        public bool SyncEditorConfigWithIDE
+        public bool SyncEditorConfigWithIde
         {
-            get => m_SyncEditorConfigWithIDE;
-            set => m_SyncEditorConfigWithIDE = value;
+            get => mSyncEditorConfigWithIde;
+            set => mSyncEditorConfigWithIde = value;
         }
 
         /// <summary>
@@ -243,8 +244,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public RiderConfig RiderConfig
         {
-            get => m_RiderConfig;
-            set => m_RiderConfig = value;
+            get => mRiderConfig;
+            set => mRiderConfig = value;
         }
 
         /// <summary>
@@ -252,8 +253,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public VisualStudioConfig VisualStudioConfig
         {
-            get => m_VisualStudioConfig;
-            set => m_VisualStudioConfig = value;
+            get => mVisualStudioConfig;
+            set => mVisualStudioConfig = value;
         }
 
         /// <summary>
@@ -261,8 +262,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public VSCodeConfig VSCodeConfig
         {
-            get => m_VSCodeConfig;
-            set => m_VSCodeConfig = value;
+            get => mVSCodeConfig;
+            set => mVSCodeConfig = value;
         }
     }
 
@@ -275,28 +276,28 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 是否启用代码分析
         /// </summary>
-        [SerializeField]
-        private bool m_EnableCodeAnalysis = true;
+        [FormerlySerializedAs("m_EnableCodeAnalysis")] [SerializeField]
+        private bool mEnableCodeAnalysis = true;
 
         /// <summary>
         /// 是否启用StyleCop
         /// </summary>
-        [SerializeField]
-        private bool m_EnableStyleCop = true;
+        [FormerlySerializedAs("m_EnableStyleCop")] [SerializeField]
+        private bool mEnableStyleCop = true;
 
         /// <summary>
         /// 是否启用ReSharper
         /// </summary>
-        [SerializeField]
-        private bool m_EnableReSharper = true;
+        [FormerlySerializedAs("m_EnableReSharper")] [SerializeField]
+        private bool mEnableReSharper = true;
 
         /// <summary>
         /// 是否启用代码分析
         /// </summary>
         public bool EnableCodeAnalysis
         {
-            get => m_EnableCodeAnalysis;
-            set => m_EnableCodeAnalysis = value;
+            get => mEnableCodeAnalysis;
+            set => mEnableCodeAnalysis = value;
         }
 
         /// <summary>
@@ -304,8 +305,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableStyleCop
         {
-            get => m_EnableStyleCop;
-            set => m_EnableStyleCop = value;
+            get => mEnableStyleCop;
+            set => mEnableStyleCop = value;
         }
 
         /// <summary>
@@ -313,8 +314,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableReSharper
         {
-            get => m_EnableReSharper;
-            set => m_EnableReSharper = value;
+            get => mEnableReSharper;
+            set => mEnableReSharper = value;
         }
     }
 
@@ -327,28 +328,28 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 是否启用Roslyn分析器
         /// </summary>
-        [SerializeField]
-        private bool m_EnableRoslynAnalyzers = true;
+        [FormerlySerializedAs("m_EnableRoslynAnalyzers")] [SerializeField]
+        private bool mEnableRoslynAnalyzers = true;
 
         /// <summary>
         /// 是否启用StyleCop
         /// </summary>
-        [SerializeField]
-        private bool m_EnableStyleCop = true;
+        [FormerlySerializedAs("m_EnableStyleCop")] [SerializeField]
+        private bool mEnableStyleCop = true;
 
         /// <summary>
         /// 是否启用代码分析
         /// </summary>
-        [SerializeField]
-        private bool m_EnableCodeAnalysis = true;
+        [FormerlySerializedAs("m_EnableCodeAnalysis")] [SerializeField]
+        private bool mEnableCodeAnalysis = true;
 
         /// <summary>
         /// 是否启用Roslyn分析器
         /// </summary>
         public bool EnableRoslynAnalyzers
         {
-            get => m_EnableRoslynAnalyzers;
-            set => m_EnableRoslynAnalyzers = value;
+            get => mEnableRoslynAnalyzers;
+            set => mEnableRoslynAnalyzers = value;
         }
 
         /// <summary>
@@ -356,8 +357,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableStyleCop
         {
-            get => m_EnableStyleCop;
-            set => m_EnableStyleCop = value;
+            get => mEnableStyleCop;
+            set => mEnableStyleCop = value;
         }
 
         /// <summary>
@@ -365,8 +366,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableCodeAnalysis
         {
-            get => m_EnableCodeAnalysis;
-            set => m_EnableCodeAnalysis = value;
+            get => mEnableCodeAnalysis;
+            set => mEnableCodeAnalysis = value;
         }
     }
 
@@ -379,28 +380,28 @@ namespace TByd.CodeStyle.Runtime.Config
         /// <summary>
         /// 是否启用OmniSharp
         /// </summary>
-        [SerializeField]
-        private bool m_EnableOmniSharp = true;
+        [FormerlySerializedAs("m_EnableOmniSharp")] [SerializeField]
+        private bool mEnableOmniSharp = true;
 
         /// <summary>
         /// 是否启用Roslyn分析器
         /// </summary>
-        [SerializeField]
-        private bool m_EnableRoslynAnalyzers = true;
+        [FormerlySerializedAs("m_EnableRoslynAnalyzers")] [SerializeField]
+        private bool mEnableRoslynAnalyzers = true;
 
         /// <summary>
         /// 是否启用EditorConfig
         /// </summary>
-        [SerializeField]
-        private bool m_EnableEditorConfig = true;
+        [FormerlySerializedAs("m_EnableEditorConfig")] [SerializeField]
+        private bool mEnableEditorConfig = true;
 
         /// <summary>
         /// 是否启用OmniSharp
         /// </summary>
         public bool EnableOmniSharp
         {
-            get => m_EnableOmniSharp;
-            set => m_EnableOmniSharp = value;
+            get => mEnableOmniSharp;
+            set => mEnableOmniSharp = value;
         }
 
         /// <summary>
@@ -408,8 +409,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableRoslynAnalyzers
         {
-            get => m_EnableRoslynAnalyzers;
-            set => m_EnableRoslynAnalyzers = value;
+            get => mEnableRoslynAnalyzers;
+            set => mEnableRoslynAnalyzers = value;
         }
 
         /// <summary>
@@ -417,8 +418,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool EnableEditorConfig
         {
-            get => m_EnableEditorConfig;
-            set => m_EnableEditorConfig = value;
+            get => mEnableEditorConfig;
+            set => mEnableEditorConfig = value;
         }
     }
 }

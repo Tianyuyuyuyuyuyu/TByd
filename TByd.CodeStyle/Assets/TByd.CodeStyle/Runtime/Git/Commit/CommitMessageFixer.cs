@@ -16,20 +16,20 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_config">Git提交配置</param>
-        public CommitMessageFixer(GitCommitConfig _config)
+        /// <param name="config">Git提交配置</param>
+        public CommitMessageFixer(GitCommitConfig config)
         {
-            m_Config = _config;
+            m_Config = config;
         }
 
         /// <summary>
         /// 修复提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
+        /// <param name="messageStr">提交消息</param>
         /// <returns>修复后的提交消息</returns>
-        public CommitMessage Fix(CommitMessage _message)
+        public CommitMessage Fix(CommitMessage messageStr)
         {
-            if (_message == null)
+            if (messageStr == null)
             {
                 return new CommitMessage();
             }
@@ -38,12 +38,12 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 // 创建新的提交消息对象
                 var fixedMessage = new CommitMessage(
-                    _message.Type,
-                    _message.Scope,
-                    _message.Subject,
-                    _message.Body,
-                    _message.Footer,
-                    _message.RawMessage);
+                    messageStr.Type,
+                    messageStr.Scope,
+                    messageStr.Subject,
+                    messageStr.Body,
+                    messageStr.Footer,
+                    messageStr.RawMessage);
 
                 // 修复类型
                 fixedMessage.Type = FixType(fixedMessage.Type);
@@ -62,18 +62,18 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             catch (Exception e)
             {
                 Debug.LogError($"[TByd.CodeStyle] 修复提交消息失败: {e.Message}");
-                return _message;
+                return messageStr;
             }
         }
 
         /// <summary>
         /// 修复提交类型
         /// </summary>
-        /// <param name="_type">提交类型</param>
+        /// <param name="typeStr">提交类型</param>
         /// <returns>修复后的提交类型</returns>
-        private string FixType(string _type)
+        private string FixType(string typeStr)
         {
-            if (string.IsNullOrEmpty(_type))
+            if (string.IsNullOrEmpty(typeStr))
             {
                 // 如果类型为空，则使用默认类型
                 return m_Config.CommitTypes.Count > 0 ? m_Config.CommitTypes[0].Type : "feat";
@@ -82,7 +82,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             // 检查类型是否在配置的有效类型列表中
             foreach (var commitType in m_Config.CommitTypes)
             {
-                if (commitType.Enabled && commitType.Type.Equals(_type, StringComparison.OrdinalIgnoreCase))
+                if (commitType.Enabled && commitType.Type.Equals(typeStr, StringComparison.OrdinalIgnoreCase))
                 {
                     // 返回正确大小写的类型
                     return commitType.Type;
@@ -96,11 +96,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 修复作用域
         /// </summary>
-        /// <param name="_scope">作用域</param>
+        /// <param name="scopeStr">作用域</param>
         /// <returns>修复后的作用域</returns>
-        private string FixScope(string _scope)
+        private string FixScope(string scopeStr)
         {
-            if (string.IsNullOrEmpty(_scope))
+            if (string.IsNullOrEmpty(scopeStr))
             {
                 // 如果作用域为空且不要求作用域，则返回空
                 if (!m_Config.RequireScope)
@@ -115,7 +115,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             // 检查作用域是否在配置的有效作用域列表中
             foreach (var scope in m_Config.Scopes)
             {
-                if (scope.Equals(_scope, StringComparison.OrdinalIgnoreCase))
+                if (scope.Equals(scopeStr, StringComparison.OrdinalIgnoreCase))
                 {
                     // 返回正确大小写的作用域
                     return scope;
@@ -129,17 +129,17 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 修复简短描述
         /// </summary>
-        /// <param name="_subject">简短描述</param>
+        /// <param name="subjectStr">简短描述</param>
         /// <returns>修复后的简短描述</returns>
-        private string FixSubject(string _subject)
+        private string FixSubject(string subjectStr)
         {
-            if (string.IsNullOrEmpty(_subject))
+            if (string.IsNullOrEmpty(subjectStr))
             {
                 return string.Empty;
             }
 
             // 移除末尾的句号
-            var subject = _subject.TrimEnd('.');
+            var subject = subjectStr.TrimEnd('.');
 
             // 截断过长的简短描述
             if (subject.Length > m_Config.SubjectMaxLength)
@@ -153,11 +153,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 修复提交消息文本
         /// </summary>
-        /// <param name="_messageText">提交消息文本</param>
+        /// <param name="messageText">提交消息文本</param>
         /// <returns>修复后的提交消息文本</returns>
-        public string FixText(string _messageText)
+        public string FixText(string messageText)
         {
-            var message = CommitMessageParser.Parse(_messageText);
+            var message = CommitMessageParser.Parse(messageText);
             var fixedMessage = Fix(message);
             return fixedMessage.GetFormattedMessage();
         }
@@ -165,22 +165,22 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 修复提交消息文件
         /// </summary>
-        /// <param name="_filePath">提交消息文件路径</param>
+        /// <param name="filePath">提交消息文件路径</param>
         /// <returns>是否修复成功</returns>
-        public bool FixFile(string _filePath)
+        public bool FixFile(string filePath)
         {
             try
             {
-                if (!System.IO.File.Exists(_filePath))
+                if (!System.IO.File.Exists(filePath))
                 {
-                    Debug.LogError($"[TByd.CodeStyle] 提交消息文件不存在: {_filePath}");
+                    Debug.LogError($"[TByd.CodeStyle] 提交消息文件不存在: {filePath}");
                     return false;
                 }
 
-                var messageText = System.IO.File.ReadAllText(_filePath);
+                var messageText = System.IO.File.ReadAllText(filePath);
                 var fixedMessageText = FixText(messageText);
 
-                System.IO.File.WriteAllText(_filePath, fixedMessageText);
+                System.IO.File.WriteAllText(filePath, fixedMessageText);
 
                 return true;
             }
@@ -252,9 +252,9 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 将模板写入提交消息文件
         /// </summary>
-        /// <param name="_filePath">提交消息文件路径</param>
+        /// <param name="filePath">提交消息文件路径</param>
         /// <returns>是否写入成功</returns>
-        public bool WriteTemplateToFile(string _filePath)
+        public bool WriteTemplateToFile(string filePath)
         {
             try
             {
@@ -262,13 +262,13 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
 
                 // 如果文件已存在，则读取原始内容
                 var originalContent = string.Empty;
-                if (System.IO.File.Exists(_filePath))
+                if (System.IO.File.Exists(filePath))
                 {
-                    originalContent = System.IO.File.ReadAllText(_filePath);
+                    originalContent = System.IO.File.ReadAllText(filePath);
                 }
 
                 // 将模板和原始内容写入文件
-                System.IO.File.WriteAllText(_filePath, template + originalContent);
+                System.IO.File.WriteAllText(filePath, template + originalContent);
 
                 return true;
             }

@@ -21,8 +21,7 @@ namespace TByd.CodeStyle.Tests.Editor
             var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
 
             // 创建测试运行器请求
-            var request = new ExecutionSettings();
-            request.filters = new[] { new Filter { testMode = TestMode.EditMode } };
+            var request = new ExecutionSettings { filters = new[] { new Filter { testMode = TestMode.EditMode } } };
 
             // 注册回调
             testRunnerApi.RegisterCallbacks(new TestCallbacks());

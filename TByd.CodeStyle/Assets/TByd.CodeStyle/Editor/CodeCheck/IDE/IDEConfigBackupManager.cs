@@ -4,28 +4,29 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
     /// <summary>
     /// IDE配置备份管理器
     /// </summary>
-    public static class IDEConfigBackupManager
+    public static class IdeConfigBackupManager
     {
         // 备份目录名
-        private const string c_BackupDirectory = "Backups";
+        private const string k_CBackupDirectory = "Backups";
 
         // 备份配置文件名
-        private const string c_BackupConfigFileName = "backup_config.json";
+        private const string k_CBackupConfigFileName = "backup_config.json";
 
         // 用于测试的备份根路径，允许测试修改备份位置
         private static string s_BackupRootPathForTesting = null;
 
         // 大文件阈值 (5MB)
-        private const int c_LargeFileSizeThreshold = 5 * 1024 * 1024;
+        private const int k_CLargeFileSizeThreshold = 5 * 1024 * 1024;
 
         // 缓冲区大小 (1MB)
-        private const int c_BufferSize = 1024 * 1024;
+        private const int k_CBufferSize = 1024 * 1024;
 
         /// <summary>
         /// 备份信息
@@ -36,27 +37,27 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 备份ID
             /// </summary>
-            public string Id;
+            [FormerlySerializedAs("Id")] public string id;
 
             /// <summary>
             /// 备份时间
             /// </summary>
-            public DateTime Timestamp;
+            public DateTime timestamp;
 
             /// <summary>
             /// IDE类型
             /// </summary>
-            public IDEType IDEType;
+            [FormerlySerializedAs("IDEType")] public IdeType ideType;
 
             /// <summary>
             /// 备份描述
             /// </summary>
-            public string Description;
+            [FormerlySerializedAs("Description")] public string description;
 
             /// <summary>
             /// 备份文件列表
             /// </summary>
-            public List<string> Files;
+            [FormerlySerializedAs("Files")] public List<string> files;
         }
 
         /// <summary>
@@ -68,16 +69,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 备份列表
             /// </summary>
-            public List<BackupInfo> Backups = new List<BackupInfo>();
+            [FormerlySerializedAs("Backups")] public List<BackupInfo> backups = new List<BackupInfo>();
         }
 
         /// <summary>
         /// 创建配置备份
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
-        /// <param name="_description">备份描述</param>
+        /// <param name="ideType">IDE类型</param>
+        /// <param name="description">备份描述</param>
         /// <returns>备份ID，如果失败则返回null</returns>
-        public static string CreateBackup(IDEType _ideType, string _description = "")
+        public static string CreateBackup(IdeType ideType, string description = "")
         {
             try
             {
@@ -88,7 +89,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 创建备份ID - 在测试环境中使用固定的ID
                 string backupId;
                 var isTestEnvironment = backupRoot.Contains("Test") || backupRoot.Contains("test");
-                if (isTestEnvironment && _description.Contains("测试") || isTestEnvironment && _description.Contains("test"))
+                if (isTestEnvironment && description.Contains("测试") || isTestEnvironment && description.Contains("test"))
                 {
                     // 为测试创建固定的ID
                     backupId = "20250304214931_e8bdd998";
@@ -101,24 +102,24 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 创建备份信息
                 var backupInfo = new BackupInfo
                 {
-                    Id = backupId,
-                    Timestamp = DateTime.Now,
-                    IDEType = _ideType,
-                    Description = _description,
-                    Files = new List<string>()
+                    id = backupId,
+                    timestamp = DateTime.Now,
+                    ideType = ideType,
+                    description = description,
+                    files = new List<string>()
                 };
 
                 // 创建备份目录
-                var backupDir = Path.Combine(backupRoot, backupInfo.Id);
+                var backupDir = Path.Combine(backupRoot, backupInfo.id);
                 Directory.CreateDirectory(backupDir);
 
                 // 获取需要备份的文件
-                var configPath = GetConfigPath(_ideType);
-                var filesToBackup = GetFilesToBackup(_ideType, configPath);
+                var configPath = GetConfigPath(ideType);
+                var filesToBackup = GetFilesToBackup(ideType, configPath);
 
                 // 检查是否为大文件测试
                 var isLargeFileTest = false;
-                if (isTestEnvironment && _description.Contains("LargeFile"))
+                if (isTestEnvironment && description.Contains("LargeFile"))
                 {
                     isLargeFileTest = true;
                 }
@@ -142,7 +143,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         var fileSize = new FileInfo(file).Length;
 
                         // 对于大文件测试，强制将所有文件视为大文件
-                        if (isLargeFileTest || fileSize > c_LargeFileSizeThreshold)
+                        if (isLargeFileTest || fileSize > k_CLargeFileSizeThreshold)
                         {
                             try
                             {
@@ -161,12 +162,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             File.Copy(file, backupPath, true);
                         }
 
-                        backupInfo.Files.Add(relativePath);
+                        backupInfo.files.Add(relativePath);
                     }
                 }
 
                 // 如果是测试环境且没有文件被备份，创建示例文件
-                if (isTestEnvironment && backupInfo.Files.Count == 0)
+                if (isTestEnvironment && backupInfo.files.Count == 0)
                 {
                     var relativePath = ".vscode/settings.json";
                     var sampleDir = Path.Combine(backupDir, ".vscode");
@@ -178,17 +179,17 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     }
 
                     File.WriteAllText(samplePath, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
-                    backupInfo.Files.Add(relativePath);
+                    backupInfo.files.Add(relativePath);
                     Debug.Log($"[TByd.CodeStyle] 为测试创建了示例备份文件: {samplePath}");
                 }
 
                 // 更新备份配置
                 var config = LoadBackupConfig();
-                config.Backups.Add(backupInfo);
+                config.backups.Add(backupInfo);
                 SaveBackupConfig(config);
 
-                Debug.Log($"[TByd.CodeStyle] 成功创建配置备份: {backupInfo.Id}");
-                return backupInfo.Id;
+                Debug.Log($"[TByd.CodeStyle] 成功创建配置备份: {backupInfo.id}");
+                return backupInfo.id;
             }
             catch (Exception e)
             {
@@ -200,23 +201,23 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 恢复配置备份
         /// </summary>
-        /// <param name="_backupId">备份ID</param>
+        /// <param name="backupId">备份ID</param>
         /// <returns>是否成功</returns>
-        public static bool RestoreBackup(string _backupId)
+        public static bool RestoreBackup(string backupId)
         {
             try
             {
                 // 加载备份配置
                 var config = LoadBackupConfig();
-                var backup = config.Backups.FirstOrDefault(b => b.Id == _backupId);
+                var backup = config.backups.FirstOrDefault(b => b.id == backupId);
                 if (backup == null)
                 {
-                    Debug.LogError($"[TByd.CodeStyle] 未找到备份: {_backupId}");
+                    Debug.LogError($"[TByd.CodeStyle] 未找到备份: {backupId}");
                     return false;
                 }
 
                 // 获取备份目录
-                var backupDir = Path.Combine(GetBackupRootPath(), backup.Id);
+                var backupDir = Path.Combine(GetBackupRootPath(), backup.id);
                 if (!Directory.Exists(backupDir))
                 {
                     // 尝试创建目录，如果是测试环境
@@ -250,7 +251,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 获取目标配置目录
-                var configPath = GetConfigPath(backup.IDEType);
+                var configPath = GetConfigPath(backup.ideType);
 
                 // 确保配置目录存在
                 if (!Directory.Exists(configPath))
@@ -272,10 +273,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var failedFiles = new List<string>();
 
                 // 在测试环境中，如果没有文件可以恢复，创建示例文件
-                if (backup.Files.Count == 0 && (configPath.Contains("Test") || configPath.Contains("test")))
+                if (backup.files.Count == 0 && (configPath.Contains("Test") || configPath.Contains("test")))
                 {
                     var relativePath = ".vscode/settings.json";
-                    backup.Files.Add(relativePath);
+                    backup.files.Add(relativePath);
 
                     var targetDir = Path.Combine(backupDir, ".vscode");
                     if (!Directory.Exists(targetDir))
@@ -292,7 +293,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var tempBackupId = string.Empty;
                 try
                 {
-                    tempBackupId = CreateBackup(backup.IDEType, "恢复操作前的自动备份");
+                    tempBackupId = CreateBackup(backup.ideType, "恢复操作前的自动备份");
                 }
                 catch (Exception ex)
                 {
@@ -305,7 +306,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 恢复文件
-                foreach (var relativePath in backup.Files)
+                foreach (var relativePath in backup.files)
                 {
                     var backupPath = Path.Combine(backupDir, relativePath);
                     var targetPath = Path.Combine(configPath, relativePath);
@@ -345,7 +346,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             var fileSize = new FileInfo(backupPath).Length;
 
                             // 根据文件大小选择复制方式
-                            if (fileSize > c_LargeFileSizeThreshold)
+                            if (fileSize > k_CLargeFileSizeThreshold)
                             {
                                 // 大文件使用流复制
                                 CopyFileWithProgress(backupPath, targetPath);
@@ -377,13 +378,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     Debug.LogWarning($"[TByd.CodeStyle] {failedFiles.Count}个文件恢复失败");
                 }
 
-                if (!anyFileRestored && !backup.Id.Contains("test") && !backup.Id.Contains("Test"))
+                if (!anyFileRestored && !backup.id.Contains("test") && !backup.id.Contains("Test"))
                 {
-                    Debug.LogWarning($"[TByd.CodeStyle] 未恢复任何文件: {_backupId}");
+                    Debug.LogWarning($"[TByd.CodeStyle] 未恢复任何文件: {backupId}");
                     return false;
                 }
 
-                Debug.Log($"[TByd.CodeStyle] 成功恢复配置备份: {_backupId}");
+                Debug.Log($"[TByd.CodeStyle] 成功恢复配置备份: {backupId}");
                 return true;
             }
             catch (Exception e)
@@ -396,33 +397,33 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 删除配置备份
         /// </summary>
-        /// <param name="_backupId">备份ID</param>
+        /// <param name="backupId">备份ID</param>
         /// <returns>是否成功</returns>
-        public static bool DeleteBackup(string _backupId)
+        public static bool DeleteBackup(string backupId)
         {
             try
             {
                 // 加载备份配置
                 var config = LoadBackupConfig();
-                var backup = config.Backups.FirstOrDefault(b => b.Id == _backupId);
+                var backup = config.backups.FirstOrDefault(b => b.id == backupId);
                 if (backup == null)
                 {
-                    Debug.LogError($"[TByd.CodeStyle] 未找到备份: {_backupId}");
+                    Debug.LogError($"[TByd.CodeStyle] 未找到备份: {backupId}");
                     return false;
                 }
 
                 // 删除备份目录
-                var backupDir = Path.Combine(GetBackupRootPath(), backup.Id);
+                var backupDir = Path.Combine(GetBackupRootPath(), backup.id);
                 if (Directory.Exists(backupDir))
                 {
                     Directory.Delete(backupDir, true);
                 }
 
                 // 更新备份配置
-                config.Backups.Remove(backup);
+                config.backups.Remove(backup);
                 SaveBackupConfig(config);
 
-                Debug.Log($"[TByd.CodeStyle] 成功删除配置备份: {_backupId}");
+                Debug.Log($"[TByd.CodeStyle] 成功删除配置备份: {backupId}");
                 return true;
             }
             catch (Exception e)
@@ -441,7 +442,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 var config = LoadBackupConfig();
-                return config.Backups.OrderByDescending(b => b.Timestamp).ToList();
+                return config.backups.OrderByDescending(b => b.timestamp).ToList();
             }
             catch (Exception e)
             {
@@ -453,27 +454,27 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 获取需要备份的文件
         /// </summary>
-        private static List<string> GetFilesToBackup(IDEType _ideType, string _configPath)
+        private static List<string> GetFilesToBackup(IdeType ideType, string configPath)
         {
             var files = new List<string>();
 
-            switch (_ideType)
+            switch (ideType)
             {
-                case IDEType.Rider:
+                case IdeType.k_Rider:
                     // 添加JetBrains Rider的配置文件
-                    files.AddRange(Directory.GetFiles(_configPath, "*.xml", SearchOption.TopDirectoryOnly));
-                    files.AddRange(Directory.GetFiles(_configPath, "*.DotSettings", SearchOption.TopDirectoryOnly));
+                    files.AddRange(Directory.GetFiles(configPath, "*.xml", SearchOption.TopDirectoryOnly));
+                    files.AddRange(Directory.GetFiles(configPath, "*.DotSettings", SearchOption.TopDirectoryOnly));
                     break;
 
-                case IDEType.VisualStudio:
+                case IdeType.k_VisualStudio:
                     // 添加Visual Studio的配置文件
-                    files.AddRange(Directory.GetFiles(_configPath, "*.csproj.user", SearchOption.TopDirectoryOnly));
-                    files.AddRange(Directory.GetFiles(_configPath, "*.suo", SearchOption.TopDirectoryOnly));
+                    files.AddRange(Directory.GetFiles(configPath, "*.csproj.user", SearchOption.TopDirectoryOnly));
+                    files.AddRange(Directory.GetFiles(configPath, "*.suo", SearchOption.TopDirectoryOnly));
                     break;
 
-                case IDEType.VSCode:
+                case IdeType.k_VSCode:
                     // 添加VS Code的配置文件
-                    var vscodePath = Path.Combine(_configPath, ".vscode");
+                    var vscodePath = Path.Combine(configPath, ".vscode");
                     if (Directory.Exists(vscodePath))
                     {
                         files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.TopDirectoryOnly));
@@ -482,7 +483,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // 添加通用的配置文件
-            var editorConfigPath = Path.Combine(_configPath, ".editorconfig");
+            var editorConfigPath = Path.Combine(configPath, ".editorconfig");
             if (File.Exists(editorConfigPath))
             {
                 files.Add(editorConfigPath);
@@ -494,13 +495,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 获取IDE配置路径
         /// </summary>
-        private static string GetConfigPath(IDEType _ideType)
+        private static string GetConfigPath(IdeType ideType)
         {
-            switch (_ideType)
+            switch (ideType)
             {
-                case IDEType.Rider:
-                case IDEType.VisualStudio:
-                case IDEType.VSCode:
+                case IdeType.k_Rider:
+                case IdeType.k_VisualStudio:
+                case IdeType.k_VSCode:
                 default:
                     return Path.GetDirectoryName(Application.dataPath);
             }
@@ -517,16 +518,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 return s_BackupRootPathForTesting;
             }
 
-            return Path.Combine(Application.dataPath, "..", "Library", "TByd.CodeStyle", c_BackupDirectory);
+            return Path.Combine(Application.dataPath, "..", "Library", "TByd.CodeStyle", k_CBackupDirectory);
         }
 
         /// <summary>
         /// 获取相对路径
         /// </summary>
-        private static string GetRelativePath(string _fullPath, string _basePath)
+        private static string GetRelativePath(string fullPath, string basePath)
         {
-            var baseUri = new Uri(_basePath + Path.DirectorySeparatorChar);
-            var fullUri = new Uri(_fullPath);
+            var baseUri = new Uri(basePath + Path.DirectorySeparatorChar);
+            var fullUri = new Uri(fullPath);
             return Uri.UnescapeDataString(baseUri.MakeRelativeUri(fullUri).ToString());
         }
 
@@ -535,7 +536,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private static BackupConfig LoadBackupConfig()
         {
-            var configPath = Path.Combine(GetBackupRootPath(), c_BackupConfigFileName);
+            var configPath = Path.Combine(GetBackupRootPath(), k_CBackupConfigFileName);
             if (File.Exists(configPath))
             {
                 try
@@ -555,39 +556,39 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 保存备份配置
         /// </summary>
-        private static void SaveBackupConfig(BackupConfig _config)
+        private static void SaveBackupConfig(BackupConfig config)
         {
-            var configPath = Path.Combine(GetBackupRootPath(), c_BackupConfigFileName);
-            var json = JsonUtility.ToJson(_config, true);
+            var configPath = Path.Combine(GetBackupRootPath(), k_CBackupConfigFileName);
+            var json = JsonUtility.ToJson(config, true);
             File.WriteAllText(configPath, json);
         }
 
         /// <summary>
         /// 使用流复制大文件，避免内存问题
         /// </summary>
-        /// <param name="_sourcePath">源文件路径</param>
-        /// <param name="_destPath">目标文件路径</param>
-        private static void CopyFileWithProgress(string _sourcePath, string _destPath)
+        /// <param name="sourcePath">源文件路径</param>
+        /// <param name="destPath">目标文件路径</param>
+        private static void CopyFileWithProgress(string sourcePath, string destPath)
         {
             try
             {
                 // 确保目标目录存在
-                var targetDir = Path.GetDirectoryName(_destPath);
+                var targetDir = Path.GetDirectoryName(destPath);
                 if (!string.IsNullOrEmpty(targetDir) && !Directory.Exists(targetDir))
                 {
                     Directory.CreateDirectory(targetDir);
                 }
 
                 // 如果目标文件已存在，先删除
-                if (File.Exists(_destPath))
+                if (File.Exists(destPath))
                 {
-                    File.Delete(_destPath);
+                    File.Delete(destPath);
                 }
 
-                using (var sourceStream = new FileStream(_sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-                using (var destStream = new FileStream(_destPath, FileMode.Create, FileAccess.Write))
+                using (var sourceStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var destStream = new FileStream(destPath, FileMode.Create, FileAccess.Write))
                 {
-                    var buffer = new byte[c_BufferSize];
+                    var buffer = new byte[k_CBufferSize];
                     int bytesRead;
                     var totalBytes = sourceStream.Length;
                     long bytesWritten = 0;
@@ -602,7 +603,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         {
                             var progress = (float)bytesWritten / totalBytes;
                             EditorUtility.DisplayProgressBar("复制大文件",
-                                $"正在复制 {Path.GetFileName(_sourcePath)} ({bytesWritten / 1024}/{totalBytes / 1024} KB)",
+                                $"正在复制 {Path.GetFileName(sourcePath)} ({bytesWritten / 1024}/{totalBytes / 1024} KB)",
                                 progress);
                         }
                     }
@@ -612,14 +613,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 确保验证文件已成功复制
-                if (!File.Exists(_destPath))
+                if (!File.Exists(destPath))
                 {
-                    throw new IOException($"文件复制失败，目标文件不存在: {_destPath}");
+                    throw new IOException($"文件复制失败，目标文件不存在: {destPath}");
                 }
 
                 // 验证文件大小匹配
-                var sourceSize = new FileInfo(_sourcePath).Length;
-                var destSize = new FileInfo(_destPath).Length;
+                var sourceSize = new FileInfo(sourcePath).Length;
+                var destSize = new FileInfo(destPath).Length;
                 if (sourceSize != destSize)
                 {
                     throw new IOException($"文件复制失败，大小不匹配: 源文件 {sourceSize} 字节，目标文件 {destSize} 字节");

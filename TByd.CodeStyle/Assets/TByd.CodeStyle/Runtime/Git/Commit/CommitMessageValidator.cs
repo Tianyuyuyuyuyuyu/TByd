@@ -19,10 +19,10 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_config">Git提交配置</param>
-        public CommitMessageValidator(GitCommitConfig _config)
+        /// <param name="config">Git提交配置</param>
+        public CommitMessageValidator(GitCommitConfig config)
         {
-            m_Config = _config;
+            m_Config = config;
 
             // 注册默认规则
             RegisterDefaultRules();
@@ -55,18 +55,18 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 注册规则
         /// </summary>
-        /// <param name="_rule">规则</param>
-        public void RegisterRule(ICommitMessageRule _rule)
+        /// <param name="rule">规则</param>
+        public void RegisterRule(ICommitMessageRule rule)
         {
-            m_Rules.Add(_rule);
+            m_Rules.Add(rule);
         }
 
         /// <summary>
         /// 验证提交消息
         /// </summary>
-        /// <param name="_message">提交消息</param>
+        /// <param name="message">提交消息</param>
         /// <returns>验证结果</returns>
-        public CommitMessageValidationResult Validate(CommitMessage _message)
+        public CommitMessageValidationResult Validate(CommitMessage message)
         {
             var results = new List<CommitMessageRuleResult>();
 
@@ -75,7 +75,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             {
                 try
                 {
-                    var result = rule.Validate(_message, m_Config);
+                    var result = rule.Validate(message, m_Config);
                     results.Add(result);
 
                     // 如果验证失败，记录日志
@@ -93,20 +93,20 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
                 }
             }
 
-            return new CommitMessageValidationResult(_message, results);
+            return new CommitMessageValidationResult(message, results);
         }
 
         /// <summary>
         /// 验证提交消息文本
         /// </summary>
-        /// <param name="_messageText">提交消息文本</param>
+        /// <param name="messageText">提交消息文本</param>
         /// <returns>验证结果</returns>
-        public CommitMessageValidationResult ValidateText(string _messageText)
+        public CommitMessageValidationResult ValidateText(string messageText)
         {
             // 添加调试日志
-            Debug.Log($"[TByd.CodeStyle] ValidateText: '{_messageText}'");
+            Debug.Log($"[TByd.CodeStyle] ValidateText: '{messageText}'");
 
-            var message = CommitMessageParser.Parse(_messageText);
+            var message = CommitMessageParser.Parse(messageText);
 
             // 添加调试日志
             Debug.Log($"[TByd.CodeStyle] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
@@ -117,11 +117,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 验证提交消息文件
         /// </summary>
-        /// <param name="_filePath">提交消息文件路径</param>
+        /// <param name="filePath">提交消息文件路径</param>
         /// <returns>验证结果</returns>
-        public CommitMessageValidationResult ValidateFile(string _filePath)
+        public CommitMessageValidationResult ValidateFile(string filePath)
         {
-            var message = CommitMessageParser.ParseFromFile(_filePath);
+            var message = CommitMessageParser.ParseFromFile(filePath);
             return Validate(message);
         }
     }
@@ -140,12 +140,12 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_message">提交消息</param>
-        /// <param name="_results">规则验证结果列表</param>
-        public CommitMessageValidationResult(CommitMessage _message, List<CommitMessageRuleResult> _results)
+        /// <param name="message">提交消息</param>
+        /// <param name="results">规则验证结果列表</param>
+        public CommitMessageValidationResult(CommitMessage message, List<CommitMessageRuleResult> results)
         {
-            m_Message = _message;
-            m_Results = _results;
+            m_Message = message;
+            m_Results = results;
         }
 
         /// <summary>

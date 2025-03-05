@@ -102,6 +102,14 @@ dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.severity = suggesti
 dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.symbols = pascal_case_symbols
 dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.style = pascal_case_style
 
+## 方法参数命名规则 - camelCase
+dotnet_naming_style.parameter_style.capitalization = camel_case
+dotnet_naming_symbols.parameter_symbols.applicable_kinds = parameter
+dotnet_naming_symbols.parameter_symbols.applicable_accessibilities = *
+dotnet_naming_rule.parameters_should_be_camel_case.severity = warning
+dotnet_naming_rule.parameters_should_be_camel_case.symbols = parameter_symbols
+dotnet_naming_rule.parameters_should_be_camel_case.style = parameter_style
+
 ## 公共字段命名规则 - camelCase
 dotnet_naming_style.public_class_member_style.capitalization = camel_case
 dotnet_naming_symbols.public_class_member.applicable_kinds = field
@@ -165,6 +173,12 @@ dotnet_naming_symbols.event_symbol.applicable_accessibilities = *
 dotnet_naming_rule.event_should_be_on_pascal_case.severity = suggestion
 dotnet_naming_rule.event_should_be_on_pascal_case.symbols = event_symbol
 dotnet_naming_rule.event_should_be_on_pascal_case.style = event_style
+
+# 禁用特定代码样式建议
+# 禁用推荐使用范围索引器替代Substring的建议
+csharp_style_prefer_range_operator = false:silent
+# 禁用推荐使用索引运算符的建议
+csharp_style_prefer_index_operator = false:silent
 
 [*.json]
 indent_style = space

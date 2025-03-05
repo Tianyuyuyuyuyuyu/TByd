@@ -53,14 +53,14 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_title">组件标题</param>
-        /// <param name="_description">组件描述</param>
-        /// <param name="_isCollapsible">是否可折叠</param>
-        protected UIComponent(string _title, string _description = "", bool _isCollapsible = false)
+        /// <param name="title">组件标题</param>
+        /// <param name="description">组件描述</param>
+        /// <param name="isCollapsible">是否可折叠</param>
+        protected UIComponent(string title, string description = "", bool isCollapsible = false)
         {
-            m_Title = _title;
-            m_Description = _description;
-            m_IsCollapsible = _isCollapsible;
+            m_Title = title;
+            m_Description = description;
+            m_IsCollapsible = isCollapsible;
             m_IsCollapsed = false;
         }
 
@@ -70,7 +70,9 @@ namespace TByd.CodeStyle.Editor.UI.Components
         public virtual void Draw()
         {
             if (!m_IsVisible)
+            {
                 return;
+            }
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -116,28 +118,28 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <summary>
         /// 设置组件可见性
         /// </summary>
-        /// <param name="_isVisible">是否可见</param>
-        public void SetVisible(bool _isVisible)
+        /// <param name="isVisible">是否可见</param>
+        public void SetVisible(bool isVisible)
         {
-            m_IsVisible = _isVisible;
+            m_IsVisible = isVisible;
         }
 
         /// <summary>
         /// 设置组件标题
         /// </summary>
-        /// <param name="_title">标题</param>
-        public void SetTitle(string _title)
+        /// <param name="title">标题</param>
+        public void SetTitle(string title)
         {
-            m_Title = _title;
+            m_Title = title;
         }
 
         /// <summary>
         /// 设置组件描述
         /// </summary>
-        /// <param name="_description">描述</param>
-        public void SetDescription(string _description)
+        /// <param name="description">描述</param>
+        public void SetDescription(string description)
         {
-            m_Description = _description;
+            m_Description = description;
         }
 
         /// <summary>

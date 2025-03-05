@@ -82,12 +82,12 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 使用反射设置备份根路径
         private void SetBackupRootPath(string path)
         {
-            var methodInfo = typeof(IDEConfigBackupManager).GetMethod("GetBackupRootPath",
+            var methodInfo = typeof(IdeConfigBackupManager).GetMethod("GetBackupRootPath",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (methodInfo != null)
             {
-                var fieldInfo = typeof(IDEConfigBackupManager).GetField("s_BackupRootPathForTesting",
+                var fieldInfo = typeof(IdeConfigBackupManager).GetField("s_BackupRootPathForTesting",
                     BindingFlags.NonPublic | BindingFlags.Static);
 
                 if (fieldInfo != null)
@@ -100,7 +100,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 使用反射获取私有静态方法的结果
         private T GetPrivateStaticMethodResult<T>(string methodName, params object[] parameters)
         {
-            var methodInfo = typeof(IDEConfigBackupManager).GetMethod(methodName,
+            var methodInfo = typeof(IdeConfigBackupManager).GetMethod(methodName,
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (methodInfo != null)
@@ -118,7 +118,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             var description = "Test Backup";
 
             // Act
-            var backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, description);
+            var backupId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, description);
 
             // Assert
             Assert.IsNotNull(backupId);
@@ -129,12 +129,12 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void CreateBackup_EmptyDescription_CreatesBackup()
         {
             // Act
-            var backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode);
+            var backupId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode);
 
             // Assert
             Assert.IsNotNull(backupId);
-            var backups = IDEConfigBackupManager.GetBackups();
-            Assert.IsTrue(backups.Any(b => b.Id == backupId));
+            var backups = IdeConfigBackupManager.GetBackups();
+            Assert.IsTrue(backups.Any(b => b.id == backupId));
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             }
 
             // Act
-            var backups = IDEConfigBackupManager.GetBackups();
+            var backups = IdeConfigBackupManager.GetBackups();
 
             // Assert
             Assert.IsNotNull(backups);
@@ -164,23 +164,23 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             }
 
             // Arrange - 创建两个备份
-            IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "First");
+            IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "First");
             System.Threading.Thread.Sleep(100); // 确保时间戳不同
-            IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Second");
+            IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "Second");
 
             // Act
-            var backups = IDEConfigBackupManager.GetBackups();
+            var backups = IdeConfigBackupManager.GetBackups();
 
             // Assert
             Assert.AreEqual(2, backups.Count);
-            Assert.IsTrue(backups[0].Timestamp >= backups[1].Timestamp);
+            Assert.IsTrue(backups[0].timestamp >= backups[1].timestamp);
         }
 
         [Test]
         public void RestoreBackup_ValidBackup_ReturnsTrue()
         {
             // 确保正确的配置路径被使用
-            var mockPathMethod = typeof(IDEConfigBackupManager).GetMethod("GetConfigPath",
+            var mockPathMethod = typeof(IdeConfigBackupManager).GetMethod("GetConfigPath",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (mockPathMethod == null)
@@ -189,13 +189,13 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             }
 
             // 创建备份
-            var backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Test");
+            var backupId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "Test");
 
             // 修改原始文件
             File.WriteAllText(Path.Combine(m_ConfigDirectory, ".editorconfig"), "modified content");
 
             // Act
-            var result = IDEConfigBackupManager.RestoreBackup(backupId);
+            var result = IdeConfigBackupManager.RestoreBackup(backupId);
 
             // Assert
             Assert.IsTrue(result);
@@ -207,10 +207,10 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void RestoreBackup_InvalidBackupId_ReturnsFalse()
         {
             // 预期错误日志
-            LogAssert.Expect(LogType.Error, $"[TByd.CodeStyle] 未找到备份: invalid_id");
+            LogAssert.Expect(LogType.Error, "[TByd.CodeStyle] 未找到备份: invalid_id");
 
             // Act
-            var result = IDEConfigBackupManager.RestoreBackup("invalid_id");
+            var result = IdeConfigBackupManager.RestoreBackup("invalid_id");
 
             // Assert
             Assert.IsFalse(result);
@@ -220,25 +220,25 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void DeleteBackup_ValidBackup_ReturnsTrue()
         {
             // Arrange
-            var backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Test");
+            var backupId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "Test");
 
             // Act
-            var result = IDEConfigBackupManager.DeleteBackup(backupId);
+            var result = IdeConfigBackupManager.DeleteBackup(backupId);
 
             // Assert
             Assert.IsTrue(result);
-            var backups = IDEConfigBackupManager.GetBackups();
-            Assert.IsFalse(backups.Any(b => b.Id == backupId));
+            var backups = IdeConfigBackupManager.GetBackups();
+            Assert.IsFalse(backups.Any(b => b.id == backupId));
         }
 
         [Test]
         public void DeleteBackup_InvalidBackupId_ReturnsFalse()
         {
             // 预期错误日志
-            LogAssert.Expect(LogType.Error, $"[TByd.CodeStyle] 未找到备份: invalid_id");
+            LogAssert.Expect(LogType.Error, "[TByd.CodeStyle] 未找到备份: invalid_id");
 
             // Act
-            var result = IDEConfigBackupManager.DeleteBackup("invalid_id");
+            var result = IdeConfigBackupManager.DeleteBackup("invalid_id");
 
             // Assert
             Assert.IsFalse(result);
@@ -254,24 +254,24 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             }
 
             // Arrange
-            var firstId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "First");
+            var firstId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "First");
             System.Threading.Thread.Sleep(100); // 确保时间戳不同
-            var secondId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Second");
+            var secondId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "Second");
 
             // Act
-            var backups = IDEConfigBackupManager.GetBackups();
+            var backups = IdeConfigBackupManager.GetBackups();
 
             // Assert
             Assert.AreEqual(2, backups.Count);
-            Assert.AreEqual(secondId, backups[0].Id);
-            Assert.AreEqual(firstId, backups[1].Id);
+            Assert.AreEqual(secondId, backups[0].id);
+            Assert.AreEqual(firstId, backups[1].id);
         }
 
         [Test]
         public void RestoreBackup_DeletedFiles_RecreatesFiles()
         {
             // Arrange
-            var backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Test");
+            var backupId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "Test");
 
             // 删除原始文件
             File.Delete(Path.Combine(m_ConfigDirectory, ".editorconfig"));
@@ -281,7 +281,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             }
 
             // Act
-            var result = IDEConfigBackupManager.RestoreBackup(backupId);
+            var result = IdeConfigBackupManager.RestoreBackup(backupId);
 
             // Assert
             Assert.IsTrue(result);
@@ -298,7 +298,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             File.WriteAllBytes(largePath, largeData);
 
             // Act
-            var backupId = IDEConfigBackupManager.CreateBackup(IDEType.VSCode, "Large File Test");
+            var backupId = IdeConfigBackupManager.CreateBackup(IdeType.k_VSCode, "Large File Test");
 
             // Assert
             Assert.IsNotNull(backupId);

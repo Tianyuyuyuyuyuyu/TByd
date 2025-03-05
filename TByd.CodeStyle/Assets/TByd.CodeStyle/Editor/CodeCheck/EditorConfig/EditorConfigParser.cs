@@ -19,19 +19,19 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 解析EditorConfig文件
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>EditorConfig规则列表</returns>
-        public static List<EditorConfigRule> ParseFile(string _filePath)
+        public static List<EditorConfigRule> ParseFile(string filePath)
         {
-            if (string.IsNullOrEmpty(_filePath) || !File.Exists(_filePath))
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
             {
-                Debug.LogError($"[TByd.CodeStyle] EditorConfig文件不存在: {_filePath}");
+                Debug.LogError($"[TByd.CodeStyle] EditorConfig文件不存在: {filePath}");
                 return new List<EditorConfigRule>();
             }
 
             try
             {
-                var lines = File.ReadAllLines(_filePath);
+                var lines = File.ReadAllLines(filePath);
                 return ParseLines(lines);
             }
             catch (Exception e)
@@ -44,18 +44,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 解析EditorConfig内容
         /// </summary>
-        /// <param name="_content">EditorConfig内容</param>
+        /// <param name="content">EditorConfig内容</param>
         /// <returns>EditorConfig规则列表</returns>
-        public static List<EditorConfigRule> ParseContent(string _content)
+        public static List<EditorConfigRule> ParseContent(string content)
         {
-            if (string.IsNullOrEmpty(_content))
+            if (string.IsNullOrEmpty(content))
             {
                 return new List<EditorConfigRule>();
             }
 
             try
             {
-                var lines = _content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 return ParseLines(lines);
             }
             catch (Exception e)
@@ -68,15 +68,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 解析EditorConfig行
         /// </summary>
-        /// <param name="_lines">EditorConfig行</param>
+        /// <param name="lines">EditorConfig行</param>
         /// <returns>EditorConfig规则列表</returns>
-        private static List<EditorConfigRule> ParseLines(string[] _lines)
+        private static List<EditorConfigRule> ParseLines(string[] lines)
         {
             var rules = new List<EditorConfigRule>();
             EditorConfigRule currentRule = null;
             var isRoot = false;
 
-            foreach (var line in _lines)
+            foreach (var line in lines)
             {
                 // 跳过空行
                 if (string.IsNullOrWhiteSpace(line))
@@ -131,12 +131,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 生成EditorConfig内容
         /// </summary>
-        /// <param name="_rules">EditorConfig规则列表</param>
-        /// <param name="_isRoot">是否为根配置</param>
+        /// <param name="rules">EditorConfig规则列表</param>
+        /// <param name="isRoot">是否为根配置</param>
         /// <returns>EditorConfig内容</returns>
-        public static string GenerateContent(List<EditorConfigRule> _rules, bool _isRoot = true)
+        public static string GenerateContent(List<EditorConfigRule> rules, bool isRoot = true)
         {
-            if (_rules == null || _rules.Count == 0)
+            if (rules == null || rules.Count == 0)
             {
                 return string.Empty;
             }
@@ -148,7 +148,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 writer.WriteLine();
 
                 // 添加root属性
-                if (_isRoot)
+                if (isRoot)
                 {
                     writer.WriteLine("# top-most EditorConfig file");
                     writer.WriteLine("root = true");
@@ -156,7 +156,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 添加规则
-                foreach (var rule in _rules)
+                foreach (var rule in rules)
                 {
                     // 添加节
                     writer.WriteLine($"[{rule.Pattern}]");

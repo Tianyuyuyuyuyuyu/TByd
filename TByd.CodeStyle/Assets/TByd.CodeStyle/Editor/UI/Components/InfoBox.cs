@@ -12,9 +12,9 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// </summary>
         public enum InfoType
         {
-            Info,
-            Warning,
-            Error
+            k_Info,
+            k_Warning,
+            k_Error
         }
 
         // 信息类型
@@ -44,15 +44,15 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_title">标题</param>
-        /// <param name="_message">信息内容</param>
-        /// <param name="_type">信息类型</param>
-        /// <param name="_isCollapsible">是否可折叠</param>
-        public InfoBox(string _title, string _message, InfoType _type = InfoType.Info, bool _isCollapsible = false)
-            : base(_title, "", _isCollapsible)
+        /// <param name="title">标题</param>
+        /// <param name="message">信息内容</param>
+        /// <param name="type">信息类型</param>
+        /// <param name="isCollapsible">是否可折叠</param>
+        public InfoBox(string title, string message, InfoType type = InfoType.k_Info, bool isCollapsible = false)
+            : base(title, "", isCollapsible)
         {
-            m_Message = _message;
-            m_Type = _type;
+            m_Message = message;
+            m_Type = type;
         }
 
         /// <summary>
@@ -72,11 +72,11 @@ namespace TByd.CodeStyle.Editor.UI.Components
         {
             switch (m_Type)
             {
-                case InfoType.Info:
+                case InfoType.k_Info:
                     return MessageType.Info;
-                case InfoType.Warning:
+                case InfoType.k_Warning:
                     return MessageType.Warning;
-                case InfoType.Error:
+                case InfoType.k_Error:
                     return MessageType.Error;
                 default:
                     return MessageType.None;
@@ -86,19 +86,19 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <summary>
         /// 设置信息内容
         /// </summary>
-        /// <param name="_message">信息内容</param>
-        public void SetMessage(string _message)
+        /// <param name="message">信息内容</param>
+        public void SetMessage(string message)
         {
-            m_Message = _message;
+            m_Message = message;
         }
 
         /// <summary>
         /// 设置信息类型
         /// </summary>
-        /// <param name="_type">信息类型</param>
-        public void SetType(InfoType _type)
+        /// <param name="type">信息类型</param>
+        public void SetType(InfoType type)
         {
-            m_Type = _type;
+            m_Type = type;
         }
     }
 }

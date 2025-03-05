@@ -15,10 +15,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
     public static class EditorConfigManager
     {
         // EditorConfig文件名
-        private const string c_EditorConfigFileName = ".editorconfig";
+        private const string k_CEditorConfigFileName = ".editorconfig";
 
         // 配置变更事件
-        public static event Action ConfigChanged;
+        public static event Action OnConfigChanged;
 
         // 当前项目的EditorConfig规则
         private static List<EditorConfigRule> s_Rules = new List<EditorConfigRule>();
@@ -71,7 +71,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <returns>EditorConfig文件路径</returns>
         public static string GetProjectEditorConfigPath()
         {
-            return Path.Combine(GetProjectRootPath(), c_EditorConfigFileName);
+            return Path.Combine(GetProjectRootPath(), k_CEditorConfigFileName);
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 触发配置变更事件
-            OnConfigChanged();
+            OnConfigChangedMethod();
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 Debug.Log($"[TByd.CodeStyle] 已保存EditorConfig文件: {editorConfigPath}");
 
                 // 触发配置变更事件
-                OnConfigChanged();
+                OnConfigChangedMethod();
 
                 // 刷新资源数据库，确保Unity能够识别新文件
                 AssetDatabase.Refresh();
@@ -151,14 +151,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 导出EditorConfig文件
         /// </summary>
-        /// <param name="_path">导出路径</param>
-        public static void ExportEditorConfig(string _path)
+        /// <param name="path">导出路径</param>
+        public static void ExportEditorConfig(string path)
         {
             try
             {
                 var content = EditorConfigParser.GenerateContent(s_Rules);
-                File.WriteAllText(_path, content);
-                Debug.Log($"[TByd.CodeStyle] EditorConfig已导出到: {_path}");
+                File.WriteAllText(path, content);
+                Debug.Log($"[TByd.CodeStyle] EditorConfig已导出到: {path}");
             }
             catch (Exception e)
             {
@@ -169,14 +169,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 导入EditorConfig文件
         /// </summary>
-        /// <param name="_path">导入路径</param>
-        public static void ImportEditorConfig(string _path)
+        /// <param name="path">导入路径</param>
+        public static void ImportEditorConfig(string path)
         {
             try
             {
-                s_Rules = EditorConfigParser.ParseFile(_path);
+                s_Rules = EditorConfigParser.ParseFile(path);
                 SaveProjectEditorConfig();
-                Debug.Log($"[TByd.CodeStyle] 已从 {_path} 导入EditorConfig");
+                Debug.Log($"[TByd.CodeStyle] 已从 {path} 导入EditorConfig");
             }
             catch (Exception e)
             {
@@ -196,22 +196,22 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 设置EditorConfig规则
         /// </summary>
-        /// <param name="_rules">EditorConfig规则列表</param>
-        public static void SetRules(List<EditorConfigRule> _rules)
+        /// <param name="rules">EditorConfig规则列表</param>
+        public static void SetRules(List<EditorConfigRule> rules)
         {
-            s_Rules = _rules ?? new List<EditorConfigRule>();
+            s_Rules = rules ?? new List<EditorConfigRule>();
 
             // 触发配置变更事件
-            OnConfigChanged();
+            OnConfigChangedMethod();
         }
 
         /// <summary>
         /// 添加EditorConfig规则
         /// </summary>
-        /// <param name="_rule">EditorConfig规则</param>
-        public static void AddRule(EditorConfigRule _rule)
+        /// <param name="rule">EditorConfig规则</param>
+        public static void AddRule(EditorConfigRule rule)
         {
-            if (_rule == null)
+            if (rule == null)
             {
                 return;
             }
@@ -219,44 +219,44 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             // 检查是否已存在相同模式的规则
             for (var i = 0; i < s_Rules.Count; i++)
             {
-                if (s_Rules[i].Pattern == _rule.Pattern)
+                if (s_Rules[i].Pattern == rule.Pattern)
                 {
                     // 替换已存在的规则
-                    s_Rules[i] = _rule;
+                    s_Rules[i] = rule;
 
                     // 触发配置变更事件
-                    OnConfigChanged();
+                    OnConfigChangedMethod();
 
                     return;
                 }
             }
 
             // 添加新规则
-            s_Rules.Add(_rule);
+            s_Rules.Add(rule);
 
             // 触发配置变更事件
-            OnConfigChanged();
+            OnConfigChangedMethod();
         }
 
         /// <summary>
         /// 移除EditorConfig规则
         /// </summary>
-        /// <param name="_pattern">规则模式</param>
-        public static void RemoveRule(string _pattern)
+        /// <param name="pattern">规则模式</param>
+        public static void RemoveRule(string pattern)
         {
-            if (string.IsNullOrEmpty(_pattern))
+            if (string.IsNullOrEmpty(pattern))
             {
                 return;
             }
 
             for (var i = s_Rules.Count - 1; i >= 0; i--)
             {
-                if (s_Rules[i].Pattern == _pattern)
+                if (s_Rules[i].Pattern == pattern)
                 {
                     s_Rules.RemoveAt(i);
 
                     // 触发配置变更事件
-                    OnConfigChanged();
+                    OnConfigChangedMethod();
 
                     return;
                 }
@@ -271,16 +271,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             s_Rules.Clear();
 
             // 触发配置变更事件
-            OnConfigChanged();
+            OnConfigChangedMethod();
         }
 
         /// <summary>
         /// 配置变更处理
         /// </summary>
-        private static void OnConfigChanged()
+        private static void OnConfigChangedMethod()
         {
             // 触发配置变更事件
-            ConfigChanged?.Invoke();
+            OnConfigChanged?.Invoke();
         }
 
         /// <summary>
@@ -295,21 +295,21 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 获取适用于指定文件的EditorConfig规则
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePathStr">文件路径</param>
         /// <returns>适用的规则属性</returns>
-        public static Dictionary<string, string> GetFileProperties(string _filePath)
+        public static Dictionary<string, string> GetFileProperties(string filePathStr)
         {
             var properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            if (string.IsNullOrEmpty(_filePath) || !File.Exists(_filePath))
+            if (string.IsNullOrEmpty(filePathStr) || !File.Exists(filePathStr))
             {
                 return properties;
             }
 
-            var fileName = Path.GetFileName(_filePath);
-            var relativePath = GetRelativePath(_filePath);
+            var fileName = Path.GetFileName(filePathStr);
+            var relativePath = GetRelativePath(filePathStr);
 
-            Debug.Log($"获取文件属性: 文件={_filePath}, 相对路径={relativePath}");
+            Debug.Log($"获取文件属性: 文件={filePathStr}, 相对路径={relativePath}");
 
             // 按照规则顺序应用属性
             foreach (var rule in s_Rules)
@@ -337,37 +337,37 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 检查文件是否匹配模式
         /// </summary>
-        /// <param name="_fileName">文件名</param>
-        /// <param name="_relativePath">相对路径</param>
-        /// <param name="_pattern">匹配模式</param>
+        /// <param name="fileName">文件名</param>
+        /// <param name="relativePath">相对路径</param>
+        /// <param name="pattern">匹配模式</param>
         /// <returns>是否匹配</returns>
-        private static bool IsFileMatchPattern(string _fileName, string _relativePath, string _pattern)
+        private static bool IsFileMatchPattern(string fileName, string relativePath, string pattern)
         {
             // 处理特殊情况
-            if (_pattern == "*")
+            if (pattern == "*")
             {
                 return true;
             }
 
             // 处理文件名匹配模式
-            if (_pattern.StartsWith("*."))
+            if (pattern.StartsWith("*."))
             {
-                var extension = _pattern.Substring(1); // 获取扩展名部分，包括点号
-                return _fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase);
+                var extension = pattern.Substring(1); // 获取扩展名部分，包括点号
+                return fileName.EndsWith(extension, StringComparison.OrdinalIgnoreCase);
             }
 
             // 处理确切文件名匹配
-            if (!_pattern.Contains("/") && !_pattern.Contains("*") && !_pattern.Contains("?") &&
-                !_pattern.Contains("["))
+            if (!pattern.Contains("/") && !pattern.Contains("*") && !pattern.Contains("?") &&
+                !pattern.Contains("["))
             {
-                return string.Equals(_fileName, _pattern, StringComparison.OrdinalIgnoreCase);
+                return string.Equals(fileName, pattern, StringComparison.OrdinalIgnoreCase);
             }
 
             // 处理多扩展名匹配模式，如 *.{js,py}
-            if (_pattern.Contains("{") && _pattern.Contains("}"))
+            if (pattern.Contains("{") && pattern.Contains("}"))
             {
                 // 提取扩展名列表
-                var match = Regex.Match(_pattern, @"\*\.\{(.*?)\}");
+                var match = Regex.Match(pattern, @"\*\.\{(.*?)\}");
                 if (match.Success)
                 {
                     var extensionList = match.Groups[1].Value;
@@ -375,7 +375,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                     foreach (var ext in extensions)
                     {
-                        if (_fileName.EndsWith("." + ext.Trim(), StringComparison.OrdinalIgnoreCase))
+                        if (fileName.EndsWith("." + ext.Trim(), StringComparison.OrdinalIgnoreCase))
                         {
                             return true;
                         }
@@ -386,11 +386,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 处理目录匹配模式，如 lib/**.js
-            if (_pattern.Contains("/"))
+            if (pattern.Contains("/"))
             {
                 // 将Windows路径分隔符转换为Unix风格
-                var normalizedPath = _relativePath.Replace('\\', '/');
-                var normalizedPattern = _pattern.Replace('\\', '/');
+                var normalizedPath = relativePath.Replace('\\', '/');
+                var normalizedPattern = pattern.Replace('\\', '/');
 
                 Debug.Log($"匹配目录模式: 路径={normalizedPath}, 模式={normalizedPattern}");
 
@@ -481,39 +481,39 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             }
 
             // 处理简单的通配符匹配
-            return SimplePatternMatch(_fileName, _pattern);
+            return SimplePatternMatch(fileName, pattern);
         }
 
         /// <summary>
         /// 简单的通配符匹配
         /// </summary>
-        /// <param name="_text">要匹配的文本</param>
-        /// <param name="_pattern">匹配模式</param>
+        /// <param name="text">要匹配的文本</param>
+        /// <param name="pattern">匹配模式</param>
         /// <returns>是否匹配</returns>
-        private static bool SimplePatternMatch(string _text, string _pattern)
+        private static bool SimplePatternMatch(string text, string pattern)
         {
             // 将通配符模式转换为正则表达式
-            var regexPattern = "^" + Regex.Escape(_pattern)
+            var regexPattern = "^" + Regex.Escape(pattern)
                 .Replace(@"\*", ".*")
                 .Replace(@"\?", ".") + "$";
 
-            return Regex.IsMatch(_text, regexPattern, RegexOptions.IgnoreCase);
+            return Regex.IsMatch(text, regexPattern, RegexOptions.IgnoreCase);
         }
 
         /// <summary>
         /// 验证文件是否符合EditorConfig规则
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>是否符合规则</returns>
-        public static bool ValidateFile(string _filePath)
+        public static bool ValidateFile(string filePath)
         {
-            if (string.IsNullOrEmpty(_filePath) || !File.Exists(_filePath))
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
             {
                 return false;
             }
 
             // 获取适用于文件的EditorConfig属性
-            var properties = GetFileProperties(_filePath);
+            var properties = GetFileProperties(filePath);
 
             // 如果没有适用的属性，则认为文件符合规则
             if (properties.Count == 0)
@@ -525,7 +525,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             string content;
             try
             {
-                content = File.ReadAllText(_filePath);
+                content = File.ReadAllText(filePath);
             }
             catch (Exception e)
             {
@@ -539,7 +539,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 try
                 {
                     // 读取文件的前几个字节来检测BOM标记
-                    var fileBytes = File.ReadAllBytes(_filePath);
+                    var fileBytes = File.ReadAllBytes(filePath);
                     var detectedEncoding = DetectEncoding(fileBytes);
 
                     var isCorrectEncoding = false;
@@ -548,19 +548,19 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     {
                         case "utf-8":
                         case "utf8":
-                            isCorrectEncoding = detectedEncoding == Encoding.UTF8 ||
+                            isCorrectEncoding = Equals(detectedEncoding, Encoding.UTF8) ||
                                                 (detectedEncoding == null && IsValidUtf8(fileBytes));
                             break;
                         case "utf-8-bom":
-                            isCorrectEncoding = detectedEncoding == Encoding.UTF8 && HasUtf8Bom(fileBytes);
+                            isCorrectEncoding = Equals(detectedEncoding, Encoding.UTF8) && HasUtf8Bom(fileBytes);
                             break;
                         case "utf-16le":
                         case "utf16le":
-                            isCorrectEncoding = detectedEncoding == Encoding.Unicode;
+                            isCorrectEncoding = Equals(detectedEncoding, Encoding.Unicode);
                             break;
                         case "utf-16be":
                         case "utf16be":
-                            isCorrectEncoding = detectedEncoding == Encoding.BigEndianUnicode;
+                            isCorrectEncoding = Equals(detectedEncoding, Encoding.BigEndianUnicode);
                             break;
                         case "latin1":
                         case "iso-8859-1":
@@ -575,7 +575,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                     if (!isCorrectEncoding)
                     {
-                        Debug.LogWarning($"[TByd.CodeStyle] 文件 {_filePath} 的编码不符合EditorConfig规则，应为 {charset}");
+                        Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的编码不符合EditorConfig规则，应为 {charset}");
                         return false;
                     }
                 }
@@ -624,7 +624,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                     if (!hasCorrectLineEnding)
                     {
-                        Debug.LogWarning($"[TByd.CodeStyle] 文件 {_filePath} 的行尾不符合EditorConfig规则");
+                        Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的行尾不符合EditorConfig规则");
                         return false;
                     }
                 }
@@ -641,7 +641,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                     if (!hasNewline)
                     {
-                        Debug.LogWarning($"[TByd.CodeStyle] 文件 {_filePath} 的最后一行没有换行符");
+                        Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的最后一行没有换行符");
                         return false;
                     }
                 }
@@ -660,7 +660,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     {
                         if (lines[i].TrimEnd() != lines[i])
                         {
-                            Debug.LogWarning($"[TByd.CodeStyle] 文件 {_filePath} 的第 {i + 1} 行有尾随空白字符");
+                            Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的第 {i + 1} 行有尾随空白字符");
                             return false;
                         }
                     }
@@ -696,12 +696,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                         // 检查缩进样式
                         if (useSpaces && line.StartsWith("\t"))
                         {
-                            Debug.LogWarning($"[TByd.CodeStyle] 文件 {_filePath} 的第 {i + 1} 行使用了制表符缩进，但应该使用空格");
+                            Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的第 {i + 1} 行使用了制表符缩进，但应该使用空格");
                             return false;
                         }
                         else if (!useSpaces && line.StartsWith(" "))
                         {
-                            Debug.LogWarning($"[TByd.CodeStyle] 文件 {_filePath} 的第 {i + 1} 行使用了空格缩进，但应该使用制表符");
+                            Debug.LogWarning($"[TByd.CodeStyle] 文件 {filePath} 的第 {i + 1} 行使用了空格缩进，但应该使用制表符");
                             return false;
                         }
                     }
@@ -714,18 +714,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 格式化文件使其符合EditorConfig规则
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>是否成功格式化</returns>
-        public static bool FormatFile(string _filePath)
+        public static bool FormatFile(string filePath)
         {
-            if (string.IsNullOrEmpty(_filePath) || !File.Exists(_filePath))
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
             {
-                Debug.LogError($"[TByd.CodeStyle] 文件不存在: {_filePath}");
+                Debug.LogError($"[TByd.CodeStyle] 文件不存在: {filePath}");
                 return false;
             }
 
             // 获取适用于文件的EditorConfig属性
-            var properties = GetFileProperties(_filePath);
+            var properties = GetFileProperties(filePath);
 
             // 如果没有适用的属性，则无需格式化
             if (properties.Count == 0)
@@ -740,7 +740,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
                 if (properties.TryGetValue("charset", out var charset))
                 {
-                    var fileBytes = File.ReadAllBytes(_filePath);
+                    var fileBytes = File.ReadAllBytes(filePath);
                     DetectEncoding(fileBytes);
 
                     switch (charset.ToLowerInvariant())
@@ -773,7 +773,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 // 如果需要处理BOM，使用字节数组读取
                 if (properties.ContainsKey("charset"))
                 {
-                    var fileBytes = File.ReadAllBytes(_filePath);
+                    var fileBytes = File.ReadAllBytes(filePath);
 
                     // 如果文件有BOM，跳过BOM字节
                     var skipBytes = 0;
@@ -799,7 +799,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 else
                 {
                     // 如果不需要处理编码，直接读取文本
-                    content = File.ReadAllText(_filePath);
+                    content = File.ReadAllText(filePath);
                 }
 
                 var originalContent = content;
@@ -994,15 +994,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 if (properties.ContainsKey("charset"))
                 {
                     // 使用指定的编码写入文件
-                    File.WriteAllText(_filePath, content, encoding);
+                    File.WriteAllText(filePath, content, encoding);
                 }
                 else
                 {
                     // 使用默认编码写入文件
-                    File.WriteAllText(_filePath, content);
+                    File.WriteAllText(filePath, content);
                 }
 
-                Debug.Log($"[TByd.CodeStyle] 已格式化文件: {_filePath}");
+                Debug.Log($"[TByd.CodeStyle] 已格式化文件: {filePath}");
                 return true;
             }
             catch (Exception e)
@@ -1015,41 +1015,41 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 检测文件编码
         /// </summary>
-        /// <param name="_bytes">文件字节数组</param>
+        /// <param name="bytes">文件字节数组</param>
         /// <returns>检测到的编码，如果没有检测到BOM则返回null</returns>
-        private static Encoding DetectEncoding(byte[] _bytes)
+        private static Encoding DetectEncoding(byte[] bytes)
         {
-            if (_bytes == null || _bytes.Length < 2)
+            if (bytes == null || bytes.Length < 2)
             {
                 return null;
             }
 
             // 检测UTF-8 BOM (EF BB BF)
-            if (_bytes.Length >= 3 && _bytes[0] == 0xEF && _bytes[1] == 0xBB && _bytes[2] == 0xBF)
+            if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
             {
                 return Encoding.UTF8;
             }
 
             // 检测UTF-16 LE BOM (FF FE)
-            if (_bytes[0] == 0xFF && _bytes[1] == 0xFE)
+            if (bytes[0] == 0xFF && bytes[1] == 0xFE)
             {
                 return Encoding.Unicode; // UTF-16 LE
             }
 
             // 检测UTF-16 BE BOM (FE FF)
-            if (_bytes[0] == 0xFE && _bytes[1] == 0xFF)
+            if (bytes[0] == 0xFE && bytes[1] == 0xFF)
             {
                 return Encoding.BigEndianUnicode; // UTF-16 BE
             }
 
             // 检测UTF-32 LE BOM (FF FE 00 00)
-            if (_bytes.Length >= 4 && _bytes[0] == 0xFF && _bytes[1] == 0xFE && _bytes[2] == 0x00 && _bytes[3] == 0x00)
+            if (bytes.Length >= 4 && bytes[0] == 0xFF && bytes[1] == 0xFE && bytes[2] == 0x00 && bytes[3] == 0x00)
             {
                 return Encoding.UTF32; // UTF-32 LE
             }
 
             // 检测UTF-32 BE BOM (00 00 FE FF)
-            if (_bytes.Length >= 4 && _bytes[0] == 0x00 && _bytes[1] == 0x00 && _bytes[2] == 0xFE && _bytes[3] == 0xFF)
+            if (bytes.Length >= 4 && bytes[0] == 0x00 && bytes[1] == 0x00 && bytes[2] == 0xFE && bytes[3] == 0xFF)
             {
                 return new UTF32Encoding(true, true); // UTF-32 BE
             }
@@ -1061,23 +1061,23 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 检查字节数组是否为有效的UTF-8编码
         /// </summary>
-        /// <param name="_bytes">文件字节数组</param>
+        /// <param name="bytes">文件字节数组</param>
         /// <returns>是否为有效的UTF-8编码</returns>
-        private static bool IsValidUtf8(byte[] _bytes)
+        private static bool IsValidUtf8(byte[] bytes)
         {
-            if (_bytes == null || _bytes.Length == 0)
+            if (bytes == null || bytes.Length == 0)
             {
                 return true;
             }
 
             // 跳过UTF-8 BOM
-            var start = HasUtf8Bom(_bytes) ? 3 : 0;
+            var start = HasUtf8Bom(bytes) ? 3 : 0;
 
             var i = start;
-            while (i < _bytes.Length)
+            while (i < bytes.Length)
             {
                 // 单字节ASCII字符 (0xxxxxxx)
-                if ((_bytes[i] & 0x80) == 0)
+                if ((bytes[i] & 0x80) == 0)
                 {
                     i += 1;
                     continue;
@@ -1086,15 +1086,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 // 确定多字节序列的长度
                 int extraBytes;
 
-                if ((_bytes[i] & 0xE0) == 0xC0) // 2字节序列 (110xxxxx 10xxxxxx)
+                if ((bytes[i] & 0xE0) == 0xC0) // 2字节序列 (110xxxxx 10xxxxxx)
                 {
                     extraBytes = 1;
                 }
-                else if ((_bytes[i] & 0xF0) == 0xE0) // 3字节序列 (1110xxxx 10xxxxxx 10xxxxxx)
+                else if ((bytes[i] & 0xF0) == 0xE0) // 3字节序列 (1110xxxx 10xxxxxx 10xxxxxx)
                 {
                     extraBytes = 2;
                 }
-                else if ((_bytes[i] & 0xF8) == 0xF0) // 4字节序列 (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx)
+                else if ((bytes[i] & 0xF8) == 0xF0) // 4字节序列 (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx)
                 {
                     extraBytes = 3;
                 }
@@ -1104,7 +1104,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
 
                 // 检查是否有足够的字节
-                if (i + extraBytes >= _bytes.Length)
+                if (i + extraBytes >= bytes.Length)
                 {
                     return false;
                 }
@@ -1112,7 +1112,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 // 检查后续字节是否符合UTF-8格式 (10xxxxxx)
                 for (var j = 1; j <= extraBytes; j++)
                 {
-                    if ((_bytes[i + j] & 0xC0) != 0x80)
+                    if ((bytes[i + j] & 0xC0) != 0x80)
                     {
                         return false;
                     }
@@ -1127,40 +1127,40 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 检查字节数组是否包含UTF-8 BOM
         /// </summary>
-        /// <param name="_bytes">文件字节数组</param>
+        /// <param name="bytes">文件字节数组</param>
         /// <returns>是否包含UTF-8 BOM</returns>
-        private static bool HasUtf8Bom(byte[] _bytes)
+        private static bool HasUtf8Bom(byte[] bytes)
         {
-            return _bytes != null && _bytes.Length >= 3 &&
-                   _bytes[0] == 0xEF && _bytes[1] == 0xBB && _bytes[2] == 0xBF;
+            return bytes != null && bytes.Length >= 3 &&
+                   bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF;
         }
 
         /// <summary>
         /// 获取相对于项目根目录的路径
         /// </summary>
-        /// <param name="_filePath">文件的绝对路径</param>
+        /// <param name="filePath">文件的绝对路径</param>
         /// <returns>相对路径</returns>
-        private static string GetRelativePath(string _filePath)
+        private static string GetRelativePath(string filePath)
         {
-            if (string.IsNullOrEmpty(_filePath))
+            if (string.IsNullOrEmpty(filePath))
             {
                 return string.Empty;
             }
 
             var projectRoot = GetProjectRootPath();
-            var relativePath = _filePath;
+            var relativePath = filePath;
 
             // 如果文件路径以项目根目录开头，则转换为相对路径
-            if (_filePath.StartsWith(projectRoot))
+            if (filePath.StartsWith(projectRoot))
             {
-                relativePath = _filePath.Substring(projectRoot.Length)
+                relativePath = filePath.Substring(projectRoot.Length)
                     .TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
             }
             // 处理测试环境中的临时路径
-            else if (_filePath.Contains("Temp") || _filePath.Contains("EditorConfigTest"))
+            else if (filePath.Contains("Temp") || filePath.Contains("EditorConfigTest"))
             {
                 // 尝试提取最后几个目录段作为相对路径
-                var pathParts = _filePath.Replace('\\', '/').Split('/');
+                var pathParts = filePath.Replace('\\', '/').Split('/');
                 var startIndex = -1;
 
                 // 查找关键目录（如lib、Temp、EditorConfigTest）
@@ -1180,34 +1180,34 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 }
             }
 
-            Debug.Log($"计算相对路径: 原始路径={_filePath}, 项目根目录={projectRoot}, 相对路径={relativePath}");
+            Debug.Log($"计算相对路径: 原始路径={filePath}, 项目根目录={projectRoot}, 相对路径={relativePath}");
             return relativePath;
         }
 
         /// <summary>
         /// 保存规则到文件
         /// </summary>
-        /// <param name="_rules">规则列表</param>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="rules">规则列表</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>是否成功</returns>
-        public static bool SaveRulesToFile(List<EditorConfigRule> _rules, string _filePath)
+        public static bool SaveRulesToFile(List<EditorConfigRule> rules, string filePath)
         {
             try
             {
                 // 确保目录存在
-                var directory = Path.GetDirectoryName(_filePath);
+                var directory = Path.GetDirectoryName(filePath);
                 if (!string.IsNullOrEmpty(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
 
                 // 生成EditorConfig内容
-                var content = GenerateEditorConfigContent(_rules);
+                var content = GenerateEditorConfigContent(rules);
 
                 // 保存到文件
-                File.WriteAllText(_filePath, content);
+                File.WriteAllText(filePath, content);
 
-                Debug.Log($"[TByd.CodeStyle] 成功保存EditorConfig规则到: {_filePath}");
+                Debug.Log($"[TByd.CodeStyle] 成功保存EditorConfig规则到: {filePath}");
                 return true;
             }
             catch (Exception e)
@@ -1220,11 +1220,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 生成EditorConfig内容
         /// </summary>
-        /// <param name="_rules">规则列表</param>
+        /// <param name="rules">规则列表</param>
         /// <returns>生成的内容</returns>
-        private static string GenerateEditorConfigContent(List<EditorConfigRule> _rules)
+        private static string GenerateEditorConfigContent(List<EditorConfigRule> rules)
         {
-            if (_rules == null || _rules.Count == 0)
+            if (rules == null || rules.Count == 0)
             {
                 return string.Empty;
             }
@@ -1236,7 +1236,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 writer.WriteLine();
 
                 // 写入每个规则
-                foreach (var rule in _rules)
+                foreach (var rule in rules)
                 {
                     // 写入规则模式
                     writer.WriteLine($"[{rule.Pattern}]");

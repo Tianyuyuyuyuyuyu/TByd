@@ -10,10 +10,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     /// <summary>
     /// IDE集成管理器，用于管理和执行IDE集成
     /// </summary>
-    public static class IDEIntegrationManager
+    public static class IdeIntegrationManager
     {
         // IDE集成列表
-        private static readonly List<IDEIntegration> s_Integrations = new List<IDEIntegration>();
+        private static readonly List<IDeIntegration> s_Integrations = new List<IDeIntegration>();
 
         // 是否已初始化
         private static bool s_Initialized;
@@ -21,7 +21,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 静态构造函数
         /// </summary>
-        static IDEIntegrationManager()
+        static IdeIntegrationManager()
         {
             // 延迟初始化，确保Unity完全加载
             EditorApplication.delayCall += Initialize;
@@ -33,7 +33,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void Initialize()
         {
             if (s_Initialized)
+            {
                 return;
+            }
 
             // 注册IDE集成
             RegisterIntegrations();
@@ -61,12 +63,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 注册IDE集成 (用于测试和扩展)
         /// </summary>
-        /// <param name="_integration">要注册的IDE集成</param>
-        public static void RegisterIntegration(IDEIntegration _integration)
+        /// <param name="integration">要注册的IDE集成</param>
+        public static void RegisterIntegration(IDeIntegration integration)
         {
             // 确保集成不为空
-            if (_integration == null)
+            if (integration == null)
+            {
                 return;
+            }
 
             // 确保已初始化
             if (!s_Initialized)
@@ -75,9 +79,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // 确保不重复添加
-            if (!s_Integrations.Any(i => i.Name == _integration.Name))
+            if (!s_Integrations.Any(i => i.Name == integration.Name))
             {
-                s_Integrations.Add(_integration);
+                s_Integrations.Add(integration);
             }
         }
 
@@ -85,7 +89,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// 获取当前使用的IDE集成
         /// </summary>
         /// <returns>当前IDE集成</returns>
-        public static IDEIntegration GetCurrentIntegration()
+        public static IDeIntegration GetCurrentIntegration()
         {
             // 确保已初始化
             if (!s_Initialized)
@@ -114,7 +118,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// 获取已安装的IDE集成列表
         /// </summary>
         /// <returns>已安装的IDE集成列表</returns>
-        public static List<IDEIntegration> GetInstalledIntegrations()
+        public static List<IDeIntegration> GetInstalledIntegrations()
         {
             // 确保已初始化
             if (!s_Initialized)
@@ -128,9 +132,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 获取特定类型的IDE集成
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
+        /// <param name="ideType">IDE类型</param>
         /// <returns>IDE集成</returns>
-        public static IDEIntegration GetIntegration(IDEType _ideType)
+        public static IDeIntegration GetIntegration(IdeType ideType)
         {
             // 确保已初始化
             if (!s_Initialized)
@@ -139,31 +143,31 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // 基于IDE类型查找对应的集成
-            return s_Integrations.Find(i => i.GetType().Name.Contains(_ideType.ToString()));
+            return s_Integrations.Find(i => i.GetType().Name.Contains(ideType.ToString()));
         }
 
         /// <summary>
         /// 检查特定IDE是否已安装
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
+        /// <param name="ideType">IDE类型</param>
         /// <returns>是否已安装</returns>
-        public static bool IsIDEInstalled(IDEType _ideType)
+        public static bool IsIdeInstalled(IdeType ideType)
         {
-            var integration = GetIntegration(_ideType);
+            var integration = GetIntegration(ideType);
             return integration != null && integration.IsInstalled;
         }
 
         /// <summary>
         /// 导出配置到当前IDE
         /// </summary>
-        /// <param name="_rules">EditorConfig规则列表</param>
+        /// <param name="rules">EditorConfig规则列表</param>
         /// <returns>是否成功</returns>
-        public static bool ExportConfigToCurrentIDE(List<EditorConfigRule> _rules)
+        public static bool ExportConfigToCurrentIde(List<EditorConfigRule> rules)
         {
-            var currentIDE = GetCurrentIntegration();
-            if (currentIDE != null)
+            var currentIde = GetCurrentIntegration();
+            if (currentIde != null)
             {
-                return currentIDE.ExportConfig(_rules);
+                return currentIde.ExportConfig(rules);
             }
             return false;
         }
@@ -171,15 +175,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 导出配置到特定IDE
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
-        /// <param name="_config">代码风格配置</param>
+        /// <param name="ideType">IDE类型</param>
+        /// <param name="config">代码风格配置</param>
         /// <returns>是否成功</returns>
-        public static bool ExportConfigToIDE(IDEType _ideType, CodeStyleConfig _config)
+        public static bool ExportConfigToIde(IdeType ideType, CodeStyleConfig config)
         {
             // 获取EditorConfig规则列表
             var rules = EditorConfigManager.GetRules();
 
-            var integration = GetIntegration(_ideType);
+            var integration = GetIntegration(ideType);
             if (integration != null && integration.IsInstalled)
             {
                 return integration.ExportConfig(rules);
@@ -190,9 +194,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 导出配置到所有已安装的IDE
         /// </summary>
-        /// <param name="_config">代码风格配置</param>
+        /// <param name="config">代码风格配置</param>
         /// <returns>是否成功</returns>
-        public static bool ExportConfigToAllIDEs(CodeStyleConfig _config)
+        public static bool ExportConfigToAllIDEs(CodeStyleConfig config)
         {
             // 获取EditorConfig规则列表
             var rules = EditorConfigManager.GetRules();
@@ -202,16 +206,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 导出配置到所有已安装的IDE
         /// </summary>
-        /// <param name="_rules">EditorConfig规则列表</param>
+        /// <param name="rules">EditorConfig规则列表</param>
         /// <returns>是否成功</returns>
-        public static bool ExportConfigToAllIDEs(List<EditorConfigRule> _rules)
+        public static bool ExportConfigToAllIDEs(List<EditorConfigRule> rules)
         {
             var allSuccess = true;
             var integrations = GetInstalledIntegrations();
 
             foreach (var integration in integrations)
             {
-                if (!integration.ExportConfig(_rules))
+                if (!integration.ExportConfig(rules))
                 {
                     allSuccess = false;
                 }

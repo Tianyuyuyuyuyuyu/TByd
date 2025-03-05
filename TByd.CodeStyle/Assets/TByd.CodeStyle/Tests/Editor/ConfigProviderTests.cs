@@ -24,7 +24,7 @@ namespace TByd.CodeStyle.Tests.Editor
         [SetUp]
         public void Setup()
         {
-            Debug.Log($"[TByd.CodeStyle.Tests] 开始设置测试环境");
+            Debug.Log("[TByd.CodeStyle.Tests] 开始设置测试环境");
 
             // 构建完整的测试配置路径
             m_FullTestConfigPath = Path.Combine(Application.dataPath, k_TestConfigPath);
@@ -76,15 +76,15 @@ namespace TByd.CodeStyle.Tests.Editor
             }
 
             // 重新初始化配置管理器
-            Debug.Log($"[TByd.CodeStyle.Tests] 初始化配置管理器");
+            Debug.Log("[TByd.CodeStyle.Tests] 初始化配置管理器");
             ConfigManager.Initialize();
-            Debug.Log($"[TByd.CodeStyle.Tests] 测试环境设置完成");
+            Debug.Log("[TByd.CodeStyle.Tests] 测试环境设置完成");
         }
 
         [TearDown]
         public void TearDown()
         {
-            Debug.Log($"[TByd.CodeStyle.Tests] 开始清理测试环境");
+            Debug.Log("[TByd.CodeStyle.Tests] 开始清理测试环境");
 
             // 恢复原始配置路径
             Debug.Log($"[TByd.CodeStyle.Tests] 恢复原始配置路径: {m_OriginalConfigPath}");
@@ -97,7 +97,7 @@ namespace TByd.CodeStyle.Tests.Editor
                 try
                 {
                     File.Delete(m_FullTestConfigPath);
-                    Debug.Log($"[TByd.CodeStyle.Tests] 测试配置文件删除成功");
+                    Debug.Log("[TByd.CodeStyle.Tests] 测试配置文件删除成功");
                 }
                 catch (Exception e)
                 {
@@ -106,13 +106,13 @@ namespace TByd.CodeStyle.Tests.Editor
             }
             else
             {
-                Debug.Log($"[TByd.CodeStyle.Tests] 测试配置文件不存在，无需删除");
+                Debug.Log("[TByd.CodeStyle.Tests] 测试配置文件不存在，无需删除");
             }
 
             // 重新初始化配置管理器
-            Debug.Log($"[TByd.CodeStyle.Tests] 重新初始化配置管理器");
+            Debug.Log("[TByd.CodeStyle.Tests] 重新初始化配置管理器");
             ConfigManager.Initialize();
-            Debug.Log($"[TByd.CodeStyle.Tests] 测试环境清理完成");
+            Debug.Log("[TByd.CodeStyle.Tests] 测试环境清理完成");
         }
 
         [Test]
@@ -190,7 +190,7 @@ namespace TByd.CodeStyle.Tests.Editor
             Assert.IsTrue(containsRequireScope, "配置文件不包含RequireScope设置");
 
             // 重新初始化配置管理器
-            Debug.Log($"[TByd.CodeStyle.Tests] 重新初始化配置管理器");
+            Debug.Log("[TByd.CodeStyle.Tests] 重新初始化配置管理器");
             ConfigManager.Initialize();
 
             // 获取配置
@@ -209,7 +209,7 @@ namespace TByd.CodeStyle.Tests.Editor
             var eventTriggered = false;
 
             // 订阅配置变更事件
-            ConfigProvider.ConfigChanged += () => eventTriggered = true;
+            ConfigProvider.OnConfigChanged += () => eventTriggered = true;
 
             // 获取配置
             var config = ConfigProvider.GetConfig();

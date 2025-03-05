@@ -12,10 +12,10 @@ namespace TByd.CodeStyle.Editor.UI.Settings
     /// <summary>
     /// IDE集成设置提供者，用于在Project Settings窗口中显示IDE集成设置
     /// </summary>
-    public class IDEIntegrationSettingsProvider : SettingsProvider
+    public class IdeIntegrationSettingsProvider : SettingsProvider
     {
         // 设置路径
-        private const string c_SettingsPath = "Project/TByd/IDE集成";
+        private const string k_CSettingsPath = "Project/TByd/IDE集成";
 
         // 关键字
         private static readonly string[] s_Keywords = new string[]
@@ -36,19 +36,19 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private Vector2 m_ScrollPosition;
 
         // 当前IDE类型
-        private IDEType m_CurrentIDEType;
+        private IdeType m_CurrentIdeType;
 
         // IDE配置是否已初始化
-        private bool m_IsIDEConfigured;
+        private bool m_IsIdeConfigured;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_path">设置路径</param>
-        /// <param name="_scopes">设置范围</param>
-        /// <param name="_keywords">关键字</param>
-        public IDEIntegrationSettingsProvider(string _path, SettingsScope _scopes, IEnumerable<string> _keywords = null)
-            : base(_path, _scopes, _keywords)
+        /// <param name="path">设置路径</param>
+        /// <param name="scopes">设置范围</param>
+        /// <param name="keywords">关键字</param>
+        public IdeIntegrationSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
+            : base(path, scopes, keywords)
         {
         }
 
@@ -58,15 +58,17 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private void Initialize()
         {
             if (m_Initialized)
+            {
                 return;
+            }
 
             m_Config = ConfigProvider.GetConfig();
 
             // 订阅配置变更事件
-            ConfigProvider.ConfigChanged += OnConfigChanged;
+            ConfigProvider.OnConfigChanged += OnConfigChanged;
 
             // 检测当前IDE
-            CheckIDEStatus();
+            CheckIdeStatus();
 
             m_Initialized = true;
         }
@@ -74,10 +76,10 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// <summary>
         /// 检查IDE状态
         /// </summary>
-        private void CheckIDEStatus()
+        private void CheckIdeStatus()
         {
-            m_CurrentIDEType = IDEDetector.DetectCurrentIDE();
-            m_IsIDEConfigured = IDEDetector.IsIDEConfigured(m_CurrentIDEType);
+            m_CurrentIdeType = IdeDetector.DetectCurrentIde();
+            m_IsIdeConfigured = IdeDetector.IsIdeConfigured(m_CurrentIdeType);
         }
 
         /// <summary>
@@ -87,14 +89,14 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         {
             m_Config = ConfigProvider.GetConfig();
             m_IsDirty = false;
-            CheckIDEStatus();
+            CheckIdeStatus();
         }
 
         /// <summary>
         /// 绘制设置UI
         /// </summary>
-        /// <param name="_searchContext">搜索上下文</param>
-        public override void OnGUI(string _searchContext)
+        /// <param name="searchContext">搜索上下文</param>
+        public override void OnGUI(string searchContext)
         {
             Initialize();
 
@@ -124,8 +126,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.Space();
 
             DrawGeneralSettings();
-            DrawCurrentIDESettings();
-            DrawIDESpecificSettings();
+            DrawCurrentIdeSettings();
+            DrawIdeSpecificSettings();
             DrawConfigSyncSettings();
             DrawConfigValidationSettings();
 
@@ -152,21 +154,21 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             EditorGUI.BeginChangeCheck();
 
-            var enableIDEIntegration = EditorGUILayout.Toggle("启用IDE集成", m_Config.EnableIDEIntegration);
-            var autoConfigureIDE = EditorGUILayout.Toggle("自动配置IDE", m_Config.AutoConfigureIDE);
-            var syncEditorConfigWithIDE = EditorGUILayout.Toggle("同步EditorConfig到IDE", m_Config.SyncEditorConfigWithIDE);
+            var enableIdeIntegration = EditorGUILayout.Toggle("启用IDE集成", m_Config.EnableIdeIntegration);
+            var autoConfigureIde = EditorGUILayout.Toggle("自动配置IDE", m_Config.AutoConfigureIde);
+            var syncEditorConfigWithIde = EditorGUILayout.Toggle("同步EditorConfig到IDE", m_Config.SyncEditorConfigWithIde);
 
             if (EditorGUI.EndChangeCheck())
             {
-                m_Config.EnableIDEIntegration = enableIDEIntegration;
-                m_Config.AutoConfigureIDE = autoConfigureIDE;
-                m_Config.SyncEditorConfigWithIDE = syncEditorConfigWithIDE;
+                m_Config.EnableIdeIntegration = enableIdeIntegration;
+                m_Config.AutoConfigureIde = autoConfigureIde;
+                m_Config.SyncEditorConfigWithIde = syncEditorConfigWithIde;
 
                 m_IsDirty = true;
             }
 
             // 如果未启用IDE集成，则显示提示并返回
-            if (!m_Config.EnableIDEIntegration)
+            if (!m_Config.EnableIdeIntegration)
             {
                 EditorGUILayout.HelpBox("IDE集成已禁用，IDE集成设置将不会生效。", MessageType.Info);
             }
@@ -177,37 +179,37 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// <summary>
         /// 绘制当前IDE设置
         /// </summary>
-        private void DrawCurrentIDESettings()
+        private void DrawCurrentIdeSettings()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("当前IDE", EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("检测到的IDE:", m_CurrentIDEType.ToString());
-            EditorGUILayout.LabelField("配置状态:", m_IsIDEConfigured ? "已配置" : "未配置");
+            EditorGUILayout.LabelField("检测到的IDE:", m_CurrentIdeType.ToString());
+            EditorGUILayout.LabelField("配置状态:", m_IsIdeConfigured ? "已配置" : "未配置");
 
-            if (!m_IsIDEConfigured)
+            if (!m_IsIdeConfigured)
             {
                 EditorGUILayout.HelpBox("当前IDE未配置，建议配置以获得更好的开发体验。", MessageType.Info);
-                
+
                 if (GUILayout.Button("配置IDE"))
                 {
-                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
-                    CheckIDEStatus();
+                    IdeDetector.ConfigureIde(m_CurrentIdeType);
+                    CheckIdeStatus();
                 }
             }
             else
             {
                 if (GUILayout.Button("重新配置IDE"))
                 {
-                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
-                    CheckIDEStatus();
+                    IdeDetector.ConfigureIde(m_CurrentIdeType);
+                    CheckIdeStatus();
                 }
 
                 if (GUILayout.Button("重置IDE配置"))
                 {
-                    IDEDetector.ResetIDEConfiguration(m_CurrentIDEType);
-                    CheckIDEStatus();
+                    IdeDetector.ResetIdeConfiguration(m_CurrentIdeType);
+                    CheckIdeStatus();
                 }
             }
 
@@ -217,21 +219,21 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// <summary>
         /// 绘制IDE特定设置
         /// </summary>
-        private void DrawIDESpecificSettings()
+        private void DrawIdeSpecificSettings()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.LabelField("IDE特定设置", EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
-            switch (m_CurrentIDEType)
+            switch (m_CurrentIdeType)
             {
-                case IDEType.Rider:
+                case IdeType.k_Rider:
                     DrawRiderSettings();
                     break;
-                case IDEType.VisualStudio:
+                case IdeType.k_VisualStudio:
                     DrawVisualStudioSettings();
                     break;
-                case IDEType.VSCode:
+                case IdeType.k_VSCode:
                     DrawVSCodeSettings();
                     break;
                 default:
@@ -310,7 +312,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             if (GUILayout.Button("导出配置到当前IDE"))
             {
-                var success = IDEIntegrationManager.ExportConfigToCurrentIDE(EditorConfigManager.GetRules());
+                var success = IdeIntegrationManager.ExportConfigToCurrentIde(EditorConfigManager.GetRules());
                 if (success)
                 {
                     EditorUtility.DisplayDialog("导出成功", "配置已成功导出到当前IDE。", "确定");
@@ -323,7 +325,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             if (GUILayout.Button("导出配置到所有IDE"))
             {
-                var success = IDEIntegrationManager.ExportConfigToAllIDEs(EditorConfigManager.GetRules());
+                var success = IdeIntegrationManager.ExportConfigToAllIDEs(EditorConfigManager.GetRules());
                 if (success)
                 {
                     EditorUtility.DisplayDialog("导出成功", "配置已成功导出到所有IDE。", "确定");
@@ -350,13 +352,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 // 获取项目根目录
                 var projectPath = Path.GetDirectoryName(Application.dataPath);
-                
+
                 // 验证配置
-                var result = IDEConfigValidator.ValidateConfig(m_CurrentIDEType, projectPath);
-                
+                var result = IdeConfigValidator.ValidateConfig(m_CurrentIdeType, projectPath);
+
                 // 显示验证结果
                 var message = "验证结果:\n\n";
-                
+
                 if (result.IsValid)
                 {
                     message += "配置有效，未发现问题。\n";
@@ -365,7 +367,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 {
                     message += "配置存在问题:\n\n";
                 }
-                
+
                 if (result.Errors.Count > 0)
                 {
                     message += "错误:\n";
@@ -375,7 +377,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     }
                     message += "\n";
                 }
-                
+
                 if (result.Warnings.Count > 0)
                 {
                     message += "警告:\n";
@@ -385,7 +387,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     }
                     message += "\n";
                 }
-                
+
                 if (result.Suggestions.Count > 0)
                 {
                     message += "建议:\n";
@@ -394,7 +396,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                         message += $"- {suggestion}\n";
                     }
                 }
-                
+
                 EditorUtility.DisplayDialog("IDE配置验证", message, "确定");
             }
 
@@ -408,11 +410,11 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         {
             ConfigProvider.SaveConfig();
             m_IsDirty = false;
-            
+
             // 如果启用了同步EditorConfig到IDE，则导出配置
-            if (m_Config.EnableIDEIntegration && m_Config.SyncEditorConfigWithIDE)
+            if (m_Config.EnableIdeIntegration && m_Config.SyncEditorConfigWithIde)
             {
-                IDEIntegrationManager.ExportConfigToCurrentIDE(EditorConfigManager.GetRules());
+                IdeIntegrationManager.ExportConfigToCurrentIde(EditorConfigManager.GetRules());
             }
         }
 
@@ -424,21 +426,21 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             if (EditorUtility.DisplayDialog("重置设置", "确定要重置IDE集成设置吗？这将恢复所有设置为默认值。", "确定", "取消"))
             {
                 // 重置IDE集成设置
-                m_Config.EnableIDEIntegration = true;
-                m_Config.AutoConfigureIDE = true;
-                m_Config.SyncEditorConfigWithIDE = true;
-                
+                m_Config.EnableIdeIntegration = true;
+                m_Config.AutoConfigureIde = true;
+                m_Config.SyncEditorConfigWithIde = true;
+
                 // 重置IDE特定设置
                 m_Config.RiderConfig = new RiderConfig();
                 m_Config.VisualStudioConfig = new VisualStudioConfig();
                 m_Config.VSCodeConfig = new VSCodeConfig();
-                
+
                 // 保存配置
                 ConfigProvider.SaveConfig();
-                
+
                 // 更新状态
                 m_IsDirty = false;
-                CheckIDEStatus();
+                CheckIdeStatus();
             }
         }
 
@@ -448,8 +450,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         [SettingsProvider]
         public static SettingsProvider CreateSettingsProvider()
         {
-            var provider = new IDEIntegrationSettingsProvider(c_SettingsPath, SettingsScope.Project, s_Keywords);
+            var provider = new IdeIntegrationSettingsProvider(k_CSettingsPath, SettingsScope.Project, s_Keywords);
             return provider;
         }
     }
-} 
+}

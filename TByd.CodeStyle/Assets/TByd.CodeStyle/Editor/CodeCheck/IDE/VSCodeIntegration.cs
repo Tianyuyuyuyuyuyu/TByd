@@ -10,22 +10,22 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     /// <summary>
     /// VS Code IDE集成实现
     /// </summary>
-    public class VSCodeIntegration : IDEIntegrationBase
+    public class VSCodeIntegration : IdeIntegrationBase
     {
         // VS Code配置文件名
-        private const string c_VSCodeConfigFileName = ".editorconfig";
+        private const string k_CVSCodeConfigFileName = ".editorconfig";
 
         // VS Code设置目录
-        private const string c_VSCodeSettingsDirectory = ".vscode";
+        private const string k_CVSCodeSettingsDirectory = ".vscode";
 
         // VS Code设置文件
-        private const string c_VSCodeSettingsFileName = "settings.json";
+        private const string k_CVSCodeSettingsFileName = "settings.json";
 
         // VS Code OmniSharp配置文件
-        private const string c_VSCodeOmniSharpFileName = "omnisharp.json";
+        private const string k_CVSCodeOmniSharpFileName = "omnisharp.json";
 
         // VS Code插件类名
-        private const string c_VSCodeUnityIntegrationClassName = "VSCodeEditor.VSCodeScriptEditor";
+        private const string k_CVSCodeUnityIntegrationClassName = "VSCodeEditor.VSCodeScriptEditor";
 
         /// <summary>
         /// IDE名称
@@ -48,9 +48,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 导出配置到VS Code
         /// </summary>
-        /// <param name="_rules">EditorConfig规则</param>
+        /// <param name="rules">EditorConfig规则</param>
         /// <returns>是否成功</returns>
-        public override bool ExportConfig(List<EditorConfigRule> _rules)
+        public override bool ExportConfig(List<EditorConfigRule> rules)
         {
             try
             {
@@ -66,8 +66,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 Directory.CreateDirectory(configPath);
 
                 // 导出EditorConfig规则
-                var editorConfigPath = Path.Combine(configPath, c_VSCodeConfigFileName);
-                EditorConfigManager.SaveRulesToFile(_rules, editorConfigPath);
+                var editorConfigPath = Path.Combine(configPath, k_CVSCodeConfigFileName);
+                EditorConfigManager.SaveRulesToFile(rules, editorConfigPath);
 
                 // 更新VS Code设置
                 UpdateVSCodeSettings(configPath);
@@ -93,7 +93,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             // 方法1：检查EditorPrefs
             var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
-            if (!string.IsNullOrEmpty(scriptEditorPref) && 
+            if (!string.IsNullOrEmpty(scriptEditorPref) &&
                 (scriptEditorPref.IndexOf("Code", StringComparison.OrdinalIgnoreCase) >= 0 ||
                  scriptEditorPref.IndexOf("VSCode", StringComparison.OrdinalIgnoreCase) >= 0))
             {
@@ -103,7 +103,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 方法2：检查当前脚本编辑器类型
             try
             {
-                var editorType = Type.GetType(c_VSCodeUnityIntegrationClassName, false);
+                var editorType = Type.GetType(k_CVSCodeUnityIntegrationClassName, false);
                 if (editorType != null)
                 {
                     var currentEditorProperty = editorType.GetProperty("CurrentEditor", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
@@ -125,13 +125,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 更新VS Code设置
         /// </summary>
-        /// <param name="_vscodeDir">VS Code设置目录</param>
-        private void UpdateVSCodeSettings(string _vscodeDir)
+        /// <param name="vscodeDir">VS Code设置目录</param>
+        private void UpdateVSCodeSettings(string vscodeDir)
         {
             try
             {
                 // 设置文件路径
-                var settingsPath = Path.Combine(_vscodeDir, c_VSCodeSettingsFileName);
+                var settingsPath = Path.Combine(vscodeDir, k_CVSCodeSettingsFileName);
 
                 // 默认设置
                 var defaultSettings = @"{
@@ -215,8 +215,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 创建OmniSharp配置
         /// </summary>
-        /// <param name="_vscodeDir">VS Code设置目录</param>
-        private void CreateOmniSharpConfig(string _vscodeDir)
+        /// <param name="vscodeDir">VS Code设置目录</param>
+        private void CreateOmniSharpConfig(string vscodeDir)
         {
             try
             {
@@ -287,7 +287,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     }
 }";
 
-                var configPath = Path.Combine(_vscodeDir, c_VSCodeOmniSharpFileName);
+                var configPath = Path.Combine(vscodeDir, k_CVSCodeOmniSharpFileName);
                 File.WriteAllText(configPath, configContent);
             }
             catch (Exception e)
@@ -408,7 +408,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                 var subDirs = Directory.GetDirectories(rootDir);
                                 foreach (var subDir in subDirs)
                                 {
-                                    if (subDir.Contains("VS Code", StringComparison.OrdinalIgnoreCase) || 
+                                    if (subDir.Contains("VS Code", StringComparison.OrdinalIgnoreCase) ||
                                         subDir.Contains("VSCode", StringComparison.OrdinalIgnoreCase))
                                     {
                                         exePath = Path.Combine(subDir, "Code.exe");
@@ -482,8 +482,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 // 尝试从Unity编辑器设置中获取VS Code路径
                 var editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
-                if (!string.IsNullOrEmpty(editorPath) && 
-                    (editorPath.Contains("Code.exe", StringComparison.OrdinalIgnoreCase) || 
+                if (!string.IsNullOrEmpty(editorPath) &&
+                    (editorPath.Contains("Code.exe", StringComparison.OrdinalIgnoreCase) ||
                      editorPath.Contains("Visual Studio Code", StringComparison.OrdinalIgnoreCase)))
                 {
                     return editorPath;
@@ -565,7 +565,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             var projectRoot = Path.GetDirectoryName(Application.dataPath);
 
             // 返回.vscode目录路径
-            return Path.Combine(projectRoot, c_VSCodeSettingsDirectory);
+            return Path.Combine(projectRoot, k_CVSCodeSettingsDirectory);
         }
     }
-} 
+}

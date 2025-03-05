@@ -20,7 +20,7 @@ namespace TByd.CodeStyle.Tests.Editor.CodeCheck
         private CodeStyleConfig m_Config;
         private CodeCheckConfig m_CodeCheckConfig;
         private CodeChecker m_CodeChecker;
-        private List<IDEIntegration> m_RegisteredIntegrations = new List<IDEIntegration>();
+        private List<IDeIntegration> m_RegisteredIntegrations = new List<IDeIntegration>();
 
         [SetUp]
         public void Setup()
@@ -57,8 +57,8 @@ dotnet_naming_style.prefix_m_.capitalization = pascal_case
             // 创建配置对象
             m_Config = ScriptableObject.CreateInstance<CodeStyleConfig>();
             m_Config.EnableCodeStyleCheck = true;
-            m_Config.EnableIDEIntegration = true;
-            m_Config.SyncEditorConfigWithIDE = true;
+            m_Config.EnableIdeIntegration = true;
+            m_Config.SyncEditorConfigWithIde = true;
 
             m_CodeCheckConfig = new CodeCheckConfig();
 
@@ -66,7 +66,7 @@ dotnet_naming_style.prefix_m_.capitalization = pascal_case
             m_CodeChecker = new CodeChecker(m_CodeCheckConfig);
 
             // 注册测试用的IDE集成
-            RegisterIntegration(new MockIdeIntegration(IDEType.Rider, true));
+            RegisterIntegration(new MockIdeIntegration(IdeType.k_Rider, true));
         }
 
         [TearDown]
@@ -98,31 +98,31 @@ dotnet_naming_style.prefix_m_.capitalization = pascal_case
         }
 
         // 注册IDE集成到Manager，并跟踪它们以便清理
-        private void RegisterIntegration(IDEIntegration integration)
+        private void RegisterIntegration(IDeIntegration integration)
         {
             // 使用反射获取或添加集成
-            var field = typeof(IDEIntegrationManager).GetField("s_Integrations",
+            var field = typeof(IdeIntegrationManager).GetField("s_Integrations",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
-            if (field != null && field.GetValue(null) is List<IDEIntegration> integrations)
+            if (field != null && field.GetValue(null) is List<IDeIntegration> integrations)
             {
                 integrations.Add(integration);
                 m_RegisteredIntegrations.Add(integration);
             }
             else
             {
-                IDEIntegrationManager.RegisterIntegration(integration);
+                IdeIntegrationManager.RegisterIntegration(integration);
                 m_RegisteredIntegrations.Add(integration);
             }
         }
 
         // 从Manager中移除IDE集成
-        private void RemoveIntegration(IDEIntegration integration)
+        private void RemoveIntegration(IDeIntegration integration)
         {
-            var field = typeof(IDEIntegrationManager).GetField("s_Integrations",
+            var field = typeof(IdeIntegrationManager).GetField("s_Integrations",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
-            if (field != null && field.GetValue(null) is List<IDEIntegration> integrations)
+            if (field != null && field.GetValue(null) is List<IDeIntegration> integrations)
             {
                 integrations.Remove(integration);
             }
@@ -140,7 +140,7 @@ dotnet_naming_style.prefix_m_.capitalization = pascal_case
 
             // 注册规则到EditorConfig管理器
             typeof(EditorConfigManager)
-                .GetField("s_Rules", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+                .GetField("s_Rules", BindingFlags.NonPublic | BindingFlags.Static)
                 ?.SetValue(null, rules);
 
             // 2. 创建测试代码文件
@@ -222,9 +222,14 @@ public class BadExampleClass : MonoBehaviour
             foreach (var issue in invalidResult.Issues)
             {
                 if (issue.Message.Contains("前缀") || issue.Message.Contains("m_"))
+                {
                     foundNamingIssue = true;
+                }
+
                 if (issue.Message.Contains("Update") && issue.Message.Contains("Find"))
+                {
                     foundFindInUpdateIssue = true;
+                }
             }
 
             Assert.IsTrue(foundNamingIssue, "应该检测到命名问题");
@@ -232,7 +237,7 @@ public class BadExampleClass : MonoBehaviour
 
             // 4. 将EditorConfig导出到IDE
             // 直接使用静态类方法
-            var exportResult = IDEIntegrationManager.ExportConfigToAllIDEs(rules);
+            var exportResult = IdeIntegrationManager.ExportConfigToAllIDEs(rules);
 
             // 验证导出结果
             Assert.IsTrue(exportResult, "配置导出应该成功");
@@ -306,15 +311,15 @@ public class BadExampleClass : MonoBehaviour
         /// <summary>
         /// 模拟IDE集成类，用于测试
         /// </summary>
-        private class MockIdeIntegration : IDEIntegration
+        private class MockIdeIntegration : IDeIntegration
         {
             public bool IsInstalled { get; private set; }
             public string Name { get; private set; }
-            public IDEType IdeType { get; private set; }
+            public IdeType IdeType { get; private set; }
             public bool ExportConfigCalled { get; private set; }
             public bool ExportRulesCalled { get; private set; }
 
-            public MockIdeIntegration(IDEType ideType, bool isInstalled)
+            public MockIdeIntegration(IdeType ideType, bool isInstalled)
             {
                 IdeType = ideType;
                 IsInstalled = isInstalled;

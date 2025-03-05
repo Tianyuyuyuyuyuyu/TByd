@@ -23,12 +23,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -69,12 +69,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -115,12 +115,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -161,12 +161,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -207,12 +207,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -253,12 +253,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -299,12 +299,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -345,12 +345,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -391,12 +391,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Unity;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Unity;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Info;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Info;
 
         /// <summary>
         /// 正则表达式模式

@@ -43,11 +43,11 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 检查代码
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_filePath">文件路径</param>
-        /// <param name="_config">代码检查配置</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="config">代码检查配置</param>
         /// <returns>检查结果</returns>
-        CodeCheckResult Check(string _code, string _filePath, CodeCheckConfig _config);
+        CodeCheckResult Check(string code, string filePath, CodeCheckConfig config);
     }
 
     /// <summary>
@@ -58,37 +58,37 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 命名规则
         /// </summary>
-        Naming,
+        k_Naming,
 
         /// <summary>
         /// 格式规则
         /// </summary>
-        Formatting,
+        k_Formatting,
 
         /// <summary>
         /// 代码风格规则
         /// </summary>
-        Style,
+        k_Style,
 
         /// <summary>
         /// 性能规则
         /// </summary>
-        Performance,
+        k_Performance,
 
         /// <summary>
         /// Unity特定规则
         /// </summary>
-        Unity,
+        k_Unity,
 
         /// <summary>
         /// 安全规则
         /// </summary>
-        Security,
+        k_Security,
 
         /// <summary>
         /// 其他规则
         /// </summary>
-        Other
+        k_Other
     }
 
     /// <summary>
@@ -99,17 +99,17 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 信息
         /// </summary>
-        Info,
+        k_Info,
 
         /// <summary>
         /// 警告
         /// </summary>
-        Warning,
+        k_Warning,
 
         /// <summary>
         /// 错误
         /// </summary>
-        Error
+        k_Error
     }
 
     /// <summary>
@@ -142,28 +142,28 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 创建失败的检查结果
         /// </summary>
-        /// <param name="_issues">问题列表</param>
+        /// <param name="issues">问题列表</param>
         /// <returns>检查结果</returns>
-        public static CodeCheckResult Failure(List<CodeCheckIssue> _issues)
+        public static CodeCheckResult Failure(List<CodeCheckIssue> issues)
         {
             return new CodeCheckResult
             {
                 IsValid = false,
-                Issues = _issues
+                Issues = issues
             };
         }
 
         /// <summary>
         /// 创建失败的检查结果
         /// </summary>
-        /// <param name="_issue">问题</param>
+        /// <param name="issue">问题</param>
         /// <returns>检查结果</returns>
-        public static CodeCheckResult Failure(CodeCheckIssue _issue)
+        public static CodeCheckResult Failure(CodeCheckIssue issue)
         {
             return new CodeCheckResult
             {
                 IsValid = false,
-                Issues = new List<CodeCheckIssue> { _issue }
+                Issues = new List<CodeCheckIssue> { issue }
             };
         }
     }
@@ -242,7 +242,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 是否启用
@@ -252,70 +252,70 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 检查代码
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_filePath">文件路径</param>
-        /// <param name="_config">代码检查配置</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="config">代码检查配置</param>
         /// <returns>检查结果</returns>
-        public abstract CodeCheckResult Check(string _code, string _filePath, CodeCheckConfig _config);
+        public abstract CodeCheckResult Check(string code, string filePath, CodeCheckConfig config);
 
         /// <summary>
         /// 创建代码检查问题
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
-        /// <param name="_lineNumber">行号</param>
-        /// <param name="_columnNumber">列号</param>
-        /// <param name="_message">问题描述</param>
-        /// <param name="_fixSuggestion">修复建议</param>
-        /// <param name="_codeSnippet">问题代码</param>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="lineNumber">行号</param>
+        /// <param name="columnNumber">列号</param>
+        /// <param name="message">问题描述</param>
+        /// <param name="fixSuggestion">修复建议</param>
+        /// <param name="codeSnippet">问题代码</param>
         /// <returns>代码检查问题</returns>
         protected CodeCheckIssue CreateIssue(
-            string _filePath,
-            int _lineNumber,
-            int _columnNumber,
-            string _message,
-            string _fixSuggestion = null,
-            string _codeSnippet = null)
+            string filePath,
+            int lineNumber,
+            int columnNumber,
+            string message,
+            string fixSuggestion = null,
+            string codeSnippet = null)
         {
             return new CodeCheckIssue
             {
                 RuleId = Id,
-                FilePath = _filePath,
-                LineNumber = _lineNumber,
-                ColumnNumber = _columnNumber,
-                Message = _message,
-                FixSuggestion = _fixSuggestion,
+                FilePath = filePath,
+                LineNumber = lineNumber,
+                ColumnNumber = columnNumber,
+                Message = message,
+                FixSuggestion = fixSuggestion,
                 Severity = Severity,
-                CodeSnippet = _codeSnippet
+                CodeSnippet = codeSnippet
             };
         }
 
         /// <summary>
         /// 获取代码行
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_lineNumber">行号（从1开始）</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="lineNumber">行号（从1开始）</param>
         /// <returns>代码行</returns>
-        protected string GetCodeLine(string _code, int _lineNumber)
+        protected string GetCodeLine(string code, int lineNumber)
         {
-            var lines = _code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            if (_lineNumber <= 0 || _lineNumber > lines.Length)
+            if (lineNumber <= 0 || lineNumber > lines.Length)
             {
                 return string.Empty;
             }
 
-            return lines[_lineNumber - 1];
+            return lines[lineNumber - 1];
         }
 
         /// <summary>
         /// 获取代码行号和列号
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_position">位置</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="position">位置</param>
         /// <returns>行号和列号</returns>
-        protected (int lineNumber, int columnNumber) GetLineAndColumn(string _code, int _position)
+        protected (int lineNumber, int columnNumber) GetLineAndColumn(string code, int position)
         {
-            if (_position < 0 || _position >= _code.Length)
+            if (position < 0 || position >= code.Length)
             {
                 return (1, 1);
             }
@@ -323,14 +323,14 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             var lineNumber = 1;
             var columnNumber = 1;
 
-            for (var i = 0; i < _position; i++)
+            for (var i = 0; i < position; i++)
             {
-                if (_code[i] == '\n')
+                if (code[i] == '\n')
                 {
                     lineNumber++;
                     columnNumber = 1;
                 }
-                else if (_code[i] != '\r')
+                else if (code[i] != '\r')
                 {
                     columnNumber++;
                 }
@@ -390,20 +390,20 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 检查代码
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_filePath">文件路径</param>
-        /// <param name="_config">代码检查配置</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="config">代码检查配置</param>
         /// <returns>检查结果</returns>
-        public override CodeCheckResult Check(string _code, string _filePath, CodeCheckConfig _config)
+        public override CodeCheckResult Check(string code, string filePath, CodeCheckConfig config)
         {
-            if (string.IsNullOrEmpty(_code))
+            if (string.IsNullOrEmpty(code))
             {
                 return CodeCheckResult.Success();
             }
 
             // 使用GetRegex方法获取正则表达式对象
             var regex = GetRegex();
-            var matches = regex.Matches(_code);
+            var matches = regex.Matches(code);
 
             if ((matches.Count > 0 && MatchIsIssue) || (matches.Count == 0 && !MatchIsIssue))
             {
@@ -414,20 +414,20 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
                     // 匹配为问题
                     foreach (Match match in matches)
                     {
-                        (var lineNumber, var columnNumber) = GetLineAndColumn(_code, match.Index);
+                        (var lineNumber, var columnNumber) = GetLineAndColumn(code, match.Index);
                         var codeSnippet = match.Value;
 
                         var message = FormatMessage(IssueMessageTemplate, match);
                         var fixSuggestion = FixSuggestionTemplate != null ? FormatMessage(FixSuggestionTemplate, match) : null;
 
-                        issues.Add(CreateIssue(_filePath, lineNumber, columnNumber, message, fixSuggestion, codeSnippet));
+                        issues.Add(CreateIssue(filePath, lineNumber, columnNumber, message, fixSuggestion, codeSnippet));
                     }
                 }
                 else
                 {
                     // 不匹配为问题
                     var message = FormatMessage(IssueMessageTemplate, null);
-                    issues.Add(CreateIssue(_filePath, 1, 1, message, FixSuggestionTemplate, null));
+                    issues.Add(CreateIssue(filePath, 1, 1, message, FixSuggestionTemplate, null));
                 }
 
                 return CodeCheckResult.Failure(issues);
@@ -439,28 +439,28 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 格式化消息
         /// </summary>
-        /// <param name="_template">模板</param>
-        /// <param name="_match">匹配结果</param>
+        /// <param name="template">模板</param>
+        /// <param name="match">匹配结果</param>
         /// <returns>格式化后的消息</returns>
-        protected virtual string FormatMessage(string _template, Match _match)
+        protected virtual string FormatMessage(string template, Match match)
         {
-            if (_match == null)
+            if (match == null)
             {
-                return _template;
+                return template;
             }
 
-            var result = _template;
+            var result = template;
 
             // 替换{0}为完整匹配
-            result = result.Replace("{0}", _match.Value);
+            result = result.Replace("{0}", match.Value);
 
             // 替换{group_name}为命名组
             // 使用GetRegex方法获取正则表达式对象
             foreach (var groupName in GetRegex().GetGroupNames())
             {
-                if (groupName != "0" && _match.Groups[groupName].Success)
+                if (groupName != "0" && match.Groups[groupName].Success)
                 {
-                    result = result.Replace("{" + groupName + "}", _match.Groups[groupName].Value);
+                    result = result.Replace("{" + groupName + "}", match.Groups[groupName].Value);
                 }
             }
 

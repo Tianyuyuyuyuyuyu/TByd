@@ -36,12 +36,12 @@ namespace TByd.CodeStyle.Tests.Editor
         /// <returns>测试状态</returns>
         private static TestStatus GetPassState(this ITestResultAdaptor result)
         {
-            if (result.TestStatus == TestStatus.Passed)
-                return TestStatus.Passed;
-            else if (result.TestStatus == TestStatus.Failed)
-                return TestStatus.Failed;
-            else
-                return TestStatus.Skipped;
+            return result.TestStatus switch
+            {
+                TestStatus.Passed => TestStatus.Passed,
+                TestStatus.Failed => TestStatus.Failed,
+                _ => TestStatus.Skipped
+            };
         }
 
         /// <summary>
@@ -56,8 +56,7 @@ namespace TByd.CodeStyle.Tests.Editor
             var testRunnerApi = ScriptableObject.CreateInstance<TestRunnerApi>();
 
             // 创建测试运行器请求
-            var request = new ExecutionSettings();
-            request.filters = new[] { new Filter { testMode = TestMode.EditMode } };
+            var request = new ExecutionSettings { filters = new[] { new Filter { testMode = TestMode.EditMode } } };
 
             // 注册回调
             testRunnerApi.RegisterCallbacks(new TestReportCallbacks());
@@ -212,14 +211,16 @@ namespace TByd.CodeStyle.Tests.Editor
 
                     switch (testResult.PassState)
                     {
-                        case UnityEditor.TestTools.TestRunner.Api.TestStatus.Passed:
+                        case TestStatus.Passed:
                             rowClass += "passed";
                             statusText = "<span class=\"passed\">通过</span>";
                             break;
-                        case UnityEditor.TestTools.TestRunner.Api.TestStatus.Failed:
+                        case TestStatus.Failed:
                             rowClass += "failed";
                             statusText = "<span class=\"failed\">失败</span>";
                             break;
+                        case TestStatus.Inconclusive:
+                        case TestStatus.Skipped:
                         default:
                             rowClass += "ignored";
                             statusText = "<span class=\"ignored\">忽略</span>";
@@ -233,10 +234,10 @@ namespace TByd.CodeStyle.Tests.Editor
                     sb.AppendLine("        </tr>");
 
                     // 测试详情
-                    if (testResult.PassState != UnityEditor.TestTools.TestRunner.Api.TestStatus.Passed)
+                    if (testResult.PassState != TestStatus.Passed)
                     {
-                        sb.AppendLine($"        <tr>");
-                        sb.AppendLine($"            <td colspan=\"3\">");
+                        sb.AppendLine("        <tr>");
+                        sb.AppendLine("            <td colspan=\"3\">");
                         sb.AppendLine($"                <div id=\"details-{i}\" class=\"details\">");
                         sb.AppendLine($"                    <div><strong>完整名称:</strong> {testResult.FullName}</div>");
                         if (!string.IsNullOrEmpty(testResult.Message))
@@ -247,9 +248,9 @@ namespace TByd.CodeStyle.Tests.Editor
                         {
                             sb.AppendLine($"                    <div><strong>堆栈跟踪:</strong><pre>{testResult.StackTrace}</pre></div>");
                         }
-                        sb.AppendLine($"                </div>");
-                        sb.AppendLine($"            </td>");
-                        sb.AppendLine($"        </tr>");
+                        sb.AppendLine("                </div>");
+                        sb.AppendLine("            </td>");
+                        sb.AppendLine("        </tr>");
                     }
                 }
 
@@ -271,7 +272,7 @@ namespace TByd.CodeStyle.Tests.Editor
             public string FullName { get; set; }
             public string Name { get; set; }
             public double Duration { get; set; }
-            public UnityEditor.TestTools.TestRunner.Api.TestStatus PassState { get; set; }
+            public TestStatus PassState { get; set; }
             public string Message { get; set; }
             public string StackTrace { get; set; }
         }

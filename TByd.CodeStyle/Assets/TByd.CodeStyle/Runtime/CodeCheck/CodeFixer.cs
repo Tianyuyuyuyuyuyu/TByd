@@ -26,12 +26,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_config">代码检查配置</param>
-        /// <param name="_checker">代码检查器</param>
-        public CodeFixer(CodeCheckConfig _config, CodeChecker _checker)
+        /// <param name="config">代码检查配置</param>
+        /// <param name="checker">代码检查器</param>
+        public CodeFixer(CodeCheckConfig config, CodeChecker checker)
         {
-            m_Config = _config;
-            m_Checker = _checker;
+            m_Config = config;
+            m_Checker = checker;
 
             // 注册默认修复处理器
             RegisterDefaultFixHandlers();
@@ -57,35 +57,35 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 注册修复处理器
         /// </summary>
-        /// <param name="_ruleId">规则ID</param>
-        /// <param name="_handler">处理器</param>
-        public void RegisterFixHandler(string _ruleId, Func<string, CodeCheckIssue, string> _handler)
+        /// <param name="ruleId">规则ID</param>
+        /// <param name="handler">处理器</param>
+        public void RegisterFixHandler(string ruleId, Func<string, CodeCheckIssue, string> handler)
         {
-            m_FixHandlers[_ruleId] = _handler;
+            m_FixHandlers[ruleId] = handler;
         }
 
         /// <summary>
         /// 修复代码
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>修复后的代码</returns>
-        public string FixCode(string _code, string _filePath)
+        public string FixCode(string code, string filePath)
         {
-            if (string.IsNullOrEmpty(_code))
+            if (string.IsNullOrEmpty(code))
             {
-                return _code;
+                return code;
             }
 
             // 检查代码
-            var result = m_Checker.CheckCode(_code, _filePath);
+            var result = m_Checker.CheckCode(code, filePath);
 
             if (result.IsValid)
             {
-                return _code;
+                return code;
             }
 
-            var fixedCode = _code;
+            var fixedCode = code;
 
             // 按规则ID分组
             var issuesByRule = result.Issues
@@ -122,25 +122,25 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 修复文件
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>是否修复成功</returns>
-        public bool FixFile(string _filePath)
+        public bool FixFile(string filePath)
         {
-            if (!File.Exists(_filePath))
+            if (!File.Exists(filePath))
             {
-                Debug.LogError($"[TByd.CodeStyle] 文件不存在: {_filePath}");
+                Debug.LogError($"[TByd.CodeStyle] 文件不存在: {filePath}");
                 return false;
             }
 
             try
             {
-                var code = File.ReadAllText(_filePath);
-                var fixedCode = FixCode(code, _filePath);
+                var code = File.ReadAllText(filePath);
+                var fixedCode = FixCode(code, filePath);
 
                 // 检查是否有修改
                 if (code != fixedCode)
                 {
-                    File.WriteAllText(_filePath, fixedCode);
+                    File.WriteAllText(filePath, fixedCode);
                     return true;
                 }
 
@@ -156,34 +156,24 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 修复目录
         /// </summary>
-        /// <param name="_directoryPath">目录路径</param>
-        /// <param name="_recursive">是否递归修复子目录</param>
+        /// <param name="directoryPath">目录路径</param>
+        /// <param name="recursive">是否递归修复子目录</param>
         /// <returns>修复的文件数量</returns>
-        public int FixDirectory(string _directoryPath, bool _recursive = true)
+        public int FixDirectory(string directoryPath, bool recursive = true)
         {
-            if (!Directory.Exists(_directoryPath))
+            if (!Directory.Exists(directoryPath))
             {
-                Debug.LogError($"[TByd.CodeStyle] 目录不存在: {_directoryPath}");
+                Debug.LogError($"[TByd.CodeStyle] 目录不存在: {directoryPath}");
                 return 0;
             }
 
-            var fixedCount = 0;
-
             // 获取所有C#文件
             var files = Directory.GetFiles(
-                _directoryPath,
+                directoryPath,
                 "*.cs",
-                _recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
+                recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
-            foreach (var filePath in files)
-            {
-                if (FixFile(filePath))
-                {
-                    fixedCount++;
-                }
-            }
-
-            return fixedCount;
+            return files.Count(FixFile);
         }
 
         #region 命名规则修复处理器
@@ -191,23 +181,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 修复私有字段命名
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_issue">问题</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="issue">问题</param>
         /// <returns>修复后的代码</returns>
-        private string FixPrivateFieldNaming(string _code, CodeCheckIssue _issue)
+        private string FixPrivateFieldNaming(string code, CodeCheckIssue issue)
         {
             // 提取代码片段
-            var codeSnippet = _issue.CodeSnippet;
+            var codeSnippet = issue.CodeSnippet;
             if (string.IsNullOrEmpty(codeSnippet))
             {
-                return _code;
+                return code;
             }
 
             // 提取字段名
             var match = Regex.Match(codeSnippet, @"private\s+(?!static\s+)(?<type>[\w<>[\],\s]+)\s+(?<name>\w+)\s*[;=]");
             if (!match.Success)
             {
-                return _code;
+                return code;
             }
 
             var fieldName = match.Groups["name"].Value;
@@ -215,29 +205,29 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             var newFieldName = $"m_{pascalName}";
 
             // 替换字段名
-            return ReplaceAtPosition(_code, _issue.LineNumber, _issue.ColumnNumber, fieldName, newFieldName);
+            return ReplaceAtPosition(code, issue.LineNumber, issue.ColumnNumber, fieldName, newFieldName);
         }
 
         /// <summary>
         /// 修复静态字段命名
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_issue">问题</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="issue">问题</param>
         /// <returns>修复后的代码</returns>
-        private string FixStaticFieldNaming(string _code, CodeCheckIssue _issue)
+        private string FixStaticFieldNaming(string code, CodeCheckIssue issue)
         {
             // 提取代码片段
-            var codeSnippet = _issue.CodeSnippet;
+            var codeSnippet = issue.CodeSnippet;
             if (string.IsNullOrEmpty(codeSnippet))
             {
-                return _code;
+                return code;
             }
 
             // 提取字段名
             var match = Regex.Match(codeSnippet, @"private\s+static\s+(?<type>[\w<>[\],\s]+)\s+(?<name>\w+)\s*[;=]");
             if (!match.Success)
             {
-                return _code;
+                return code;
             }
 
             var fieldName = match.Groups["name"].Value;
@@ -245,29 +235,29 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             var newFieldName = $"s_{pascalName}";
 
             // 替换字段名
-            return ReplaceAtPosition(_code, _issue.LineNumber, _issue.ColumnNumber, fieldName, newFieldName);
+            return ReplaceAtPosition(code, issue.LineNumber, issue.ColumnNumber, fieldName, newFieldName);
         }
 
         /// <summary>
         /// 修复常量命名
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_issue">问题</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="issue">问题</param>
         /// <returns>修复后的代码</returns>
-        private string FixConstantNaming(string _code, CodeCheckIssue _issue)
+        private string FixConstantNaming(string code, CodeCheckIssue issue)
         {
             // 提取代码片段
-            var codeSnippet = _issue.CodeSnippet;
+            var codeSnippet = issue.CodeSnippet;
             if (string.IsNullOrEmpty(codeSnippet))
             {
-                return _code;
+                return code;
             }
 
             // 提取常量名
             var match = Regex.Match(codeSnippet, @"(?:private|public|protected|internal)\s+const\s+(?<type>[\w<>[\],\s]+)\s+(?<name>\w+)\s*[;=]");
             if (!match.Success)
             {
-                return _code;
+                return code;
             }
 
             var constantName = match.Groups["name"].Value;
@@ -275,87 +265,87 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             var newConstantName = $"c_{pascalName}";
 
             // 替换常量名
-            return ReplaceAtPosition(_code, _issue.LineNumber, _issue.ColumnNumber, constantName, newConstantName);
+            return ReplaceAtPosition(code, issue.LineNumber, issue.ColumnNumber, constantName, newConstantName);
         }
 
         /// <summary>
         /// 修复属性命名
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_issue">问题</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="issue">问题</param>
         /// <returns>修复后的代码</returns>
-        private string FixPropertyNaming(string _code, CodeCheckIssue _issue)
+        private string FixPropertyNaming(string code, CodeCheckIssue issue)
         {
             // 提取代码片段
-            var codeSnippet = _issue.CodeSnippet;
+            var codeSnippet = issue.CodeSnippet;
             if (string.IsNullOrEmpty(codeSnippet))
             {
-                return _code;
+                return code;
             }
 
             // 提取属性名
             var match = Regex.Match(codeSnippet, @"(?:public|protected|internal)\s+(?<type>[\w<>[\],\s]+)\s+(?<name>[a-z]\w*)\s*\{");
             if (!match.Success)
             {
-                return _code;
+                return code;
             }
 
             var propertyName = match.Groups["name"].Value;
             var pascalName = ToPascalCase(propertyName);
 
             // 替换属性名
-            return ReplaceAtPosition(_code, _issue.LineNumber, _issue.ColumnNumber, propertyName, pascalName);
+            return ReplaceAtPosition(code, issue.LineNumber, issue.ColumnNumber, propertyName, pascalName);
         }
 
         /// <summary>
         /// 修复方法命名
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_issue">问题</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="issue">问题</param>
         /// <returns>修复后的代码</returns>
-        private string FixMethodNaming(string _code, CodeCheckIssue _issue)
+        private string FixMethodNaming(string code, CodeCheckIssue issue)
         {
             // 提取代码片段
-            var codeSnippet = _issue.CodeSnippet;
+            var codeSnippet = issue.CodeSnippet;
             if (string.IsNullOrEmpty(codeSnippet))
             {
-                return _code;
+                return code;
             }
 
             // 提取方法名
             var match = Regex.Match(codeSnippet, @"(?:public|protected|internal|private)\s+(?<returnType>[\w<>[\],\s]+)\s+(?<name>[a-z]\w*)\s*\(");
             if (!match.Success)
             {
-                return _code;
+                return code;
             }
 
             var methodName = match.Groups["name"].Value;
             var pascalName = ToPascalCase(methodName);
 
             // 替换方法名
-            return ReplaceAtPosition(_code, _issue.LineNumber, _issue.ColumnNumber, methodName, pascalName);
+            return ReplaceAtPosition(code, issue.LineNumber, issue.ColumnNumber, methodName, pascalName);
         }
 
         /// <summary>
         /// 修复参数命名
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_issue">问题</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="issue">问题</param>
         /// <returns>修复后的代码</returns>
-        private string FixParameterNaming(string _code, CodeCheckIssue _issue)
+        private string FixParameterNaming(string code, CodeCheckIssue issue)
         {
             // 提取代码片段
-            var codeSnippet = _issue.CodeSnippet;
+            var codeSnippet = issue.CodeSnippet;
             if (string.IsNullOrEmpty(codeSnippet))
             {
-                return _code;
+                return code;
             }
 
             // 提取参数名
             var match = Regex.Match(codeSnippet, @"\(\s*(?<type>[\w<>\[\],\s]+)\s+(?<n>\w+)(?:,|\))");
             if (!match.Success)
             {
-                return _code;
+                return code;
             }
 
             var paramName = match.Groups["n"].Value;
@@ -363,7 +353,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
             var newParamName = $"_{camelName}";
 
             // 替换参数名
-            return ReplaceAtPosition(_code, _issue.LineNumber, _issue.ColumnNumber, paramName, newParamName);
+            return ReplaceAtPosition(code, issue.LineNumber, issue.ColumnNumber, paramName, newParamName);
         }
 
         #endregion
@@ -373,20 +363,20 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 修复空MonoBehaviour方法
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_issue">问题</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="issue">问题</param>
         /// <returns>修复后的代码</returns>
-        private string FixEmptyMonoBehaviourMethods(string _code, CodeCheckIssue _issue)
+        private string FixEmptyMonoBehaviourMethods(string code, CodeCheckIssue issue)
         {
             // 提取代码片段
-            var codeSnippet = _issue.CodeSnippet;
+            var codeSnippet = issue.CodeSnippet;
             if (string.IsNullOrEmpty(codeSnippet))
             {
-                return _code;
+                return code;
             }
 
             // 删除整个方法
-            return _code.Replace(codeSnippet, string.Empty);
+            return code.Replace(codeSnippet, string.Empty);
         }
 
         #endregion
@@ -396,91 +386,91 @@ namespace TByd.CodeStyle.Runtime.CodeCheck
         /// <summary>
         /// 转换为PascalCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>PascalCase名称</returns>
-        private string ToPascalCase(string _name)
+        private string ToPascalCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是PascalCase，直接返回
-            if (char.IsUpper(_name[0]))
+            if (char.IsUpper(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是camelCase，转换为PascalCase
-            return char.ToUpper(_name[0]) + _name.Substring(1);
+            return char.ToUpper(name[0]) + name.Substring(1);
         }
 
         /// <summary>
         /// 转换为camelCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>camelCase名称</returns>
-        private string ToCamelCase(string _name)
+        private string ToCamelCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是camelCase，直接返回
-            if (char.IsLower(_name[0]))
+            if (char.IsLower(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是PascalCase，转换为camelCase
-            return char.ToLower(_name[0]) + _name.Substring(1);
+            return char.ToLower(name[0]) + name.Substring(1);
         }
 
         /// <summary>
         /// 在指定位置替换文本
         /// </summary>
-        /// <param name="_code">代码内容</param>
-        /// <param name="_lineNumber">行号</param>
-        /// <param name="_columnNumber">列号</param>
-        /// <param name="_oldText">旧文本</param>
-        /// <param name="_newText">新文本</param>
+        /// <param name="code">代码内容</param>
+        /// <param name="lineNumber">行号</param>
+        /// <param name="columnNumber">列号</param>
+        /// <param name="oldText">旧文本</param>
+        /// <param name="newText">新文本</param>
         /// <returns>替换后的代码</returns>
-        private string ReplaceAtPosition(string _code, int _lineNumber, int _columnNumber, string _oldText, string _newText)
+        private string ReplaceAtPosition(string code, int lineNumber, int columnNumber, string oldText, string newText)
         {
             // 分割为行
-            var lines = _code.Split(new[] { '\r', '\n' }, StringSplitOptions.None);
+            var lines = code.Split(new[] { '\r', '\n' }, StringSplitOptions.None);
 
             // 检查行号是否有效
-            if (_lineNumber <= 0 || _lineNumber > lines.Length)
+            if (lineNumber <= 0 || lineNumber > lines.Length)
             {
-                return _code;
+                return code;
             }
 
             // 获取行内容
-            var line = lines[_lineNumber - 1];
+            var line = lines[lineNumber - 1];
 
             // 检查列号是否有效
-            if (_columnNumber <= 0 || _columnNumber > line.Length)
+            if (columnNumber <= 0 || columnNumber > line.Length)
             {
-                return _code;
+                return code;
             }
 
             // 查找旧文本在行中的位置
-            var startIndex = line.IndexOf(_oldText, _columnNumber - 1);
+            var startIndex = line.IndexOf(oldText, columnNumber - 1);
             if (startIndex < 0)
             {
                 // 如果在指定列号后找不到，尝试在整行中查找
-                startIndex = line.IndexOf(_oldText);
+                startIndex = line.IndexOf(oldText);
                 if (startIndex < 0)
                 {
-                    return _code;
+                    return code;
                 }
             }
 
             // 替换文本
-            var newLine = line.Substring(0, startIndex) + _newText + line.Substring(startIndex + _oldText.Length);
-            lines[_lineNumber - 1] = newLine;
+            var newLine = line.Substring(0, startIndex) + newText + line.Substring(startIndex + oldText.Length);
+            lines[lineNumber - 1] = newLine;
 
             // 重新组合代码
             return string.Join(Environment.NewLine, lines);

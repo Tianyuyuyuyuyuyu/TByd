@@ -25,12 +25,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Naming;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -50,38 +50,38 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 格式化消息
         /// </summary>
-        /// <param name="_template">模板</param>
-        /// <param name="_match">匹配结果</param>
+        /// <param name="template">模板</param>
+        /// <param name="match">匹配结果</param>
         /// <returns>格式化后的消息</returns>
-        protected override string FormatMessage(string _template, Match _match)
+        protected override string FormatMessage(string template, Match match)
         {
-            var name = _match.Groups["name"].Value;
+            var name = match.Groups["name"].Value;
             var pascalName = ToPascalCase(name);
 
-            return _template.Replace("{name}", name)
+            return template.Replace("{name}", name)
                            .Replace("{pascalName}", pascalName);
         }
 
         /// <summary>
         /// 转换为PascalCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>PascalCase名称</returns>
-        private string ToPascalCase(string _name)
+        private string ToPascalCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是PascalCase，直接返回
-            if (char.IsUpper(_name[0]))
+            if (char.IsUpper(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是camelCase，转换为PascalCase
-            return char.ToUpper(_name[0]) + _name.Substring(1);
+            return char.ToUpper(name[0]) + name.Substring(1);
         }
     }
 
@@ -108,7 +108,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Naming;
 
         /// <summary>
         /// 正则表达式模式
@@ -128,16 +128,16 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 格式化消息
         /// </summary>
-        /// <param name="_template">模板</param>
-        /// <param name="_match">匹配结果</param>
+        /// <param name="template">模板</param>
+        /// <param name="match">匹配结果</param>
         /// <returns>格式化后的消息</returns>
-        protected override string FormatMessage(string _template, Match _match)
+        protected override string FormatMessage(string template, Match match)
         {
-            var result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(template, match);
 
-            if (_match != null && _match.Groups["name"].Success)
+            if (match != null && match.Groups["name"].Success)
             {
-                var name = _match.Groups["name"].Value;
+                var name = match.Groups["name"].Value;
                 var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
@@ -149,23 +149,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 转换为PascalCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>PascalCase名称</returns>
-        private string ToPascalCase(string _name)
+        private string ToPascalCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是PascalCase，直接返回
-            if (char.IsUpper(_name[0]))
+            if (char.IsUpper(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是camelCase，转换为PascalCase
-            return char.ToUpper(_name[0]) + _name.Substring(1);
+            return char.ToUpper(name[0]) + name.Substring(1);
         }
     }
 
@@ -192,7 +192,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Naming;
 
         /// <summary>
         /// 正则表达式模式
@@ -212,16 +212,16 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 格式化消息
         /// </summary>
-        /// <param name="_template">模板</param>
-        /// <param name="_match">匹配结果</param>
+        /// <param name="template">模板</param>
+        /// <param name="match">匹配结果</param>
         /// <returns>格式化后的消息</returns>
-        protected override string FormatMessage(string _template, Match _match)
+        protected override string FormatMessage(string template, Match match)
         {
-            var result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(template, match);
 
-            if (_match != null && _match.Groups["name"].Success)
+            if (match != null && match.Groups["name"].Success)
             {
-                var name = _match.Groups["name"].Value;
+                var name = match.Groups["name"].Value;
                 var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
@@ -233,23 +233,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 转换为PascalCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>PascalCase名称</returns>
-        private string ToPascalCase(string _name)
+        private string ToPascalCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是PascalCase，直接返回
-            if (char.IsUpper(_name[0]))
+            if (char.IsUpper(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是camelCase，转换为PascalCase
-            return char.ToUpper(_name[0]) + _name.Substring(1);
+            return char.ToUpper(name[0]) + name.Substring(1);
         }
     }
 
@@ -276,7 +276,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Naming;
 
         /// <summary>
         /// 正则表达式模式
@@ -296,16 +296,16 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 格式化消息
         /// </summary>
-        /// <param name="_template">模板</param>
-        /// <param name="_match">匹配结果</param>
+        /// <param name="template">模板</param>
+        /// <param name="match">匹配结果</param>
         /// <returns>格式化后的消息</returns>
-        protected override string FormatMessage(string _template, Match _match)
+        protected override string FormatMessage(string template, Match match)
         {
-            var result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(template, match);
 
-            if (_match != null && _match.Groups["name"].Success)
+            if (match != null && match.Groups["name"].Success)
             {
-                var name = _match.Groups["name"].Value;
+                var name = match.Groups["name"].Value;
                 var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
@@ -317,23 +317,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 转换为PascalCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>PascalCase名称</returns>
-        private string ToPascalCase(string _name)
+        private string ToPascalCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是PascalCase，直接返回
-            if (char.IsUpper(_name[0]))
+            if (char.IsUpper(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是camelCase，转换为PascalCase
-            return char.ToUpper(_name[0]) + _name.Substring(1);
+            return char.ToUpper(name[0]) + name.Substring(1);
         }
     }
 
@@ -360,7 +360,7 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Naming;
 
         /// <summary>
         /// 正则表达式模式
@@ -380,16 +380,16 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 格式化消息
         /// </summary>
-        /// <param name="_template">模板</param>
-        /// <param name="_match">匹配结果</param>
+        /// <param name="template">模板</param>
+        /// <param name="match">匹配结果</param>
         /// <returns>格式化后的消息</returns>
-        protected override string FormatMessage(string _template, Match _match)
+        protected override string FormatMessage(string template, Match match)
         {
-            var result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(template, match);
 
-            if (_match != null && _match.Groups["name"].Success)
+            if (match != null && match.Groups["name"].Success)
             {
-                var name = _match.Groups["name"].Value;
+                var name = match.Groups["name"].Value;
                 var pascalName = ToPascalCase(name);
 
                 result = result.Replace("{PascalName}", pascalName);
@@ -401,23 +401,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 转换为PascalCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>PascalCase名称</returns>
-        private string ToPascalCase(string _name)
+        private string ToPascalCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是PascalCase，直接返回
-            if (char.IsUpper(_name[0]))
+            if (char.IsUpper(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是camelCase，转换为PascalCase
-            return char.ToUpper(_name[0]) + _name.Substring(1);
+            return char.ToUpper(name[0]) + name.Substring(1);
         }
     }
 
@@ -444,12 +444,12 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 规则类别
         /// </summary>
-        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.Naming;
+        public override CodeCheckRuleCategory Category => CodeCheckRuleCategory.k_Naming;
 
         /// <summary>
         /// 规则严重程度
         /// </summary>
-        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.Warning;
+        public new CodeCheckRuleSeverity Severity { get; set; } = CodeCheckRuleSeverity.k_Warning;
 
         /// <summary>
         /// 正则表达式模式
@@ -469,16 +469,16 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 格式化消息
         /// </summary>
-        /// <param name="_template">模板</param>
-        /// <param name="_match">匹配结果</param>
+        /// <param name="template">模板</param>
+        /// <param name="match">匹配结果</param>
         /// <returns>格式化后的消息</returns>
-        protected override string FormatMessage(string _template, Match _match)
+        protected override string FormatMessage(string template, Match match)
         {
-            var result = base.FormatMessage(_template, _match);
+            var result = base.FormatMessage(template, match);
 
-            if (_match != null && _match.Groups["name"].Success)
+            if (match != null && match.Groups["name"].Success)
             {
-                var name = _match.Groups["name"].Value;
+                var name = match.Groups["name"].Value;
                 var camelName = ToCamelCase(name);
 
                 result = result.Replace("{camelName}", camelName);
@@ -490,23 +490,23 @@ namespace TByd.CodeStyle.Runtime.CodeCheck.Rules
         /// <summary>
         /// 转换为camelCase
         /// </summary>
-        /// <param name="_name">名称</param>
+        /// <param name="name">名称</param>
         /// <returns>camelCase名称</returns>
-        private string ToCamelCase(string _name)
+        private string ToCamelCase(string name)
         {
-            if (string.IsNullOrEmpty(_name))
+            if (string.IsNullOrEmpty(name))
             {
                 return string.Empty;
             }
 
             // 如果已经是camelCase，直接返回
-            if (char.IsLower(_name[0]))
+            if (char.IsLower(name[0]))
             {
-                return _name;
+                return name;
             }
 
             // 如果是PascalCase，转换为camelCase
-            return char.ToLower(_name[0]) + _name.Substring(1);
+            return char.ToLower(name[0]) + name.Substring(1);
         }
     }
 }

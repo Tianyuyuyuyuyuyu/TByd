@@ -8,13 +8,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     /// <summary>
     /// IDE配置同步管理器
     /// </summary>
-    public static class IDEConfigSyncManager
+    public static class IdeConfigSyncManager
     {
         // 同步配置文件名
-        private const string c_SyncConfigFileName = "sync_config.json";
+        private const string k_CSyncConfigFileName = "sync_config.json";
 
         // 同步锁文件名
-        private const string c_SyncLockFileName = "sync.lock";
+        private const string k_CSyncLockFileName = "sync.lock";
 
         // 用于测试的同步配置路径，允许测试修改同步配置的存储位置
         private static string s_SyncConfigPathForTesting = null;
@@ -22,7 +22,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 冲突文件列表
         /// </summary>
-        private static List<string> _conflictFiles = new List<string>();
+        private static List<string> s_ConflictFiles = new List<string>();
 
         /// <summary>
         /// 同步配置
@@ -33,12 +33,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 上次同步时间
             /// </summary>
-            public DateTime LastSyncTime;
+            public DateTime lastSyncTime;
 
             /// <summary>
             /// 同步状态
             /// </summary>
-            public Dictionary<string, string> FileHashes = new Dictionary<string, string>();
+            public Dictionary<string, string> fileHashes = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -49,40 +49,40 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             /// <summary>
             /// 是否成功
             /// </summary>
-            public bool Success;
+            public bool success;
 
             /// <summary>
             /// 更新的文件列表
             /// </summary>
-            public List<string> UpdatedFiles = new List<string>();
+            public List<string> updatedFiles = new List<string>();
 
             /// <summary>
             /// 冲突的文件列表
             /// </summary>
-            public List<string> ConflictFiles = new List<string>();
+            public List<string> conflictFiles = new List<string>();
 
             /// <summary>
             /// 错误信息
             /// </summary>
-            public string Error;
+            public string error;
         }
 
         /// <summary>
         /// 同步IDE配置
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
+        /// <param name="ideType">IDE类型</param>
         /// <returns>同步结果</returns>
-        public static SyncResult SynchronizeConfig(IDEType _ideType)
+        public static SyncResult SynchronizeConfig(IdeType ideType)
         {
             var result = new SyncResult
             {
-                Success = false,
-                UpdatedFiles = new List<string>(),
-                ConflictFiles = new List<string>()
+                success = false,
+                updatedFiles = new List<string>(),
+                conflictFiles = new List<string>()
             };
 
             // 确保配置目录存在
-            var configPath = GetConfigPath(_ideType);
+            var configPath = GetConfigPath(ideType);
             if (!Directory.Exists(configPath))
             {
                 // 如果是测试环境，尝试创建目录
@@ -123,7 +123,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             if (!AcquireSyncLock())
             {
                 Debug.LogError("[TByd.CodeStyle] 无法获取同步锁，可能有其他同步操作正在进行");
-                result.Error = "无法获取同步锁，可能有其他同步操作正在进行";
+                result.error = "无法获取同步锁，可能有其他同步操作正在进行";
                 return result;
             }
 
@@ -135,13 +135,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 {
                     config = new SyncConfig
                     {
-                        LastSyncTime = DateTime.MinValue,
-                        FileHashes = new Dictionary<string, string>()
+                        lastSyncTime = DateTime.MinValue,
+                        fileHashes = new Dictionary<string, string>()
                     };
                 }
 
                 // 获取当前所有配置文件
-                var currentFiles = GetConfigFiles(_ideType);
+                var currentFiles = GetConfigFiles(ideType);
 
                 // 跟踪需要更新的文件
                 var filesToUpdate = new List<string>();
@@ -191,7 +191,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     var currentHash = CalculateFileHash(file);
 
                     // 检查文件是否在同步配置中
-                    if (config.FileHashes.TryGetValue(relativePath, out var storedHash))
+                    if (config.fileHashes.TryGetValue(relativePath, out var storedHash))
                     {
                         // 文件已存在，检查是否已更改
                         if (currentHash != storedHash)
@@ -207,7 +207,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                 if (remoteHash != storedHash)
                                 {
                                     // 远程和本地都已更改，存在冲突
-                                    result.ConflictFiles.Add(file);
+                                    result.conflictFiles.Add(file);
                                     Debug.LogWarning($"[TByd.CodeStyle] 文件存在冲突: {file}");
                                 }
                                 else
@@ -231,7 +231,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查已删除的文件
-                foreach (var relativePath in config.FileHashes.Keys)
+                foreach (var relativePath in config.fileHashes.Keys)
                 {
                     if (!existingFiles.Contains(relativePath))
                     {
@@ -255,9 +255,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                     // 更新同步配置
                     var relativePath = GetRelativePath(file, configPath);
-                    config.FileHashes[relativePath] = CalculateFileHash(file);
+                    config.fileHashes[relativePath] = CalculateFileHash(file);
 
-                    result.UpdatedFiles.Add(file);
+                    result.updatedFiles.Add(file);
                     Debug.Log($"[TByd.CodeStyle] 已更新文件: {file}");
                 }
 
@@ -265,7 +265,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 foreach (var file in deletedFiles)
                 {
                     var relativePath = GetRelativePath(file, configPath);
-                    config.FileHashes.Remove(relativePath);
+                    config.fileHashes.Remove(relativePath);
 
                     // 删除远程文件
                     var remotePath = GetRemoteConfigPath(file);
@@ -277,21 +277,21 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 仅在有变化时更新同步时间和保存配置
-                if (filesToUpdate.Count > 0 || deletedFiles.Count > 0 || result.ConflictFiles.Count > 0)
+                if (filesToUpdate.Count > 0 || deletedFiles.Count > 0 || result.conflictFiles.Count > 0)
                 {
                     // 更新同步时间
-                    config.LastSyncTime = DateTime.Now;
+                    config.lastSyncTime = DateTime.Now;
 
                     // 保存同步配置
                     SaveSyncConfig(config);
                 }
 
-                result.Success = true;
+                result.success = true;
             }
             catch (Exception e)
             {
                 Debug.LogError($"[TByd.CodeStyle] 同步配置失败: {e.Message}");
-                result.Error = e.Message;
+                result.error = e.Message;
             }
             finally
             {
@@ -308,13 +308,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 解决配置冲突
         /// </summary>
-        /// <param name="_useLocal">使用本地版本</param>
+        /// <param name="useLocal">使用本地版本</param>
         /// <returns>是否成功</returns>
-        public static bool ResolveConflicts(bool _useLocal)
+        public static bool ResolveConflicts(bool useLocal)
         {
             try
             {
-                if (_conflictFiles == null || _conflictFiles.Count == 0)
+                if (s_ConflictFiles == null || s_ConflictFiles.Count == 0)
                 {
                     Debug.LogWarning("[TByd.CodeStyle] 没有需要解决的冲突");
                     return true;
@@ -328,17 +328,17 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     return false;
                 }
 
-                foreach (var file in _conflictFiles)
+                foreach (var file in s_ConflictFiles)
                 {
                     var localPath = file;
                     var remotePath = GetRemoteConfigPath(file);
 
-                    if (_useLocal)
+                    if (useLocal)
                     {
                         if (File.Exists(localPath))
                         {
                             // 使用本地版本，更新配置
-                            config.FileHashes[file] = CalculateFileHash(localPath);
+                            config.fileHashes[file] = CalculateFileHash(localPath);
                             Debug.Log($"[TByd.CodeStyle] 已使用本地版本: {file}");
                         }
                     }
@@ -367,7 +367,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             }
 
                             File.Copy(remotePath, localPath, true);
-                            config.FileHashes[file] = CalculateFileHash(localPath);
+                            config.fileHashes[file] = CalculateFileHash(localPath);
                             Debug.Log($"[TByd.CodeStyle] 已使用远程版本: {file}");
                         }
                     }
@@ -375,7 +375,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
                 // 保存同步配置
                 SaveSyncConfig(config);
-                _conflictFiles.Clear();
+                s_ConflictFiles.Clear();
                 return true;
             }
             catch (Exception e)
@@ -388,19 +388,19 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 获取远程文件路径
         /// </summary>
-        /// <param name="_localFilePath">本地文件路径</param>
-        /// <param name="_ideType">IDE类型</param>
+        /// <param name="localFilePath">本地文件路径</param>
+        /// <param name="ideType">IDE类型</param>
         /// <returns>远程文件路径</returns>
-        private static string GetRemoteFilePath(string _localFilePath, IDEType _ideType)
+        private static string GetRemoteFilePath(string localFilePath, IdeType ideType)
         {
             // 获取配置路径
-            var configPath = GetConfigPath(_ideType);
+            var configPath = GetConfigPath(ideType);
 
             // 计算相对路径
-            var relativePath = GetRelativePath(_localFilePath, configPath);
+            var relativePath = GetRelativePath(localFilePath, configPath);
 
             // 获取远程配置路径
-            var remoteConfigPath = GetRemoteConfigPath(_localFilePath);
+            var remoteConfigPath = GetRemoteConfigPath(localFilePath);
 
             // 组合远程文件路径
             return Path.Combine(remoteConfigPath, relativePath);
@@ -409,36 +409,36 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 获取远程配置文件路径
         /// </summary>
-        /// <param name="_localPath">本地文件路径</param>
+        /// <param name="localPath">本地文件路径</param>
         /// <returns>远程文件路径</returns>
-        private static string GetRemoteConfigPath(string _localPath)
+        private static string GetRemoteConfigPath(string localPath)
         {
             try
             {
                 var remotePath = string.Empty;
 
                 // 处理测试路径
-                if (_localPath.Contains("TByd.CodeStyle\\Assets") || _localPath.Contains("TByd.CodeStyle/Assets"))
+                if (localPath.Contains("TByd.CodeStyle\\Assets") || localPath.Contains("TByd.CodeStyle/Assets"))
                 {
                     // 判断是否是测试环境
-                    if (_localPath.Contains("Test") || _localPath.Contains("test"))
+                    if (localPath.Contains("Test") || localPath.Contains("test"))
                     {
                         var remoteTestDir = Path.Combine(Path.GetTempPath(), "tbyd", "codestyle", "RemoteConfigs");
-                        var fileName = Path.GetFileName(_localPath);
-                        var subDir = Path.GetFileName(Path.GetDirectoryName(_localPath));
+                        var fileName = Path.GetFileName(localPath);
+                        var subDir = Path.GetFileName(Path.GetDirectoryName(localPath));
                         remotePath = Path.Combine(remoteTestDir, subDir, fileName);
                     }
                     else
                     {
                         // 项目代码，使用固定的远程路径
-                        remotePath = _localPath.Replace("TByd.CodeStyle\\Assets", "TByd.CodeStyle\\RemoteConfigs")
+                        remotePath = localPath.Replace("TByd.CodeStyle\\Assets", "TByd.CodeStyle\\RemoteConfigs")
                                      .Replace("TByd.CodeStyle/Assets", "TByd.CodeStyle/RemoteConfigs");
                     }
                 }
-                else if (_localPath.Contains("AppData\\Local\\Temp") || _localPath.Contains("AppData/Local/Temp"))
+                else if (localPath.Contains("AppData\\Local\\Temp") || localPath.Contains("AppData/Local/Temp"))
                 {
                     // 临时目录处理
-                    var parts = _localPath.Split(new[] { "\\Config\\", "/Config/" }, StringSplitOptions.None);
+                    var parts = localPath.Split(new[] { "\\Config\\", "/Config/" }, StringSplitOptions.None);
                     if (parts.Length > 1)
                     {
                         var basePath = parts[0];
@@ -448,14 +448,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     else
                     {
                         // 无法解析测试路径，使用默认远程目录
-                        var fileName = Path.GetFileName(_localPath);
+                        var fileName = Path.GetFileName(localPath);
                         remotePath = Path.Combine(Path.GetTempPath(), "tbyd", "codestyle", "RemoteConfigs", fileName);
                     }
                 }
                 else
                 {
                     // 默认处理
-                    var fileName = Path.GetFileName(_localPath);
+                    var fileName = Path.GetFileName(localPath);
                     var remoteDir = Path.Combine(Path.GetTempPath(), "tbyd", "codestyle", "RemoteConfigs");
                     remotePath = Path.Combine(remoteDir, fileName);
                 }
@@ -489,22 +489,22 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             catch (Exception ex)
             {
                 Debug.LogError($"[TByd.CodeStyle] 获取远程配置路径失败: {ex.Message}");
-                return _localPath.Replace(".vscode", "RemoteConfigs");
+                return localPath.Replace(".vscode", "RemoteConfigs");
             }
         }
 
         /// <summary>
         /// 获取需要同步的文件
         /// </summary>
-        private static List<string> GetFilesToSync(IDEType _ideType, string _configPath)
+        private static List<string> GetFilesToSync(IdeType ideType, string configPath)
         {
             var files = new List<string>();
 
-            switch (_ideType)
+            switch (ideType)
             {
-                case IDEType.Rider:
+                case IdeType.k_Rider:
                     // Rider配置文件
-                    var ideaPath = Path.Combine(_configPath, ".idea");
+                    var ideaPath = Path.Combine(configPath, ".idea");
                     if (Directory.Exists(ideaPath))
                     {
                         // 获取.idea目录下的所有XML和JSON文件
@@ -526,14 +526,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     }
                     break;
 
-                case IDEType.VisualStudio:
+                case IdeType.k_VisualStudio:
                     // Visual Studio配置文件
-                    files.Add(Path.Combine(_configPath, ".vssettings"));
+                    files.Add(Path.Combine(configPath, ".vssettings"));
                     break;
 
-                case IDEType.VSCode:
+                case IdeType.k_VSCode:
                     // VS Code配置文件
-                    var vscodePath = Path.Combine(_configPath, ".vscode");
+                    var vscodePath = Path.Combine(configPath, ".vscode");
                     if (Directory.Exists(vscodePath))
                     {
                         files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.AllDirectories));
@@ -542,7 +542,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // EditorConfig文件
-            var editorConfigPath = Path.Combine(_configPath, ".editorconfig");
+            var editorConfigPath = Path.Combine(configPath, ".editorconfig");
             if (File.Exists(editorConfigPath))
             {
                 files.Add(editorConfigPath);
@@ -554,15 +554,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 获取配置路径
         /// </summary>
-        private static string GetConfigPath(IDEType _ideType)
+        private static string GetConfigPath(IdeType ideType)
         {
-            switch (_ideType)
+            switch (ideType)
             {
-                case IDEType.Rider:
+                case IdeType.k_Rider:
                     return Path.GetDirectoryName(Application.dataPath);
-                case IDEType.VisualStudio:
+                case IdeType.k_VisualStudio:
                     return Path.GetDirectoryName(Application.dataPath);
-                case IDEType.VSCode:
+                case IdeType.k_VSCode:
                     return Path.GetDirectoryName(Application.dataPath);
                 default:
                     return Path.GetDirectoryName(Application.dataPath);
@@ -572,11 +572,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 计算文件哈希
         /// </summary>
-        private static string CalculateFileHash(string _filePath)
+        private static string CalculateFileHash(string filePath)
         {
             try
             {
-                var fileBytes = File.ReadAllBytes(_filePath);
+                var fileBytes = File.ReadAllBytes(filePath);
                 var md5 = System.Security.Cryptography.MD5.Create();
                 var hashBytes = md5.ComputeHash(fileBytes);
                 return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
@@ -590,7 +590,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 检查文件是否有冲突
         /// </summary>
-        private static bool HasConflict(string _filePath)
+        private static bool HasConflict(string filePath)
         {
             // 这里可以实现更复杂的冲突检测逻辑
             // 简单起见，我们认为如果文件被修改且本地也有修改，就是冲突
@@ -600,7 +600,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 更新文件
         /// </summary>
-        private static void UpdateFile(string _filePath, IDEType _ideType)
+        private static void UpdateFile(string filePath, IdeType ideType)
         {
             // 在实际应用中，这里会实现复杂的文件更新逻辑
             // 例如读取远程存储的文件版本并应用
@@ -609,10 +609,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 获取相对路径
         /// </summary>
-        private static string GetRelativePath(string _fullPath, string _basePath)
+        private static string GetRelativePath(string fullPath, string basePath)
         {
-            var baseUri = new Uri(_basePath + Path.DirectorySeparatorChar);
-            var fullUri = new Uri(_fullPath);
+            var baseUri = new Uri(basePath + Path.DirectorySeparatorChar);
+            var fullUri = new Uri(fullPath);
             return Uri.UnescapeDataString(baseUri.MakeRelativeUri(fullUri).ToString());
         }
 
@@ -645,15 +645,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             try
             {
-                var configPath = Path.Combine(GetSyncConfigPath(), c_SyncConfigFileName);
+                var configPath = Path.Combine(GetSyncConfigPath(), k_CSyncConfigFileName);
 
                 // 如果配置文件不存在，返回默认配置
                 if (!File.Exists(configPath))
                 {
                     return new SyncConfig
                     {
-                        LastSyncTime = DateTime.Now,
-                        FileHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                        lastSyncTime = DateTime.Now,
+                        fileHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                     };
                 }
 
@@ -664,19 +664,19 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var config = JsonUtility.FromJson<SyncConfig>(json);
 
                 // 确保FileHashes不为null，并且使用不区分大小写的比较器
-                if (config.FileHashes == null)
+                if (config.fileHashes == null)
                 {
-                    config.FileHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                    config.fileHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 }
-                else if (!(config.FileHashes is Dictionary<string, string>))
+                else if (!(config.fileHashes is Dictionary<string, string>))
                 {
                     // 如果类型不匹配，创建一个新的字典
                     var newDict = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                    foreach (var kvp in config.FileHashes)
+                    foreach (var kvp in config.fileHashes)
                     {
                         newDict[kvp.Key] = kvp.Value;
                     }
-                    config.FileHashes = newDict;
+                    config.fileHashes = newDict;
                 }
 
                 return config;
@@ -686,8 +686,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 Debug.LogError($"[TByd.CodeStyle] 加载同步配置失败: {ex.Message}");
                 return new SyncConfig
                 {
-                    LastSyncTime = DateTime.Now,
-                    FileHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                    lastSyncTime = DateTime.Now,
+                    fileHashes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 };
             }
         }
@@ -695,11 +695,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 保存同步配置
         /// </summary>
-        private static void SaveSyncConfig(SyncConfig _config)
+        private static void SaveSyncConfig(SyncConfig config)
         {
             try
             {
-                var configPath = Path.Combine(GetSyncConfigPath(), c_SyncConfigFileName);
+                var configPath = Path.Combine(GetSyncConfigPath(), k_CSyncConfigFileName);
 
                 // 确保目录存在
                 var directoryPath = Path.GetDirectoryName(configPath);
@@ -709,7 +709,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 序列化配置
-                var json = JsonUtility.ToJson(_config, true);
+                var json = JsonUtility.ToJson(config, true);
 
                 // 写入配置文件
                 File.WriteAllText(configPath, json);
@@ -725,18 +725,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 保存同步配置
         /// </summary>
-        private static void SaveSyncConfig(Dictionary<string, string> _fileHashes)
+        private static void SaveSyncConfig(Dictionary<string, string> fileHashes)
         {
             // 加载现有配置或创建新的配置
             var config = LoadSyncConfig();
 
             // 更新文件哈希
-            config.FileHashes = _fileHashes != null
-                ? new Dictionary<string, string>(_fileHashes, StringComparer.OrdinalIgnoreCase)
+            config.fileHashes = fileHashes != null
+                ? new Dictionary<string, string>(fileHashes, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // 更新同步时间
-            config.LastSyncTime = DateTime.Now;
+            config.lastSyncTime = DateTime.Now;
 
             // 保存配置
             SaveSyncConfig(config);
@@ -747,7 +747,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         private static bool AcquireSyncLock()
         {
-            var lockPath = Path.Combine(GetSyncConfigPath(), c_SyncLockFileName);
+            var lockPath = Path.Combine(GetSyncConfigPath(), k_CSyncLockFileName);
 
             // 检查锁文件是否存在
             if (File.Exists(lockPath))
@@ -807,7 +807,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <returns>是否成功释放锁</returns>
         private static bool ReleaseSyncLock()
         {
-            var lockPath = Path.Combine(GetSyncConfigPath(), c_SyncLockFileName);
+            var lockPath = Path.Combine(GetSyncConfigPath(), k_CSyncLockFileName);
 
             // 删除锁文件
             if (File.Exists(lockPath))
@@ -829,58 +829,58 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 从文件路径获取IDE类型
         /// </summary>
-        /// <param name="_filePath">文件路径</param>
+        /// <param name="filePath">文件路径</param>
         /// <returns>IDE类型</returns>
-        private static IDEType GetIDETypeFromPath(string _filePath)
+        private static IdeType GetIdeTypeFromPath(string filePath)
         {
-            if (string.IsNullOrEmpty(_filePath))
+            if (string.IsNullOrEmpty(filePath))
             {
-                throw new ArgumentException("文件路径不能为空", nameof(_filePath));
+                throw new ArgumentException("文件路径不能为空", nameof(filePath));
             }
 
             // 根据路径判断IDE类型
-            if (_filePath.Contains("Rider"))
+            if (filePath.Contains("Rider"))
             {
-                return IDEType.Rider;
+                return IdeType.k_Rider;
             }
-            else if (_filePath.Contains("VisualStudio"))
+            else if (filePath.Contains("VisualStudio"))
             {
-                return IDEType.VisualStudio;
+                return IdeType.k_VisualStudio;
             }
-            else if (_filePath.Contains("VSCode"))
+            else if (filePath.Contains("VSCode"))
             {
-                return IDEType.VSCode;
+                return IdeType.k_VSCode;
             }
 
             // 如果无法判断，则根据扩展名尝试判断
-            var extension = Path.GetExtension(_filePath).ToLower();
+            var extension = Path.GetExtension(filePath).ToLower();
             if (extension == ".xml" || extension == ".dotsettings")
             {
-                return IDEType.Rider;
+                return IdeType.k_Rider;
             }
             else if (extension == ".vssettings" || extension == ".vsconfig")
             {
-                return IDEType.VisualStudio;
+                return IdeType.k_VisualStudio;
             }
             else if (extension == ".json")
             {
-                return IDEType.VSCode;
+                return IdeType.k_VSCode;
             }
 
             // 默认返回Rider
-            Debug.LogWarning($"[TByd.CodeStyle] 无法从路径确定IDE类型: {_filePath}，默认使用Rider");
-            return IDEType.Rider;
+            Debug.LogWarning($"[TByd.CodeStyle] 无法从路径确定IDE类型: {filePath}，默认使用Rider");
+            return IdeType.k_Rider;
         }
 
         /// <summary>
         /// 获取指定IDE的配置文件列表
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
+        /// <param name="ideType">IDE类型</param>
         /// <returns>配置文件列表</returns>
-        private static List<string> GetConfigFiles(IDEType _ideType)
+        private static List<string> GetConfigFiles(IdeType ideType)
         {
-            var configPath = GetConfigPath(_ideType);
-            return GetFilesToSync(_ideType, configPath);
+            var configPath = GetConfigPath(ideType);
+            return GetFilesToSync(ideType, configPath);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
     public class CodeStyleSettingsProvider : SettingsProvider
     {
         // 设置路径
-        private const string c_SettingsPath = "Project/TByd/代码风格";
+        private const string k_CSettingsPath = "Project/TByd/代码风格";
 
         // 关键字
         private static readonly string[] s_Keywords = new string[]
@@ -36,11 +36,11 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="_path">设置路径</param>
-        /// <param name="_scopes">设置范围</param>
-        /// <param name="_keywords">关键字</param>
-        public CodeStyleSettingsProvider(string _path, SettingsScope _scopes, IEnumerable<string> _keywords = null)
-            : base(_path, _scopes, _keywords)
+        /// <param name="path">设置路径</param>
+        /// <param name="scopes">设置范围</param>
+        /// <param name="keywords">关键字</param>
+        public CodeStyleSettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)
+            : base(path, scopes, keywords)
         {
         }
 
@@ -50,12 +50,14 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private void Initialize()
         {
             if (m_Initialized)
+            {
                 return;
+            }
 
             m_Config = ConfigProvider.GetConfig();
 
             // 订阅配置变更事件
-            ConfigProvider.ConfigChanged += OnConfigChanged;
+            ConfigProvider.OnConfigChanged += OnConfigChanged;
 
             m_Initialized = true;
         }
@@ -72,8 +74,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// <summary>
         /// 绘制设置UI
         /// </summary>
-        /// <param name="_searchContext">搜索上下文</param>
-        public override void OnGUI(string _searchContext)
+        /// <param name="searchContext">搜索上下文</param>
+        public override void OnGUI(string searchContext)
         {
             Initialize();
 
@@ -406,7 +408,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             ConfigProvider.SaveConfig();
             m_IsDirty = false;
 
-            NotificationSystem.ShowNotification("设置已保存", NotificationType.Success);
+            NotificationSystem.ShowNotification("设置已保存", NotificationType.k_Success);
         }
 
         /// <summary>
@@ -419,7 +421,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 ConfigProvider.ResetConfig();
                 m_IsDirty = false;
 
-                NotificationSystem.ShowNotification("设置已重置为默认值", NotificationType.Info);
+                NotificationSystem.ShowNotification("设置已重置为默认值", NotificationType.k_Info);
             }
         }
 
@@ -432,7 +434,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             if (!string.IsNullOrEmpty(path))
             {
                 ConfigProvider.ExportConfig(path);
-                NotificationSystem.ShowNotification("设置已导出", NotificationType.Success);
+                NotificationSystem.ShowNotification("设置已导出", NotificationType.k_Success);
             }
         }
 
@@ -447,7 +449,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 ConfigProvider.ImportConfig(path);
                 m_IsDirty = false;
 
-                NotificationSystem.ShowNotification("设置已导入", NotificationType.Success);
+                NotificationSystem.ShowNotification("设置已导入", NotificationType.k_Success);
             }
         }
 
@@ -458,7 +460,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         [SettingsProvider]
         public static SettingsProvider CreateSettingsProvider()
         {
-            return new CodeStyleSettingsProvider(c_SettingsPath, SettingsScope.Project, s_Keywords);
+            return new CodeStyleSettingsProvider(k_CSettingsPath, SettingsScope.Project, s_Keywords);
         }
     }
 }

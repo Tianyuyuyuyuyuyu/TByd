@@ -79,7 +79,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 使用反射设置同步配置路径
         private void SetSyncConfigPath(string path)
         {
-            var fieldInfo = typeof(IDEConfigSyncManager).GetField("s_SyncConfigPathForTesting",
+            var fieldInfo = typeof(IdeConfigSyncManager).GetField("s_SyncConfigPathForTesting",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (fieldInfo != null)
@@ -91,7 +91,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 使用反射获取私有静态字段的值
         private T GetPrivateStaticFieldValue<T>(string fieldName)
         {
-            var fieldInfo = typeof(IDEConfigSyncManager).GetField(fieldName,
+            var fieldInfo = typeof(IdeConfigSyncManager).GetField(fieldName,
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (fieldInfo != null)
@@ -105,7 +105,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 使用反射调用私有静态方法
         private void CallPrivateStaticMethod(string methodName, params object[] parameters)
         {
-            var methodInfo = typeof(IDEConfigSyncManager).GetMethod(methodName,
+            var methodInfo = typeof(IdeConfigSyncManager).GetMethod(methodName,
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (methodInfo != null)
@@ -117,7 +117,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 模拟获取配置路径方法，确保测试使用正确的配置目录
         private void MockGetConfigPath()
         {
-            var methodInfo = typeof(IDEConfigSyncManager).GetMethod("GetConfigPath",
+            var methodInfo = typeof(IdeConfigSyncManager).GetMethod("GetConfigPath",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (methodInfo != null)
@@ -140,11 +140,11 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             CallPrivateStaticMethod("SaveSyncConfig", new object[] { new Dictionary<string, string>() });
 
             // Act
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsTrue(result.Success, "同步应该成功");
-            Assert.That(result.Error, Is.Null.Or.Empty);
+            Assert.IsTrue(result.success, "同步应该成功");
+            Assert.That(result.error, Is.Null.Or.Empty);
         }
 
         [Test]
@@ -159,11 +159,11 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             // 模拟配置目录不存在的情况
 
             // Act
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsFalse(result.Success, "当目录不存在时，同步不应该成功");
-            Assert.IsNotEmpty(result.Error, "应该返回错误信息");
+            Assert.IsFalse(result.success, "当目录不存在时，同步不应该成功");
+            Assert.IsNotEmpty(result.error, "应该返回错误信息");
         }
 
         [Test]
@@ -171,7 +171,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         {
             // Arrange
             // 首次同步
-            IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // 修改文件
             var settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
@@ -182,12 +182,12 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             File.WriteAllText(settingsPath, newContent);
 
             // Act
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsTrue(result.Success);
-            Assert.Greater(result.UpdatedFiles.Count, 0);
-            Assert.Contains(settingsPath, result.UpdatedFiles);
+            Assert.IsTrue(result.success);
+            Assert.Greater(result.updatedFiles.Count, 0);
+            Assert.Contains(settingsPath, result.updatedFiles);
         }
 
         [Test]
@@ -205,12 +205,12 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             LogAssert.Expect(LogType.Warning, new System.Text.RegularExpressions.Regex("另一个同步进程正在运行"));
 
             // Act
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsFalse(result.Success, "当锁文件存在时，同步不应该成功");
-            Assert.IsNotEmpty(result.Error);
-            Assert.IsTrue(result.Error.Contains("另一个同步进程正在运行"), $"错误消息应该提及锁: {result.Error}");
+            Assert.IsFalse(result.success, "当锁文件存在时，同步不应该成功");
+            Assert.IsNotEmpty(result.error);
+            Assert.IsTrue(result.error.Contains("另一个同步进程正在运行"), $"错误消息应该提及锁: {result.error}");
         }
 
         [Test]
@@ -228,7 +228,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             SetPrivateStaticFieldValue("_conflictFiles", conflictFiles);
 
             // Act
-            var result = IDEConfigSyncManager.ResolveConflicts(true);
+            var result = IdeConfigSyncManager.ResolveConflicts(true);
 
             // Assert
             Assert.IsTrue(result);
@@ -263,7 +263,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             SetPrivateStaticFieldValue("_conflictFiles", conflictFiles);
 
             // Act - 选择使用远程版本解决冲突
-            var result = IDEConfigSyncManager.ResolveConflicts(false);
+            var result = IdeConfigSyncManager.ResolveConflicts(false);
 
             // Assert
             Assert.IsTrue(result);
@@ -281,8 +281,8 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         /// <param name="value">要设置的值</param>
         private void SetPrivateStaticFieldValue<T>(string fieldName, T value)
         {
-            var field = typeof(IDEConfigSyncManager).GetField(fieldName,
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var field = typeof(IdeConfigSyncManager).GetField(fieldName,
+                BindingFlags.NonPublic | BindingFlags.Static);
             if (field != null)
             {
                 field.SetValue(null, value);
@@ -298,8 +298,8 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         /// <returns>方法返回值</returns>
         private T GetPrivateStaticMethodResult<T>(string methodName, params object[] parameters)
         {
-            var method = typeof(IDEConfigSyncManager).GetMethod(methodName,
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            var method = typeof(IdeConfigSyncManager).GetMethod(methodName,
+                BindingFlags.NonPublic | BindingFlags.Static);
             if (method != null)
             {
                 return (T)method.Invoke(null, parameters);
@@ -319,11 +319,11 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             Assert.IsTrue(File.Exists(lockFile), "锁文件应该存在");
 
             // Act
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsTrue(result.Success, "当锁文件过期时，同步应该成功");
-            Assert.That(result.Error, Is.Null.Or.Empty);
+            Assert.IsTrue(result.success, "当锁文件过期时，同步应该成功");
+            Assert.That(result.error, Is.Null.Or.Empty);
         }
 
         [Test]
@@ -331,17 +331,17 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         {
             // Arrange
             // 首次同步
-            var firstResult = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
-            Assert.IsTrue(firstResult.Success, "首次同步应该成功");
+            var firstResult = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
+            Assert.IsTrue(firstResult.success, "首次同步应该成功");
 
             // 不修改任何文件
 
             // Act - 再次同步
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsTrue(result.Success, "当没有变化时，同步应该成功");
-            Assert.AreEqual(0, result.UpdatedFiles.Count, "没有变化时不应该更新任何文件");
+            Assert.IsTrue(result.success, "当没有变化时，同步应该成功");
+            Assert.AreEqual(0, result.updatedFiles.Count, "没有变化时不应该更新任何文件");
         }
 
         [Test]
@@ -349,7 +349,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         {
             // Arrange
             // 首次同步
-            IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // 添加新文件
             var newFilePath = Path.Combine(m_ConfigDirectory, ".vscode", "launch.json");
@@ -361,11 +361,11 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             File.WriteAllText(newFilePath, newContent);
 
             // Act
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsTrue(result.Success);
-            Assert.Contains(newFilePath, result.UpdatedFiles);
+            Assert.IsTrue(result.success);
+            Assert.Contains(newFilePath, result.updatedFiles);
         }
 
         [Test]
@@ -373,17 +373,17 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         {
             // Arrange
             // 首次同步
-            IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // 删除文件
             var settingsPath = Path.Combine(m_ConfigDirectory, ".vscode", "settings.json");
             File.Delete(settingsPath);
 
             // Act
-            var result = IDEConfigSyncManager.SynchronizeConfig(IDEType.VSCode);
+            var result = IdeConfigSyncManager.SynchronizeConfig(IdeType.k_VSCode);
 
             // Assert
-            Assert.IsTrue(result.Success);
+            Assert.IsTrue(result.success);
             // 确认不会因为文件删除而失败
         }
     }

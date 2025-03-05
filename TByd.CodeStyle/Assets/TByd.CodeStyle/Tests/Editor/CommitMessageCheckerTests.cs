@@ -60,7 +60,7 @@ namespace TByd.CodeStyle.Tests.Editor
             var invalidMessage = "feat(core): ";
 
             // 手动解析提交消息，用于调试
-            var message = TByd.CodeStyle.Runtime.Git.Commit.CommitMessageParser.Parse(invalidMessage);
+            var message = Runtime.Git.Commit.CommitMessageParser.Parse(invalidMessage);
             Debug.Log($"[TByd.CodeStyle.Tests] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
 
             // 验证提交消息

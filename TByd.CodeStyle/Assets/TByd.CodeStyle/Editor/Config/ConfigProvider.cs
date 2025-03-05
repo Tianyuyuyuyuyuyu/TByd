@@ -12,7 +12,7 @@ namespace TByd.CodeStyle.Editor.Config
     public static class ConfigProvider
     {
         // 配置变更事件
-        public static event Action ConfigChanged;
+        public static event Action OnConfigChanged;
 
         /// <summary>
         /// 静态构造函数，在编辑器加载时初始化
@@ -23,7 +23,7 @@ namespace TByd.CodeStyle.Editor.Config
             ConfigManager.Initialize();
 
             // 订阅配置变更事件
-            ConfigManager.ConfigChanged += OnConfigChanged;
+            ConfigManager.OnConfigChanged += OnConfigChangedMethod;
 
             // 订阅编辑器更新事件，用于检测配置文件变更
             EditorApplication.update += CheckConfigFileChange;
@@ -46,7 +46,7 @@ namespace TByd.CodeStyle.Editor.Config
             ConfigManager.SaveConfig();
 
             // 触发配置变更事件
-            OnConfigChanged();
+            OnConfigChangedMethod();
         }
 
         /// <summary>
@@ -60,10 +60,10 @@ namespace TByd.CodeStyle.Editor.Config
         /// <summary>
         /// 配置变更处理
         /// </summary>
-        private static void OnConfigChanged()
+        private static void OnConfigChangedMethod()
         {
             // 触发编辑器配置变更事件
-            ConfigChanged?.Invoke();
+            OnConfigChanged?.Invoke();
 
             // 刷新编辑器窗口
             // 注意：不要使用EditorUtility.SetDirty(null)，这会导致ArgumentNullException
@@ -86,14 +86,14 @@ namespace TByd.CodeStyle.Editor.Config
         /// <summary>
         /// 导出配置
         /// </summary>
-        /// <param name="_path">导出路径</param>
-        public static void ExportConfig(string _path)
+        /// <param name="path">导出路径</param>
+        public static void ExportConfig(string path)
         {
             try
             {
                 var configJson = JsonUtility.ToJson(GetConfig(), true);
-                System.IO.File.WriteAllText(_path, configJson);
-                Debug.Log($"[TByd.CodeStyle] 配置已导出到: {_path}");
+                System.IO.File.WriteAllText(path, configJson);
+                Debug.Log($"[TByd.CodeStyle] 配置已导出到: {path}");
             }
             catch (Exception e)
             {
@@ -104,12 +104,12 @@ namespace TByd.CodeStyle.Editor.Config
         /// <summary>
         /// 导入配置
         /// </summary>
-        /// <param name="_path">导入路径</param>
-        public static void ImportConfig(string _path)
+        /// <param name="path">导入路径</param>
+        public static void ImportConfig(string path)
         {
             try
             {
-                var configJson = System.IO.File.ReadAllText(_path);
+                var configJson = System.IO.File.ReadAllText(path);
                 var config = JsonUtility.FromJson<CodeStyleConfig>(configJson);
 
                 // 更新当前配置
@@ -124,7 +124,7 @@ namespace TByd.CodeStyle.Editor.Config
                 // 保存配置
                 SaveConfig();
 
-                Debug.Log($"[TByd.CodeStyle] 配置已从 {_path} 导入");
+                Debug.Log($"[TByd.CodeStyle] 配置已从 {path} 导入");
             }
             catch (Exception e)
             {

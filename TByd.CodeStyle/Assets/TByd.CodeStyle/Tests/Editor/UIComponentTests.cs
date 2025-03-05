@@ -53,7 +53,9 @@ namespace TByd.CodeStyle.Tests.Editor
             public void TestDraw()
             {
                 if (!m_IsVisible)
+                {
                     return;
+                }
 
                 // 不调用EditorGUILayout.BeginVertical，直接测试逻辑
                 if (!m_IsCollapsible || !m_IsCollapsed)
@@ -133,7 +135,7 @@ namespace TByd.CodeStyle.Tests.Editor
             // 创建InfoBox
             var title = "信息标题";
             var message = "信息内容";
-            var type = InfoBox.InfoType.Warning;
+            var type = InfoBox.InfoType.k_Warning;
 
             var infoBox = new InfoBox(title, message, type);
 

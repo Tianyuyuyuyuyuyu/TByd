@@ -8,10 +8,10 @@ namespace TByd.CodeStyle.Editor.UI.Utils
     /// </summary>
     public enum NotificationType
     {
-        Info,
-        Warning,
-        Error,
-        Success
+        k_Info,
+        k_Warning,
+        k_Error,
+        k_Success
     }
 
     /// <summary>
@@ -20,7 +20,7 @@ namespace TByd.CodeStyle.Editor.UI.Utils
     public static class NotificationSystem
     {
         // 通知显示时间（秒）
-        private const float c_NotificationDisplayTime = 5f;
+        private const float k_CNotificationDisplayTime = 5f;
 
         // 当前通知
         private static string s_CurrentNotification;
@@ -36,19 +36,19 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         /// <summary>
         /// 显示通知
         /// </summary>
-        /// <param name="_message">通知消息</param>
-        /// <param name="_type">通知类型</param>
-        public static void ShowNotification(string _message, NotificationType _type = NotificationType.Info)
+        /// <param name="message">通知消息</param>
+        /// <param name="type">通知类型</param>
+        public static void ShowNotification(string message, NotificationType type = NotificationType.k_Info)
         {
-            s_CurrentNotification = _message;
-            s_CurrentNotificationType = _type;
-            s_NotificationEndTime = EditorApplication.timeSinceStartup + c_NotificationDisplayTime;
+            s_CurrentNotification = message;
+            s_CurrentNotificationType = type;
+            s_NotificationEndTime = EditorApplication.timeSinceStartup + k_CNotificationDisplayTime;
 
             // 确保重绘编辑器窗口
             EditorApplication.update -= UpdateNotification;
             EditorApplication.update += UpdateNotification;
 
-            Debug.Log($"[TByd.CodeStyle] {GetNotificationTypePrefix(_type)}{_message}");
+            Debug.Log($"[TByd.CodeStyle] {GetNotificationTypePrefix(type)}{message}");
         }
 
         /// <summary>
@@ -91,14 +91,14 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         /// <summary>
         /// 显示进度条
         /// </summary>
-        /// <param name="_title">进度标题</param>
-        /// <param name="_info">进度信息</param>
-        /// <param name="_progress">进度值（0-1）</param>
-        public static void ShowProgress(string _title, string _info, float _progress)
+        /// <param name="title">进度标题</param>
+        /// <param name="info">进度信息</param>
+        /// <param name="progress">进度值（0-1）</param>
+        public static void ShowProgress(string title, string info, float progress)
         {
-            s_ProgressTitle = _title;
-            s_ProgressInfo = _info;
-            s_Progress = Mathf.Clamp01(_progress);
+            s_ProgressTitle = title;
+            s_ProgressInfo = info;
+            s_Progress = Mathf.Clamp01(progress);
             s_IsProgressVisible = true;
 
             EditorUtility.DisplayProgressBar(s_ProgressTitle, s_ProgressInfo, s_Progress);
@@ -107,12 +107,12 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         /// <summary>
         /// 更新进度条
         /// </summary>
-        /// <param name="_info">进度信息</param>
-        /// <param name="_progress">进度值（0-1）</param>
-        public static void UpdateProgress(string _info, float _progress)
+        /// <param name="info">进度信息</param>
+        /// <param name="progress">进度值（0-1）</param>
+        public static void UpdateProgress(string info, float progress)
         {
-            s_ProgressInfo = _info;
-            s_Progress = Mathf.Clamp01(_progress);
+            s_ProgressInfo = info;
+            s_Progress = Mathf.Clamp01(progress);
 
             if (s_IsProgressVisible)
             {
@@ -186,7 +186,9 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         {
             if (string.IsNullOrEmpty(s_CurrentNotification) ||
                 EditorApplication.timeSinceStartup > s_NotificationEndTime)
+            {
                 return;
+            }
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -202,20 +204,22 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         /// <summary>
         /// 绘制通知
         /// </summary>
-        /// <param name="_rect">绘制区域</param>
+        /// <param name="rect">绘制区域</param>
         /// <returns>是否绘制了通知</returns>
-        public static bool DrawNotification(Rect _rect)
+        public static bool DrawNotification(Rect rect)
         {
             if (string.IsNullOrEmpty(s_CurrentNotification) ||
                 EditorApplication.timeSinceStartup > s_NotificationEndTime)
+            {
                 return false;
+            }
 
             var style = new GUIStyle(EditorStyles.helpBox);
             style.normal.textColor = GetNotificationColor(s_CurrentNotificationType);
             style.fontStyle = FontStyle.Bold;
             style.padding = new RectOffset(10, 10, 5, 5);
 
-            GUI.Box(_rect, GetNotificationTypePrefix(s_CurrentNotificationType) + s_CurrentNotification, style);
+            GUI.Box(rect, GetNotificationTypePrefix(s_CurrentNotificationType) + s_CurrentNotification, style);
 
             return true;
         }
@@ -238,19 +242,19 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         /// <summary>
         /// 获取通知类型前缀
         /// </summary>
-        /// <param name="_type">通知类型</param>
+        /// <param name="type">通知类型</param>
         /// <returns>前缀字符串</returns>
-        private static string GetNotificationTypePrefix(NotificationType _type)
+        private static string GetNotificationTypePrefix(NotificationType type)
         {
-            switch (_type)
+            switch (type)
             {
-                case NotificationType.Info:
+                case NotificationType.k_Info:
                     return "[信息] ";
-                case NotificationType.Warning:
+                case NotificationType.k_Warning:
                     return "[警告] ";
-                case NotificationType.Error:
+                case NotificationType.k_Error:
                     return "[错误] ";
-                case NotificationType.Success:
+                case NotificationType.k_Success:
                     return "[成功] ";
                 default:
                     return string.Empty;
@@ -260,19 +264,19 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         /// <summary>
         /// 获取通知类型颜色
         /// </summary>
-        /// <param name="_type">通知类型</param>
+        /// <param name="type">通知类型</param>
         /// <returns>颜色</returns>
-        private static Color GetNotificationColor(NotificationType _type)
+        private static Color GetNotificationColor(NotificationType type)
         {
-            switch (_type)
+            switch (type)
             {
-                case NotificationType.Info:
+                case NotificationType.k_Info:
                     return Color.white;
-                case NotificationType.Warning:
+                case NotificationType.k_Warning:
                     return Color.yellow;
-                case NotificationType.Error:
+                case NotificationType.k_Error:
                     return Color.red;
-                case NotificationType.Success:
+                case NotificationType.k_Success:
                     return Color.green;
                 default:
                     return Color.white;

@@ -31,8 +31,7 @@ namespace TByd.CodeStyle.Tests.Editor.CodeCheck.Rules
         public void AvoidGameObjectFindRule_ValidAndInvalidCases_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new AvoidGameObjectFindRule();
-            rule.Enabled = true;
+            var rule = new AvoidGameObjectFindRule { Enabled = true };
 
             // 有效的代码示例，不使用GameObject.Find
             var validCode = @"
@@ -93,8 +92,7 @@ public class BadExample : MonoBehaviour
         public void AvoidFindInUpdateRule_ValidAndInvalidCases_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new AvoidFindInUpdateRule();
-            rule.Enabled = true;
+            var rule = new AvoidFindInUpdateRule { Enabled = true };
 
             // 有效的代码示例，不在Update中使用Find
             var validCode = @"
@@ -164,8 +162,7 @@ public class BadExample : MonoBehaviour
         public void AvoidSendMessageRule_ValidAndInvalidCases_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new AvoidSendMessageRule();
-            rule.Enabled = true;
+            var rule = new AvoidSendMessageRule { Enabled = true };
 
             // 有效的代码示例，不使用SendMessage
             var validCode = @"
@@ -241,8 +238,7 @@ public class BadExample : MonoBehaviour
         public void AvoidGetComponentInUpdate_ValidAndInvalidCases_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new AvoidGetComponentInUpdateRule();
-            rule.Enabled = true;
+            var rule = new AvoidGetComponentInUpdateRule { Enabled = true };
 
             // 有效的代码示例，不在Update中使用GetComponent
             var validCode = @"
@@ -310,8 +306,7 @@ public class BadExample : MonoBehaviour
         public void AvoidHardcodedPathRule_ValidAndInvalidCases_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new AvoidHardcodedPathRule();
-            rule.Enabled = true;
+            var rule = new AvoidHardcodedPathRule { Enabled = true };
 
             // 有效的代码示例，不使用硬编码路径
             var validCode = @"
@@ -368,8 +363,7 @@ public class BadExample : MonoBehaviour
         public void AvoidEmptyMonoBehaviourMethodsRule_ValidAndInvalidCases_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new AvoidEmptyMonoBehaviourMethodsRule();
-            rule.Enabled = true;
+            var rule = new AvoidEmptyMonoBehaviourMethodsRule { Enabled = true };
 
             // 有效的代码示例，没有空的MonoBehaviour方法
             var validCode = @"
@@ -489,15 +483,29 @@ public class ComplexExample : MonoBehaviour
             foreach (var issue in result.Issues)
             {
                 if (issue.Message.Contains("Update") && issue.Message.Contains("Find"))
+                {
                     foundFindInUpdateIssue = true;
+                }
+
                 if (issue.Message.Contains("Update") && issue.Message.Contains("GetComponent"))
+                {
                     foundGetComponentInUpdateIssue = true;
+                }
+
                 if (issue.Message.Contains("SendMessage"))
+                {
                     foundSendMessageIssue = true;
+                }
+
                 if (issue.Message.Contains("硬编码") || issue.Message.Contains("路径"))
+                {
                     foundHardcodedPathIssue = true;
+                }
+
                 if (issue.Message.Contains("空") || issue.Message.Contains("empty"))
+                {
                     foundEmptyMethodIssue = true;
+                }
             }
 
             Assert.IsTrue(foundFindInUpdateIssue, "应该检测到在Update中使用Find的问题");

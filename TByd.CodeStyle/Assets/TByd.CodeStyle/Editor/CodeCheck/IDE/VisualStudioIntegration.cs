@@ -10,16 +10,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     /// <summary>
     /// Visual Studio IDE集成实现
     /// </summary>
-    public class VisualStudioIntegration : IDEIntegrationBase
+    public class VisualStudioIntegration : IdeIntegrationBase
     {
         // Visual Studio配置文件名
-        private const string c_VSConfigFileName = ".editorconfig";
+        private const string k_CVSConfigFileName = ".editorconfig";
 
         // Visual Studio设置文件名
-        private const string c_VSSettingsFileName = ".vssettings";
+        private const string k_CVSSettingsFileName = ".vssettings";
 
         // Visual Studio插件类名
-        private const string c_VSUnityIntegrationClassName = "Microsoft.Unity.VisualStudio.Editor.VisualStudioEditor";
+        private const string k_CVSUnityIntegrationClassName = "Microsoft.Unity.VisualStudio.Editor.VisualStudioEditor";
 
         /// <summary>
         /// IDE名称
@@ -42,9 +42,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 导出配置到Visual Studio
         /// </summary>
-        /// <param name="_rules">EditorConfig规则</param>
+        /// <param name="rules">EditorConfig规则</param>
         /// <returns>是否成功</returns>
-        public override bool ExportConfig(List<EditorConfigRule> _rules)
+        public override bool ExportConfig(List<EditorConfigRule> rules)
         {
             try
             {
@@ -60,8 +60,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 Directory.CreateDirectory(configPath);
 
                 // 导出EditorConfig规则
-                var editorConfigPath = Path.Combine(configPath, c_VSConfigFileName);
-                EditorConfigManager.SaveRulesToFile(_rules, editorConfigPath);
+                var editorConfigPath = Path.Combine(configPath, k_CVSConfigFileName);
+                EditorConfigManager.SaveRulesToFile(rules, editorConfigPath);
 
                 // 创建Visual Studio设置
                 CreateVisualStudioSettings(configPath);
@@ -79,8 +79,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 创建Visual Studio设置
         /// </summary>
-        /// <param name="_configPath">配置目录路径</param>
-        private void CreateVisualStudioSettings(string _configPath)
+        /// <param name="configPathStr">配置目录路径</param>
+        private void CreateVisualStudioSettings(string configPathStr)
         {
             var configContent = @"<?xml version=""1.0"" encoding=""utf-8""?>
 <UserSettings>
@@ -154,7 +154,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
   </ToolsOptions>
 </UserSettings>";
 
-            var configPath = Path.Combine(_configPath, c_VSSettingsFileName);
+            var configPath = Path.Combine(configPathStr, k_CVSSettingsFileName);
             File.WriteAllText(configPath, configContent);
         }
 
@@ -166,7 +166,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             // 方法1：检查EditorPrefs
             var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
-            if (!string.IsNullOrEmpty(scriptEditorPref) && 
+            if (!string.IsNullOrEmpty(scriptEditorPref) &&
                 (scriptEditorPref.IndexOf("Visual Studio", StringComparison.OrdinalIgnoreCase) >= 0 ||
                  scriptEditorPref.IndexOf("devenv", StringComparison.OrdinalIgnoreCase) >= 0))
             {
@@ -176,7 +176,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 方法2：检查当前脚本编辑器类型
             try
             {
-                var editorType = Type.GetType(c_VSUnityIntegrationClassName, false);
+                var editorType = Type.GetType(k_CVSUnityIntegrationClassName, false);
                 if (editorType != null)
                 {
                     var currentEditorProperty = editorType.GetProperty("CurrentEditor", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
@@ -436,8 +436,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 // 尝试从Unity编辑器设置中获取Visual Studio路径
                 var editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
-                if (!string.IsNullOrEmpty(editorPath) && 
-                    (editorPath.Contains("devenv.exe", StringComparison.OrdinalIgnoreCase) || 
+                if (!string.IsNullOrEmpty(editorPath) &&
+                    (editorPath.Contains("devenv.exe", StringComparison.OrdinalIgnoreCase) ||
                      editorPath.Contains("Visual Studio", StringComparison.OrdinalIgnoreCase)))
                 {
                     return editorPath;
@@ -511,4 +511,4 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             return Path.GetDirectoryName(Application.dataPath);
         }
     }
-} 
+}

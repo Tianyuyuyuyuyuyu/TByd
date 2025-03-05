@@ -19,7 +19,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         private string m_ConfigDirectory;
         private string m_SyncDirectory;
         private string m_OriginalSyncConfigPath;
-        private List<IDEIntegration> m_RegisteredIntegrations = new List<IDEIntegration>();
+        private List<IDeIntegration> m_RegisteredIntegrations = new List<IDeIntegration>();
         private List<EditorConfigRule> m_TestRules;
 
         [SetUp]
@@ -99,7 +99,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 使用反射设置同步配置路径
         private void SetSyncConfigPath(string path)
         {
-            var fieldInfo = typeof(IDEConfigSyncManager).GetField("s_SyncConfigPathForTesting",
+            var fieldInfo = typeof(IdeConfigSyncManager).GetField("s_SyncConfigPathForTesting",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (fieldInfo != null)
@@ -111,7 +111,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 使用反射获取私有静态字段的值
         private T GetPrivateStaticFieldValue<T>(string fieldName)
         {
-            var fieldInfo = typeof(IDEConfigSyncManager).GetField(fieldName,
+            var fieldInfo = typeof(IdeConfigSyncManager).GetField(fieldName,
                 BindingFlags.NonPublic | BindingFlags.Static);
 
             if (fieldInfo != null)
@@ -123,31 +123,31 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         }
 
         // 注册IDE集成到Manager，并跟踪它们以便清理
-        private void RegisterIntegration(IDEIntegration integration)
+        private void RegisterIntegration(IDeIntegration integration)
         {
             // 使用反射获取或添加集成
-            var field = typeof(IDEIntegrationManager).GetField("s_Integrations",
+            var field = typeof(IdeIntegrationManager).GetField("s_Integrations",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
-            if (field != null && field.GetValue(null) is List<IDEIntegration> integrations)
+            if (field != null && field.GetValue(null) is List<IDeIntegration> integrations)
             {
                 integrations.Add(integration);
                 m_RegisteredIntegrations.Add(integration);
             }
             else
             {
-                IDEIntegrationManager.RegisterIntegration(integration);
+                IdeIntegrationManager.RegisterIntegration(integration);
                 m_RegisteredIntegrations.Add(integration);
             }
         }
 
         // 从Manager中移除IDE集成
-        private void RemoveIntegration(IDEIntegration integration)
+        private void RemoveIntegration(IDeIntegration integration)
         {
-            var field = typeof(IDEIntegrationManager).GetField("s_Integrations",
+            var field = typeof(IdeIntegrationManager).GetField("s_Integrations",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
-            if (field != null && field.GetValue(null) is List<IDEIntegration> integrations)
+            if (field != null && field.GetValue(null) is List<IDeIntegration> integrations)
             {
                 integrations.Remove(integration);
             }
@@ -160,9 +160,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void RegisterAndGetIntegrations_ValidIntegrations_SuccessfullyRegistered()
         {
             // 注册测试IDE集成
-            var riderIntegration = new MockIdeIntegration(IDEType.Rider, true);
-            var vsIntegration = new MockIdeIntegration(IDEType.VisualStudio, false);
-            var vscodeIntegration = new MockIdeIntegration(IDEType.VSCode, true);
+            var riderIntegration = new MockIdeIntegration(IdeType.k_Rider, true);
+            var vsIntegration = new MockIdeIntegration(IdeType.k_VisualStudio, false);
+            var vscodeIntegration = new MockIdeIntegration(IdeType.k_VSCode, true);
 
             RegisterIntegration(riderIntegration);
             RegisterIntegration(vsIntegration);
@@ -176,17 +176,17 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         }
 
         // 使用反射获取所有注册的集成
-        private List<IDEIntegration> GetAllIntegrations()
+        private List<IDeIntegration> GetAllIntegrations()
         {
-            var field = typeof(IDEIntegrationManager).GetField("s_Integrations",
+            var field = typeof(IdeIntegrationManager).GetField("s_Integrations",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
-            if (field != null && field.GetValue(null) is List<IDEIntegration> integrations)
+            if (field != null && field.GetValue(null) is List<IDeIntegration> integrations)
             {
                 return integrations;
             }
 
-            return new List<IDEIntegration>();
+            return new List<IDeIntegration>();
         }
 
         /// <summary>
@@ -199,18 +199,18 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             ClearIntegrations();
 
             // 注册测试IDE集成（使用模拟数据）
-            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true); // 模拟已安装
-            var mockVSIntegration = new MockIdeIntegration(IDEType.VisualStudio, false); // 模拟未安装
-            var mockVSCodeIntegration = new MockIdeIntegration(IDEType.VSCode, true); // 模拟已安装
+            var mockRiderIntegration = new MockIdeIntegration(IdeType.k_Rider, true); // 模拟已安装
+            var mockVSIntegration = new MockIdeIntegration(IdeType.k_VisualStudio, false); // 模拟未安装
+            var mockVSCodeIntegration = new MockIdeIntegration(IdeType.k_VSCode, true); // 模拟已安装
 
             RegisterIntegration(mockRiderIntegration);
             RegisterIntegration(mockVSIntegration);
             RegisterIntegration(mockVSCodeIntegration);
 
             // 检查IDE是否安装
-            var isRiderInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.Rider);
-            var isVSInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.VisualStudio);
-            var isVSCodeInstalled = IDEIntegrationManager.IsIDEInstalled(IDEType.VSCode);
+            var isRiderInstalled = IdeIntegrationManager.IsIdeInstalled(IdeType.k_Rider);
+            var isVSInstalled = IdeIntegrationManager.IsIdeInstalled(IdeType.k_VisualStudio);
+            var isVSCodeInstalled = IdeIntegrationManager.IsIdeInstalled(IdeType.k_VSCode);
 
             // 验证结果
             Assert.IsTrue(isRiderInstalled, "Rider应该被检测为已安装");
@@ -228,9 +228,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             ClearIntegrations();
 
             // 创建模拟IDE集成
-            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true);
-            var mockVSIntegration = new MockIdeIntegration(IDEType.VisualStudio, false);
-            var mockVSCodeIntegration = new MockIdeIntegration(IDEType.VSCode, true);
+            var mockRiderIntegration = new MockIdeIntegration(IdeType.k_Rider, true);
+            var mockVSIntegration = new MockIdeIntegration(IdeType.k_VisualStudio, false);
+            var mockVSCodeIntegration = new MockIdeIntegration(IdeType.k_VSCode, true);
 
             // 注册测试IDE集成
             RegisterIntegration(mockRiderIntegration);
@@ -238,7 +238,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
             RegisterIntegration(mockVSCodeIntegration);
 
             // 获取已安装的IDE列表
-            var installedIDEs = IDEIntegrationManager.GetInstalledIntegrations();
+            var installedIDEs = IdeIntegrationManager.GetInstalledIntegrations();
 
             // 验证结果 - 使用名称匹配因为我们不能访问IDEType
             Assert.AreEqual(2, installedIDEs.Count, "应该有2个已安装的IDE");
@@ -254,7 +254,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void ExportConfigToIDE_ValidConfig_CallsExportMethod()
         {
             // 注册测试IDE集成（使用模拟数据）
-            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true);
+            var mockRiderIntegration = new MockIdeIntegration(IdeType.k_Rider, true);
             RegisterIntegration(mockRiderIntegration);
 
             // 设置EditorConfig规则
@@ -263,7 +263,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
                 ?.SetValue(null, m_TestRules);
 
             // 导出配置
-            var result = IDEIntegrationManager.ExportConfigToAllIDEs(m_TestRules);
+            var result = IdeIntegrationManager.ExportConfigToAllIDEs(m_TestRules);
 
             // 验证结果
             Assert.IsTrue(result, "配置导出应该成功");
@@ -277,9 +277,9 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         public void ExportConfigToAllIDEs_ValidConfig_ExportsToInstalledIDEs()
         {
             // 注册测试IDE集成（使用模拟数据）
-            var mockRiderIntegration = new MockIdeIntegration(IDEType.Rider, true); // 模拟已安装
-            var mockVSIntegration = new MockIdeIntegration(IDEType.VisualStudio, false); // 模拟未安装
-            var mockVSCodeIntegration = new MockIdeIntegration(IDEType.VSCode, true); // 模拟已安装
+            var mockRiderIntegration = new MockIdeIntegration(IdeType.k_Rider, true); // 模拟已安装
+            var mockVSIntegration = new MockIdeIntegration(IdeType.k_VisualStudio, false); // 模拟未安装
+            var mockVSCodeIntegration = new MockIdeIntegration(IdeType.k_VSCode, true); // 模拟已安装
 
             RegisterIntegration(mockRiderIntegration);
             RegisterIntegration(mockVSIntegration);
@@ -291,7 +291,7 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
                 ?.SetValue(null, m_TestRules);
 
             // 导出配置到所有IDE
-            IDEIntegrationManager.ExportConfigToAllIDEs(m_TestRules);
+            IdeIntegrationManager.ExportConfigToAllIDEs(m_TestRules);
 
             // 验证结果
             Assert.IsTrue(mockRiderIntegration.ExportRulesCalled, "应该调用了Rider的ExportConfig方法");
@@ -302,15 +302,15 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         /// <summary>
         /// 模拟IDE集成类，用于测试
         /// </summary>
-        private class MockIdeIntegration : IDEIntegration
+        private class MockIdeIntegration : IDeIntegration
         {
             public string Name { get; private set; }
             public bool IsInstalled { get; private set; }
-            public IDEType IdeType { get; private set; }
+            public IdeType IdeType { get; private set; }
             public bool ExportConfigCalled { get; private set; }
             public bool ExportRulesCalled { get; private set; }
 
-            public MockIdeIntegration(IDEType ideType, bool isInstalled)
+            public MockIdeIntegration(IdeType ideType, bool isInstalled)
             {
                 IdeType = ideType;
                 IsInstalled = isInstalled;
@@ -342,10 +342,10 @@ namespace TByd.CodeStyle.Tests.Editor.IDE
         // 清除所有注册的集成
         private void ClearIntegrations()
         {
-            var field = typeof(IDEIntegrationManager).GetField("s_Integrations",
+            var field = typeof(IdeIntegrationManager).GetField("s_Integrations",
                 BindingFlags.NonPublic | BindingFlags.Static);
 
-            if (field != null && field.GetValue(null) is List<IDEIntegration> integrations)
+            if (field != null && field.GetValue(null) is List<IDeIntegration> integrations)
             {
                 integrations.Clear();
             }

@@ -9,27 +9,27 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     /// <summary>
     /// IDE检测器，用于检测当前使用的IDE并提供自动配置功能
     /// </summary>
-    public static class IDEDetector
+    public static class IdeDetector
     {
         // 上次检测时间
         private static DateTime s_LastDetectionTime = DateTime.MinValue;
 
         // 检测间隔（秒）
-        private const float c_DetectionInterval = 300f; // 5分钟
+        private const float k_CDetectionInterval = 300f; // 5分钟
 
         // 是否已初始化
         private static bool s_Initialized;
 
         // 当前IDE类型
-        private static IDEType s_CurrentIDEType = IDEType.Unknown;
+        private static IdeType s_CurrentIdeType = IdeType.k_Unknown;
 
         // IDE配置状态
-        private static bool s_IsIDEConfigured;
+        private static bool s_IsIdeConfigured;
 
         /// <summary>
         /// 静态构造函数，在编辑器加载时初始化
         /// </summary>
-        static IDEDetector()
+        static IdeDetector()
         {
             // 延迟初始化，确保Unity完全加载
             EditorApplication.delayCall += Initialize;
@@ -41,7 +41,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void Initialize()
         {
             if (s_Initialized)
+            {
                 return;
+            }
 
             // 订阅编辑器更新事件
             EditorApplication.update += OnEditorUpdate;
@@ -57,13 +59,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private static void OnEditorUpdate()
         {
             // 检查是否需要进行检测
-            if ((DateTime.Now - s_LastDetectionTime).TotalSeconds >= c_DetectionInterval)
+            if ((DateTime.Now - s_LastDetectionTime).TotalSeconds >= k_CDetectionInterval)
             {
                 // 更新检测时间
                 s_LastDetectionTime = DateTime.Now;
 
                 // 检测IDE
-                DetectIDE();
+                DetectIde();
             }
         }
 
@@ -71,85 +73,85 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// 检测当前IDE
         /// </summary>
         /// <returns>当前IDE类型</returns>
-        public static IDEType DetectCurrentIDE()
+        public static IdeType DetectCurrentIde()
         {
             // 获取当前使用的IDE
-            var currentIDE = IDEIntegrationManager.GetCurrentIntegration();
+            var currentIde = IdeIntegrationManager.GetCurrentIntegration();
 
-            if (currentIDE != null)
+            if (currentIde != null)
             {
-                if (currentIDE is RiderIntegration)
+                if (currentIde is RiderIntegration)
                 {
-                    s_CurrentIDEType = IDEType.Rider;
+                    s_CurrentIdeType = IdeType.k_Rider;
                 }
-                else if (currentIDE is VisualStudioIntegration)
+                else if (currentIde is VisualStudioIntegration)
                 {
-                    s_CurrentIDEType = IDEType.VisualStudio;
+                    s_CurrentIdeType = IdeType.k_VisualStudio;
                 }
-                else if (currentIDE is VSCodeIntegration)
+                else if (currentIde is VSCodeIntegration)
                 {
-                    s_CurrentIDEType = IDEType.VSCode;
+                    s_CurrentIdeType = IdeType.k_VSCode;
                 }
                 else
                 {
-                    s_CurrentIDEType = IDEType.Unknown;
+                    s_CurrentIdeType = IdeType.k_Unknown;
                 }
             }
             else
             {
-                s_CurrentIDEType = IDEType.Unknown;
+                s_CurrentIdeType = IdeType.k_Unknown;
             }
 
-            return s_CurrentIDEType;
+            return s_CurrentIdeType;
         }
 
         /// <summary>
         /// 检查IDE是否已配置
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
+        /// <param name="ideType">IDE类型</param>
         /// <returns>是否已配置</returns>
-        public static bool IsIDEConfigured(IDEType _ideType)
+        public static bool IsIdeConfigured(IdeType ideType)
         {
             // 获取配置
             var config = ConfigManager.GetConfig();
 
             // 检查IDE是否已配置
-            switch (_ideType)
+            switch (ideType)
             {
-                case IDEType.Rider:
-                    s_IsIDEConfigured = config.RiderConfig.EnableCodeAnalysis ||
+                case IdeType.k_Rider:
+                    s_IsIdeConfigured = config.RiderConfig.EnableCodeAnalysis ||
                                       config.RiderConfig.EnableStyleCop ||
                                       config.RiderConfig.EnableReSharper;
                     break;
-                case IDEType.VisualStudio:
-                    s_IsIDEConfigured = config.VisualStudioConfig.EnableRoslynAnalyzers ||
+                case IdeType.k_VisualStudio:
+                    s_IsIdeConfigured = config.VisualStudioConfig.EnableRoslynAnalyzers ||
                                       config.VisualStudioConfig.EnableStyleCop ||
                                       config.VisualStudioConfig.EnableCodeAnalysis;
                     break;
-                case IDEType.VSCode:
-                    s_IsIDEConfigured = config.VSCodeConfig.EnableOmniSharp ||
+                case IdeType.k_VSCode:
+                    s_IsIdeConfigured = config.VSCodeConfig.EnableOmniSharp ||
                                       config.VSCodeConfig.EnableRoslynAnalyzers ||
                                       config.VSCodeConfig.EnableEditorConfig;
                     break;
                 default:
-                    s_IsIDEConfigured = false;
+                    s_IsIdeConfigured = false;
                     break;
             }
 
-            return s_IsIDEConfigured;
+            return s_IsIdeConfigured;
         }
 
         /// <summary>
         /// 提示IDE配置
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
-        public static void PromptIDEConfiguration(IDEType _ideType)
+        /// <param name="ideType">IDE类型</param>
+        public static void PromptIdeConfiguration(IdeType ideType)
         {
             // 获取配置
             var config = ConfigManager.GetConfig();
 
             // 如果未启用IDE集成或不自动配置，则不提示
-            if (!config.EnableIDEIntegration || !config.AutoConfigureIDE)
+            if (!config.EnableIdeIntegration || !config.AutoConfigureIde)
             {
                 return;
             }
@@ -161,7 +163,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 
             // 如果已经配置过，则不提示
-            if (IsIDEConfigured(_ideType))
+            if (IsIdeConfigured(ideType))
             {
                 return;
             }
@@ -169,11 +171,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 提示用户是否要配置IDE
             if (EditorUtility.DisplayDialog(
                 "TByd.CodeStyle - IDE检测",
-                $"检测到您正在使用 {_ideType} 作为脚本编辑器。\n\n是否要配置 {_ideType} 以支持代码风格检查？",
+                $"检测到您正在使用 {ideType} 作为脚本编辑器。\n\n是否要配置 {ideType} 以支持代码风格检查？",
                 "是，现在配置",
                 "否，稍后再说"))
             {
-                ConfigureIDE(_ideType);
+                ConfigureIde(ideType);
             }
             else
             {
@@ -185,26 +187,26 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 配置IDE
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
-        public static void ConfigureIDE(IDEType _ideType)
+        /// <param name="ideType">IDE类型</param>
+        public static void ConfigureIde(IdeType ideType)
         {
             // 获取配置
             var config = ConfigManager.GetConfig();
 
             // 根据IDE类型配置
-            switch (_ideType)
+            switch (ideType)
             {
-                case IDEType.Rider:
+                case IdeType.k_Rider:
                     config.RiderConfig.EnableCodeAnalysis = true;
                     config.RiderConfig.EnableStyleCop = true;
                     config.RiderConfig.EnableReSharper = true;
                     break;
-                case IDEType.VisualStudio:
+                case IdeType.k_VisualStudio:
                     config.VisualStudioConfig.EnableRoslynAnalyzers = true;
                     config.VisualStudioConfig.EnableStyleCop = true;
                     config.VisualStudioConfig.EnableCodeAnalysis = true;
                     break;
-                case IDEType.VSCode:
+                case IdeType.k_VSCode:
                     config.VSCodeConfig.EnableOmniSharp = true;
                     config.VSCodeConfig.EnableRoslynAnalyzers = true;
                     config.VSCodeConfig.EnableEditorConfig = true;
@@ -215,40 +217,40 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             ConfigManager.SaveConfig();
 
             // 导出EditorConfig
-            if (config.SyncEditorConfigWithIDE)
+            if (config.SyncEditorConfigWithIde)
             {
-                IDEIntegrationManager.ExportConfigToCurrentIDE(EditorConfigManager.GetRules());
+                IdeIntegrationManager.ExportConfigToCurrentIde(EditorConfigManager.GetRules());
             }
 
             // 更新状态
-            s_IsIDEConfigured = true;
+            s_IsIdeConfigured = true;
 
             // 提示用户配置成功
             EditorUtility.DisplayDialog(
                 "TByd.CodeStyle - IDE配置",
-                $"{_ideType} 已成功配置。\n\n您现在可以使用代码风格检查功能了。",
+                $"{ideType} 已成功配置。\n\n您现在可以使用代码风格检查功能了。",
                 "确定");
         }
 
         /// <summary>
         /// 重置IDE配置
         /// </summary>
-        /// <param name="_ideType">IDE类型</param>
-        public static void ResetIDEConfiguration(IDEType _ideType)
+        /// <param name="ideType">IDE类型</param>
+        public static void ResetIdeConfiguration(IdeType ideType)
         {
             // 获取配置
             var config = ConfigManager.GetConfig();
 
             // 根据IDE类型重置配置
-            switch (_ideType)
+            switch (ideType)
             {
-                case IDEType.Rider:
+                case IdeType.k_Rider:
                     config.RiderConfig = new RiderConfig();
                     break;
-                case IDEType.VisualStudio:
+                case IdeType.k_VisualStudio:
                     config.VisualStudioConfig = new VisualStudioConfig();
                     break;
-                case IDEType.VSCode:
+                case IdeType.k_VSCode:
                     config.VSCodeConfig = new VSCodeConfig();
                     break;
             }
@@ -257,7 +259,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             ConfigManager.SaveConfig();
 
             // 更新状态
-            s_IsIDEConfigured = false;
+            s_IsIdeConfigured = false;
 
             // 重置自动配置状态
             ResetAutoConfigState();
@@ -277,28 +279,28 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 立即检测IDE
         /// </summary>
-        public static void DetectIDENow()
+        public static void DetectIdeNow()
         {
             s_LastDetectionTime = DateTime.MinValue;
-            DetectIDE();
+            DetectIde();
         }
 
         /// <summary>
         /// 检测IDE
         /// </summary>
-        private static void DetectIDE()
+        private static void DetectIde()
         {
             // 获取当前IDE类型
-            var currentType = DetectCurrentIDE();
+            var currentType = DetectCurrentIde();
 
-            if (currentType != IDEType.Unknown)
+            if (currentType != IdeType.k_Unknown)
             {
                 Debug.Log($"[TByd.CodeStyle] 检测到当前使用的IDE: {currentType}");
 
                 // 检查是否需要配置
-                if (!IsIDEConfigured(currentType))
+                if (!IsIdeConfigured(currentType))
                 {
-                    PromptIDEConfiguration(currentType);
+                    PromptIdeConfiguration(currentType);
                 }
             }
         }

@@ -19,11 +19,11 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 解析提交消息文本
         /// </summary>
-        /// <param name="_message">提交消息文本</param>
+        /// <param name="message">提交消息文本</param>
         /// <returns>解析后的提交消息对象</returns>
-        public static CommitMessage Parse(string _message)
+        public static CommitMessage Parse(string message)
         {
-            if (string.IsNullOrEmpty(_message))
+            if (string.IsNullOrEmpty(message))
             {
                 return new CommitMessage();
             }
@@ -31,7 +31,7 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             try
             {
                 // 移除注释行
-                var cleanMessage = RemoveComments(_message);
+                var cleanMessage = RemoveComments(message);
 
                 // 分割消息为头部、正文和页脚
                 var parts = SplitMessage(cleanMessage);
@@ -74,23 +74,23 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
             catch (Exception e)
             {
                 Debug.LogError($"[TByd.CodeStyle] 解析提交消息失败: {e.Message}");
-                return new CommitMessage(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, _message);
+                return new CommitMessage(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, message);
             }
         }
 
         /// <summary>
         /// 移除提交消息中的注释行
         /// </summary>
-        /// <param name="_message">原始提交消息</param>
+        /// <param name="message">原始提交消息</param>
         /// <returns>移除注释后的提交消息</returns>
-        private static string RemoveComments(string _message)
+        private static string RemoveComments(string message)
         {
-            if (string.IsNullOrEmpty(_message))
+            if (string.IsNullOrEmpty(message))
             {
                 return string.Empty;
             }
 
-            var lines = _message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var sb = new System.Text.StringBuilder();
 
             foreach (var line in lines)
@@ -107,17 +107,17 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 分割提交消息为头部、正文和页脚
         /// </summary>
-        /// <param name="_message">提交消息</param>
+        /// <param name="message">提交消息</param>
         /// <returns>分割后的部分</returns>
-        private static string[] SplitMessage(string _message)
+        private static string[] SplitMessage(string message)
         {
-            if (string.IsNullOrEmpty(_message))
+            if (string.IsNullOrEmpty(message))
             {
                 return new[] { string.Empty };
             }
 
             // 按照空行分割消息
-            var parts = Regex.Split(_message, @"(?:\r?\n){2,}");
+            var parts = Regex.Split(message, @"(?:\r?\n){2,}");
 
             return parts;
         }
@@ -125,16 +125,16 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 检查提交消息是否符合格式要求
         /// </summary>
-        /// <param name="_message">提交消息文本</param>
+        /// <param name="message">提交消息文本</param>
         /// <returns>是否符合格式要求</returns>
-        public static bool IsValidFormat(string _message)
+        public static bool IsValidFormat(string message)
         {
-            if (string.IsNullOrEmpty(_message))
+            if (string.IsNullOrEmpty(message))
             {
                 return false;
             }
 
-            var cleanMessage = RemoveComments(_message);
+            var cleanMessage = RemoveComments(message);
             var parts = SplitMessage(cleanMessage);
 
             if (parts.Length == 0 || string.IsNullOrEmpty(parts[0]))
@@ -148,19 +148,19 @@ namespace TByd.CodeStyle.Runtime.Git.Commit
         /// <summary>
         /// 从提交消息文件中读取提交消息
         /// </summary>
-        /// <param name="_filePath">提交消息文件路径</param>
+        /// <param name="filePath">提交消息文件路径</param>
         /// <returns>提交消息对象</returns>
-        public static CommitMessage ParseFromFile(string _filePath)
+        public static CommitMessage ParseFromFile(string filePath)
         {
             try
             {
-                if (!System.IO.File.Exists(_filePath))
+                if (!System.IO.File.Exists(filePath))
                 {
-                    Debug.LogError($"[TByd.CodeStyle] 提交消息文件不存在: {_filePath}");
+                    Debug.LogError($"[TByd.CodeStyle] 提交消息文件不存在: {filePath}");
                     return new CommitMessage();
                 }
 
-                var message = System.IO.File.ReadAllText(_filePath);
+                var message = System.IO.File.ReadAllText(filePath);
                 return Parse(message);
             }
             catch (Exception e)

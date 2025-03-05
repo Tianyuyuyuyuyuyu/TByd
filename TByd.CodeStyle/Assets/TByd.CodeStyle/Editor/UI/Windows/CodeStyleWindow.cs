@@ -19,7 +19,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
     public class CodeStyleWindow : EditorWindow
     {
         // 窗口标题
-        private const string c_WindowTitle = "TByd 代码风格";
+        private const string k_CWindowTitle = "TByd 代码风格";
 
         // 窗口实例
         private static CodeStyleWindow s_Instance;
@@ -67,17 +67,17 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         /// <summary>
         /// 当前IDE类型
         /// </summary>
-        private IDEType m_CurrentIDEType;
+        private IdeType m_CurrentIdeType;
 
         /// <summary>
         /// IDE配置是否已初始化
         /// </summary>
-        private bool m_IsIDEConfigured;
+        private bool m_IsIdeConfigured;
 
         /// <summary>
         /// IDE自动配置是否已提示
         /// </summary>
-        private bool m_HasPromptedIDEConfig;
+        private bool m_HasPromptedIdeConfig;
 
         /// <summary>
         /// 打开窗口的菜单项
@@ -85,12 +85,12 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         [MenuItem("TByd/CodeStyle/代码风格工具", false, 100)]
         public static void ShowWindow()
         {
-            s_Instance = GetWindow<CodeStyleWindow>(false, c_WindowTitle, true);
+            s_Instance = GetWindow<CodeStyleWindow>(false, k_CWindowTitle, true);
             s_Instance.minSize = new Vector2(600, 400);
             s_Instance.Show();
 
             // 显示欢迎通知
-            NotificationSystem.ShowNotification("欢迎使用TByd代码风格工具！", NotificationType.Info);
+            NotificationSystem.ShowNotification("欢迎使用TByd代码风格工具！", NotificationType.k_Info);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             CheckGitRepositoryStatus();
 
             // 检查IDE状态
-            CheckIDEStatus();
+            CheckIdeStatus();
         }
 
         /// <summary>
@@ -159,10 +159,10 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
                 // 检查是否所有必要的钩子都已安装
                 m_AreHooksInstalled = hookStatus.Count > 0 &&
-                                    hookStatus.ContainsKey(GitHookType.PreCommit) &&
-                                    hookStatus[GitHookType.PreCommit] &&
-                                    hookStatus.ContainsKey(GitHookType.CommitMsg) &&
-                                    hookStatus[GitHookType.CommitMsg];
+                                    hookStatus.ContainsKey(GitHookType.k_PreCommit) &&
+                                    hookStatus[GitHookType.k_PreCommit] &&
+                                    hookStatus.ContainsKey(GitHookType.k_CommitMsg) &&
+                                    hookStatus[GitHookType.k_CommitMsg];
             }
             else
             {
@@ -173,16 +173,16 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         /// <summary>
         /// 检查IDE状态
         /// </summary>
-        private void CheckIDEStatus()
+        private void CheckIdeStatus()
         {
-            m_CurrentIDEType = IDEDetector.DetectCurrentIDE();
-            m_IsIDEConfigured = IDEDetector.IsIDEConfigured(m_CurrentIDEType);
+            m_CurrentIdeType = IdeDetector.DetectCurrentIde();
+            m_IsIdeConfigured = IdeDetector.IsIdeConfigured(m_CurrentIdeType);
 
             // 如果IDE未配置且未提示过，显示自动配置提示
-            if (!m_IsIDEConfigured && !m_HasPromptedIDEConfig)
+            if (!m_IsIdeConfigured && !m_HasPromptedIdeConfig)
             {
-                m_HasPromptedIDEConfig = true;
-                IDEDetector.PromptIDEConfiguration(m_CurrentIDEType);
+                m_HasPromptedIdeConfig = true;
+                IdeDetector.PromptIdeConfiguration(m_CurrentIdeType);
             }
         }
 
@@ -196,7 +196,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             // 绘制标题
             EditorGUILayout.Space();
-            GUILayout.Label(c_WindowTitle, EditorStyles.boldLabel);
+            GUILayout.Label(k_CWindowTitle, EditorStyles.boldLabel);
             EditorGUILayout.Space();
 
             // 绘制通知
@@ -218,7 +218,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     DrawCodeCheckTab();
                     break;
                 case 3:
-                    DrawIDEIntegrationTab();
+                    DrawIdeIntegrationTab();
                     break;
                 case 4:
                     DrawSettingsTab();
@@ -291,18 +291,18 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("IDE状态", EditorStyles.boldLabel);
 
-            EditorGUILayout.LabelField("当前IDE:", m_CurrentIDEType.ToString());
-            EditorGUILayout.LabelField("配置状态:", m_IsIDEConfigured ? "已配置" : "未配置");
+            EditorGUILayout.LabelField("当前IDE:", m_CurrentIdeType.ToString());
+            EditorGUILayout.LabelField("配置状态:", m_IsIdeConfigured ? "已配置" : "未配置");
 
-            if (!m_IsIDEConfigured)
+            if (!m_IsIdeConfigured)
             {
                 EditorGUILayout.HelpBox("当前IDE未配置，建议配置以获得更好的开发体验。", MessageType.Info);
 
                 EditorGUILayout.Space();
                 if (GUILayout.Button("配置IDE"))
                 {
-                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
-                    CheckIDEStatus();
+                    IdeDetector.ConfigureIde(m_CurrentIdeType);
+                    CheckIdeStatus();
                 }
             }
             else
@@ -548,7 +548,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             if (GUILayout.Button("复制到剪贴板"))
             {
                 EditorGUIUtility.systemCopyBuffer = m_CommitMessage;
-                NotificationSystem.ShowNotification("提交消息已复制到剪贴板", NotificationType.Success);
+                NotificationSystem.ShowNotification("提交消息已复制到剪贴板", NotificationType.k_Success);
             }
 
             if (GUILayout.Button("重置"))
@@ -572,14 +572,14 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             {
                 GitHookMonitor.InstallEnabledHooks();
                 CheckGitRepositoryStatus();
-                NotificationSystem.ShowNotification("Git钩子安装成功", NotificationType.Success);
+                NotificationSystem.ShowNotification("Git钩子安装成功", NotificationType.k_Success);
             }
 
             if (GUILayout.Button("卸载钩子"))
             {
                 GitHookMonitor.UninstallAllHooks();
                 CheckGitRepositoryStatus();
-                NotificationSystem.ShowNotification("Git钩子卸载成功", NotificationType.Info);
+                NotificationSystem.ShowNotification("Git钩子卸载成功", NotificationType.k_Info);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -662,7 +662,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             m_SelectedCommitTypeIndex = 0;
             m_SelectedScopeIndex = 0;
 
-            NotificationSystem.ShowNotification("提交消息已重置", NotificationType.Info);
+            NotificationSystem.ShowNotification("提交消息已重置", NotificationType.k_Info);
         }
 
         /// <summary>
@@ -980,7 +980,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         /// <summary>
         /// 绘制IDE集成标签页
         /// </summary>
-        private void DrawIDEIntegrationTab()
+        private void DrawIdeIntegrationTab()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -991,25 +991,25 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("当前IDE", EditorStyles.boldLabel);
 
-            EditorGUILayout.LabelField("检测到的IDE:", m_CurrentIDEType.ToString());
-            EditorGUILayout.LabelField("配置状态:", m_IsIDEConfigured ? "已配置" : "未配置");
+            EditorGUILayout.LabelField("检测到的IDE:", m_CurrentIdeType.ToString());
+            EditorGUILayout.LabelField("配置状态:", m_IsIdeConfigured ? "已配置" : "未配置");
 
-            if (!m_IsIDEConfigured)
+            if (!m_IsIdeConfigured)
             {
                 EditorGUILayout.HelpBox("当前IDE未配置，建议配置以获得更好的开发体验。", MessageType.Info);
 
                 if (GUILayout.Button("配置IDE"))
                 {
-                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
-                    CheckIDEStatus();
+                    IdeDetector.ConfigureIde(m_CurrentIdeType);
+                    CheckIdeStatus();
                 }
             }
             else
             {
                 if (GUILayout.Button("重新配置IDE"))
                 {
-                    IDEDetector.ConfigureIDE(m_CurrentIDEType);
-                    CheckIDEStatus();
+                    IdeDetector.ConfigureIde(m_CurrentIdeType);
+                    CheckIdeStatus();
                 }
             }
 
@@ -1021,15 +1021,15 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             GUILayout.Label("IDE特定设置", EditorStyles.boldLabel);
 
-            switch (m_CurrentIDEType)
+            switch (m_CurrentIdeType)
             {
-                case IDEType.Rider:
+                case IdeType.k_Rider:
                     DrawRiderSettings();
                     break;
-                case IDEType.VisualStudio:
+                case IdeType.k_VisualStudio:
                     DrawVisualStudioSettings();
                     break;
-                case IDEType.VSCode:
+                case IdeType.k_VSCode:
                     DrawVSCodeSettings();
                     break;
                 default:
@@ -1047,11 +1047,11 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             if (GUILayout.Button("验证配置"))
             {
-                var result = IDEConfigValidator.ValidateConfig(m_CurrentIDEType, Path.GetDirectoryName(Application.dataPath));
+                var result = IdeConfigValidator.ValidateConfig(m_CurrentIdeType, Path.GetDirectoryName(Application.dataPath));
 
                 if (result.IsValid)
                 {
-                    NotificationSystem.ShowNotification("配置验证通过", NotificationType.Success);
+                    NotificationSystem.ShowNotification("配置验证通过", NotificationType.k_Success);
                 }
                 else
                 {
@@ -1073,7 +1073,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             }
 
             // 检查配置冲突
-            var conflicts = IDEConfigValidator.CheckConfigConflicts(m_CurrentIDEType, Path.GetDirectoryName(Application.dataPath));
+            var conflicts = IdeConfigValidator.CheckConfigConflicts(m_CurrentIdeType, Path.GetDirectoryName(Application.dataPath));
             if (conflicts.Count > 0)
             {
                 EditorGUILayout.Space();
@@ -1087,13 +1087,13 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                         "- 使用标准版本：使用推荐的配置",
                         "使用本地版本", "使用标准版本");
 
-                    if (IDEConfigSyncManager.ResolveConflicts(useLocal))
+                    if (IdeConfigSyncManager.ResolveConflicts(useLocal))
                     {
-                        NotificationSystem.ShowNotification("配置冲突已解决", NotificationType.Success);
+                        NotificationSystem.ShowNotification("配置冲突已解决", NotificationType.k_Success);
                     }
                     else
                     {
-                        NotificationSystem.ShowNotification("解决配置冲突失败", NotificationType.Error);
+                        NotificationSystem.ShowNotification("解决配置冲突失败", NotificationType.k_Error);
                     }
                 }
             }
@@ -1107,29 +1107,29 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             GUILayout.Label("配置备份", EditorStyles.boldLabel);
 
             // 显示备份列表
-            var backups = IDEConfigBackupManager.GetBackups();
+            var backups = IdeConfigBackupManager.GetBackups();
             if (backups.Count > 0)
             {
                 EditorGUILayout.LabelField("备份历史：");
                 foreach (var backup in backups)
                 {
                     EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField($"{backup.Timestamp:yyyy-MM-dd HH:mm:ss} - {backup.Description}");
+                    EditorGUILayout.LabelField($"{backup.timestamp:yyyy-MM-dd HH:mm:ss} - {backup.description}");
 
                     if (GUILayout.Button("恢复", GUILayout.Width(60)))
                     {
                         if (EditorUtility.DisplayDialog("恢复备份",
-                            $"确定要恢复此备份吗？\n时间：{backup.Timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.Description}",
+                            $"确定要恢复此备份吗？\n时间：{backup.timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.description}",
                             "确定", "取消"))
                         {
-                            if (IDEConfigBackupManager.RestoreBackup(backup.Id))
+                            if (IdeConfigBackupManager.RestoreBackup(backup.id))
                             {
-                                NotificationSystem.ShowNotification("配置已恢复", NotificationType.Success);
-                                CheckIDEStatus();
+                                NotificationSystem.ShowNotification("配置已恢复", NotificationType.k_Success);
+                                CheckIdeStatus();
                             }
                             else
                             {
-                                NotificationSystem.ShowNotification("恢复配置失败", NotificationType.Error);
+                                NotificationSystem.ShowNotification("恢复配置失败", NotificationType.k_Error);
                             }
                         }
                     }
@@ -1137,16 +1137,16 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     if (GUILayout.Button("删除", GUILayout.Width(60)))
                     {
                         if (EditorUtility.DisplayDialog("删除备份",
-                            $"确定要删除此备份吗？\n时间：{backup.Timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.Description}",
+                            $"确定要删除此备份吗？\n时间：{backup.timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.description}",
                             "确定", "取消"))
                         {
-                            if (IDEConfigBackupManager.DeleteBackup(backup.Id))
+                            if (IdeConfigBackupManager.DeleteBackup(backup.id))
                             {
-                                NotificationSystem.ShowNotification("备份已删除", NotificationType.Success);
+                                NotificationSystem.ShowNotification("备份已删除", NotificationType.k_Success);
                             }
                             else
                             {
-                                NotificationSystem.ShowNotification("删除备份失败", NotificationType.Error);
+                                NotificationSystem.ShowNotification("删除备份失败", NotificationType.k_Error);
                             }
                         }
                     }
@@ -1171,14 +1171,14 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     "确定", "取消"))
                 {
                     description = EditorInputDialog.Show("备份描述", "请输入备份描述（可选）：", "");
-                    var backupId = IDEConfigBackupManager.CreateBackup(m_CurrentIDEType, description);
+                    var backupId = IdeConfigBackupManager.CreateBackup(m_CurrentIdeType, description);
                     if (!string.IsNullOrEmpty(backupId))
                     {
-                        NotificationSystem.ShowNotification("配置已备份", NotificationType.Success);
+                        NotificationSystem.ShowNotification("配置已备份", NotificationType.k_Success);
                     }
                     else
                     {
-                        NotificationSystem.ShowNotification("创建备份失败", NotificationType.Error);
+                        NotificationSystem.ShowNotification("创建备份失败", NotificationType.k_Error);
                     }
                 }
             }
@@ -1194,24 +1194,24 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             if (GUILayout.Button("同步配置"))
             {
-                var result = IDEConfigSyncManager.SynchronizeConfig(m_CurrentIDEType);
-                if (result.Success)
+                var result = IdeConfigSyncManager.SynchronizeConfig(m_CurrentIdeType);
+                if (result.success)
                 {
                     var message = "配置同步成功";
-                    if (result.UpdatedFiles.Count > 0)
+                    if (result.updatedFiles.Count > 0)
                     {
-                        message += $"\n\n更新的文件：\n{string.Join("\n", result.UpdatedFiles)}";
+                        message += $"\n\n更新的文件：\n{string.Join("\n", result.updatedFiles)}";
                     }
-                    if (result.ConflictFiles.Count > 0)
+                    if (result.conflictFiles.Count > 0)
                     {
-                        message += $"\n\n存在冲突的文件：\n{string.Join("\n", result.ConflictFiles)}";
+                        message += $"\n\n存在冲突的文件：\n{string.Join("\n", result.conflictFiles)}";
                     }
                     EditorUtility.DisplayDialog("同步结果", message, "确定");
-                    CheckIDEStatus();
+                    CheckIdeStatus();
                 }
                 else
                 {
-                    EditorUtility.DisplayDialog("同步失败", result.Error, "确定");
+                    EditorUtility.DisplayDialog("同步失败", result.error, "确定");
                 }
             }
 
@@ -1225,8 +1225,8 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             if (GUILayout.Button("导出到所有支持的IDE"))
             {
-                IDEIntegrationManager.ExportConfigToAllIDEs(EditorConfigManager.GetRules());
-                NotificationSystem.ShowNotification("已导出设置到所有支持的IDE", NotificationType.Success);
+                IdeIntegrationManager.ExportConfigToAllIDEs(EditorConfigManager.GetRules());
+                NotificationSystem.ShowNotification("已导出设置到所有支持的IDE", NotificationType.k_Success);
             }
 
             EditorGUILayout.EndVertical();
@@ -1328,17 +1328,17 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             // IDE集成设置
             EditorGUILayout.LabelField("IDE集成设置", EditorStyles.boldLabel);
 
-            config.EnableIDEIntegration = EditorGUILayout.ToggleLeft("启用IDE集成", config.EnableIDEIntegration);
-            config.AutoConfigureIDE = EditorGUILayout.ToggleLeft("自动配置IDE", config.AutoConfigureIDE);
-            config.SyncEditorConfigWithIDE = EditorGUILayout.ToggleLeft("同步EditorConfig到IDE", config.SyncEditorConfigWithIDE);
+            config.EnableIdeIntegration = EditorGUILayout.ToggleLeft("启用IDE集成", config.EnableIdeIntegration);
+            config.AutoConfigureIde = EditorGUILayout.ToggleLeft("自动配置IDE", config.AutoConfigureIde);
+            config.SyncEditorConfigWithIde = EditorGUILayout.ToggleLeft("同步EditorConfig到IDE", config.SyncEditorConfigWithIde);
 
-            if (config.EnableIDEIntegration)
+            if (config.EnableIdeIntegration)
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("重新检测IDE"))
                 {
-                    CheckIDEStatus();
+                    CheckIdeStatus();
                 }
 
                 if (GUILayout.Button("重置IDE配置"))
@@ -1346,9 +1346,9 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     if (EditorUtility.DisplayDialog("重置IDE配置",
                         "确定要重置IDE配置吗？这将清除所有IDE特定的设置。", "确定", "取消"))
                     {
-                        IDEDetector.ResetIDEConfiguration(m_CurrentIDEType);
-                        CheckIDEStatus();
-                        NotificationSystem.ShowNotification("IDE配置已重置", NotificationType.Info);
+                        IdeDetector.ResetIdeConfiguration(m_CurrentIdeType);
+                        CheckIdeStatus();
+                        NotificationSystem.ShowNotification("IDE配置已重置", NotificationType.k_Info);
                     }
                 }
                 EditorGUILayout.EndHorizontal();
@@ -1443,7 +1443,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             if (EditorGUI.EndChangeCheck())
             {
                 ConfigManager.SaveConfig();
-                NotificationSystem.ShowNotification("设置已保存", NotificationType.Success);
+                NotificationSystem.ShowNotification("设置已保存", NotificationType.k_Success);
             }
 
             EditorGUILayout.Space();
@@ -1454,7 +1454,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 if (EditorUtility.DisplayDialog("重置设置", "确定要重置所有设置吗？这将恢复默认配置。", "确定", "取消"))
                 {
                     ConfigManager.ResetConfig();
-                    NotificationSystem.ShowNotification("设置已重置为默认值", NotificationType.Info);
+                    NotificationSystem.ShowNotification("设置已重置为默认值", NotificationType.k_Info);
                 }
             }
 
@@ -1478,7 +1478,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 }
 
                 NotificationSystem.HideProgress();
-                NotificationSystem.ShowNotification("进度测试完成", NotificationType.Success);
+                NotificationSystem.ShowNotification("进度测试完成", NotificationType.k_Success);
             };
         }
     }

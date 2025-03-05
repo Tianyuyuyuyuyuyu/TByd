@@ -12,7 +12,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
     public class EditorConfigSettingsProvider : SettingsProvider
     {
         // 设置路径
-        private const string c_SettingsPath = "Project/TByd/EditorConfig";
+        private const string k_CSettingsPath = "Project/TByd/EditorConfig";
 
         // 编辑器样式
         private GUIStyle m_HeaderStyle;
@@ -29,7 +29,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// <summary>
         /// 构造函数
         /// </summary>
-        public EditorConfigSettingsProvider() : base(c_SettingsPath, SettingsScope.Project)
+        public EditorConfigSettingsProvider() : base(k_CSettingsPath, SettingsScope.Project)
         {
             // 设置关键字，用于搜索
             keywords = new HashSet<string>(new[]
@@ -82,8 +82,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// <summary>
         /// 绘制设置界面
         /// </summary>
-        /// <param name="_searchContext">搜索上下文</param>
-        public override void OnGUI(string _searchContext)
+        /// <param name="searchContext">搜索上下文</param>
+        public override void OnGUI(string searchContext)
         {
             InitStyles();
 

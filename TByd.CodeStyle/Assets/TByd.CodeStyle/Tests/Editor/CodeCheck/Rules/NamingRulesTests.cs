@@ -39,8 +39,7 @@ namespace TByd.CodeStyle.Tests.Editor.CodeCheck.Rules
         public void PrivateFieldNamingRule_ValidAndInvalidNames_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new PrivateFieldNamingRule();
-            rule.Enabled = true;
+            var rule = new PrivateFieldNamingRule { Enabled = true };
 
             // 有效的代码示例，使用m_前缀
             var validCode = @"
@@ -88,8 +87,7 @@ public class BadExample : MonoBehaviour
         public void StaticFieldNamingRule_ValidAndInvalidNames_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new StaticFieldNamingRule();
-            rule.Enabled = true;
+            var rule = new StaticFieldNamingRule { Enabled = true };
 
             // 有效的代码示例，使用s_前缀
             var validCode = @"
@@ -137,8 +135,7 @@ public class BadExample : MonoBehaviour
         public void ConstantNamingRule_ValidAndInvalidNames_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new ConstantNamingRule();
-            rule.Enabled = true;
+            var rule = new ConstantNamingRule { Enabled = true };
 
             // 有效的代码示例，使用c_前缀
             var validCode = @"
@@ -186,8 +183,7 @@ public class BadExample : MonoBehaviour
         public void PropertyNamingRule_ValidAndInvalidNames_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new PropertyNamingRule();
-            rule.Enabled = true;
+            var rule = new PropertyNamingRule { Enabled = true };
 
             // 有效的代码示例，使用PascalCase
             var validCode = @"
@@ -235,8 +231,7 @@ public class BadExample : MonoBehaviour
         public void MethodNamingRule_ValidAndInvalidNames_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new MethodNamingRule();
-            rule.Enabled = true;
+            var rule = new MethodNamingRule { Enabled = true };
 
             // 有效的代码示例，使用PascalCase
             var validCode = @"
@@ -284,8 +279,7 @@ public class BadExample : MonoBehaviour
         public void ParameterNamingRule_ValidAndInvalidNames_ReturnsCorrectResults()
         {
             // 创建规则
-            var rule = new ParameterNamingRule();
-            rule.Enabled = true;
+            var rule = new ParameterNamingRule { Enabled = true };
 
             // 有效的代码示例，使用_前缀
             var validCode = @"
@@ -382,12 +376,35 @@ public class Example : MonoBehaviour
 
             foreach (var issue in result.Issues)
             {
-                if (issue.RuleId == "CS0003") foundPrivateFieldIssue = true;
-                if (issue.RuleId == "CS0005") foundStaticFieldIssue = true;
-                if (issue.RuleId == "CS0004") foundConstantIssue = true;
-                if (issue.RuleId == "CS0007") foundPropertyIssue = true;
-                if (issue.RuleId == "CS0002") foundMethodIssue = true;
-                if (issue.RuleId == "CS0006") foundParameterIssue = true;
+                if (issue.RuleId == "CS0003")
+                {
+                    foundPrivateFieldIssue = true;
+                }
+
+                if (issue.RuleId == "CS0005")
+                {
+                    foundStaticFieldIssue = true;
+                }
+
+                if (issue.RuleId == "CS0004")
+                {
+                    foundConstantIssue = true;
+                }
+
+                if (issue.RuleId == "CS0007")
+                {
+                    foundPropertyIssue = true;
+                }
+
+                if (issue.RuleId == "CS0002")
+                {
+                    foundMethodIssue = true;
+                }
+
+                if (issue.RuleId == "CS0006")
+                {
+                    foundParameterIssue = true;
+                }
             }
 
             Assert.IsTrue(foundPrivateFieldIssue, "应该检测到私有成员变量命名问题");

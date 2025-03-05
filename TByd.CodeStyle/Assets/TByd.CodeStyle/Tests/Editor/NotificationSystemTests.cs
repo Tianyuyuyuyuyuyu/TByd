@@ -24,7 +24,7 @@ namespace TByd.CodeStyle.Tests.Editor
         {
             // 显示通知
             var message = "测试通知";
-            var type = NotificationType.Info;
+            var type = NotificationType.k_Info;
             NotificationSystem.ShowNotification(message, type);
 
             // 验证当前通知

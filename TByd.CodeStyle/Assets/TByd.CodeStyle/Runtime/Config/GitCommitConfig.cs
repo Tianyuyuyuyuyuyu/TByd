@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace TByd.CodeStyle.Runtime.Config
 {
@@ -19,20 +20,20 @@ namespace TByd.CodeStyle.Runtime.Config
             /// <summary>
             /// 类型标识
             /// </summary>
-            [SerializeField]
-            private string m_Type;
+            [FormerlySerializedAs("m_Type")] [SerializeField]
+            private string mType;
 
             /// <summary>
             /// 类型描述
             /// </summary>
-            [SerializeField]
-            private string m_Description;
+            [FormerlySerializedAs("m_Description")] [SerializeField]
+            private string mDescription;
 
             /// <summary>
             /// 是否启用
             /// </summary>
-            [SerializeField]
-            private bool m_Enabled = true;
+            [FormerlySerializedAs("m_Enabled")] [SerializeField]
+            private bool mEnabled = true;
 
             /// <summary>
             /// 构造函数
@@ -42,14 +43,14 @@ namespace TByd.CodeStyle.Runtime.Config
             /// <summary>
             /// 构造函数
             /// </summary>
-            /// <param name="_type">类型标识</param>
-            /// <param name="_description">类型描述</param>
-            /// <param name="_enabled">是否启用</param>
-            public CommitType(string _type, string _description, bool _enabled = true)
+            /// <param name="type">类型标识</param>
+            /// <param name="description">类型描述</param>
+            /// <param name="enabled">是否启用</param>
+            public CommitType(string type, string description, bool enabled = true)
             {
-                m_Type = _type;
-                m_Description = _description;
-                m_Enabled = _enabled;
+                mType = type;
+                mDescription = description;
+                mEnabled = enabled;
             }
 
             /// <summary>
@@ -57,8 +58,8 @@ namespace TByd.CodeStyle.Runtime.Config
             /// </summary>
             public string Type
             {
-                get => m_Type;
-                set => m_Type = value;
+                get => mType;
+                set => mType = value;
             }
 
             /// <summary>
@@ -66,8 +67,8 @@ namespace TByd.CodeStyle.Runtime.Config
             /// </summary>
             public string Description
             {
-                get => m_Description;
-                set => m_Description = value;
+                get => mDescription;
+                set => mDescription = value;
             }
 
             /// <summary>
@@ -75,64 +76,64 @@ namespace TByd.CodeStyle.Runtime.Config
             /// </summary>
             public bool Enabled
             {
-                get => m_Enabled;
-                set => m_Enabled = value;
+                get => mEnabled;
+                set => mEnabled = value;
             }
         }
 
         /// <summary>
         /// 是否强制使用提交模板
         /// </summary>
-        [SerializeField]
-        private bool m_ForceUseTemplate = true;
+        [FormerlySerializedAs("m_ForceUseTemplate")] [SerializeField]
+        private bool mForceUseTemplate = true;
 
         /// <summary>
         /// 是否要求提交类型
         /// </summary>
-        [SerializeField]
-        private bool m_RequireType = true;
+        [FormerlySerializedAs("m_RequireType")] [SerializeField]
+        private bool mRequireType = true;
 
         /// <summary>
         /// 是否要求作用域
         /// </summary>
-        [SerializeField]
-        private bool m_RequireScope = false;
+        [FormerlySerializedAs("m_RequireScope")] [SerializeField]
+        private bool mRequireScope = false;
 
         /// <summary>
         /// 是否要求简短描述
         /// </summary>
-        [SerializeField]
-        private bool m_RequireSubject = true;
+        [FormerlySerializedAs("m_RequireSubject")] [SerializeField]
+        private bool mRequireSubject = true;
 
         /// <summary>
         /// 是否要求详细描述
         /// </summary>
-        [SerializeField]
-        private bool m_RequireBody = false;
+        [FormerlySerializedAs("m_RequireBody")] [SerializeField]
+        private bool mRequireBody = false;
 
         /// <summary>
         /// 是否要求关闭的问题
         /// </summary>
-        [SerializeField]
-        private bool m_RequireFooter = false;
+        [FormerlySerializedAs("m_RequireFooter")] [SerializeField]
+        private bool mRequireFooter = false;
 
         /// <summary>
         /// 简短描述的最大长度
         /// </summary>
-        [SerializeField]
-        private int m_SubjectMaxLength = 100;
+        [FormerlySerializedAs("m_SubjectMaxLength")] [SerializeField]
+        private int mSubjectMaxLength = 100;
 
         /// <summary>
         /// 提交类型列表
         /// </summary>
-        [SerializeField]
-        private List<CommitType> m_CommitTypes = new List<CommitType>();
+        [FormerlySerializedAs("m_CommitTypes")] [SerializeField]
+        private List<CommitType> mCommitTypes = new List<CommitType>();
 
         /// <summary>
         /// 作用域列表
         /// </summary>
-        [SerializeField]
-        private List<string> m_Scopes = new List<string>();
+        [FormerlySerializedAs("m_Scopes")] [SerializeField]
+        private List<string> mScopes = new List<string>();
 
         /// <summary>
         /// 构造函数，初始化默认提交类型
@@ -148,17 +149,17 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         private void InitDefaultCommitTypes()
         {
-            m_CommitTypes.Add(new CommitType("feat", "新功能"));
-            m_CommitTypes.Add(new CommitType("fix", "修复Bug"));
-            m_CommitTypes.Add(new CommitType("docs", "文档更新"));
-            m_CommitTypes.Add(new CommitType("style", "代码风格调整（不影响功能）"));
-            m_CommitTypes.Add(new CommitType("refactor", "代码重构"));
-            m_CommitTypes.Add(new CommitType("perf", "性能优化"));
-            m_CommitTypes.Add(new CommitType("test", "测试相关"));
-            m_CommitTypes.Add(new CommitType("build", "构建系统或外部依赖项更改"));
-            m_CommitTypes.Add(new CommitType("ci", "CI配置更改"));
-            m_CommitTypes.Add(new CommitType("chore", "其他修改"));
-            m_CommitTypes.Add(new CommitType("revert", "回退提交"));
+            mCommitTypes.Add(new CommitType("feat", "新功能"));
+            mCommitTypes.Add(new CommitType("fix", "修复Bug"));
+            mCommitTypes.Add(new CommitType("docs", "文档更新"));
+            mCommitTypes.Add(new CommitType("style", "代码风格调整（不影响功能）"));
+            mCommitTypes.Add(new CommitType("refactor", "代码重构"));
+            mCommitTypes.Add(new CommitType("perf", "性能优化"));
+            mCommitTypes.Add(new CommitType("test", "测试相关"));
+            mCommitTypes.Add(new CommitType("build", "构建系统或外部依赖项更改"));
+            mCommitTypes.Add(new CommitType("ci", "CI配置更改"));
+            mCommitTypes.Add(new CommitType("chore", "其他修改"));
+            mCommitTypes.Add(new CommitType("revert", "回退提交"));
         }
 
         /// <summary>
@@ -166,12 +167,12 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         private void InitDefaultScopes()
         {
-            m_Scopes.Add("core");
-            m_Scopes.Add("ui");
-            m_Scopes.Add("config");
-            m_Scopes.Add("git");
-            m_Scopes.Add("editor");
-            m_Scopes.Add("docs");
+            mScopes.Add("core");
+            mScopes.Add("ui");
+            mScopes.Add("config");
+            mScopes.Add("git");
+            mScopes.Add("editor");
+            mScopes.Add("docs");
         }
 
         /// <summary>
@@ -179,8 +180,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool ForceUseTemplate
         {
-            get => m_ForceUseTemplate;
-            set => m_ForceUseTemplate = value;
+            get => mForceUseTemplate;
+            set => mForceUseTemplate = value;
         }
 
         /// <summary>
@@ -188,8 +189,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool RequireType
         {
-            get => m_RequireType;
-            set => m_RequireType = value;
+            get => mRequireType;
+            set => mRequireType = value;
         }
 
         /// <summary>
@@ -197,8 +198,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool RequireScope
         {
-            get => m_RequireScope;
-            set => m_RequireScope = value;
+            get => mRequireScope;
+            set => mRequireScope = value;
         }
 
         /// <summary>
@@ -206,8 +207,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool RequireSubject
         {
-            get => m_RequireSubject;
-            set => m_RequireSubject = value;
+            get => mRequireSubject;
+            set => mRequireSubject = value;
         }
 
         /// <summary>
@@ -215,8 +216,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool RequireBody
         {
-            get => m_RequireBody;
-            set => m_RequireBody = value;
+            get => mRequireBody;
+            set => mRequireBody = value;
         }
 
         /// <summary>
@@ -224,8 +225,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public bool RequireFooter
         {
-            get => m_RequireFooter;
-            set => m_RequireFooter = value;
+            get => mRequireFooter;
+            set => mRequireFooter = value;
         }
 
         /// <summary>
@@ -233,8 +234,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public int SubjectMaxLength
         {
-            get => m_SubjectMaxLength;
-            set => m_SubjectMaxLength = value;
+            get => mSubjectMaxLength;
+            set => mSubjectMaxLength = value;
         }
 
         /// <summary>
@@ -242,8 +243,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public List<CommitType> CommitTypes
         {
-            get => m_CommitTypes;
-            set => m_CommitTypes = value;
+            get => mCommitTypes;
+            set => mCommitTypes = value;
         }
 
         /// <summary>
@@ -251,8 +252,8 @@ namespace TByd.CodeStyle.Runtime.Config
         /// </summary>
         public List<string> Scopes
         {
-            get => m_Scopes;
-            set => m_Scopes = value;
+            get => mScopes;
+            set => mScopes = value;
         }
     }
 }

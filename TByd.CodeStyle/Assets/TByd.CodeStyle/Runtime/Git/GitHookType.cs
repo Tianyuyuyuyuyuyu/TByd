@@ -10,77 +10,77 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <summary>
         /// 提交前钩子，在git commit命令执行前触发
         /// </summary>
-        PreCommit,
+        k_PreCommit,
 
         /// <summary>
         /// 提交消息钩子，在编辑提交消息时触发
         /// </summary>
-        CommitMsg,
+        k_CommitMsg,
 
         /// <summary>
         /// 提交后钩子，在提交完成后触发
         /// </summary>
-        PostCommit,
+        k_PostCommit,
 
         /// <summary>
         /// 推送前钩子，在git push命令执行前触发
         /// </summary>
-        PrePush,
+        k_PrePush,
 
         /// <summary>
         /// 推送后钩子，在推送完成后触发
         /// </summary>
-        PostPush,
+        k_PostPush,
 
         /// <summary>
         /// 合并前钩子，在合并操作执行前触发
         /// </summary>
-        PreMerge,
+        k_PreMerge,
 
         /// <summary>
         /// 合并后钩子，在合并完成后触发
         /// </summary>
-        PostMerge,
+        k_PostMerge,
 
         /// <summary>
         /// 检出钩子，在git checkout命令执行后触发
         /// </summary>
-        PostCheckout,
+        k_PostCheckout,
 
         /// <summary>
         /// 应用补丁前钩子，在git am命令执行前触发
         /// </summary>
-        ApplyPatchMsg,
+        k_ApplyPatchMsg,
 
         /// <summary>
         /// 预接收钩子，在服务器接收推送前触发
         /// </summary>
-        PreReceive,
+        k_PreReceive,
 
         /// <summary>
         /// 更新钩子，在服务器更新引用前触发
         /// </summary>
-        Update,
+        k_Update,
 
         /// <summary>
         /// 接收后钩子，在服务器接收推送后触发
         /// </summary>
-        PostReceive,
+        k_PostReceive,
 
         /// <summary>
         /// 更新后钩子，在服务器更新引用后触发
         /// </summary>
-        PostUpdate,
+        k_PostUpdate,
 
         /// <summary>
         /// 引用更新钩子，在本地引用更新后触发
         /// </summary>
-        PostRewrite,
+        k_PostRewrite,
 
         /// <summary>
         /// 准备提交消息钩子，在提交消息编辑器启动前触发
         /// </summary>
-        PrepareCommitMsg
+        k_PrepareCommitMsg
     }
 
     /// <summary>
@@ -91,85 +91,85 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <summary>
         /// 获取钩子文件名
         /// </summary>
-        /// <param name="_hookType">钩子类型</param>
+        /// <param name="hookType">钩子类型</param>
         /// <returns>钩子文件名</returns>
-        public static string GetFileName(this GitHookType _hookType)
+        public static string GetFileName(this GitHookType hookType)
         {
-            switch (_hookType)
+            switch (hookType)
             {
-                case GitHookType.PreCommit:
+                case GitHookType.k_PreCommit:
                     return "pre-commit";
-                case GitHookType.CommitMsg:
+                case GitHookType.k_CommitMsg:
                     return "commit-msg";
-                case GitHookType.PostCommit:
+                case GitHookType.k_PostCommit:
                     return "post-commit";
-                case GitHookType.PrePush:
+                case GitHookType.k_PrePush:
                     return "pre-push";
-                case GitHookType.PostPush:
+                case GitHookType.k_PostPush:
                     return "post-push";
-                case GitHookType.PreMerge:
+                case GitHookType.k_PreMerge:
                     return "pre-merge-commit";
-                case GitHookType.PostMerge:
+                case GitHookType.k_PostMerge:
                     return "post-merge";
-                case GitHookType.PostCheckout:
+                case GitHookType.k_PostCheckout:
                     return "post-checkout";
-                case GitHookType.ApplyPatchMsg:
+                case GitHookType.k_ApplyPatchMsg:
                     return "applypatch-msg";
-                case GitHookType.PreReceive:
+                case GitHookType.k_PreReceive:
                     return "pre-receive";
-                case GitHookType.Update:
+                case GitHookType.k_Update:
                     return "update";
-                case GitHookType.PostReceive:
+                case GitHookType.k_PostReceive:
                     return "post-receive";
-                case GitHookType.PostUpdate:
+                case GitHookType.k_PostUpdate:
                     return "post-update";
-                case GitHookType.PostRewrite:
+                case GitHookType.k_PostRewrite:
                     return "post-rewrite";
-                case GitHookType.PrepareCommitMsg:
+                case GitHookType.k_PrepareCommitMsg:
                     return "prepare-commit-msg";
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(_hookType), _hookType, "未知的Git钩子类型");
+                    throw new ArgumentOutOfRangeException(nameof(hookType), hookType, "未知的Git钩子类型");
             }
         }
 
         /// <summary>
         /// 获取钩子描述
         /// </summary>
-        /// <param name="_hookType">钩子类型</param>
+        /// <param name="hookType">钩子类型</param>
         /// <returns>钩子描述</returns>
-        public static string GetDescription(this GitHookType _hookType)
+        public static string GetDescription(this GitHookType hookType)
         {
-            switch (_hookType)
+            switch (hookType)
             {
-                case GitHookType.PreCommit:
+                case GitHookType.k_PreCommit:
                     return "提交前钩子，在git commit命令执行前触发";
-                case GitHookType.CommitMsg:
+                case GitHookType.k_CommitMsg:
                     return "提交消息钩子，在编辑提交消息时触发";
-                case GitHookType.PostCommit:
+                case GitHookType.k_PostCommit:
                     return "提交后钩子，在提交完成后触发";
-                case GitHookType.PrePush:
+                case GitHookType.k_PrePush:
                     return "推送前钩子，在git push命令执行前触发";
-                case GitHookType.PostPush:
+                case GitHookType.k_PostPush:
                     return "推送后钩子，在推送完成后触发";
-                case GitHookType.PreMerge:
+                case GitHookType.k_PreMerge:
                     return "合并前钩子，在合并操作执行前触发";
-                case GitHookType.PostMerge:
+                case GitHookType.k_PostMerge:
                     return "合并后钩子，在合并完成后触发";
-                case GitHookType.PostCheckout:
+                case GitHookType.k_PostCheckout:
                     return "检出钩子，在git checkout命令执行后触发";
-                case GitHookType.ApplyPatchMsg:
+                case GitHookType.k_ApplyPatchMsg:
                     return "应用补丁前钩子，在git am命令执行前触发";
-                case GitHookType.PreReceive:
+                case GitHookType.k_PreReceive:
                     return "预接收钩子，在服务器接收推送前触发";
-                case GitHookType.Update:
+                case GitHookType.k_Update:
                     return "更新钩子，在服务器更新引用前触发";
-                case GitHookType.PostReceive:
+                case GitHookType.k_PostReceive:
                     return "接收后钩子，在服务器接收推送后触发";
-                case GitHookType.PostUpdate:
+                case GitHookType.k_PostUpdate:
                     return "更新后钩子，在服务器更新引用后触发";
-                case GitHookType.PostRewrite:
+                case GitHookType.k_PostRewrite:
                     return "引用更新钩子，在本地引用更新后触发";
-                case GitHookType.PrepareCommitMsg:
+                case GitHookType.k_PrepareCommitMsg:
                     return "准备提交消息钩子，在提交消息编辑器启动前触发";
                 default:
                     return "未知钩子类型";
@@ -179,44 +179,44 @@ namespace TByd.CodeStyle.Runtime.Git
         /// <summary>
         /// 从文件名获取钩子类型
         /// </summary>
-        /// <param name="_fileName">文件名</param>
+        /// <param name="fileName">文件名</param>
         /// <returns>钩子类型</returns>
-        public static GitHookType GetHookTypeFromFileName(string _fileName)
+        public static GitHookType GetHookTypeFromFileName(string fileName)
         {
-            switch (_fileName)
+            switch (fileName)
             {
                 case "pre-commit":
-                    return GitHookType.PreCommit;
+                    return GitHookType.k_PreCommit;
                 case "commit-msg":
-                    return GitHookType.CommitMsg;
+                    return GitHookType.k_CommitMsg;
                 case "post-commit":
-                    return GitHookType.PostCommit;
+                    return GitHookType.k_PostCommit;
                 case "pre-push":
-                    return GitHookType.PrePush;
+                    return GitHookType.k_PrePush;
                 case "post-push":
-                    return GitHookType.PostPush;
+                    return GitHookType.k_PostPush;
                 case "pre-merge-commit":
-                    return GitHookType.PreMerge;
+                    return GitHookType.k_PreMerge;
                 case "post-merge":
-                    return GitHookType.PostMerge;
+                    return GitHookType.k_PostMerge;
                 case "post-checkout":
-                    return GitHookType.PostCheckout;
+                    return GitHookType.k_PostCheckout;
                 case "applypatch-msg":
-                    return GitHookType.ApplyPatchMsg;
+                    return GitHookType.k_ApplyPatchMsg;
                 case "pre-receive":
-                    return GitHookType.PreReceive;
+                    return GitHookType.k_PreReceive;
                 case "update":
-                    return GitHookType.Update;
+                    return GitHookType.k_Update;
                 case "post-receive":
-                    return GitHookType.PostReceive;
+                    return GitHookType.k_PostReceive;
                 case "post-update":
-                    return GitHookType.PostUpdate;
+                    return GitHookType.k_PostUpdate;
                 case "post-rewrite":
-                    return GitHookType.PostRewrite;
+                    return GitHookType.k_PostRewrite;
                 case "prepare-commit-msg":
-                    return GitHookType.PrepareCommitMsg;
+                    return GitHookType.k_PrepareCommitMsg;
                 default:
-                    throw new ArgumentException($"未知的Git钩子文件名: {_fileName}", nameof(_fileName));
+                    throw new ArgumentException($"未知的Git钩子文件名: {fileName}", nameof(fileName));
             }
         }
     }
