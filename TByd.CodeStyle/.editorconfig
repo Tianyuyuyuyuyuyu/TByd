@@ -91,18 +91,35 @@ csharp_space_around_declaration_statements = false
 csharp_space_before_open_square_brackets = false
 csharp_space_between_empty_square_brackets = false
 csharp_space_between_square_brackets = false
+
+# 命名规则
+
+## 基本命名规则 - PascalCase（类、结构体、枚举、属性、方法、事件、委托等）
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 dotnet_naming_symbols.pascal_case_symbols.applicable_kinds = namespace,class,struct,enum,property,method,event,delegate
 dotnet_naming_symbols.pascal_case_symbols.applicable_accessibilities = *
 dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.symbols = pascal_case_symbols
 dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.style = pascal_case_style
+
+## 公共字段命名规则 - camelCase
 dotnet_naming_style.public_class_member_style.capitalization = camel_case
 dotnet_naming_symbols.public_class_member.applicable_kinds = field
 dotnet_naming_symbols.public_class_member.applicable_accessibilities = public
 dotnet_naming_rule.public_class_member_rule.severity = suggestion
 dotnet_naming_rule.public_class_member_rule.symbols = public_class_member
 dotnet_naming_rule.public_class_member_rule.style = public_class_member_style
+
+## 序列化字段命名规则 - camelCase（Unity序列化字段）
+dotnet_naming_style.serialized_field_style.capitalization = camel_case
+dotnet_naming_symbols.serialized_field.applicable_kinds = field
+dotnet_naming_symbols.serialized_field.applicable_accessibilities = *
+dotnet_naming_symbols.serialized_field.required_modifiers =
+dotnet_naming_rule.serialized_field_rule.severity = suggestion
+dotnet_naming_rule.serialized_field_rule.symbols = serialized_field
+dotnet_naming_rule.serialized_field_rule.style = serialized_field_style
+
+## 静态字段命名规则 - s_PascalCase
 dotnet_naming_style.static_member_style.capitalization = pascal_case
 dotnet_naming_style.static_member_style.required_prefix = s_
 dotnet_naming_symbols.static_member.applicable_kinds = field
@@ -111,6 +128,8 @@ dotnet_naming_symbols.static_member.required_modifiers = static
 dotnet_naming_rule.static_member_rule.severity = suggestion
 dotnet_naming_rule.static_member_rule.symbols = static_member
 dotnet_naming_rule.static_member_rule.style = static_member_style
+
+## 私有字段命名规则 - m_PascalCase
 dotnet_naming_style.private_class_member_style.capitalization = pascal_case
 dotnet_naming_style.private_class_member_style.required_prefix = m_
 dotnet_naming_symbols.private_class_member.applicable_kinds = field
@@ -118,14 +137,18 @@ dotnet_naming_symbols.private_class_member.applicable_accessibilities = internal
 dotnet_naming_rule.private_class_member_rule.severity = suggestion
 dotnet_naming_rule.private_class_member_rule.symbols = private_class_member
 dotnet_naming_rule.private_class_member_rule.style = private_class_member_style
-dotnet_naming_style.constant_fields_style.capitalization = all_upper
-dotnet_naming_style.constant_fields_style.word_separator = _
+
+## 常量字段命名规则 - k_PascalCase（Unity惯用）
+dotnet_naming_style.constant_fields_style.capitalization = pascal_case
+dotnet_naming_style.constant_fields_style.required_prefix = k_
 dotnet_naming_symbols.constant_fields.applicable_kinds = field
 dotnet_naming_symbols.constant_fields.applicable_accessibilities = *
 dotnet_naming_symbols.constant_fields.required_modifiers = const
 dotnet_naming_rule.constant_fields_rule.severity = suggestion
 dotnet_naming_rule.constant_fields_rule.symbols = constant_fields
 dotnet_naming_rule.constant_fields_rule.style = constant_fields_style
+
+## 接口命名规则 - IPascalCase
 dotnet_naming_style.interface_style.capitalization = pascal_case
 dotnet_naming_style.interface_style.required_prefix = I
 dotnet_naming_symbols.interface_symbol.applicable_kinds = interface
@@ -133,6 +156,15 @@ dotnet_naming_symbols.interface_symbol.applicable_accessibilities = *
 dotnet_naming_rule.interface_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.interface_should_be_pascal_case.symbols = interface_symbol
 dotnet_naming_rule.interface_should_be_pascal_case.style = interface_style
+
+## 事件命名规则 - OnPascalCase
+dotnet_naming_style.event_style.capitalization = pascal_case
+dotnet_naming_style.event_style.required_prefix = On
+dotnet_naming_symbols.event_symbol.applicable_kinds = event
+dotnet_naming_symbols.event_symbol.applicable_accessibilities = *
+dotnet_naming_rule.event_should_be_on_pascal_case.severity = suggestion
+dotnet_naming_rule.event_should_be_on_pascal_case.symbols = event_symbol
+dotnet_naming_rule.event_should_be_on_pascal_case.style = event_style
 
 [*.json]
 indent_style = space
@@ -144,6 +176,8 @@ indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
+
+# Unity特定文件类型配置
 
 [*.{asmdef,asmref}]
 indent_style = space
@@ -161,6 +195,25 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
+[*.asset]
+indent_style = space
+indent_size = 2
+
+[*.{shader,compute,cginc,hlsl,glslinc}]
+indent_style = space
+indent_size = 4
+
+[*.mat]
+indent_style = space
+indent_size = 2
+
+[*.controller]
+indent_style = space
+indent_size = 2
+
+[*.anim]
+indent_style = space
+indent_size = 2
+
 [Makefile]
 indent_style = tab
-
