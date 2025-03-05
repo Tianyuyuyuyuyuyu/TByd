@@ -80,22 +80,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
             if (currentIde != null)
             {
-                if (currentIde is RiderIntegration)
+                s_CurrentIdeType = currentIde switch
                 {
-                    s_CurrentIdeType = IdeType.k_Rider;
-                }
-                else if (currentIde is VisualStudioIntegration)
-                {
-                    s_CurrentIdeType = IdeType.k_VisualStudio;
-                }
-                else if (currentIde is VSCodeIntegration)
-                {
-                    s_CurrentIdeType = IdeType.k_VSCode;
-                }
-                else
-                {
-                    s_CurrentIdeType = IdeType.k_Unknown;
-                }
+                    RiderIntegration => IdeType.k_Rider,
+                    VisualStudioIntegration => IdeType.k_VisualStudio,
+                    VSCodeIntegration => IdeType.k_VSCode,
+                    _ => IdeType.k_Unknown
+                };
             }
             else
             {
@@ -116,27 +107,17 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             var config = ConfigManager.GetConfig();
 
             // 检查IDE是否已配置
-            switch (ideType)
+            s_IsIdeConfigured = ideType switch
             {
-                case IdeType.k_Rider:
-                    s_IsIdeConfigured = config.RiderConfig.EnableCodeAnalysis ||
-                                        config.RiderConfig.EnableStyleCop ||
-                                        config.RiderConfig.EnableReSharper;
-                    break;
-                case IdeType.k_VisualStudio:
-                    s_IsIdeConfigured = config.VisualStudioConfig.EnableRoslynAnalyzers ||
-                                        config.VisualStudioConfig.EnableStyleCop ||
-                                        config.VisualStudioConfig.EnableCodeAnalysis;
-                    break;
-                case IdeType.k_VSCode:
-                    s_IsIdeConfigured = config.VSCodeConfig.EnableOmniSharp ||
-                                        config.VSCodeConfig.EnableRoslynAnalyzers ||
-                                        config.VSCodeConfig.EnableEditorConfig;
-                    break;
-                default:
-                    s_IsIdeConfigured = false;
-                    break;
-            }
+                IdeType.k_Rider => config.RiderConfig.EnableCodeAnalysis || config.RiderConfig.EnableStyleCop ||
+                                   config.RiderConfig.EnableReSharper,
+                IdeType.k_VisualStudio => config.VisualStudioConfig.EnableRoslynAnalyzers ||
+                                          config.VisualStudioConfig.EnableStyleCop ||
+                                          config.VisualStudioConfig.EnableCodeAnalysis,
+                IdeType.k_VSCode => config.VSCodeConfig.EnableOmniSharp || config.VSCodeConfig.EnableRoslynAnalyzers ||
+                                    config.VSCodeConfig.EnableEditorConfig,
+                _ => false
+            };
 
             return s_IsIdeConfigured;
         }
@@ -211,6 +192,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     config.VSCodeConfig.EnableRoslynAnalyzers = true;
                     config.VSCodeConfig.EnableEditorConfig = true;
                     break;
+                case IdeType.k_Unknown:
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(ideType), ideType, null);
             }
 
             // 保存配置
@@ -253,6 +237,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 case IdeType.k_VSCode:
                     config.VSCodeConfig = new VSCodeConfig();
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(ideType), ideType, null);
             }
 
             // 保存配置
@@ -268,7 +254,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// 重置自动配置状态
         /// </summary>
-        public static void ResetAutoConfigState()
+        private static void ResetAutoConfigState()
         {
             EditorPrefs.DeleteKey("TByd.CodeStyle.IDE.AutoConfigured");
             EditorPrefs.DeleteKey("TByd.CodeStyle.IDE.DontAskAgain");

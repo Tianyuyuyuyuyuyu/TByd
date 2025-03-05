@@ -192,9 +192,10 @@ namespace TByd.CodeStyle.Editor.UI.Utils
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-            var style = new GUIStyle(EditorStyles.label);
-            style.normal.textColor = GetNotificationColor(s_CurrentNotificationType);
-            style.fontStyle = FontStyle.Bold;
+            var style = new GUIStyle(EditorStyles.label)
+            {
+                normal = { textColor = GetNotificationColor(s_CurrentNotificationType) }, fontStyle = FontStyle.Bold
+            };
 
             EditorGUILayout.LabelField(GetNotificationTypePrefix(s_CurrentNotificationType) + s_CurrentNotification,
                 style);

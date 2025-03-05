@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
 using TByd.CodeStyle.Editor.Git;
@@ -1171,12 +1170,11 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUILayout.BeginHorizontal();
             if (GUILayout.Button("创建备份"))
             {
-                var description = "";
                 if (EditorUtility.DisplayDialog("创建备份",
                         "是否要创建配置备份？",
                         "确定", "取消"))
                 {
-                    description = EditorInputDialog.Show("备份描述", "请输入备份描述（可选）：");
+                    var description = EditorInputDialog.Show("备份描述", "请输入备份描述（可选）：");
                     var backupId = IdeConfigBackupManager.CreateBackup(m_CurrentIdeType, description);
                     if (!string.IsNullOrEmpty(backupId))
                     {
@@ -1473,27 +1471,6 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             }
 
             EditorGUILayout.EndVertical();
-        }
-
-        /// <summary>
-        /// 显示测试进度
-        /// </summary>
-        private void ShowTestProgress()
-        {
-            EditorApplication.delayCall += () =>
-            {
-                for (var i = 0; i <= 10; i++)
-                {
-                    var progress = i / 10f;
-                    NotificationSystem.ShowProgress("测试进度", $"正在处理... {i * 10}%", progress);
-
-                    // 模拟处理时间
-                    Thread.Sleep(200);
-                }
-
-                NotificationSystem.HideProgress();
-                NotificationSystem.ShowNotification("进度测试完成", NotificationType.k_Success);
-            };
         }
     }
 }

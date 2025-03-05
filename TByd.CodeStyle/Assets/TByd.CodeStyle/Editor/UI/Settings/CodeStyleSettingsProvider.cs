@@ -253,11 +253,11 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
                 EditorGUI.BeginChangeCheck();
 
-                var scope = EditorGUILayout.TextField(gitConfig.Scopes[i]);
+                var scopeTmp = EditorGUILayout.TextField(gitConfig.Scopes[i]);
 
                 if (EditorGUI.EndChangeCheck())
                 {
-                    gitConfig.Scopes[i] = scope;
+                    gitConfig.Scopes[i] = scopeTmp;
                     m_IsDirty = true;
                 }
 

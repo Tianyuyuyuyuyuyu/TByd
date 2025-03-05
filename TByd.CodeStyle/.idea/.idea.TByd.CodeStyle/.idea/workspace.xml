@@ -5,36 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="775abadd-1961-4cc5-83c3-6f15e81d5d30" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TByd.CodeStyle/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TByd.CodeStyle/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/CodeCheckRunner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/CodeCheckRunner.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigFormatMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigFormatMenu.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigRule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigRule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigParser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigParser.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigTemplate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigTemplate.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigBackupManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigBackupManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigSyncManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigSyncManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigValidator.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEDetector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEDetector.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEIntegration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEIntegration.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEIntegrationManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEIntegrationManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEType.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/RiderIntegration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/RiderIntegration.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/VSCodeIntegration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/VSCodeIntegration.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/VisualStudioIntegration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/VisualStudioIntegration.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/Config/ConfigProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/Config/ConfigProvider.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/Git/Commit/CommitMessageChecker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/Git/Commit/CommitMessageChecker.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/Git/GitHookMonitor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/Git/GitHookMonitor.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Components/InfoBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Components/InfoBox.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Components/UIComponent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Components/UIComponent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/CodeCheckSettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/CodeCheckSettingsProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/CodeStyleSettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/CodeStyleSettingsProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/CommitMessageSettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/CommitMessageSettingsProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/EditorConfigSettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/EditorConfigSettingsProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/GitHookSettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/GitHookSettingsProvider.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/IDEIntegrationSettingsProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Settings/IDEIntegrationSettingsProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/EditorInputDialog.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/EditorInputDialog.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/NotificationSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/NotificationSystem.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Windows/CodeStyleWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Windows/CodeStyleWindow.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -73,7 +60,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.sourceCode.C#"
+    "settings.editor.selected.configurable": "SpellingScopeSettingsId"
   }
 }]]></component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
@@ -139,7 +126,7 @@
       <workItem from="1741158839534" duration="328000" />
       <workItem from="1741159186447" duration="1015000" />
       <workItem from="1741160222116" duration="59000" />
-      <workItem from="1741160291885" duration="3682000" />
+      <workItem from="1741160291885" duration="6195000" />
     </task>
     <servers />
   </component>

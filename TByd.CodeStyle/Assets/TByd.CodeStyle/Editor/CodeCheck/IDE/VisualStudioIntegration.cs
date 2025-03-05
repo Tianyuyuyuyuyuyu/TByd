@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Microsoft.Win32;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
@@ -15,13 +14,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     public class VisualStudioIntegration : IdeIntegrationBase
     {
         // Visual Studio配置文件名
-        private const string k_CVSConfigFileName = ".editorconfig";
+        private const string k_CvsConfigFileName = ".editorconfig";
 
         // Visual Studio设置文件名
-        private const string k_CVSSettingsFileName = ".vssettings";
+        private const string k_CvsSettingsFileName = ".vssettings";
 
         // Visual Studio插件类名
-        private const string k_CVSUnityIntegrationClassName = "Microsoft.Unity.VisualStudio.Editor.VisualStudioEditor";
 
         /// <summary>
         /// IDE名称
@@ -62,7 +60,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 Directory.CreateDirectory(configPath);
 
                 // 导出EditorConfig规则
-                var editorConfigPath = Path.Combine(configPath, k_CVSConfigFileName);
+                var editorConfigPath = Path.Combine(configPath, k_CvsConfigFileName);
                 EditorConfigManager.SaveRulesToFile(rules, editorConfigPath);
 
                 // 创建Visual Studio设置
@@ -156,46 +154,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
   </ToolsOptions>
 </UserSettings>";
 
-            var configPath = Path.Combine(configPathStr, k_CVSSettingsFileName);
+            var configPath = Path.Combine(configPathStr, k_CvsSettingsFileName);
             File.WriteAllText(configPath, configContent);
-        }
-
-        /// <summary>
-        /// 检查是否使用Visual Studio作为脚本编辑器
-        /// </summary>
-        /// <returns>是否使用Visual Studio作为脚本编辑器</returns>
-        private bool IsVSScriptEditor()
-        {
-            // 方法1：检查EditorPrefs
-            var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
-            if (!string.IsNullOrEmpty(scriptEditorPref) &&
-                (scriptEditorPref.IndexOf("Visual Studio", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 scriptEditorPref.IndexOf("devenv", StringComparison.OrdinalIgnoreCase) >= 0))
-            {
-                return true;
-            }
-
-            // 方法2：检查当前脚本编辑器类型
-            try
-            {
-                var editorType = Type.GetType(k_CVSUnityIntegrationClassName, false);
-                if (editorType != null)
-                {
-                    var currentEditorProperty =
-                        editorType.GetProperty("CurrentEditor", BindingFlags.Public | BindingFlags.Static);
-                    if (currentEditorProperty != null)
-                    {
-                        var currentEditor = currentEditorProperty.GetValue(null);
-                        return currentEditor != null && currentEditor.GetType().Name.Contains("VisualStudio");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // 忽略异常
-            }
-
-            return false;
         }
 
         /// <summary>

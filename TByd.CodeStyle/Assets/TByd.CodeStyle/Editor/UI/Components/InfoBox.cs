@@ -68,35 +68,13 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <returns>Unity消息类型</returns>
         private MessageType GetMessageType()
         {
-            switch (Type)
+            return Type switch
             {
-                case InfoType.k_Info:
-                    return MessageType.Info;
-                case InfoType.k_Warning:
-                    return MessageType.Warning;
-                case InfoType.k_Error:
-                    return MessageType.Error;
-                default:
-                    return MessageType.None;
-            }
-        }
-
-        /// <summary>
-        /// 设置信息内容
-        /// </summary>
-        /// <param name="message">信息内容</param>
-        public void SetMessage(string message)
-        {
-            Message = message;
-        }
-
-        /// <summary>
-        /// 设置信息类型
-        /// </summary>
-        /// <param name="type">信息类型</param>
-        public void SetType(InfoType type)
-        {
-            Type = type;
+                InfoType.k_Info => MessageType.Info,
+                InfoType.k_Warning => MessageType.Warning,
+                InfoType.k_Error => MessageType.Error,
+                _ => MessageType.None
+            };
         }
     }
 }

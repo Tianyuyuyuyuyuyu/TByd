@@ -74,7 +74,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         {
             var rules = new List<EditorConfigRule>();
             EditorConfigRule currentRule = null;
-            var isRoot = false;
 
             foreach (var line in lines)
             {
@@ -110,7 +109,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     // 处理root属性（特殊属性，不属于任何节）
                     if (key.ToLowerInvariant() == "root")
                     {
-                        isRoot = value.ToLowerInvariant() == "true";
                         continue;
                     }
 

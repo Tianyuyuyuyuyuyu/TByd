@@ -252,12 +252,10 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUI.BeginChangeCheck();
 
             // 获取钩子状态
-            var isInstalled = false;
-            m_HookStatus.TryGetValue(hookConfig.HookType, out isInstalled);
+            m_HookStatus.TryGetValue(hookConfig.HookType, out var isInstalled);
 
             // 显示钩子状态
-            var statusStyle = new GUIStyle(EditorStyles.label);
-            statusStyle.normal.textColor = isInstalled ? Color.green : Color.red;
+            var statusStyle = new GUIStyle(EditorStyles.label) { normal = { textColor = isInstalled ? Color.green : Color.red } };
 
             EditorGUILayout.LabelField(isInstalled ? "已安装" : "未安装", statusStyle, GUILayout.Width(60));
 

@@ -40,34 +40,22 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         /// </summary>
         private void InitStyles()
         {
-            if (m_HeaderStyle == null)
+            m_HeaderStyle ??= new GUIStyle(EditorStyles.boldLabel)
             {
-                m_HeaderStyle = new GUIStyle(EditorStyles.boldLabel)
-                {
-                    fontSize = 14, margin = new RectOffset(0, 0, 10, 10)
-                };
-            }
+                fontSize = 14, margin = new RectOffset(0, 0, 10, 10)
+            };
 
-            if (m_SectionStyle == null)
+            m_SectionStyle ??= new GUIStyle(EditorStyles.boldLabel)
             {
-                m_SectionStyle = new GUIStyle(EditorStyles.boldLabel)
-                {
-                    fontSize = 12, margin = new RectOffset(0, 0, 5, 5)
-                };
-            }
+                fontSize = 12, margin = new RectOffset(0, 0, 5, 5)
+            };
 
-            if (m_RuleHeaderStyle == null)
-            {
-                m_RuleHeaderStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
-            }
+            m_RuleHeaderStyle ??= new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
 
-            if (m_RuleContentStyle == null)
+            m_RuleContentStyle ??= new GUIStyle(EditorStyles.helpBox)
             {
-                m_RuleContentStyle = new GUIStyle(EditorStyles.helpBox)
-                {
-                    padding = new RectOffset(10, 10, 10, 10), margin = new RectOffset(20, 0, 5, 5)
-                };
-            }
+                padding = new RectOffset(10, 10, 10, 10), margin = new RectOffset(20, 0, 5, 5)
+            };
         }
 
         /// <summary>

@@ -13,7 +13,6 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         private bool m_IsCanceled;
         private bool m_IsInitialized;
         private string m_Message;
-        private string m_Title;
 
         private void OnEnable()
         {
@@ -39,16 +38,17 @@ namespace TByd.CodeStyle.Editor.UI.Utils
             var e = Event.current;
             if (e.type == EventType.KeyDown)
             {
-                if (e.keyCode == KeyCode.Return)
+                switch (e.keyCode)
                 {
-                    Close();
-                    e.Use();
-                }
-                else if (e.keyCode == KeyCode.Escape)
-                {
-                    m_IsCanceled = true;
-                    Close();
-                    e.Use();
+                    case KeyCode.Return:
+                        Close();
+                        e.Use();
+                        break;
+                    case KeyCode.Escape:
+                        m_IsCanceled = true;
+                        Close();
+                        e.Use();
+                        break;
                 }
             }
 
@@ -86,7 +86,6 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         {
             var window = CreateInstance<EditorInputDialog>();
             window.titleContent = new GUIContent(title);
-            window.m_Title = title;
             window.m_Message = message;
             window.m_DefaultValue = defaultValue;
             window.minSize = new Vector2(300, 100);

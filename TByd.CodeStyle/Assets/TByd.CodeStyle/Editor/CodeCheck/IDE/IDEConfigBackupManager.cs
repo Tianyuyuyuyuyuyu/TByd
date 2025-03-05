@@ -76,11 +76,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var filesToBackup = GetFilesToBackup(ideType, configPath);
 
                 // 检查是否为大文件测试
-                var isLargeFileTest = false;
-                if (isTestEnvironment && description.Contains("LargeFile"))
-                {
-                    isLargeFileTest = true;
-                }
+                var isLargeFileTest = isTestEnvironment && description.Contains("LargeFile");
 
                 // 复制文件到备份目录
                 foreach (var file in filesToBackup)
@@ -443,6 +439,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     }
 
                     break;
+                case IdeType.k_Unknown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(ideType), ideType, null);
             }
 
             // 添加通用的配置文件

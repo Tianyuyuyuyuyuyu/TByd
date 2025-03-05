@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using TByd.CodeStyle.Runtime.Config;
@@ -214,7 +215,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
             if (selectedObjects == null || selectedObjects.Length == 0)
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             var assetPaths = new List<string>();

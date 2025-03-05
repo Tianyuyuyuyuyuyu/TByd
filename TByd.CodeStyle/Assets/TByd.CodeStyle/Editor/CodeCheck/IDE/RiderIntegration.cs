@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Microsoft.Win32;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
@@ -24,7 +23,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private const string k_CRiderConfigDirectory = ".idea";
 
         // Rider插件类名
-        private const string k_CRiderUnityIntegrationClassName = "Packages.Rider.Editor.RiderScriptEditor";
 
         // Rider代码风格设置文件
         private const string k_CRiderCodeStyleFileName = "codeStyleConfig.xml";
@@ -45,7 +43,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             get
             {
                 // 检查是否是测试环境
-                var isTestEnvironment = false;
+                bool isTestEnvironment;
                 try
                 {
                     var testAssemblies = AppDomain.CurrentDomain.GetAssemblies()
@@ -88,22 +86,26 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var projectRoot = Path.GetDirectoryName(Application.dataPath);
 
                 // EditorConfig应该放在项目根目录，而不是.idea文件夹内
-                var editorConfigPath = Path.Combine(projectRoot, k_CRiderConfigFileName);
-                EditorConfigManager.SaveRulesToFile(rules, editorConfigPath);
+                if (projectRoot != null)
+                {
+                    var editorConfigPath = Path.Combine(projectRoot, k_CRiderConfigFileName);
+                    EditorConfigManager.SaveRulesToFile(rules, editorConfigPath);
 
-                // 获取Rider配置目录
-                var ideaConfigPath = Path.Combine(projectRoot, k_CRiderConfigDirectory);
+                    // 获取Rider配置目录
+                    var ideaConfigPath = Path.Combine(projectRoot, k_CRiderConfigDirectory);
 
-                // 确保.idea目录存在
-                Directory.CreateDirectory(ideaConfigPath);
+                    // 确保.idea目录存在
+                    Directory.CreateDirectory(ideaConfigPath);
 
-                // 创建Rider代码风格配置
-                CreateRiderCodeStyleConfig(ideaConfigPath);
+                    // 创建Rider代码风格配置
+                    CreateRiderCodeStyleConfig(ideaConfigPath);
 
-                // 创建Rider C#设置
-                CreateRiderCSharpSettings(ideaConfigPath);
+                    // 创建Rider C#设置
+                    CreateRiderCSharpSettings(ideaConfigPath);
 
-                Debug.Log($"[TByd.CodeStyle] 成功导出配置到Rider: {editorConfigPath}");
+                    Debug.Log($"[TByd.CodeStyle] 成功导出配置到Rider: {editorConfigPath}");
+                }
+
                 return true;
             }
             catch (Exception e)
@@ -204,43 +206,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
             var configPath = Path.Combine(configPathStr, k_CRiderCSharpSettingsFileName);
             File.WriteAllText(configPath, configContent);
-        }
-
-        /// <summary>
-        /// 检查是否使用Rider作为脚本编辑器
-        /// </summary>
-        /// <returns>是否使用Rider作为脚本编辑器</returns>
-        private bool IsRiderScriptEditor()
-        {
-            // 方法1：检查EditorPrefs
-            var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
-            if (!string.IsNullOrEmpty(scriptEditorPref) &&
-                scriptEditorPref.IndexOf("Rider", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            // 方法2：检查当前脚本编辑器类型
-            try
-            {
-                var editorType = Type.GetType(k_CRiderUnityIntegrationClassName, false);
-                if (editorType != null)
-                {
-                    var currentEditorProperty =
-                        editorType.GetProperty("CurrentEditor", BindingFlags.Public | BindingFlags.Static);
-                    if (currentEditorProperty != null)
-                    {
-                        var currentEditor = currentEditorProperty.GetValue(null);
-                        return currentEditor != null && currentEditor.GetType().Name.Contains("Rider");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // 忽略异常
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -487,33 +452,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             }
 #endif
             return string.Empty;
-        }
-
-        /// <summary>
-        /// 获取Rider安装路径
-        /// </summary>
-        private string GetRiderPath()
-        {
-            var exePath = GetRiderExecutablePath();
-            if (string.IsNullOrEmpty(exePath))
-            {
-                return string.Empty;
-            }
-
-            // 返回Rider安装目录（bin目录的父目录）
-            return Path.GetDirectoryName(Path.GetDirectoryName(exePath));
-        }
-
-        /// <summary>
-        /// 获取Rider配置目录
-        /// </summary>
-        private string GetRiderConfigPath()
-        {
-            // 获取项目根目录
-            var projectRoot = Path.GetDirectoryName(Application.dataPath);
-
-            // 返回.idea目录路径
-            return Path.Combine(projectRoot, k_CRiderConfigDirectory);
         }
     }
 }

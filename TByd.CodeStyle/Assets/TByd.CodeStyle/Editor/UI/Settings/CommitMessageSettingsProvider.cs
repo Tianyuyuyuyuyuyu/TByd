@@ -278,13 +278,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             // 绘制作用域列表
             for (var i = 0; i < m_Config.GitCommitConfig.Scopes.Count; i++)
             {
-                var scope = m_Config.GitCommitConfig.Scopes[i];
+                var scopeTmp = m_Config.GitCommitConfig.Scopes[i];
 
                 EditorGUILayout.BeginHorizontal();
 
                 EditorGUI.BeginChangeCheck();
 
-                var newScope = EditorGUILayout.TextField(scope);
+                var newScope = EditorGUILayout.TextField(scopeTmp);
 
                 if (EditorGUI.EndChangeCheck())
                 {

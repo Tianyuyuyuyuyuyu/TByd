@@ -540,7 +540,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                     var fileBytes = File.ReadAllBytes(filePath);
                     var detectedEncoding = DetectEncoding(fileBytes);
 
-                    var isCorrectEncoding = false;
+                    bool isCorrectEncoding;
 
                     switch (charset.ToLowerInvariant())
                     {
@@ -670,14 +670,13 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 properties.TryGetValue("indent_size", out var indentSize))
             {
                 var useSpaces = indentStyle.ToLowerInvariant() == "space";
-                int size;
 
-                if (int.TryParse(indentSize, out size) || indentSize.ToLowerInvariant() == "tab")
+                if (int.TryParse(indentSize, out _) || indentSize.ToLowerInvariant() == "tab")
                 {
                     if (indentSize.ToLowerInvariant() == "tab" &&
                         properties.TryGetValue("tab_width", out var tabWidth))
                     {
-                        int.TryParse(tabWidth, out size);
+                        int.TryParse(tabWidth, out _);
                     }
 
                     var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);

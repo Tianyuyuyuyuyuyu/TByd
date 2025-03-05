@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Microsoft.Win32;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
@@ -15,19 +14,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     public class VSCodeIntegration : IdeIntegrationBase
     {
         // VS Code配置文件名
-        private const string k_CVSCodeConfigFileName = ".editorconfig";
+        private const string k_CvsCodeConfigFileName = ".editorconfig";
 
         // VS Code设置目录
-        private const string k_CVSCodeSettingsDirectory = ".vscode";
+        private const string k_CvsCodeSettingsDirectory = ".vscode";
 
         // VS Code设置文件
-        private const string k_CVSCodeSettingsFileName = "settings.json";
+        private const string k_CvsCodeSettingsFileName = "settings.json";
 
         // VS Code OmniSharp配置文件
-        private const string k_CVSCodeOmniSharpFileName = "omnisharp.json";
+        private const string k_CvsCodeOmniSharpFileName = "omnisharp.json";
 
         // VS Code插件类名
-        private const string k_CVSCodeUnityIntegrationClassName = "VSCodeEditor.VSCodeScriptEditor";
 
         /// <summary>
         /// IDE名称
@@ -68,7 +66,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 Directory.CreateDirectory(configPath);
 
                 // 导出EditorConfig规则
-                var editorConfigPath = Path.Combine(configPath, k_CVSCodeConfigFileName);
+                var editorConfigPath = Path.Combine(configPath, k_CvsCodeConfigFileName);
                 EditorConfigManager.SaveRulesToFile(rules, editorConfigPath);
 
                 // 更新VS Code设置
@@ -88,44 +86,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         }
 
         /// <summary>
-        /// 检查是否使用VS Code作为脚本编辑器
-        /// </summary>
-        /// <returns>是否使用VS Code作为脚本编辑器</returns>
-        private bool IsVSCodeScriptEditor()
-        {
-            // 方法1：检查EditorPrefs
-            var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
-            if (!string.IsNullOrEmpty(scriptEditorPref) &&
-                (scriptEditorPref.IndexOf("Code", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 scriptEditorPref.IndexOf("VSCode", StringComparison.OrdinalIgnoreCase) >= 0))
-            {
-                return true;
-            }
-
-            // 方法2：检查当前脚本编辑器类型
-            try
-            {
-                var editorType = Type.GetType(k_CVSCodeUnityIntegrationClassName, false);
-                if (editorType != null)
-                {
-                    var currentEditorProperty =
-                        editorType.GetProperty("CurrentEditor", BindingFlags.Public | BindingFlags.Static);
-                    if (currentEditorProperty != null)
-                    {
-                        var currentEditor = currentEditorProperty.GetValue(null);
-                        return currentEditor != null && currentEditor.GetType().Name.Contains("VSCode");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // 忽略异常
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// 更新VS Code设置
         /// </summary>
         /// <param name="vscodeDir">VS Code设置目录</param>
@@ -134,7 +94,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 设置文件路径
-                var settingsPath = Path.Combine(vscodeDir, k_CVSCodeSettingsFileName);
+                var settingsPath = Path.Combine(vscodeDir, k_CvsCodeSettingsFileName);
 
                 // 默认设置
                 var defaultSettings = @"{
@@ -290,7 +250,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     }
 }";
 
-                var configPath = Path.Combine(vscodeDir, k_CVSCodeOmniSharpFileName);
+                var configPath = Path.Combine(vscodeDir, k_CvsCodeOmniSharpFileName);
                 File.WriteAllText(configPath, configContent);
             }
             catch (Exception e)
@@ -564,7 +524,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             var projectRoot = Path.GetDirectoryName(Application.dataPath);
 
             // 返回.vscode目录路径
-            return Path.Combine(projectRoot, k_CVSCodeSettingsDirectory);
+            if (projectRoot != null)
+            {
+                return Path.Combine(projectRoot, k_CvsCodeSettingsDirectory);
+            }
+
+            return string.Empty;
         }
     }
 }

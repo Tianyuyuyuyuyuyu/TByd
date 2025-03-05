@@ -278,23 +278,5 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
             return rules;
         }
-
-        /// <summary>
-        /// 获取默认的EditorConfig内容
-        /// </summary>
-        /// <returns>默认的EditorConfig内容</returns>
-        public static string GetDefaultContent()
-        {
-            return EditorConfigParser.GenerateContent(GetDefaultRules());
-        }
-
-        /// <summary>
-        /// 获取Unity项目推荐的EditorConfig内容
-        /// </summary>
-        /// <returns>Unity项目推荐的EditorConfig内容</returns>
-        public static string GetUnityProjectContent()
-        {
-            return EditorConfigParser.GenerateContent(GetUnityProjectRules());
-        }
     }
 }
