@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using Microsoft.Win32;
+using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
 using UnityEngine;
-using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
@@ -106,7 +108,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var editorType = Type.GetType(k_CVSCodeUnityIntegrationClassName, false);
                 if (editorType != null)
                 {
-                    var currentEditorProperty = editorType.GetProperty("CurrentEditor", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    var currentEditorProperty =
+                        editorType.GetProperty("CurrentEditor", BindingFlags.Public | BindingFlags.Static);
                     if (currentEditorProperty != null)
                     {
                         var currentEditor = currentEditorProperty.GetValue(null);
@@ -325,7 +328,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
                 // 标准安装路径
-                var windowsPaths = new string[]
+                var windowsPaths = new[]
                 {
                     Path.Combine(localAppData, "Programs", "Microsoft VS Code", "Code.exe"),
                     Path.Combine(programFiles, "Microsoft VS Code", "Code.exe"),
@@ -341,18 +344,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查常见的自定义安装位置
-                var commonCustomPaths = new string[]
+                var commonCustomPaths = new[]
                 {
-                    @"C:\VSCode\Code.exe",
-                    @"D:\VSCode\Code.exe",
-                    @"E:\VSCode\Code.exe",
-                    @"F:\VSCode\Code.exe",
-                    @"G:\VSCode\Code.exe",
-                    Path.Combine(userProfile, "VSCode", "Code.exe"),
-                    @"C:\Program Files\VSCode\Code.exe",
-                    @"D:\Program Files\VSCode\Code.exe",
-                    @"E:\Program Files\VSCode\Code.exe",
-                    @"F:\Program Files\VSCode\Code.exe",
+                    @"C:\VSCode\Code.exe", @"D:\VSCode\Code.exe", @"E:\VSCode\Code.exe", @"F:\VSCode\Code.exe",
+                    @"G:\VSCode\Code.exe", Path.Combine(userProfile, "VSCode", "Code.exe"),
+                    @"C:\Program Files\VSCode\Code.exe", @"D:\Program Files\VSCode\Code.exe",
+                    @"E:\Program Files\VSCode\Code.exe", @"F:\Program Files\VSCode\Code.exe",
                     @"G:\Program Files\VSCode\Code.exe"
                 };
 
@@ -434,7 +431,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在macOS上查找VS Code
             else if (Application.platform == RuntimePlatform.OSXEditor)
             {
-                var macPaths = new string[]
+                var macPaths = new[]
                 {
                     "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
@@ -452,11 +449,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在Linux上查找VS Code
             else if (Application.platform == RuntimePlatform.LinuxEditor)
             {
-                var linuxPaths = new string[]
+                var linuxPaths = new[]
                 {
-                    "/usr/bin/code",
-                    "/usr/local/bin/code",
-                    "/snap/bin/code",
+                    "/usr/bin/code", "/usr/local/bin/code", "/snap/bin/code",
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/bin/code"
                 };
 
@@ -493,6 +488,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 // 忽略异常
             }
+
             return string.Empty;
         }
 
@@ -506,7 +502,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从注册表获取VS Code路径
-                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall"))
+                using (var key = Registry.CurrentUser.OpenSubKey(
+                           @"Software\Microsoft\Windows\CurrentVersion\Uninstall"))
                 {
                     if (key != null)
                     {
@@ -517,7 +514,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                 if (subKey != null)
                                 {
                                     var displayName = subKey.GetValue("DisplayName") as string;
-                                    if (!string.IsNullOrEmpty(displayName) && displayName.Contains("Visual Studio Code", StringComparison.OrdinalIgnoreCase))
+                                    if (!string.IsNullOrEmpty(displayName) && displayName.Contains("Visual Studio Code",
+                                            StringComparison.OrdinalIgnoreCase))
                                     {
                                         var installLocation = subKey.GetValue("InstallLocation") as string;
                                         if (!string.IsNullOrEmpty(installLocation))
@@ -536,7 +534,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 尝试从另一个注册表位置获取
-                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Code.exe"))
+                using (var key = Registry.LocalMachine.OpenSubKey(
+                           @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Code.exe"))
                 {
                     if (key != null)
                     {

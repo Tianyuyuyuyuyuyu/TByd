@@ -141,7 +141,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
                 // 显示结果
                 EditorUtility.ClearProgressBar();
 
-                var message = $"格式化完成！\n\n" +
+                var message = "格式化完成！\n\n" +
                               $"总文件数: {totalFiles}\n" +
                               $"成功格式化的文件: {formattedFiles}\n" +
                               $"格式化失败的文件: {failedFiles}";

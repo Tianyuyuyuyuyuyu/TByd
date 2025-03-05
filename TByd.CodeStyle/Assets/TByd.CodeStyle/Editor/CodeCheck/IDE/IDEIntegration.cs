@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
@@ -13,12 +13,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// <summary>
         /// IDE名称
         /// </summary>
-        string Name { get; }
+        string Name
+        {
+            get;
+        }
 
         /// <summary>
         /// 是否已安装
         /// </summary>
-        bool IsInstalled { get; }
+        bool IsInstalled
+        {
+            get;
+        }
 
         /// <summary>
         /// 导出配置到IDE
@@ -34,19 +40,25 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     public abstract class IdeIntegrationBase : IDeIntegration
     {
         /// <summary>
-        /// IDE名称
-        /// </summary>
-        public abstract string Name { get; }
-
-        /// <summary>
         /// IDE图标
         /// </summary>
         public virtual Texture2D Icon => null;
 
         /// <summary>
+        /// IDE名称
+        /// </summary>
+        public abstract string Name
+        {
+            get;
+        }
+
+        /// <summary>
         /// 是否已安装
         /// </summary>
-        public abstract bool IsInstalled { get; }
+        public abstract bool IsInstalled
+        {
+            get;
+        }
 
         /// <summary>
         /// 导出配置到IDE

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.Git;
 using TByd.CodeStyle.Runtime.Config;
 using TByd.CodeStyle.Runtime.Git;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Settings
 {
@@ -17,13 +17,13 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private const string k_CSettingsPath = "Project/TByd/Git钩子";
 
         // 关键字
-        private static readonly string[] s_Keywords = new string[]
-        {
-            "TByd", "Git", "Hook", "钩子", "提交", "Commit"
-        };
+        private static readonly string[] s_Keywords = { "TByd", "Git", "Hook", "钩子", "提交", "Commit" };
 
         // 配置
         private CodeStyleConfig m_Config;
+
+        // 钩子状态
+        private Dictionary<GitHookType, bool> m_HookStatus = new();
 
         // 是否已初始化
         private bool m_Initialized;
@@ -33,9 +33,6 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
         // 滚动位置
         private Vector2 m_ScrollPosition;
-
-        // 钩子状态
-        private Dictionary<GitHookType, bool> m_HookStatus = new();
 
         /// <summary>
         /// 构造函数
@@ -186,8 +183,9 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUILayout.LabelField("Git仓库路径设置", EditorStyles.boldLabel);
 
             // 显示当前Git仓库路径
-            var currentRepoPath = string.IsNullOrEmpty(m_Config.CustomGitRepositoryPath) ?
-                "使用Unity项目根目录" : m_Config.CustomGitRepositoryPath;
+            var currentRepoPath = string.IsNullOrEmpty(m_Config.CustomGitRepositoryPath)
+                ? "使用Unity项目根目录"
+                : m_Config.CustomGitRepositoryPath;
 
             EditorGUILayout.LabelField("当前Git仓库路径:", currentRepoPath);
 

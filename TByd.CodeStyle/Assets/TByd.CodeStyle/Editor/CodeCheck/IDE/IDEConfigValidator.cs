@@ -11,32 +11,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     public static class IdeConfigValidator
     {
         /// <summary>
-        /// 验证结果
-        /// </summary>
-        public class ValidationResult
-        {
-            /// <summary>
-            /// 是否有效
-            /// </summary>
-            public bool IsValid { get; set; }
-
-            /// <summary>
-            /// 错误信息列表
-            /// </summary>
-            public List<string> Errors { get; } = new();
-
-            /// <summary>
-            /// 警告信息列表
-            /// </summary>
-            public List<string> Warnings { get; } = new();
-
-            /// <summary>
-            /// 建议信息列表
-            /// </summary>
-            public List<string> Suggestions { get; } = new();
-        }
-
-        /// <summary>
         /// 验证IDE配置
         /// </summary>
         /// <param name="ideType">IDE类型</param>
@@ -358,6 +332,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                             conflicts.Add($"Rider的缩进设置与EditorConfig冲突: {rule.Pattern}");
                                         }
                                     }
+
                                     break;
 
                                 case IdeType.k_VisualStudio:
@@ -372,6 +347,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                             conflicts.Add($"Visual Studio的缩进设置与EditorConfig冲突: {rule.Pattern}");
                                         }
                                     }
+
                                     break;
 
                                 case IdeType.k_VSCode:
@@ -386,6 +362,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                             conflicts.Add($"VS Code的缩进设置与EditorConfig冲突: {rule.Pattern}");
                                         }
                                     }
+
                                     break;
                                 case IdeType.k_Unknown:
                                     break;
@@ -403,6 +380,45 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 conflicts.Add($"检查配置冲突时发生错误: {e.Message}");
                 return conflicts;
             }
+        }
+
+        /// <summary>
+        /// 验证结果
+        /// </summary>
+        public class ValidationResult
+        {
+            /// <summary>
+            /// 是否有效
+            /// </summary>
+            public bool IsValid
+            {
+                get;
+                set;
+            }
+
+            /// <summary>
+            /// 错误信息列表
+            /// </summary>
+            public List<string> Errors
+            {
+                get;
+            } = new();
+
+            /// <summary>
+            /// 警告信息列表
+            /// </summary>
+            public List<string> Warnings
+            {
+                get;
+            } = new();
+
+            /// <summary>
+            /// 建议信息列表
+            /// </summary>
+            public List<string> Suggestions
+            {
+                get;
+            } = new();
         }
     }
 }

@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.CodeCheck;
 using TByd.CodeStyle.Runtime.Config;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Settings
 {
@@ -19,10 +20,10 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private const string k_CSettingsPath = "Project/TByd/代码检查";
 
         // 关键字
-        private static readonly string[] s_Keywords = new string[]
-        {
-            "TByd", "Code", "Check", "Style", "代码", "检查", "风格"
-        };
+        private static readonly string[] s_Keywords = { "TByd", "Code", "Check", "Style", "代码", "检查", "风格" };
+
+        // 规则分类折叠状态
+        private readonly Dictionary<CodeCheckRuleCategory, bool> m_CategoryFoldouts = new();
 
         // 配置
         private CodeStyleConfig m_Config;
@@ -33,14 +34,11 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         // 是否已修改
         private bool m_IsDirty;
 
-        // 滚动位置
-        private Vector2 m_ScrollPosition;
-
-        // 规则分类折叠状态
-        private Dictionary<CodeCheckRuleCategory, bool> m_CategoryFoldouts = new();
-
         // 新忽略路径
         private string m_NewIgnorePath = string.Empty;
+
+        // 滚动位置
+        private Vector2 m_ScrollPosition;
 
         // 测试文件路径
         private string m_TestFilePath = string.Empty;
@@ -75,7 +73,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             ConfigProvider.OnConfigChanged += OnConfigChanged;
 
             // 初始化分类折叠状态
-            foreach (CodeCheckRuleCategory category in System.Enum.GetValues(typeof(CodeCheckRuleCategory)))
+            foreach (CodeCheckRuleCategory category in Enum.GetValues(typeof(CodeCheckRuleCategory)))
             {
                 m_CategoryFoldouts[category] = true;
             }
@@ -274,7 +272,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 var category = categoryGroup.Key;
 
                 // 绘制分类折叠标题
-                m_CategoryFoldouts[category] = EditorGUILayout.Foldout(m_CategoryFoldouts[category], GetCategoryName(category), true);
+                m_CategoryFoldouts[category] =
+                    EditorGUILayout.Foldout(m_CategoryFoldouts[category], GetCategoryName(category), true);
 
                 if (m_CategoryFoldouts[category])
                 {
@@ -290,7 +289,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                         var enabled = EditorGUILayout.Toggle(rule.Enabled, GUILayout.Width(20));
                         EditorGUILayout.LabelField(rule.Name, GUILayout.Width(200));
 
-                        var severity = (CodeCheckRuleSeverity)EditorGUILayout.EnumPopup(rule.Severity, GUILayout.Width(100));
+                        var severity =
+                            (CodeCheckRuleSeverity)EditorGUILayout.EnumPopup(rule.Severity, GUILayout.Width(100));
 
                         if (EditorGUI.EndChangeCheck())
                         {
@@ -427,7 +427,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
                 m_IsDirty = false;
 
-                NotificationSystem.ShowNotification("代码检查设置已重置为默认值", NotificationType.k_Info);
+                NotificationSystem.ShowNotification("代码检查设置已重置为默认值");
             }
         }
 

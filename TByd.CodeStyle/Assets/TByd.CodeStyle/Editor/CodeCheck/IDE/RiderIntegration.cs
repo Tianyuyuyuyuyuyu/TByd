@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Microsoft.Win32;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using UnityEditor;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
@@ -49,8 +53,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         .ToArray();
 
                     isTestEnvironment = testAssemblies.Length > 0 &&
-                                       (new System.Diagnostics.StackTrace().ToString().Contains("Test") ||
-                                        new System.Diagnostics.StackTrace().ToString().Contains("test"));
+                                        (new StackTrace().ToString().Contains("Test") ||
+                                         new StackTrace().ToString().Contains("test"));
                 }
                 catch
                 {
@@ -210,7 +214,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             // 方法1：检查EditorPrefs
             var scriptEditorPref = EditorPrefs.GetString("kScriptsDefaultApp", "");
-            if (!string.IsNullOrEmpty(scriptEditorPref) && scriptEditorPref.IndexOf("Rider", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (!string.IsNullOrEmpty(scriptEditorPref) &&
+                scriptEditorPref.IndexOf("Rider", StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 return true;
             }
@@ -221,7 +226,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var editorType = Type.GetType(k_CRiderUnityIntegrationClassName, false);
                 if (editorType != null)
                 {
-                    var currentEditorProperty = editorType.GetProperty("CurrentEditor", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    var currentEditorProperty =
+                        editorType.GetProperty("CurrentEditor", BindingFlags.Public | BindingFlags.Static);
                     if (currentEditorProperty != null)
                     {
                         var currentEditor = currentEditorProperty.GetValue(null);
@@ -266,7 +272,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
                 // 查找JetBrains Toolbox安装的Rider
-                var jetbrainsToolboxPaths = new string[]
+                var jetbrainsToolboxPaths = new[]
                 {
                     Path.Combine(localAppData, "JetBrains", "Toolbox", "apps", "Rider"),
                     Path.Combine(programFiles, "JetBrains", "Toolbox", "apps", "Rider"),
@@ -293,10 +299,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 查找常规安装的Rider
-                var standardPaths = new string[]
+                var standardPaths = new[]
                 {
-                    Path.Combine(programFiles, "JetBrains"),
-                    Path.Combine(programFilesX86, "JetBrains")
+                    Path.Combine(programFiles, "JetBrains"), Path.Combine(programFilesX86, "JetBrains")
                 };
 
                 foreach (var basePath in standardPaths)
@@ -316,18 +321,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 }
 
                 // 检查常见的自定义安装位置
-                var commonCustomPaths = new string[]
+                var commonCustomPaths = new[]
                 {
-                    @"C:\JetBrains",
-                    @"D:\JetBrains",
-                    @"E:\JetBrains",
-                    @"F:\JetBrains",
-                    @"G:\JetBrains",
-                    Path.Combine(userProfile, "JetBrains"),
-                    @"C:\Program Files\JetBrains",
-                    @"D:\Program Files\JetBrains",
-                    @"E:\Program Files\JetBrains",
-                    @"F:\Program Files\JetBrains",
+                    @"C:\JetBrains", @"D:\JetBrains", @"E:\JetBrains", @"F:\JetBrains", @"G:\JetBrains",
+                    Path.Combine(userProfile, "JetBrains"), @"C:\Program Files\JetBrains",
+                    @"D:\Program Files\JetBrains", @"E:\Program Files\JetBrains", @"F:\Program Files\JetBrains",
                     @"G:\Program Files\JetBrains"
                 };
 
@@ -384,7 +382,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在macOS上查找Rider
             else if (Application.platform == RuntimePlatform.OSXEditor)
             {
-                var macPaths = new string[]
+                var macPaths = new[]
                 {
                     "/Applications/Rider.app/Contents/MacOS/rider",
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/Applications/Rider.app/Contents/MacOS/rider"
@@ -401,11 +399,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             // 在Linux上查找Rider
             else if (Application.platform == RuntimePlatform.LinuxEditor)
             {
-                var linuxPaths = new string[]
+                var linuxPaths = new[]
                 {
-                    "/usr/bin/rider",
-                    "/usr/local/bin/rider",
-                    "/opt/rider/bin/rider.sh",
+                    "/usr/bin/rider", "/usr/local/bin/rider", "/opt/rider/bin/rider.sh",
                     $"{Environment.GetFolderPath(Environment.SpecialFolder.Personal)}/rider/bin/rider.sh"
                 };
 
@@ -431,7 +427,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 // 尝试从Unity编辑器设置中获取Rider路径
                 var editorPath = EditorPrefs.GetString("kScriptsDefaultApp");
-                if (!string.IsNullOrEmpty(editorPath) && editorPath.Contains("Rider", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(editorPath) &&
+                    editorPath.Contains("Rider", StringComparison.OrdinalIgnoreCase))
                 {
                     return editorPath;
                 }
@@ -440,6 +437,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 // 忽略异常
             }
+
             return string.Empty;
         }
 
@@ -453,7 +451,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 // 尝试从注册表获取JetBrains Rider路径
-                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\JetBrains\Rider"))
+                using (var key = Registry.CurrentUser.OpenSubKey(@"Software\JetBrains\Rider"))
                 {
                     if (key != null)
                     {

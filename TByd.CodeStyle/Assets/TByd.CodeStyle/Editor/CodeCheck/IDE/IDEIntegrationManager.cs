@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
@@ -111,7 +112,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
             // 根据外部编辑器路径匹配IDE
             return installedIDEs.FirstOrDefault(ide =>
-                externalEditorPath.Contains(ide.Name, System.StringComparison.OrdinalIgnoreCase));
+                externalEditorPath.Contains(ide.Name, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -169,6 +170,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 return currentIde.ExportConfig(rules);
             }
+
             return false;
         }
 
@@ -188,6 +190,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 return integration.ExportConfig(rules);
             }
+
             return false;
         }
 

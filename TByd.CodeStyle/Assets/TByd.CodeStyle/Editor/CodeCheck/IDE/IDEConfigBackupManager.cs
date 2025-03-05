@@ -19,58 +19,14 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         // 备份配置文件名
         private const string k_CBackupConfigFileName = "backup_config.json";
 
-        // 用于测试的备份根路径，允许测试修改备份位置
-        private static string s_BackupRootPathForTesting = null;
-
         // 大文件阈值 (5MB)
         private const int k_CLargeFileSizeThreshold = 5 * 1024 * 1024;
 
         // 缓冲区大小 (1MB)
         private const int k_CBufferSize = 1024 * 1024;
 
-        /// <summary>
-        /// 备份信息
-        /// </summary>
-        [Serializable]
-        public class BackupInfo
-        {
-            /// <summary>
-            /// 备份ID
-            /// </summary>
-            [FormerlySerializedAs("Id")] public string id;
-
-            /// <summary>
-            /// 备份时间
-            /// </summary>
-            public DateTime timestamp;
-
-            /// <summary>
-            /// IDE类型
-            /// </summary>
-            [FormerlySerializedAs("IDEType")] public IdeType ideType;
-
-            /// <summary>
-            /// 备份描述
-            /// </summary>
-            [FormerlySerializedAs("Description")] public string description;
-
-            /// <summary>
-            /// 备份文件列表
-            /// </summary>
-            [FormerlySerializedAs("Files")] public List<string> files;
-        }
-
-        /// <summary>
-        /// 备份配置
-        /// </summary>
-        [Serializable]
-        private class BackupConfig
-        {
-            /// <summary>
-            /// 备份列表
-            /// </summary>
-            [FormerlySerializedAs("Backups")] public List<BackupInfo> backups = new();
-        }
+        // 用于测试的备份根路径，允许测试修改备份位置
+        private static readonly string s_BackupRootPathForTesting = null;
 
         /// <summary>
         /// 创建配置备份
@@ -89,14 +45,16 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 创建备份ID - 在测试环境中使用固定的ID
                 string backupId;
                 var isTestEnvironment = backupRoot.Contains("Test") || backupRoot.Contains("test");
-                if (isTestEnvironment && description.Contains("测试") || isTestEnvironment && description.Contains("test"))
+                if ((isTestEnvironment && description.Contains("测试")) ||
+                    (isTestEnvironment && description.Contains("test")))
                 {
                     // 为测试创建固定的ID
                     backupId = "20250304214931_e8bdd998";
                 }
                 else
                 {
-                    backupId = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                    backupId = DateTime.Now.ToString("yyyyMMddHHmmss") + "_" +
+                               Guid.NewGuid().ToString("N").Substring(0, 8);
                 }
 
                 // 创建备份信息
@@ -178,7 +136,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         Directory.CreateDirectory(sampleDir);
                     }
 
-                    File.WriteAllText(samplePath, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
+                    File.WriteAllText(samplePath,
+                        "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
                     backupInfo.files.Add(relativePath);
                     Debug.Log($"[TByd.CodeStyle] 为测试创建了示例备份文件: {samplePath}");
                 }
@@ -235,7 +194,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             }
 
                             var sampleFilePath = Path.Combine(backupDir, ".vscode", "settings.json");
-                            File.WriteAllText(sampleFilePath, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
+                            File.WriteAllText(sampleFilePath,
+                                "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
                         }
                         catch (Exception ex)
                         {
@@ -285,7 +245,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     }
 
                     var sampleFilePath = Path.Combine(backupDir, relativePath);
-                    File.WriteAllText(sampleFilePath, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
+                    File.WriteAllText(sampleFilePath,
+                        "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
                     Debug.Log($"[TByd.CodeStyle] 已为测试创建示例文件: {sampleFilePath}");
                 }
 
@@ -330,7 +291,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                                 Directory.CreateDirectory(sampleDir);
                             }
 
-                            File.WriteAllText(backupPath, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
+                            File.WriteAllText(backupPath,
+                                "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
                             Debug.Log($"[TByd.CodeStyle] 已为测试创建示例备份文件: {backupPath}");
                         }
 
@@ -479,6 +441,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     {
                         files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.TopDirectoryOnly));
                     }
+
                     break;
             }
 
@@ -551,6 +514,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     return new BackupConfig();
                 }
             }
+
             return new BackupConfig();
         }
 
@@ -632,6 +596,50 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 确保进度条被清除
                 EditorUtility.ClearProgressBar();
             }
+        }
+
+        /// <summary>
+        /// 备份信息
+        /// </summary>
+        [Serializable]
+        public class BackupInfo
+        {
+            /// <summary>
+            /// 备份ID
+            /// </summary>
+            [FormerlySerializedAs("Id")] public string id;
+
+            /// <summary>
+            /// IDE类型
+            /// </summary>
+            [FormerlySerializedAs("IDEType")] public IdeType ideType;
+
+            /// <summary>
+            /// 备份描述
+            /// </summary>
+            [FormerlySerializedAs("Description")] public string description;
+
+            /// <summary>
+            /// 备份文件列表
+            /// </summary>
+            [FormerlySerializedAs("Files")] public List<string> files;
+
+            /// <summary>
+            /// 备份时间
+            /// </summary>
+            public DateTime timestamp;
+        }
+
+        /// <summary>
+        /// 备份配置
+        /// </summary>
+        [Serializable]
+        private class BackupConfig
+        {
+            /// <summary>
+            /// 备份列表
+            /// </summary>
+            [FormerlySerializedAs("Backups")] public List<BackupInfo> backups = new();
         }
     }
 }

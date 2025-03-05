@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.CodeCheck;
+using UnityEditor;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace TByd.CodeStyle.Editor.CodeCheck
 {
@@ -419,7 +421,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck
             try
             {
                 // 创建Git命令
-                var process = new System.Diagnostics.Process();
+                var process = new Process();
                 process.StartInfo.FileName = "git";
                 process.StartInfo.Arguments = "diff --cached --name-only --diff-filter=ACM";
                 process.StartInfo.UseShellExecute = false;
@@ -461,17 +463,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck
         private Vector2 m_ScrollPosition;
 
         /// <summary>
-        /// 显示窗口
-        /// </summary>
-        /// <param name="report">报告文本</param>
-        public static void ShowWindow(string report)
-        {
-            var window = GetWindow<CodeCheckReportWindow>("代码检查报告");
-            window.m_Report = report;
-            window.Show();
-        }
-
-        /// <summary>
         /// 绘制GUI
         /// </summary>
         private void OnGUI()
@@ -494,6 +485,17 @@ namespace TByd.CodeStyle.Editor.CodeCheck
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// 显示窗口
+        /// </summary>
+        /// <param name="report">报告文本</param>
+        public static void ShowWindow(string report)
+        {
+            var window = GetWindow<CodeCheckReportWindow>("代码检查报告");
+            window.m_Report = report;
+            window.Show();
         }
     }
 }

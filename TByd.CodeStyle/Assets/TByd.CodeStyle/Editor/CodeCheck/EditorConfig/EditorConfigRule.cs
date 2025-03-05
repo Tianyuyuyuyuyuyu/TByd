@@ -20,7 +20,6 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         /// <summary>
         /// 规则属性
         /// </summary>
-        [SerializeField]
         private Dictionary<string, string> m_Properties = new(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>

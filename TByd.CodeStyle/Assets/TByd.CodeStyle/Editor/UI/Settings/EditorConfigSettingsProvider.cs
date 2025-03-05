@@ -14,17 +14,17 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         // 设置路径
         private const string k_CSettingsPath = "Project/TByd/EditorConfig";
 
+        // 是否显示规则详情
+        private readonly Dictionary<string, bool> m_ShowRuleDetails = new();
+
         // 编辑器样式
         private GUIStyle m_HeaderStyle;
-        private GUIStyle m_SectionStyle;
-        private GUIStyle m_RuleHeaderStyle;
         private GUIStyle m_RuleContentStyle;
+        private GUIStyle m_RuleHeaderStyle;
 
         // 规则列表滚动位置
         private Vector2 m_RulesScrollPosition;
-
-        // 是否显示规则详情
-        private Dictionary<string, bool> m_ShowRuleDetails = new();
+        private GUIStyle m_SectionStyle;
 
         /// <summary>
         /// 构造函数
@@ -32,10 +32,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         public EditorConfigSettingsProvider() : base(k_CSettingsPath, SettingsScope.Project)
         {
             // 设置关键字，用于搜索
-            keywords = new HashSet<string>(new[]
-            {
-                "EditorConfig", "代码风格", "缩进", "换行", "空格", "编码", "格式化"
-            });
+            keywords = new HashSet<string>(new[] { "EditorConfig", "代码风格", "缩进", "换行", "空格", "编码", "格式化" });
         }
 
         /// <summary>
@@ -47,8 +44,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 m_HeaderStyle = new GUIStyle(EditorStyles.boldLabel)
                 {
-                    fontSize = 14,
-                    margin = new RectOffset(0, 0, 10, 10)
+                    fontSize = 14, margin = new RectOffset(0, 0, 10, 10)
                 };
             }
 
@@ -56,25 +52,20 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 m_SectionStyle = new GUIStyle(EditorStyles.boldLabel)
                 {
-                    fontSize = 12,
-                    margin = new RectOffset(0, 0, 5, 5)
+                    fontSize = 12, margin = new RectOffset(0, 0, 5, 5)
                 };
             }
 
             if (m_RuleHeaderStyle == null)
             {
-                m_RuleHeaderStyle = new GUIStyle(EditorStyles.foldout)
-                {
-                    fontStyle = FontStyle.Bold
-                };
+                m_RuleHeaderStyle = new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold };
             }
 
             if (m_RuleContentStyle == null)
             {
                 m_RuleContentStyle = new GUIStyle(EditorStyles.helpBox)
                 {
-                    padding = new RectOffset(10, 10, 10, 10),
-                    margin = new RectOffset(20, 0, 5, 5)
+                    padding = new RectOffset(10, 10, 10, 10), margin = new RectOffset(20, 0, 5, 5)
                 };
             }
         }

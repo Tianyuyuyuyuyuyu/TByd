@@ -1,7 +1,8 @@
 using System;
+using System.IO;
+using TByd.CodeStyle.Runtime.Config;
 using UnityEditor;
 using UnityEngine;
-using TByd.CodeStyle.Runtime.Config;
 
 namespace TByd.CodeStyle.Editor.Config
 {
@@ -11,9 +12,6 @@ namespace TByd.CodeStyle.Editor.Config
     [InitializeOnLoad]
     public static class ConfigProvider
     {
-        // 配置变更事件
-        public static event Action OnConfigChanged;
-
         /// <summary>
         /// 静态构造函数，在编辑器加载时初始化
         /// </summary>
@@ -28,6 +26,9 @@ namespace TByd.CodeStyle.Editor.Config
             // 订阅编辑器更新事件，用于检测配置文件变更
             EditorApplication.update += CheckConfigFileChange;
         }
+
+        // 配置变更事件
+        public static event Action OnConfigChanged;
 
         /// <summary>
         /// 获取当前配置
@@ -92,7 +93,7 @@ namespace TByd.CodeStyle.Editor.Config
             try
             {
                 var configJson = JsonUtility.ToJson(GetConfig(), true);
-                System.IO.File.WriteAllText(path, configJson);
+                File.WriteAllText(path, configJson);
                 Debug.Log($"[TByd.CodeStyle] 配置已导出到: {path}");
             }
             catch (Exception e)
@@ -109,7 +110,7 @@ namespace TByd.CodeStyle.Editor.Config
         {
             try
             {
-                var configJson = System.IO.File.ReadAllText(path);
+                var configJson = File.ReadAllText(path);
                 var config = JsonUtility.FromJson<CodeStyleConfig>(configJson);
 
                 // 更新当前配置

@@ -117,7 +117,8 @@ namespace TByd.CodeStyle.Editor.Git.Commit
 
             // 解析提交消息
             var message = CommitMessageParser.Parse(messageText);
-            Debug.Log($"[TByd.CodeStyle] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
+            Debug.Log(
+                $"[TByd.CodeStyle] 解析结果: Type={message.Type}, Scope={message.Scope}, Subject='{message.Subject}'");
 
             // 验证提交消息
             if (s_Validator != null)
@@ -331,7 +332,7 @@ namespace TByd.CodeStyle.Editor.Git.Commit
                 }
 
                 // 检查是否包含破坏性变更标记
-                isBreakingChange = header.Contains("!") || (footer.Contains("BREAKING CHANGE"));
+                isBreakingChange = header.Contains("!") || footer.Contains("BREAKING CHANGE");
 
                 // 解析头部
                 var colonIndex = header.IndexOf(": ", StringComparison.Ordinal);

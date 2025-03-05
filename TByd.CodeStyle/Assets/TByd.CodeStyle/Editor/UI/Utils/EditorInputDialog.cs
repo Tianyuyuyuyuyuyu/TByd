@@ -1,5 +1,5 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Utils
 {
@@ -8,32 +8,12 @@ namespace TByd.CodeStyle.Editor.UI.Utils
     /// </summary>
     public class EditorInputDialog : EditorWindow
     {
-        private string m_Title;
-        private string m_Message;
-        private string m_Input;
         private string m_DefaultValue;
+        private string m_Input;
         private bool m_IsCanceled;
         private bool m_IsInitialized;
-
-        /// <summary>
-        /// 显示输入对话框
-        /// </summary>
-        /// <param name="title">标题</param>
-        /// <param name="message">提示信息</param>
-        /// <param name="defaultValue">默认值</param>
-        /// <returns>用户输入的文本</returns>
-        public static string Show(string title, string message, string defaultValue = "")
-        {
-            var window = CreateInstance<EditorInputDialog>();
-            window.titleContent = new GUIContent(title);
-            window.m_Title = title;
-            window.m_Message = message;
-            window.m_DefaultValue = defaultValue;
-            window.minSize = new Vector2(300, 100);
-            window.maxSize = new Vector2(300, 100);
-            window.ShowModal();
-            return window.m_IsCanceled ? null : window.m_Input;
-        }
+        private string m_Message;
+        private string m_Title;
 
         private void OnEnable()
         {
@@ -93,6 +73,26 @@ namespace TByd.CodeStyle.Editor.UI.Utils
                 }
             }
             EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// 显示输入对话框
+        /// </summary>
+        /// <param name="title">标题</param>
+        /// <param name="message">提示信息</param>
+        /// <param name="defaultValue">默认值</param>
+        /// <returns>用户输入的文本</returns>
+        public static string Show(string title, string message, string defaultValue = "")
+        {
+            var window = CreateInstance<EditorInputDialog>();
+            window.titleContent = new GUIContent(title);
+            window.m_Title = title;
+            window.m_Message = message;
+            window.m_DefaultValue = defaultValue;
+            window.minSize = new Vector2(300, 100);
+            window.maxSize = new Vector2(300, 100);
+            window.ShowModal();
+            return window.m_IsCanceled ? null : window.m_Input;
         }
     }
 }

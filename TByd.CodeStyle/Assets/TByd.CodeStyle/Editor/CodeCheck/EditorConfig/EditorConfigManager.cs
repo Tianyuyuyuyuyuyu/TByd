@@ -17,14 +17,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
         // EditorConfig文件名
         private const string k_CEditorConfigFileName = ".editorconfig";
 
-        // 配置变更事件
-        public static event Action OnConfigChanged;
-
         // 当前项目的EditorConfig规则
         private static List<EditorConfigRule> s_Rules = new();
 
         // 是否已初始化
-        private static bool s_Initialized = false;
+        private static bool s_Initialized;
 
         /// <summary>
         /// 静态构造函数，在编辑器加载时初始化
@@ -34,6 +31,9 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             // 延迟初始化，确保Unity编辑器已完全加载
             EditorApplication.delayCall += Initialize;
         }
+
+        // 配置变更事件
+        public static event Action OnConfigChanged;
 
         /// <summary>
         /// 初始化EditorConfig管理器
@@ -98,7 +98,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             else
             {
                 s_Rules = new List<EditorConfigRule>();
-                Debug.Log($"[TByd.CodeStyle] 项目未找到EditorConfig文件");
+                Debug.Log("[TByd.CodeStyle] 项目未找到EditorConfig文件");
             }
 
             // 触发配置变更事件

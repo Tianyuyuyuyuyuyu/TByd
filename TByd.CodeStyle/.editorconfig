@@ -1,13 +1,17 @@
+root = true
 # EditorConfig is awesome: https://editorconfig.org/
 
 # top-most EditorConfig file
-root = true
 
 [*]
 charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
+
+# ReSharper properties
+resharper_xmldoc_indent_text = ZeroIndent
+resharper_xmldoc_pi_attributes_indent = single_indent
 
 [*.cs]
 indent_style = space
@@ -50,7 +54,7 @@ csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_throw_expression = true:suggestion
 csharp_style_conditional_delegate_call = true:suggestion
-csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion
+csharp_preferred_modifier_order = public, private, protected, internal, static, extern, new, virtual, abstract, sealed, override, readonly, unsafe, volatile, async:suggestion
 csharp_prefer_braces = true:suggestion
 csharp_prefer_simple_default_expression = true:suggestion
 csharp_style_prefer_local_over_anonymous_function = true:suggestion
@@ -96,7 +100,7 @@ csharp_space_between_square_brackets = false
 
 ## 基本命名规则 - PascalCase（类、结构体、枚举、属性、方法、事件、委托等）
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
-dotnet_naming_symbols.pascal_case_symbols.applicable_kinds = namespace,class,struct,enum,property,method,event,delegate
+dotnet_naming_symbols.pascal_case_symbols.applicable_kinds = namespace, class, struct, enum, property, method, event, delegate
 dotnet_naming_symbols.pascal_case_symbols.applicable_accessibilities = *
 dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.symbols = pascal_case_symbols
@@ -141,7 +145,7 @@ dotnet_naming_rule.static_member_rule.style = static_member_style
 dotnet_naming_style.private_class_member_style.capitalization = pascal_case
 dotnet_naming_style.private_class_member_style.required_prefix = m_
 dotnet_naming_symbols.private_class_member.applicable_kinds = field
-dotnet_naming_symbols.private_class_member.applicable_accessibilities = internal,friend,private,protected,protected_internal,protected_friend,private_protected
+dotnet_naming_symbols.private_class_member.applicable_accessibilities = internal, friend, private, protected, protected_internal, protected_friend, private_protected
 dotnet_naming_rule.private_class_member_rule.severity = suggestion
 dotnet_naming_rule.private_class_member_rule.symbols = private_class_member
 dotnet_naming_rule.private_class_member_rule.style = private_class_member_style

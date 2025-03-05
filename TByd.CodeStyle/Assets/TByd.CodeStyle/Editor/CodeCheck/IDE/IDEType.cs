@@ -25,4 +25,4 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         /// </summary>
         k_VSCode = 3
     }
-} 
+}

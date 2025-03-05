@@ -17,29 +17,9 @@ namespace TByd.CodeStyle.Editor.UI.Components
             k_Error
         }
 
-        // 信息类型
-        private InfoType m_Type;
-
         // 信息内容
-        private string m_Message;
 
-        /// <summary>
-        /// 信息内容
-        /// </summary>
-        public string Message
-        {
-            get => m_Message;
-            set => m_Message = value;
-        }
-
-        /// <summary>
-        /// 信息类型
-        /// </summary>
-        public InfoType Type
-        {
-            get => m_Type;
-            set => m_Type = value;
-        }
+        // 信息类型
 
         /// <summary>
         /// 构造函数
@@ -51,8 +31,26 @@ namespace TByd.CodeStyle.Editor.UI.Components
         public InfoBox(string title, string message, InfoType type = InfoType.k_Info, bool isCollapsible = false)
             : base(title, "", isCollapsible)
         {
-            m_Message = message;
-            m_Type = type;
+            Message = message;
+            Type = type;
+        }
+
+        /// <summary>
+        /// 信息内容
+        /// </summary>
+        public string Message
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// 信息类型
+        /// </summary>
+        public InfoType Type
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -61,7 +59,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         protected override void DrawContent()
         {
             var messageType = GetMessageType();
-            EditorGUILayout.HelpBox(m_Message, messageType);
+            EditorGUILayout.HelpBox(Message, messageType);
         }
 
         /// <summary>
@@ -70,7 +68,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <returns>Unity消息类型</returns>
         private MessageType GetMessageType()
         {
-            switch (m_Type)
+            switch (Type)
             {
                 case InfoType.k_Info:
                     return MessageType.Info;
@@ -89,7 +87,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <param name="message">信息内容</param>
         public void SetMessage(string message)
         {
-            m_Message = message;
+            Message = message;
         }
 
         /// <summary>
@@ -98,7 +96,7 @@ namespace TByd.CodeStyle.Editor.UI.Components
         /// <param name="type">信息类型</param>
         public void SetType(InfoType type)
         {
-            m_Type = type;
+            Type = type;
         }
     }
 }

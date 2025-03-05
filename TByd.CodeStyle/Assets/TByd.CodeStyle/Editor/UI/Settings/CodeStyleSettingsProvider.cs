@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Config;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Settings
 {
@@ -16,7 +16,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private const string k_CSettingsPath = "Project/TByd/代码风格";
 
         // 关键字
-        private static readonly string[] s_Keywords = new string[]
+        private static readonly string[] s_Keywords =
         {
             "TByd", "代码风格", "Code", "Style", "Git", "Commit", "EditorConfig"
         };
@@ -392,7 +392,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             // 添加新的代码规则
             if (GUILayout.Button("添加代码规则", GUILayout.Width(120)))
             {
-                var newId = "CS" + (1000 + codeConfig.Rules.Count).ToString();
+                var newId = "CS" + (1000 + codeConfig.Rules.Count);
                 codeConfig.Rules.Add(new CodeCheckConfig.CodeRule(newId, "新规则", "新规则描述"));
                 m_IsDirty = true;
             }
@@ -421,7 +421,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                 ConfigProvider.ResetConfig();
                 m_IsDirty = false;
 
-                NotificationSystem.ShowNotification("设置已重置为默认值", NotificationType.k_Info);
+                NotificationSystem.ShowNotification("设置已重置为默认值");
             }
         }
 

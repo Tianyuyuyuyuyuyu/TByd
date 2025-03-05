@@ -67,7 +67,7 @@ namespace TByd.CodeStyle.Editor.UI.Utils
         public static bool HasNotification()
         {
             return !string.IsNullOrEmpty(s_CurrentNotification) &&
-                EditorApplication.timeSinceStartup <= s_NotificationEndTime;
+                   EditorApplication.timeSinceStartup <= s_NotificationEndTime;
         }
 
         /// <summary>
@@ -196,7 +196,8 @@ namespace TByd.CodeStyle.Editor.UI.Utils
             style.normal.textColor = GetNotificationColor(s_CurrentNotificationType);
             style.fontStyle = FontStyle.Bold;
 
-            EditorGUILayout.LabelField(GetNotificationTypePrefix(s_CurrentNotificationType) + s_CurrentNotification, style);
+            EditorGUILayout.LabelField(GetNotificationTypePrefix(s_CurrentNotificationType) + s_CurrentNotification,
+                style);
 
             EditorGUILayout.EndVertical();
         }

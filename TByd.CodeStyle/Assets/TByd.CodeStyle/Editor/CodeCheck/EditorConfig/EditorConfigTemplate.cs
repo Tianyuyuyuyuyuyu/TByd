@@ -86,8 +86,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_style_qualification_for_event", "false:silent");
             csharpRule.SetProperty("dotnet_style_predefined_type_for_locals_parameters_members", "true:silent");
             csharpRule.SetProperty("dotnet_style_predefined_type_for_member_access", "true:silent");
-            csharpRule.SetProperty("dotnet_style_parentheses_in_arithmetic_binary_operators", "always_for_clarity:silent");
-            csharpRule.SetProperty("dotnet_style_parentheses_in_relational_binary_operators", "always_for_clarity:silent");
+            csharpRule.SetProperty("dotnet_style_parentheses_in_arithmetic_binary_operators",
+                "always_for_clarity:silent");
+            csharpRule.SetProperty("dotnet_style_parentheses_in_relational_binary_operators",
+                "always_for_clarity:silent");
             csharpRule.SetProperty("dotnet_style_parentheses_in_other_binary_operators", "always_for_clarity:silent");
             csharpRule.SetProperty("dotnet_style_parentheses_in_other_operators", "never_if_unnecessary:silent");
             csharpRule.SetProperty("dotnet_style_require_accessibility_modifiers", "for_non_interface_members:silent");
@@ -120,7 +122,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("csharp_style_pattern_matching_over_as_with_null_check", "true:suggestion");
             csharpRule.SetProperty("csharp_style_throw_expression", "true:suggestion");
             csharpRule.SetProperty("csharp_style_conditional_delegate_call", "true:suggestion");
-            csharpRule.SetProperty("csharp_preferred_modifier_order", "public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion");
+            csharpRule.SetProperty("csharp_preferred_modifier_order",
+                "public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:suggestion");
             csharpRule.SetProperty("csharp_prefer_braces", "true:suggestion");
             csharpRule.SetProperty("csharp_prefer_simple_default_expression", "true:suggestion");
             csharpRule.SetProperty("csharp_style_prefer_local_over_anonymous_function", "true:suggestion");
@@ -170,11 +173,15 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
 
             // 命名规则 - 使用Pascal命名规则的符号
             csharpRule.SetProperty("dotnet_naming_style.pascal_case_style.capitalization", "pascal_case");
-            csharpRule.SetProperty("dotnet_naming_symbols.pascal_case_symbols.applicable_kinds", "namespace,class,struct,enum,property,method,event,delegate");
+            csharpRule.SetProperty("dotnet_naming_symbols.pascal_case_symbols.applicable_kinds",
+                "namespace,class,struct,enum,property,method,event,delegate");
             csharpRule.SetProperty("dotnet_naming_symbols.pascal_case_symbols.applicable_accessibilities", "*");
-            csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.severity", "suggestion");
-            csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.symbols", "pascal_case_symbols");
-            csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.style", "pascal_case_style");
+            csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.severity",
+                "suggestion");
+            csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.symbols",
+                "pascal_case_symbols");
+            csharpRule.SetProperty("dotnet_naming_rule.pascal_case_symbols_should_be_pascal_case.style",
+                "pascal_case_style");
 
             // 命名规则 - 公开成员变量使用驼峰式命名
             csharpRule.SetProperty("dotnet_naming_style.public_class_member_style.capitalization", "camel_case");
@@ -198,7 +205,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.EditorConfig
             csharpRule.SetProperty("dotnet_naming_style.private_class_member_style.capitalization", "pascal_case");
             csharpRule.SetProperty("dotnet_naming_style.private_class_member_style.required_prefix", "m_");
             csharpRule.SetProperty("dotnet_naming_symbols.private_class_member.applicable_kinds", "field");
-            csharpRule.SetProperty("dotnet_naming_symbols.private_class_member.applicable_accessibilities", "internal,friend,private,protected,protected_internal,protected_friend,private_protected");
+            csharpRule.SetProperty("dotnet_naming_symbols.private_class_member.applicable_accessibilities",
+                "internal,friend,private,protected,protected_internal,protected_friend,private_protected");
             csharpRule.SetProperty("dotnet_naming_rule.private_class_member_rule.severity", "suggestion");
             csharpRule.SetProperty("dotnet_naming_rule.private_class_member_rule.symbols", "private_class_member");
             csharpRule.SetProperty("dotnet_naming_rule.private_class_member_rule.style", "private_class_member_style");

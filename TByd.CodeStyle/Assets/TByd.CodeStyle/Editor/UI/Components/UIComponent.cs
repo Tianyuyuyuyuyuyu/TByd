@@ -8,6 +8,21 @@ namespace TByd.CodeStyle.Editor.UI.Components
     public abstract class UIComponent
     {
         /// <summary>
+        /// 组件描述
+        /// </summary>
+        protected string m_Description;
+
+        /// <summary>
+        /// 是否已折叠
+        /// </summary>
+        protected bool m_IsCollapsed;
+
+        /// <summary>
+        /// 是否可折叠
+        /// </summary>
+        protected bool m_IsCollapsible;
+
+        /// <summary>
         /// 组件是否可见
         /// </summary>
         protected bool m_IsVisible = true;
@@ -18,19 +33,18 @@ namespace TByd.CodeStyle.Editor.UI.Components
         protected string m_Title;
 
         /// <summary>
-        /// 组件描述
+        /// 构造函数
         /// </summary>
-        protected string m_Description;
-
-        /// <summary>
-        /// 是否可折叠
-        /// </summary>
-        protected bool m_IsCollapsible;
-
-        /// <summary>
-        /// 是否已折叠
-        /// </summary>
-        protected bool m_IsCollapsed;
+        /// <param name="title">组件标题</param>
+        /// <param name="description">组件描述</param>
+        /// <param name="isCollapsible">是否可折叠</param>
+        protected UIComponent(string title, string description = "", bool isCollapsible = false)
+        {
+            m_Title = title;
+            m_Description = description;
+            m_IsCollapsible = isCollapsible;
+            m_IsCollapsed = false;
+        }
 
         /// <summary>
         /// 组件标题
@@ -48,20 +62,6 @@ namespace TByd.CodeStyle.Editor.UI.Components
         {
             get => m_Description;
             set => m_Description = value;
-        }
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="title">组件标题</param>
-        /// <param name="description">组件描述</param>
-        /// <param name="isCollapsible">是否可折叠</param>
-        protected UIComponent(string title, string description = "", bool isCollapsible = false)
-        {
-            m_Title = title;
-            m_Description = description;
-            m_IsCollapsible = isCollapsible;
-            m_IsCollapsed = false;
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
 using TByd.CodeStyle.Editor.Git;
@@ -24,45 +25,23 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         // 窗口实例
         private static CodeStyleWindow s_Instance;
 
-        // 滚动位置
-        private Vector2 m_ScrollPosition;
-        private Vector2 m_CommitScrollPosition;
-
-        // 当前选中的标签页索引
-        private int m_SelectedTabIndex;
-
         // 标签页名称
-        private readonly string[] m_TabNames = new string[]
-        {
-            "概览",
-            "Git提交",
-            "代码检查",
-            "IDE集成",
-            "设置"
-        };
+        private readonly string[] m_TabNames = { "概览", "Git提交", "代码检查", "IDE集成", "设置" };
+
+        private bool m_AreHooksInstalled;
+        private string m_CommitBody = string.Empty;
+        private string m_CommitFooter = string.Empty;
+        private bool m_CommitIsBreakingChange;
 
         // Git提交相关
         private string m_CommitMessage = string.Empty;
-        private string m_CommitType = string.Empty;
         private string m_CommitScope = string.Empty;
+        private Vector2 m_CommitScrollPosition;
         private string m_CommitSubject = string.Empty;
-        private string m_CommitBody = string.Empty;
-        private string m_CommitFooter = string.Empty;
-        private bool m_CommitIsBreakingChange = false;
-        private bool m_ShowCommitPreview = false;
-        private CommitMessageValidationResult m_ValidationResult;
+        private string m_CommitType = string.Empty;
 
         // 提交类型选项
         private string[] m_CommitTypeOptions;
-        private int m_SelectedCommitTypeIndex = 0;
-
-        // 作用域选项
-        private string[] m_ScopeOptions;
-        private int m_SelectedScopeIndex = 0;
-
-        // Git仓库状态
-        private bool m_IsGitRepository = false;
-        private bool m_AreHooksInstalled = false;
 
         /// <summary>
         /// 当前IDE类型
@@ -70,28 +49,30 @@ namespace TByd.CodeStyle.Editor.UI.Windows
         private IdeType m_CurrentIdeType;
 
         /// <summary>
-        /// IDE配置是否已初始化
-        /// </summary>
-        private bool m_IsIdeConfigured;
-
-        /// <summary>
         /// IDE自动配置是否已提示
         /// </summary>
         private bool m_HasPromptedIdeConfig;
 
-        /// <summary>
-        /// 打开窗口的菜单项
-        /// </summary>
-        [MenuItem("TByd/CodeStyle/代码风格工具", false, 100)]
-        public static void ShowWindow()
-        {
-            s_Instance = GetWindow<CodeStyleWindow>(false, k_CWindowTitle, true);
-            s_Instance.minSize = new Vector2(600, 400);
-            s_Instance.Show();
+        // Git仓库状态
+        private bool m_IsGitRepository;
 
-            // 显示欢迎通知
-            NotificationSystem.ShowNotification("欢迎使用TByd代码风格工具！", NotificationType.k_Info);
-        }
+        /// <summary>
+        /// IDE配置是否已初始化
+        /// </summary>
+        private bool m_IsIdeConfigured;
+
+        // 作用域选项
+        private string[] m_ScopeOptions;
+
+        // 滚动位置
+        private Vector2 m_ScrollPosition;
+        private int m_SelectedCommitTypeIndex;
+        private int m_SelectedScopeIndex;
+
+        // 当前选中的标签页索引
+        private int m_SelectedTabIndex;
+        private bool m_ShowCommitPreview;
+        private CommitMessageValidationResult m_ValidationResult;
 
         /// <summary>
         /// 窗口初始化
@@ -109,6 +90,62 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             // 检查IDE状态
             CheckIdeStatus();
+        }
+
+        /// <summary>
+        /// 绘制窗口内容
+        /// </summary>
+        private void OnGUI()
+        {
+            // 检查Git仓库状态（每次绘制时检查，以便及时响应路径变更）
+            CheckGitRepositoryStatus();
+
+            // 绘制标题
+            EditorGUILayout.Space();
+            GUILayout.Label(k_CWindowTitle, EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+
+            // 绘制通知
+            NotificationSystem.DrawNotification();
+
+            DrawToolbar();
+
+            m_ScrollPosition = EditorGUILayout.BeginScrollView(m_ScrollPosition);
+
+            switch (m_SelectedTabIndex)
+            {
+                case 0:
+                    DrawOverviewTab();
+                    break;
+                case 1:
+                    DrawGitCommitTab();
+                    break;
+                case 2:
+                    DrawCodeCheckTab();
+                    break;
+                case 3:
+                    DrawIdeIntegrationTab();
+                    break;
+                case 4:
+                    DrawSettingsTab();
+                    break;
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+
+        /// <summary>
+        /// 打开窗口的菜单项
+        /// </summary>
+        [MenuItem("TByd/CodeStyle/代码风格工具", false, 100)]
+        public static void ShowWindow()
+        {
+            s_Instance = GetWindow<CodeStyleWindow>(false, k_CWindowTitle, true);
+            s_Instance.minSize = new Vector2(600, 400);
+            s_Instance.Show();
+
+            // 显示欢迎通知
+            NotificationSystem.ShowNotification("欢迎使用TByd代码风格工具！");
         }
 
         /// <summary>
@@ -159,10 +196,10 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
                 // 检查是否所有必要的钩子都已安装
                 m_AreHooksInstalled = hookStatus.Count > 0 &&
-                                    hookStatus.ContainsKey(GitHookType.k_PreCommit) &&
-                                    hookStatus[GitHookType.k_PreCommit] &&
-                                    hookStatus.ContainsKey(GitHookType.k_CommitMsg) &&
-                                    hookStatus[GitHookType.k_CommitMsg];
+                                      hookStatus.ContainsKey(GitHookType.k_PreCommit) &&
+                                      hookStatus[GitHookType.k_PreCommit] &&
+                                      hookStatus.ContainsKey(GitHookType.k_CommitMsg) &&
+                                      hookStatus[GitHookType.k_CommitMsg];
             }
             else
             {
@@ -184,48 +221,6 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 m_HasPromptedIdeConfig = true;
                 IdeDetector.PromptIdeConfiguration(m_CurrentIdeType);
             }
-        }
-
-        /// <summary>
-        /// 绘制窗口内容
-        /// </summary>
-        private void OnGUI()
-        {
-            // 检查Git仓库状态（每次绘制时检查，以便及时响应路径变更）
-            CheckGitRepositoryStatus();
-
-            // 绘制标题
-            EditorGUILayout.Space();
-            GUILayout.Label(k_CWindowTitle, EditorStyles.boldLabel);
-            EditorGUILayout.Space();
-
-            // 绘制通知
-            NotificationSystem.DrawNotification();
-
-            DrawToolbar();
-
-            m_ScrollPosition = EditorGUILayout.BeginScrollView(m_ScrollPosition);
-
-            switch (m_SelectedTabIndex)
-            {
-                case 0:
-                    DrawOverviewTab();
-                    break;
-                case 1:
-                    DrawGitCommitTab();
-                    break;
-                case 2:
-                    DrawCodeCheckTab();
-                    break;
-                case 3:
-                    DrawIdeIntegrationTab();
-                    break;
-                case 4:
-                    DrawSettingsTab();
-                    break;
-            }
-
-            EditorGUILayout.EndScrollView();
         }
 
         /// <summary>
@@ -351,6 +346,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 {
                     EditorConfigManager.CreateUnityProjectEditorConfig();
                 }
+
                 EditorGUILayout.EndHorizontal();
             }
 
@@ -432,14 +428,17 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 m_SelectedCommitTypeIndex = newTypeIndex;
                 if (m_SelectedCommitTypeIndex > 0)
                 {
-                    m_CommitType = ConfigManager.GetConfig().GitCommitConfig.CommitTypes[m_SelectedCommitTypeIndex - 1].Type;
+                    m_CommitType = ConfigManager.GetConfig().GitCommitConfig.CommitTypes[m_SelectedCommitTypeIndex - 1]
+                        .Type;
                 }
                 else
                 {
                     m_CommitType = string.Empty;
                 }
+
                 UpdateCommitMessage();
             }
+
             EditorGUILayout.EndHorizontal();
 
             // 作用域选择
@@ -461,8 +460,10 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 {
                     m_CommitScope = string.Empty;
                 }
+
                 UpdateCommitMessage();
             }
+
             EditorGUILayout.EndHorizontal();
 
             // 是否是破坏性变更
@@ -579,7 +580,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             {
                 GitHookMonitor.UninstallAllHooks();
                 CheckGitRepositoryStatus();
-                NotificationSystem.ShowNotification("Git钩子卸载成功", NotificationType.k_Info);
+                NotificationSystem.ShowNotification("Git钩子卸载成功");
             }
 
             EditorGUILayout.EndHorizontal();
@@ -662,7 +663,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             m_SelectedCommitTypeIndex = 0;
             m_SelectedScopeIndex = 0;
 
-            NotificationSystem.ShowNotification("提交消息已重置", NotificationType.k_Info);
+            NotificationSystem.ShowNotification("提交消息已重置");
         }
 
         /// <summary>
@@ -842,7 +843,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 // 显示结果
                 EditorUtility.ClearProgressBar();
 
-                var message = $"验证完成！\n\n" +
+                var message = "验证完成！\n\n" +
                               $"总文件数: {totalFiles}\n" +
                               $"符合规则的文件: {validFiles}\n" +
                               $"不符合规则的文件: {invalidFiles}";
@@ -942,7 +943,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 // 显示结果
                 EditorUtility.ClearProgressBar();
 
-                var message = $"格式化完成！\n\n" +
+                var message = "格式化完成！\n\n" +
                               $"总文件数: {totalFiles}\n" +
                               $"成功格式化的文件: {formattedFiles}\n" +
                               $"格式化失败的文件: {failedFiles}";
@@ -1047,7 +1048,8 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             if (GUILayout.Button("验证配置"))
             {
-                var result = IdeConfigValidator.ValidateConfig(m_CurrentIdeType, Path.GetDirectoryName(Application.dataPath));
+                var result =
+                    IdeConfigValidator.ValidateConfig(m_CurrentIdeType, Path.GetDirectoryName(Application.dataPath));
 
                 if (result.IsValid)
                 {
@@ -1060,20 +1062,24 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     {
                         message += "\n错误：\n" + string.Join("\n", result.Errors);
                     }
+
                     if (result.Warnings.Count > 0)
                     {
                         message += "\n警告：\n" + string.Join("\n", result.Warnings);
                     }
+
                     if (result.Suggestions.Count > 0)
                     {
                         message += "\n建议：\n" + string.Join("\n", result.Suggestions);
                     }
+
                     EditorUtility.DisplayDialog("配置验证", message, "确定");
                 }
             }
 
             // 检查配置冲突
-            var conflicts = IdeConfigValidator.CheckConfigConflicts(m_CurrentIdeType, Path.GetDirectoryName(Application.dataPath));
+            var conflicts =
+                IdeConfigValidator.CheckConfigConflicts(m_CurrentIdeType, Path.GetDirectoryName(Application.dataPath));
             if (conflicts.Count > 0)
             {
                 EditorGUILayout.Space();
@@ -1119,8 +1125,8 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     if (GUILayout.Button("恢复", GUILayout.Width(60)))
                     {
                         if (EditorUtility.DisplayDialog("恢复备份",
-                            $"确定要恢复此备份吗？\n时间：{backup.timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.description}",
-                            "确定", "取消"))
+                                $"确定要恢复此备份吗？\n时间：{backup.timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.description}",
+                                "确定", "取消"))
                         {
                             if (IdeConfigBackupManager.RestoreBackup(backup.id))
                             {
@@ -1137,8 +1143,8 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     if (GUILayout.Button("删除", GUILayout.Width(60)))
                     {
                         if (EditorUtility.DisplayDialog("删除备份",
-                            $"确定要删除此备份吗？\n时间：{backup.timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.description}",
-                            "确定", "取消"))
+                                $"确定要删除此备份吗？\n时间：{backup.timestamp:yyyy-MM-dd HH:mm:ss}\n描述：{backup.description}",
+                                "确定", "取消"))
                         {
                             if (IdeConfigBackupManager.DeleteBackup(backup.id))
                             {
@@ -1167,10 +1173,10 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             {
                 var description = "";
                 if (EditorUtility.DisplayDialog("创建备份",
-                    "是否要创建配置备份？",
-                    "确定", "取消"))
+                        "是否要创建配置备份？",
+                        "确定", "取消"))
                 {
-                    description = EditorInputDialog.Show("备份描述", "请输入备份描述（可选）：", "");
+                    description = EditorInputDialog.Show("备份描述", "请输入备份描述（可选）：");
                     var backupId = IdeConfigBackupManager.CreateBackup(m_CurrentIdeType, description);
                     if (!string.IsNullOrEmpty(backupId))
                     {
@@ -1182,6 +1188,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     }
                 }
             }
+
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.EndVertical();
@@ -1202,10 +1209,12 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     {
                         message += $"\n\n更新的文件：\n{string.Join("\n", result.updatedFiles)}";
                     }
+
                     if (result.conflictFiles.Count > 0)
                     {
                         message += $"\n\n存在冲突的文件：\n{string.Join("\n", result.conflictFiles)}";
                     }
+
                     EditorUtility.DisplayDialog("同步结果", message, "确定");
                     CheckIdeStatus();
                 }
@@ -1285,7 +1294,8 @@ namespace TByd.CodeStyle.Editor.UI.Windows
             EditorGUI.BeginChangeCheck();
 
             vscodeConfig.EnableOmniSharp = EditorGUILayout.Toggle("启用OmniSharp", vscodeConfig.EnableOmniSharp);
-            vscodeConfig.EnableRoslynAnalyzers = EditorGUILayout.Toggle("启用Roslyn分析器", vscodeConfig.EnableRoslynAnalyzers);
+            vscodeConfig.EnableRoslynAnalyzers =
+                EditorGUILayout.Toggle("启用Roslyn分析器", vscodeConfig.EnableRoslynAnalyzers);
             vscodeConfig.EnableEditorConfig = EditorGUILayout.Toggle("启用EditorConfig", vscodeConfig.EnableEditorConfig);
 
             if (EditorGUI.EndChangeCheck())
@@ -1330,7 +1340,8 @@ namespace TByd.CodeStyle.Editor.UI.Windows
 
             config.EnableIdeIntegration = EditorGUILayout.ToggleLeft("启用IDE集成", config.EnableIdeIntegration);
             config.AutoConfigureIde = EditorGUILayout.ToggleLeft("自动配置IDE", config.AutoConfigureIde);
-            config.SyncEditorConfigWithIde = EditorGUILayout.ToggleLeft("同步EditorConfig到IDE", config.SyncEditorConfigWithIde);
+            config.SyncEditorConfigWithIde =
+                EditorGUILayout.ToggleLeft("同步EditorConfig到IDE", config.SyncEditorConfigWithIde);
 
             if (config.EnableIdeIntegration)
             {
@@ -1344,13 +1355,14 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 if (GUILayout.Button("重置IDE配置"))
                 {
                     if (EditorUtility.DisplayDialog("重置IDE配置",
-                        "确定要重置IDE配置吗？这将清除所有IDE特定的设置。", "确定", "取消"))
+                            "确定要重置IDE配置吗？这将清除所有IDE特定的设置。", "确定", "取消"))
                     {
                         IdeDetector.ResetIdeConfiguration(m_CurrentIdeType);
                         CheckIdeStatus();
-                        NotificationSystem.ShowNotification("IDE配置已重置", NotificationType.k_Info);
+                        NotificationSystem.ShowNotification("IDE配置已重置");
                     }
                 }
+
                 EditorGUILayout.EndHorizontal();
             }
 
@@ -1406,6 +1418,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                         EditorUtility.OpenWithDefaultApp(editorConfigPath);
                     }
                 }
+
                 EditorGUILayout.EndHorizontal();
             }
             else
@@ -1434,6 +1447,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                         EditorConfigManager.ImportEditorConfig(path);
                     }
                 }
+
                 EditorGUILayout.EndHorizontal();
             }
 
@@ -1454,7 +1468,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                 if (EditorUtility.DisplayDialog("重置设置", "确定要重置所有设置吗？这将恢复默认配置。", "确定", "取消"))
                 {
                     ConfigManager.ResetConfig();
-                    NotificationSystem.ShowNotification("设置已重置为默认值", NotificationType.k_Info);
+                    NotificationSystem.ShowNotification("设置已重置为默认值");
                 }
             }
 
@@ -1474,7 +1488,7 @@ namespace TByd.CodeStyle.Editor.UI.Windows
                     NotificationSystem.ShowProgress("测试进度", $"正在处理... {i * 10}%", progress);
 
                     // 模拟处理时间
-                    System.Threading.Thread.Sleep(200);
+                    Thread.Sleep(200);
                 }
 
                 NotificationSystem.HideProgress();

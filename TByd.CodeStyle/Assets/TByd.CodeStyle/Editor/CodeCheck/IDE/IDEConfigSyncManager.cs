@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
@@ -18,55 +19,12 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         private const string k_CSyncLockFileName = "sync.lock";
 
         // 用于测试的同步配置路径，允许测试修改同步配置的存储位置
-        private static string s_SyncConfigPathForTesting = null;
+        private static readonly string s_SyncConfigPathForTesting = null;
 
         /// <summary>
         /// 冲突文件列表
         /// </summary>
-        private static List<string> s_ConflictFiles = new();
-
-        /// <summary>
-        /// 同步配置
-        /// </summary>
-        [Serializable]
-        private class SyncConfig
-        {
-            /// <summary>
-            /// 上次同步时间
-            /// </summary>
-            public DateTime lastSyncTime;
-
-            /// <summary>
-            /// 同步状态
-            /// </summary>
-            public Dictionary<string, string> fileHashes = new();
-        }
-
-        /// <summary>
-        /// 同步结果
-        /// </summary>
-        public class SyncResult
-        {
-            /// <summary>
-            /// 是否成功
-            /// </summary>
-            public bool success;
-
-            /// <summary>
-            /// 更新的文件列表
-            /// </summary>
-            public List<string> updatedFiles = new();
-
-            /// <summary>
-            /// 冲突的文件列表
-            /// </summary>
-            public List<string> conflictFiles = new();
-
-            /// <summary>
-            /// 错误信息
-            /// </summary>
-            public string error;
-        }
+        private static readonly List<string> s_ConflictFiles = new();
 
         /// <summary>
         /// 同步IDE配置
@@ -77,9 +35,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             var result = new SyncResult
             {
-                success = false,
-                updatedFiles = new List<string>(),
-                conflictFiles = new List<string>()
+                success = false, updatedFiles = new List<string>(), conflictFiles = new List<string>()
             };
 
             // 确保配置目录存在
@@ -104,7 +60,8 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                         var sampleFile = Path.Combine(sampleDir, "settings.json");
                         if (!File.Exists(sampleFile))
                         {
-                            File.WriteAllText(sampleFile, "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
+                            File.WriteAllText(sampleFile,
+                                "{\n    \"editor.tabSize\": 4,\n    \"editor.formatOnSave\": true\n}");
                         }
                     }
                     catch (Exception ex)
@@ -133,8 +90,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                 // 加载同步配置
                 var config = LoadSyncConfig() ?? new SyncConfig
                 {
-                    lastSyncTime = DateTime.MinValue,
-                    fileHashes = new Dictionary<string, string>()
+                    lastSyncTime = DateTime.MinValue, fileHashes = new Dictionary<string, string>()
                 };
 
                 // 获取当前所有配置文件
@@ -428,7 +384,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     {
                         // 项目代码，使用固定的远程路径
                         remotePath = localPath.Replace("TByd.CodeStyle\\Assets", "TByd.CodeStyle\\RemoteConfigs")
-                                     .Replace("TByd.CodeStyle/Assets", "TByd.CodeStyle/RemoteConfigs");
+                            .Replace("TByd.CodeStyle/Assets", "TByd.CodeStyle/RemoteConfigs");
                     }
                 }
                 else if (localPath.Contains("AppData\\Local\\Temp") || localPath.Contains("AppData/Local/Temp"))
@@ -520,6 +476,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                             files.Add(csharpierConfig);
                         }
                     }
+
                     break;
 
                 case IdeType.k_VisualStudio:
@@ -534,6 +491,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     {
                         files.AddRange(Directory.GetFiles(vscodePath, "*.json", SearchOption.AllDirectories));
                     }
+
                     break;
                 case IdeType.k_Unknown:
                     break;
@@ -573,7 +531,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             try
             {
                 var fileBytes = File.ReadAllBytes(filePath);
-                var md5 = System.Security.Cryptography.MD5.Create();
+                var md5 = MD5.Create();
                 var hashBytes = md5.ComputeHash(fileBytes);
                 return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
             }
@@ -672,6 +630,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     {
                         newDict[kvp.Key] = kvp.Value;
                     }
+
                     config.fileHashes = newDict;
                 }
 
@@ -818,6 +777,7 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -880,6 +840,49 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
         {
             var configPath = GetConfigPath(ideType);
             return GetFilesToSync(ideType, configPath);
+        }
+
+        /// <summary>
+        /// 同步配置
+        /// </summary>
+        [Serializable]
+        private class SyncConfig
+        {
+            /// <summary>
+            /// 同步状态
+            /// </summary>
+            public Dictionary<string, string> fileHashes = new();
+
+            /// <summary>
+            /// 上次同步时间
+            /// </summary>
+            public DateTime lastSyncTime;
+        }
+
+        /// <summary>
+        /// 同步结果
+        /// </summary>
+        public class SyncResult
+        {
+            /// <summary>
+            /// 冲突的文件列表
+            /// </summary>
+            public List<string> conflictFiles = new();
+
+            /// <summary>
+            /// 错误信息
+            /// </summary>
+            public string error;
+
+            /// <summary>
+            /// 是否成功
+            /// </summary>
+            public bool success;
+
+            /// <summary>
+            /// 更新的文件列表
+            /// </summary>
+            public List<string> updatedFiles = new();
         }
     }
 }

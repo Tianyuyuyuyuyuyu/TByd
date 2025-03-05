@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Editor.CodeCheck.IDE;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Runtime.Config;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Settings
 {
@@ -18,7 +18,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private const string k_CSettingsPath = "Project/TByd/IDE集成";
 
         // 关键字
-        private static readonly string[] s_Keywords = new string[]
+        private static readonly string[] s_Keywords =
         {
             "TByd", "IDE", "集成", "Integration", "Rider", "Visual Studio", "VS Code"
         };
@@ -26,20 +26,20 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         // 配置
         private CodeStyleConfig m_Config;
 
+        // 当前IDE类型
+        private IdeType m_CurrentIdeType;
+
         // 是否已初始化
         private bool m_Initialized;
 
         // 是否已修改
         private bool m_IsDirty;
 
-        // 滚动位置
-        private Vector2 m_ScrollPosition;
-
-        // 当前IDE类型
-        private IdeType m_CurrentIdeType;
-
         // IDE配置是否已初始化
         private bool m_IsIdeConfigured;
+
+        // 滚动位置
+        private Vector2 m_ScrollPosition;
 
         /// <summary>
         /// 构造函数
@@ -156,7 +156,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
             var enableIdeIntegration = EditorGUILayout.Toggle("启用IDE集成", m_Config.EnableIdeIntegration);
             var autoConfigureIde = EditorGUILayout.Toggle("自动配置IDE", m_Config.AutoConfigureIde);
-            var syncEditorConfigWithIde = EditorGUILayout.Toggle("同步EditorConfig到IDE", m_Config.SyncEditorConfigWithIde);
+            var syncEditorConfigWithIde =
+                EditorGUILayout.Toggle("同步EditorConfig到IDE", m_Config.SyncEditorConfigWithIde);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -292,7 +293,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             EditorGUI.BeginChangeCheck();
 
             vscodeConfig.EnableOmniSharp = EditorGUILayout.Toggle("启用OmniSharp", vscodeConfig.EnableOmniSharp);
-            vscodeConfig.EnableRoslynAnalyzers = EditorGUILayout.Toggle("启用Roslyn分析器", vscodeConfig.EnableRoslynAnalyzers);
+            vscodeConfig.EnableRoslynAnalyzers =
+                EditorGUILayout.Toggle("启用Roslyn分析器", vscodeConfig.EnableRoslynAnalyzers);
             vscodeConfig.EnableEditorConfig = EditorGUILayout.Toggle("启用EditorConfig", vscodeConfig.EnableEditorConfig);
 
             if (EditorGUI.EndChangeCheck())
@@ -375,6 +377,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     {
                         message += $"- {error}\n";
                     }
+
                     message += "\n";
                 }
 
@@ -385,6 +388,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
                     {
                         message += $"- {warning}\n";
                     }
+
                     message += "\n";
                 }
 

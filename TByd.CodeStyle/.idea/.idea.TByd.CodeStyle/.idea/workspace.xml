@@ -8,9 +8,10 @@
       <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.TByd.CodeStyle/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TByd.CodeStyle/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/CodeCheckRunner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/CodeCheckRunner.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigFormatMenu.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigFormatMenu.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigParser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigParser.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigRule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigRule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigTemplate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/EditorConfig/EditorConfigTemplate.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigBackupManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigBackupManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigSyncManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigSyncManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/CodeCheck/IDE/IDEConfigValidator.cs" afterDir="false" />
@@ -35,37 +36,6 @@
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/EditorInputDialog.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/EditorInputDialog.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/NotificationSystem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Utils/NotificationSystem.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Windows/CodeStyleWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Editor/UI/Windows/CodeStyleWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeCheckRule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeCheckRule.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeChecker.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeFixer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/CodeFixer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/Rules/NamingRules.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/Rules/NamingRules.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/Rules/UnityRules.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/CodeCheck/Rules/UnityRules.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/CodeCheckConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/CodeCheckConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/CodeStyleConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/CodeStyleConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/ConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/GitCommitConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Config/GitCommitConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessage.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageFixer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageFixer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageParser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageParser.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageRule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageRule.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/Commit/CommitMessageValidator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitHookConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitHookConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitHookManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitHookManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitHookType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitHookType.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Runtime/Git/GitRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/CodeStyleIntegrationTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/CodeStyleIntegrationTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/Rules/NamingRulesTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/Rules/NamingRulesTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/Rules/UnityRulesTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CodeCheck/Rules/UnityRulesTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CommitMessageCheckerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/CommitMessageCheckerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/ConfigProviderTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/ConfigProviderTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/GitHookMonitorTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/GitHookMonitorTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/IDE/IDEConfigBackupManagerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/IDE/IDEConfigBackupManagerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/IDE/IDEConfigSyncManagerTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/IDE/IDEConfigSyncManagerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/IDE/IDEIntegrationTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/IDE/IDEIntegrationTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/NotificationSystemTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/NotificationSystemTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/TestReportGenerator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/TestReportGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/TestRunner.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/TestRunner.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/UIComponentTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.CodeStyle/Tests/Editor/UIComponentTests.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,6 +47,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/196e72b4660e44569727ecf8428a3225576c30/d6/8c3b372d/String.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -90,19 +63,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.intentionPowerPack&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.sourceCode.C#"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Start Unity" type="RunUnityExe" factoryName="Unity Executable">
       <option name="EXE_PATH" value="G:\UnitySoftware\Unity 2021.3.8f1\Editor\Unity.exe" />
@@ -166,7 +139,7 @@
       <workItem from="1741158839534" duration="328000" />
       <workItem from="1741159186447" duration="1015000" />
       <workItem from="1741160222116" duration="59000" />
-      <workItem from="1741160291885" duration="470000" />
+      <workItem from="1741160291885" duration="3682000" />
     </task>
     <servers />
   </component>

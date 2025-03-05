@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.Git.Commit;
 using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Config;
 using TByd.CodeStyle.Runtime.Git;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.UI.Settings
 {
@@ -18,10 +18,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         private const string k_CSettingsPath = "Project/TByd/提交消息";
 
         // 关键字
-        private static readonly string[] s_Keywords = new string[]
-        {
-            "TByd", "Git", "Commit", "提交", "消息", "规范"
-        };
+        private static readonly string[] s_Keywords = { "TByd", "Git", "Commit", "提交", "消息", "规范" };
 
         // 配置
         private CodeStyleConfig m_Config;
@@ -32,9 +29,6 @@ namespace TByd.CodeStyle.Editor.UI.Settings
         // 是否已修改
         private bool m_IsDirty;
 
-        // 滚动位置
-        private Vector2 m_ScrollPosition;
-
         // 新提交类型
         private string m_NewCommitType = string.Empty;
 
@@ -43,6 +37,9 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
         // 新作用域
         private string m_NewScope = string.Empty;
+
+        // 滚动位置
+        private Vector2 m_ScrollPosition;
 
         // 测试提交消息
         private string m_TestCommitMessage = string.Empty;
@@ -181,7 +178,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             var requireBody = EditorGUILayout.Toggle("要求详细描述", m_Config.GitCommitConfig.RequireBody);
             var requireFooter = EditorGUILayout.Toggle("要求页脚", m_Config.GitCommitConfig.RequireFooter);
 
-            var subjectMaxLength = EditorGUILayout.IntSlider("简短描述最大长度", m_Config.GitCommitConfig.SubjectMaxLength, 50, 200);
+            var subjectMaxLength =
+                EditorGUILayout.IntSlider("简短描述最大长度", m_Config.GitCommitConfig.SubjectMaxLength, 50, 200);
 
             if (EditorGUI.EndChangeCheck())
             {
@@ -364,7 +362,8 @@ namespace TByd.CodeStyle.Editor.UI.Settings
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.LabelField("验证结果：");
-                EditorGUILayout.HelpBox(m_TestValidationResult, m_TestValidationResult.Contains("验证通过") ? MessageType.Info : MessageType.Error);
+                EditorGUILayout.HelpBox(m_TestValidationResult,
+                    m_TestValidationResult.Contains("验证通过") ? MessageType.Info : MessageType.Error);
             }
 
             EditorGUILayout.EndVertical();
@@ -396,7 +395,7 @@ namespace TByd.CodeStyle.Editor.UI.Settings
 
                 m_IsDirty = false;
 
-                NotificationSystem.ShowNotification("提交消息设置已重置为默认值", NotificationType.k_Info);
+                NotificationSystem.ShowNotification("提交消息设置已重置为默认值");
             }
         }
 

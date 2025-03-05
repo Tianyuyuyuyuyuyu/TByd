@@ -1,8 +1,8 @@
 using System;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.CodeCheck.EditorConfig;
 using TByd.CodeStyle.Runtime.Config;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 {
@@ -11,11 +11,11 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
     /// </summary>
     public static class IdeDetector
     {
-        // 上次检测时间
-        private static DateTime s_LastDetectionTime = DateTime.MinValue;
-
         // 检测间隔（秒）
         private const float k_CDetectionInterval = 300f; // 5分钟
+
+        // 上次检测时间
+        private static DateTime s_LastDetectionTime = DateTime.MinValue;
 
         // 是否已初始化
         private static bool s_Initialized;
@@ -120,18 +120,18 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
             {
                 case IdeType.k_Rider:
                     s_IsIdeConfigured = config.RiderConfig.EnableCodeAnalysis ||
-                                      config.RiderConfig.EnableStyleCop ||
-                                      config.RiderConfig.EnableReSharper;
+                                        config.RiderConfig.EnableStyleCop ||
+                                        config.RiderConfig.EnableReSharper;
                     break;
                 case IdeType.k_VisualStudio:
                     s_IsIdeConfigured = config.VisualStudioConfig.EnableRoslynAnalyzers ||
-                                      config.VisualStudioConfig.EnableStyleCop ||
-                                      config.VisualStudioConfig.EnableCodeAnalysis;
+                                        config.VisualStudioConfig.EnableStyleCop ||
+                                        config.VisualStudioConfig.EnableCodeAnalysis;
                     break;
                 case IdeType.k_VSCode:
                     s_IsIdeConfigured = config.VSCodeConfig.EnableOmniSharp ||
-                                      config.VSCodeConfig.EnableRoslynAnalyzers ||
-                                      config.VSCodeConfig.EnableEditorConfig;
+                                        config.VSCodeConfig.EnableRoslynAnalyzers ||
+                                        config.VSCodeConfig.EnableEditorConfig;
                     break;
                 default:
                     s_IsIdeConfigured = false;
@@ -170,10 +170,10 @@ namespace TByd.CodeStyle.Editor.CodeCheck.IDE
 
             // 提示用户是否要配置IDE
             if (EditorUtility.DisplayDialog(
-                "TByd.CodeStyle - IDE检测",
-                $"检测到您正在使用 {ideType} 作为脚本编辑器。\n\n是否要配置 {ideType} 以支持代码风格检查？",
-                "是，现在配置",
-                "否，稍后再说"))
+                    "TByd.CodeStyle - IDE检测",
+                    $"检测到您正在使用 {ideType} 作为脚本编辑器。\n\n是否要配置 {ideType} 以支持代码风格检查？",
+                    "是，现在配置",
+                    "否，稍后再说"))
             {
                 ConfigureIde(ideType);
             }

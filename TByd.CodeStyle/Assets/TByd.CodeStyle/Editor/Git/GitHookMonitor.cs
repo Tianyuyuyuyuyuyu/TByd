@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEditor;
-using UnityEngine;
 using TByd.CodeStyle.Editor.Config;
 using TByd.CodeStyle.Editor.UI.Utils;
 using TByd.CodeStyle.Runtime.Git;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.CodeStyle.Editor.Git
 {
@@ -15,11 +15,11 @@ namespace TByd.CodeStyle.Editor.Git
     [InitializeOnLoad]
     public static class GitHookMonitor
     {
-        // 上次检查时间
-        private static double s_LastCheckTime;
-
         // 检查间隔（秒）
         private const double k_CCheckInterval = 60;
+
+        // 上次检查时间
+        private static double s_LastCheckTime;
 
         // 是否已初始化
         private static bool s_Initialized;
@@ -114,11 +114,10 @@ namespace TByd.CodeStyle.Editor.Git
 
             // 显示通知
             var hookName = hookType.GetFileName();
-            var message = installed ?
-                $"Git钩子 {hookName} 已安装" :
-                $"Git钩子 {hookName} 已卸载";
+            var message = installed ? $"Git钩子 {hookName} 已安装" : $"Git钩子 {hookName} 已卸载";
 
-            NotificationSystem.ShowNotification(message, installed ? NotificationType.k_Success : NotificationType.k_Info);
+            NotificationSystem.ShowNotification(message,
+                installed ? NotificationType.k_Success : NotificationType.k_Info);
         }
 
         /// <summary>
