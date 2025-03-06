@@ -110,9 +110,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
 
         private void OnGUI()
         {
-            // 绘制顶部标题栏
-            DrawHeader();
-
             // 绘制选项卡
             DrawTabs();
 
@@ -151,42 +148,18 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         public static void ShowWindow()
         {
             // 创建并显示窗口
-            var window = GetWindow<PackageCreatorWindow>(true, WINDOW_TITLE, true);
-
-            // 设置窗口尺寸
+            var window = GetWindow<PackageCreatorWindow>(false, WINDOW_TITLE, true);
+            window.minSize = new Vector2(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT);
             window.position = new Rect(
                 (Screen.currentResolution.width - PREFERRED_WINDOW_WIDTH) / 2,
                 (Screen.currentResolution.height - PREFERRED_WINDOW_HEIGHT) / 2,
                 PREFERRED_WINDOW_WIDTH,
                 PREFERRED_WINDOW_HEIGHT);
-
-            window.Show();
         }
 
         #endregion
 
         #region GUI 绘制方法
-
-        /// <summary>
-        /// 绘制顶部标题
-        /// </summary>
-        private void DrawHeader()
-        {
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-
-            if (_logoIcon != null)
-            {
-                GUILayout.Label(_logoIcon, GUILayout.Width(32), GUILayout.Height(32));
-            }
-
-            GUILayout.Label("UPM Package Creator", PackageCreatorStyles.HeaderLabel);
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space(5);
-            PackageCreatorStyles.DrawSeparator();
-        }
 
         /// <summary>
         /// 绘制选项卡
