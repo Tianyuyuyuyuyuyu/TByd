@@ -1,10 +1,10 @@
 {
-  "name": "com.tbyd.codestyle",
+  "name": "com.tbyd.packagecreator",
   "displayName": "TByd PackageCreator",
   "version": "0.0.1",
   "unity": "2021.3",
   "unityRelease": "8f1",
-  "description": "Unity代码风格规范工具，提供代码检查、Git提交规范和EditorConfig支持",
+  "description": "Unity编辑器扩展工具，用于快速创建和初始化UPM包，提供标准化模板、目录结构生成、配置文件创建和基础代码脚手架",
   "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.PackageCreator/Documentation~",
   "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.PackageCreator/CHANGELOG.md",
   "license": "MIT",
