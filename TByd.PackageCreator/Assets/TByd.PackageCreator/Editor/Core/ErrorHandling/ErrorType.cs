@@ -118,6 +118,16 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <summary>
         /// 文件写入错误
         /// </summary>
-        FileWriteError = 21
+        FileWriteError = 21,
+
+        /// <summary>
+        /// 文件复制错误
+        /// </summary>
+        FileCopyError = 22,
+
+        /// <summary>
+        /// 文件删除错误
+        /// </summary>
+        FileDeleteError = 23
     }
 }

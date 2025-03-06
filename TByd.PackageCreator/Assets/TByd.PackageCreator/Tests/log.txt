@@ -1,0 +1,41 @@
+ValidateFileContents_WithDangerousScripts_ReturnsFail (0.007s)
+---
+Expected: False
+  But was:  True
+---
+at TByd.PackageCreator.Tests.Editor.Core.Security.TemplateSecurityCheckerTests.ValidateFileContents_WithDangerousScripts_ReturnsFail () [0x00091] in H:\TYPersonal\TByd\TByd.PackageCreator\Assets\TByd.PackageCreator\Tests\Editor\Core\Security\TemplateSecurityCheckerTests.cs:142
+
+ValidateFilePaths_WithAllowedTypes_ReturnsSuccess (0.009s)
+---
+Expected: True
+  But was:  False
+---
+at TByd.PackageCreator.Tests.Editor.Core.Security.TemplateSecurityCheckerTests.ValidateFilePaths_WithAllowedTypes_ReturnsSuccess () [0x000d4] in H:\TYPersonal\TByd\TByd.PackageCreator\Assets\TByd.PackageCreator\Tests\Editor\Core\Security\TemplateSecurityCheckerTests.cs:173
+
+ValidatePath_WithPathOutsideProject_ReturnsFail (0.003s)
+---
+Expected: True
+  But was:  False
+---
+at TByd.PackageCreator.Tests.Editor.Core.Security.TemplateSecurityCheckerTests.ValidatePath_WithPathOutsideProject_ReturnsFail () [0x0003f] in H:\TYPersonal\TByd\TByd.PackageCreator\Assets\TByd.PackageCreator\Tests\Editor\Core\Security\TemplateSecurityCheckerTests.cs:79
+
+ValidatePath_WithSystemReservedPath_ReturnsFail (0.003s)
+---
+Expected: True
+  But was:  False
+---
+at TByd.PackageCreator.Tests.Editor.Core.Security.TemplateSecurityCheckerTests.ValidatePath_WithSystemReservedPath_ReturnsFail () [0x00041] in H:\TYPersonal\TByd\TByd.PackageCreator\Assets\TByd.PackageCreator\Tests\Editor\Core\Security\TemplateSecurityCheckerTests.cs:95
+
+ValidatePath_WithValidPath_ReturnsSuccess (0.003s)
+---
+Expected: True
+  But was:  False
+---
+at TByd.PackageCreator.Tests.Editor.Core.Security.TemplateSecurityCheckerTests.ValidatePath_WithValidPath_ReturnsSuccess () [0x0001f] in H:\TYPersonal\TByd\TByd.PackageCreator\Assets\TByd.PackageCreator\Tests\Editor\Core\Security\TemplateSecurityCheckerTests.cs:62
+
+ValidateProtectedDirectory_WhenTargetingAllowedDir_ReturnsSuccess (0.003s)
+---
+Expected: True
+  But was:  False
+---
+at TByd.PackageCreator.Tests.Editor.Core.Security.TemplateSecurityCheckerTests.ValidateProtectedDirectory_WhenTargetingAllowedDir_ReturnsSuccess () [0x0001e] in H:\TYPersonal\TByd\TByd.PackageCreator\Assets\TByd.PackageCreator\Tests\Editor\Core\Security\TemplateSecurityCheckerTests.cs:229
