@@ -83,6 +83,91 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         private bool _includeSamples = false;
         private bool _includeDocumentation = true;
 
+        #region 模板搜索和过滤
+
+        private string _templateSearchQuery = "";
+        private bool _showAdvancedTemplates = true;
+        private bool _showBasicTemplates = true;
+        private bool _showExperimentalTemplates = false;
+        private bool _compareMode = false;
+        private List<TemplateType> _templatesForComparison = new List<TemplateType>();
+
+        /// <summary>
+        /// 判断模板是否应该显示（基于搜索和过滤条件）
+        /// </summary>
+        private bool ShouldShowTemplate(TemplateType templateType, string title, string description)
+        {
+            // 根据类型过滤
+            bool typeMatch = true;
+            switch (templateType)
+            {
+                case TemplateType.BasicPackage:
+                    typeMatch = _showBasicTemplates;
+                    break;
+                case TemplateType.EditorTool:
+                case TemplateType.RuntimeLibrary:
+                    typeMatch = _showAdvancedTemplates;
+                    break;
+            }
+
+            if (!typeMatch)
+                return false;
+
+            // 如果没有搜索查询，则直接返回true
+            if (string.IsNullOrWhiteSpace(_templateSearchQuery))
+                return true;
+
+            // 搜索标题和描述
+            string lowerSearchQuery = _templateSearchQuery.ToLowerInvariant();
+            return title.ToLowerInvariant().Contains(lowerSearchQuery) ||
+                   description.ToLowerInvariant().Contains(lowerSearchQuery);
+        }
+
+        /// <summary>
+        /// 切换模板对比模式
+        /// </summary>
+        private void ToggleCompareMode()
+        {
+            _compareMode = !_compareMode;
+            if (_compareMode)
+            {
+                // 进入对比模式时，清空对比列表并添加当前选择的模板（如果有）
+                _templatesForComparison.Clear();
+                if (_selectedTemplate.HasValue)
+                {
+                    _templatesForComparison.Add(_selectedTemplate.Value);
+                }
+            }
+            else
+            {
+                // 离开对比模式，清空对比列表
+                _templatesForComparison.Clear();
+            }
+            Repaint();
+        }
+
+        /// <summary>
+        /// 切换模板在对比列表中的状态
+        /// </summary>
+        private void ToggleTemplateInComparison(TemplateType templateType)
+        {
+            if (_templatesForComparison.Contains(templateType))
+            {
+                _templatesForComparison.Remove(templateType);
+            }
+            else
+            {
+                // 限制对比数量为3个
+                if (_templatesForComparison.Count < 3)
+                {
+                    _templatesForComparison.Add(templateType);
+                }
+            }
+            Repaint();
+        }
+
+        #endregion
+
         #endregion
 
         #region Unity 生命周期
@@ -208,27 +293,480 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         {
             EditorGUILayout.LabelField("选择包模板", PackageCreatorStyles.TitleLabel);
             EditorGUILayout.HelpBox("选择要创建的包模板类型。不同的模板提供不同的结构和功能。", MessageType.Info);
+
+            // 添加搜索和过滤区域
+            EditorGUILayout.Space(10);
+            EditorGUILayout.BeginHorizontal();
+
+            // 搜索框
+            GUI.SetNextControlName("TemplateSearchField");
+            _templateSearchQuery = EditorGUILayout.TextField(_templateSearchQuery, EditorStyles.toolbarSearchField);
+
+            // 清除搜索按钮
+            if (!string.IsNullOrEmpty(_templateSearchQuery))
+            {
+                if (GUILayout.Button("×", EditorStyles.miniButton, GUILayout.Width(20)))
+                {
+                    _templateSearchQuery = "";
+                    GUI.FocusControl(null);
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            // 过滤选项
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("过滤:");
+            _showBasicTemplates = EditorGUILayout.ToggleLeft("基础模板", _showBasicTemplates, GUILayout.Width(80));
+            _showAdvancedTemplates = EditorGUILayout.ToggleLeft("高级模板", _showAdvancedTemplates, GUILayout.Width(80));
+            _showExperimentalTemplates = EditorGUILayout.ToggleLeft("实验性", _showExperimentalTemplates, GUILayout.Width(80));
+
+            // 添加对比模式按钮
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(_compareMode ? "退出对比" : "对比模式", EditorStyles.miniButton, GUILayout.Width(70)))
+            {
+                ToggleCompareMode();
+            }
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.Space(15);
 
-            // 创建模板卡片
-            DrawTemplateCard(TemplateType.BasicPackage, "基础包模板",
-                "创建一个基本的UPM包结构，包含必要的目录和文件。",
-                "适合创建简单的包或从头开始定制包结构。包含package.json、README、LICENSE和基本目录结构。",
-                _basicPackageIcon);
+            if (_compareMode && _templatesForComparison.Count > 0)
+            {
+                // 对比模式下显示对比内容
+                DrawTemplateComparison();
+            }
+            else
+            {
+                // 正常模式下显示模板卡片
+                // 创建模板卡片
+                if (ShouldShowTemplate(TemplateType.BasicPackage, "基础包模板", "创建一个基本的UPM包结构，包含必要的目录和文件。"))
+                {
+                    DrawTemplateCard(TemplateType.BasicPackage, "基础包模板",
+                        "创建一个基本的UPM包结构，包含必要的目录和文件。",
+                        "适合创建简单的包或从头开始定制包结构。包含package.json、README、LICENSE和基本目录结构。",
+                        _basicPackageIcon);
 
+                    EditorGUILayout.Space(5);
+                }
+
+                if (ShouldShowTemplate(TemplateType.EditorTool, "编辑器工具包", "创建专为Unity编辑器扩展设计的包结构。"))
+                {
+                    DrawTemplateCard(TemplateType.EditorTool, "编辑器工具包",
+                        "创建专为Unity编辑器扩展设计的包结构。",
+                        "包含编辑器UI组件、窗口和工具类的模板。适合开发Unity编辑器插件、扩展和工具。",
+                        _editorToolIcon);
+
+                    EditorGUILayout.Space(5);
+                }
+
+                if (ShouldShowTemplate(TemplateType.RuntimeLibrary, "运行时库", "创建专注于运行时功能的包结构。"))
+                {
+                    DrawTemplateCard(TemplateType.RuntimeLibrary, "运行时库",
+                        "创建专注于运行时功能的包结构。",
+                        "用于实现游戏运行时使用的功能模块，包含运行时组件、系统和API的模板结构。适合开发游戏框架和运行时库。",
+                        _runtimeLibraryIcon);
+                }
+
+                // 如果没有模板匹配，显示提示
+                if (!ShouldShowTemplate(TemplateType.BasicPackage, "基础包模板", "创建一个基本的UPM包结构，包含必要的目录和文件。") &&
+                    !ShouldShowTemplate(TemplateType.EditorTool, "编辑器工具包", "创建专为Unity编辑器扩展设计的包结构。") &&
+                    !ShouldShowTemplate(TemplateType.RuntimeLibrary, "运行时库", "创建专注于运行时功能的包结构。"))
+                {
+                    EditorGUILayout.HelpBox("没有找到匹配的模板。请尝试修改搜索条件。", MessageType.Info);
+                }
+
+                // 添加模板预览区域
+                if (_selectedTemplate.HasValue)
+                {
+                    EditorGUILayout.Space(20);
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    EditorGUILayout.LabelField("模板预览", EditorStyles.boldLabel);
+
+                    DrawTemplatePreview(_selectedTemplate.Value);
+
+                    EditorGUILayout.EndVertical();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 绘制模板对比界面
+        /// </summary>
+        private void DrawTemplateComparison()
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            // 对比模式标题
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("模板对比", EditorStyles.boldLabel);
+            EditorGUILayout.EndHorizontal();
+
+            // 如果没有选择任何模板进行对比
+            if (_templatesForComparison.Count == 0)
+            {
+                EditorGUILayout.HelpBox("请选择至少一个模板进行对比。", MessageType.Info);
+                EditorGUILayout.EndVertical();
+                return;
+            }
+
+            // 添加或移除对比模板的选项
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("选择对比模板:", GUILayout.Width(100));
+
+            GUI.enabled = !_templatesForComparison.Contains(TemplateType.BasicPackage);
+            if (GUILayout.Button("基础包模板", _templatesForComparison.Count < 3 ? EditorStyles.miniButton : EditorStyles.miniButtonLeft))
+            {
+                ToggleTemplateInComparison(TemplateType.BasicPackage);
+            }
+
+            GUI.enabled = !_templatesForComparison.Contains(TemplateType.EditorTool);
+            if (GUILayout.Button("编辑器工具包", _templatesForComparison.Count < 3 ? EditorStyles.miniButton : EditorStyles.miniButtonMid))
+            {
+                ToggleTemplateInComparison(TemplateType.EditorTool);
+            }
+
+            GUI.enabled = !_templatesForComparison.Contains(TemplateType.RuntimeLibrary);
+            if (GUILayout.Button("运行时库", _templatesForComparison.Count < 3 ? EditorStyles.miniButton : EditorStyles.miniButtonRight))
+            {
+                ToggleTemplateInComparison(TemplateType.RuntimeLibrary);
+            }
+
+            GUI.enabled = true;
+            EditorGUILayout.EndHorizontal();
+
+            // 当前对比的模板
             EditorGUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("当前对比:", GUILayout.Width(100));
 
-            DrawTemplateCard(TemplateType.EditorTool, "编辑器工具包",
-                "创建专为Unity编辑器扩展设计的包结构。",
-                "包含编辑器UI组件、窗口和工具类的模板。适合开发Unity编辑器插件、扩展和工具。",
-                _editorToolIcon);
+            foreach (var template in _templatesForComparison)
+            {
+                string templateName = "";
+                switch (template)
+                {
+                    case TemplateType.BasicPackage:
+                        templateName = "基础包模板";
+                        break;
+                    case TemplateType.EditorTool:
+                        templateName = "编辑器工具包";
+                        break;
+                    case TemplateType.RuntimeLibrary:
+                        templateName = "运行时库";
+                        break;
+                }
 
-            EditorGUILayout.Space(5);
+                GUILayout.BeginHorizontal(EditorStyles.helpBox, GUILayout.MaxWidth(100));
+                GUILayout.Label(templateName, EditorStyles.miniLabel);
+                if (GUILayout.Button("×", EditorStyles.miniButtonRight, GUILayout.Width(20)))
+                {
+                    _templatesForComparison.Remove(template);
+                    Repaint();
+                    break;  // 中断循环防止集合修改异常
+                }
+                GUILayout.EndHorizontal();
+            }
 
-            DrawTemplateCard(TemplateType.RuntimeLibrary, "运行时库",
-                "创建专注于运行时功能的包结构。",
-                "用于实现游戏运行时使用的功能模块，包含运行时组件、系统和API的模板结构。适合开发游戏框架和运行时库。",
-                _runtimeLibraryIcon);
+            EditorGUILayout.EndHorizontal();
+
+            // 绘制对比表格
+            EditorGUILayout.Space(10);
+            DrawComparisonTable();
+
+            EditorGUILayout.Space(10);
+
+            // 若选择了多个模板，显示"选择此模板"按钮
+            if (_templatesForComparison.Count > 1)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+
+                foreach (var template in _templatesForComparison)
+                {
+                    string templateName = "";
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            templateName = "基础包模板";
+                            break;
+                        case TemplateType.EditorTool:
+                            templateName = "编辑器工具包";
+                            break;
+                        case TemplateType.RuntimeLibrary:
+                            templateName = "运行时库";
+                            break;
+                    }
+
+                    if (GUILayout.Button("选择: " + templateName, GUILayout.Width(120)))
+                    {
+                        _selectedTemplate = template;
+                        _compareMode = false;
+                        _templatesForComparison.Clear();
+                        Repaint();
+                    }
+                }
+
+                GUILayout.FlexibleSpace();
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// 绘制对比表格
+        /// </summary>
+        private void DrawComparisonTable()
+        {
+            // 表格特性列表
+            string[] features = {
+                "适用场景",
+                "包含文件夹",
+                "Runtime支持",
+                "Editor支持",
+                "提供示例",
+                "依赖管理",
+                "复杂度",
+                "适合新手",
+                "扩展性",
+                "适合团队协作"
+            };
+
+            // 表格头部
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("特性", EditorStyles.boldLabel, GUILayout.Width(120));
+
+            foreach (var template in _templatesForComparison)
+            {
+                string templateName = "";
+                switch (template)
+                {
+                    case TemplateType.BasicPackage:
+                        templateName = "基础包模板";
+                        break;
+                    case TemplateType.EditorTool:
+                        templateName = "编辑器工具包";
+                        break;
+                    case TemplateType.RuntimeLibrary:
+                        templateName = "运行时库";
+                        break;
+                }
+
+                EditorGUILayout.LabelField(templateName, EditorStyles.boldLabel, GUILayout.MinWidth(120));
+            }
+
+            EditorGUILayout.EndHorizontal();
+
+            // 分隔线
+            PackageCreatorStyles.DrawSeparator();
+
+            // 表格内容
+            for (int i = 0; i < features.Length; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField(features[i], GUILayout.Width(120));
+
+                foreach (var template in _templatesForComparison)
+                {
+                    string value = GetFeatureValue(template, i);
+
+                    // 设置不同评级的颜色
+                    Color originalColor = GUI.color;
+                    if (value.Contains("高") || value.Contains("是") || value.Contains("完全支持"))
+                        GUI.color = new Color(0.5f, 0.8f, 0.5f); // 绿色，表示好
+                    else if (value.Contains("中") || value.Contains("部分"))
+                        GUI.color = new Color(0.85f, 0.85f, 0.5f); // 黄色，表示中等
+                    else if (value.Contains("低") || value.Contains("否") || value.Contains("不支持"))
+                        GUI.color = new Color(0.85f, 0.6f, 0.6f); // 红色，表示差
+
+                    EditorGUILayout.BeginHorizontal(EditorStyles.helpBox, GUILayout.MinWidth(120));
+                    EditorGUILayout.LabelField(value, EditorStyles.wordWrappedLabel);
+                    EditorGUILayout.EndHorizontal();
+
+                    GUI.color = originalColor;
+                }
+
+                EditorGUILayout.EndHorizontal();
+                EditorGUILayout.Space(2);
+            }
+
+            // 文件结构对比
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("文件结构对比", EditorStyles.boldLabel);
+            PackageCreatorStyles.DrawSeparator();
+
+            EditorGUILayout.BeginHorizontal();
+
+            // 为每个模板显示一个文件结构预览
+            foreach (var template in _templatesForComparison)
+            {
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.MinWidth(120));
+
+                string templateName = "";
+                switch (template)
+                {
+                    case TemplateType.BasicPackage:
+                        templateName = "基础包模板";
+                        break;
+                    case TemplateType.EditorTool:
+                        templateName = "编辑器工具包";
+                        break;
+                    case TemplateType.RuntimeLibrary:
+                        templateName = "运行时库";
+                        break;
+                }
+
+                EditorGUILayout.LabelField(templateName, EditorStyles.boldLabel);
+                EditorGUILayout.Space(5);
+
+                DrawTemplatePreview(template);
+
+                EditorGUILayout.EndVertical();
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// 获取特定模板特定特性的值
+        /// </summary>
+        private string GetFeatureValue(TemplateType template, int featureIndex)
+        {
+            switch (featureIndex)
+            {
+                case 0: // 适用场景
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "简单项目，快速原型开发";
+                        case TemplateType.EditorTool:
+                            return "Unity编辑器扩展，工具开发";
+                        case TemplateType.RuntimeLibrary:
+                            return "游戏运行时框架，系统开发";
+                        default:
+                            return "";
+                    }
+
+                case 1: // 包含文件夹
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "基础目录结构";
+                        case TemplateType.EditorTool:
+                            return "基础+编辑器专用目录";
+                        case TemplateType.RuntimeLibrary:
+                            return "基础+运行时系统专用目录";
+                        default:
+                            return "";
+                    }
+
+                case 2: // Runtime支持
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "基础支持";
+                        case TemplateType.EditorTool:
+                            return "基础支持";
+                        case TemplateType.RuntimeLibrary:
+                            return "完全支持，包含组件和系统";
+                        default:
+                            return "";
+                    }
+
+                case 3: // Editor支持
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "不支持";
+                        case TemplateType.EditorTool:
+                            return "完全支持，包含UI和工具类";
+                        case TemplateType.RuntimeLibrary:
+                            return "基础支持";
+                        default:
+                            return "";
+                    }
+
+                case 4: // 提供示例
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return _includeSamples ? "是" : "否";
+                        case TemplateType.EditorTool:
+                            return _includeSamples ? "是" : "否";
+                        case TemplateType.RuntimeLibrary:
+                            return _includeSamples ? "是" : "否";
+                        default:
+                            return "";
+                    }
+
+                case 5: // 依赖管理
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "基础配置";
+                        case TemplateType.EditorTool:
+                            return "预配置编辑器依赖";
+                        case TemplateType.RuntimeLibrary:
+                            return "预配置运行时依赖";
+                        default:
+                            return "";
+                    }
+
+                case 6: // 复杂度
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "低";
+                        case TemplateType.EditorTool:
+                            return "中";
+                        case TemplateType.RuntimeLibrary:
+                            return "中-高";
+                        default:
+                            return "";
+                    }
+
+                case 7: // 适合新手
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "是";
+                        case TemplateType.EditorTool:
+                            return "部分";
+                        case TemplateType.RuntimeLibrary:
+                            return "否";
+                        default:
+                            return "";
+                    }
+
+                case 8: // 扩展性
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "中";
+                        case TemplateType.EditorTool:
+                            return "高";
+                        case TemplateType.RuntimeLibrary:
+                            return "高";
+                        default:
+                            return "";
+                    }
+
+                case 9: // 适合团队协作
+                    switch (template)
+                    {
+                        case TemplateType.BasicPackage:
+                            return "部分适合";
+                        case TemplateType.EditorTool:
+                            return "适合";
+                        case TemplateType.RuntimeLibrary:
+                            return "非常适合";
+                        default:
+                            return "";
+                    }
+
+                default:
+                    return "";
+            }
         }
 
         /// <summary>
@@ -237,15 +775,112 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         private void DrawTemplateCard(TemplateType templateType, string title, string description, string details, Texture2D icon)
         {
             bool isSelected = _selectedTemplate == templateType;
-            var card = new TemplateCardControl(title, description, details, icon, isSelected);
 
-            if (card.DrawDetailed())
+            // 在对比模式下使用不同的绘制逻辑
+            if (_compareMode)
             {
-                // 选择此模板
-                _selectedTemplate = templateType;
-                // 使窗口重绘
-                Repaint();
+                EditorGUILayout.BeginHorizontal();
+
+                // 显示是否选中进行对比的复选框
+                bool isInComparison = _templatesForComparison.Contains(templateType);
+                bool newIsInComparison = EditorGUILayout.Toggle(isInComparison, GUILayout.Width(20));
+
+                if (newIsInComparison != isInComparison)
+                {
+                    if (newIsInComparison && _templatesForComparison.Count < 3)
+                    {
+                        _templatesForComparison.Add(templateType);
+                    }
+                    else if (!newIsInComparison)
+                    {
+                        _templatesForComparison.Remove(templateType);
+                    }
+                }
+
+                // 使用基本样式的卡片，因为这是对比模式
+                var card = new TemplateCardControl(title, description, "", icon, isInComparison);
+                card.Draw();
+
+                EditorGUILayout.EndHorizontal();
             }
+            else
+            {
+                // 正常模式下的卡片显示
+                var card = new TemplateCardControl(title, description, details, icon, isSelected);
+
+                if (card.DrawDetailed())
+                {
+                    // 选择此模板
+                    _selectedTemplate = templateType;
+                    // 使窗口重绘
+                    Repaint();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 绘制模板预览
+        /// </summary>
+        private void DrawTemplatePreview(TemplateType templateType)
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("包含文件夹:", EditorStyles.boldLabel, GUILayout.Width(100));
+            EditorGUILayout.BeginVertical();
+
+            switch (templateType)
+            {
+                case TemplateType.BasicPackage:
+                    EditorGUILayout.LabelField("• Runtime - 运行时代码");
+                    EditorGUILayout.LabelField("• package.json - 包清单文件");
+                    EditorGUILayout.LabelField("• README.md - 说明文档");
+                    EditorGUILayout.LabelField("• LICENSE.md - 许可证文件");
+                    if (_includeTests)
+                        EditorGUILayout.LabelField("• Tests - 测试代码");
+                    if (_includeDocumentation)
+                        EditorGUILayout.LabelField("• Documentation~ - 文档文件夹");
+                    if (_includeSamples)
+                        EditorGUILayout.LabelField("• Samples~ - 示例代码");
+                    break;
+
+                case TemplateType.EditorTool:
+                    EditorGUILayout.LabelField("• Runtime - 运行时代码");
+                    EditorGUILayout.LabelField("• Editor - 编辑器代码");
+                    EditorGUILayout.LabelField("• Editor/UI - 编辑器UI组件");
+                    EditorGUILayout.LabelField("• Editor/Resources - 编辑器资源");
+                    EditorGUILayout.LabelField("• package.json - 包清单文件");
+                    EditorGUILayout.LabelField("• README.md - 说明文档");
+                    EditorGUILayout.LabelField("• LICENSE.md - 许可证文件");
+                    if (_includeTests)
+                    {
+                        EditorGUILayout.LabelField("• Tests/Runtime - 运行时测试");
+                        EditorGUILayout.LabelField("• Tests/Editor - 编辑器测试");
+                    }
+                    if (_includeDocumentation)
+                        EditorGUILayout.LabelField("• Documentation~ - 文档文件夹");
+                    if (_includeSamples)
+                        EditorGUILayout.LabelField("• Samples~ - 示例代码");
+                    break;
+
+                case TemplateType.RuntimeLibrary:
+                    EditorGUILayout.LabelField("• Runtime - 运行时代码");
+                    EditorGUILayout.LabelField("• Runtime/Components - 组件代码");
+                    EditorGUILayout.LabelField("• Runtime/Systems - 系统代码");
+                    EditorGUILayout.LabelField("• Runtime/Data - 数据结构");
+                    EditorGUILayout.LabelField("• Runtime/Utils - 工具类");
+                    EditorGUILayout.LabelField("• package.json - 包清单文件");
+                    EditorGUILayout.LabelField("• README.md - 说明文档");
+                    EditorGUILayout.LabelField("• LICENSE.md - 许可证文件");
+                    if (_includeTests)
+                        EditorGUILayout.LabelField("• Tests/Runtime - 运行时测试");
+                    if (_includeDocumentation)
+                        EditorGUILayout.LabelField("• Documentation~ - 文档文件夹");
+                    if (_includeSamples)
+                        EditorGUILayout.LabelField("• Samples~ - 示例代码");
+                    break;
+            }
+
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
         }
 
         /// <summary>
