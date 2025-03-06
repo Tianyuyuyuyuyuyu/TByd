@@ -134,6 +134,74 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             return cardClicked;
         }
 
+        /// <summary>
+        /// 绘制紧凑版模板卡片，适合左右分栏布局
+        /// </summary>
+        /// <returns>如果卡片被点击则返回true</returns>
+        public bool DrawCompact()
+        {
+            bool result = false;
+
+            // 选择适当的样式
+            GUIStyle cardStyle = _isSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
+
+            // 预先分配一个矩形区域（不是开始一个组）
+            // 增加高度以适应更大的字体
+            Rect cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(65));
+
+            // 处理点击事件
+            Event evt = Event.current;
+            if (evt.type == EventType.MouseDown && cardRect.Contains(evt.mousePosition))
+            {
+                result = true;
+                evt.Use();
+            }
+
+            // 绘制卡片背景
+            GUI.Box(cardRect, GUIContent.none, cardStyle);
+
+            // 计算内容区域
+            Rect contentRect = new Rect(cardRect.x + 10, cardRect.y + 5, cardRect.width - 20, cardRect.height - 10);
+
+            // 图标区域
+            if (_icon != null)
+            {
+                Rect iconRect = new Rect(contentRect.x, contentRect.y + 3, 30, 30);
+                GUI.DrawTexture(iconRect, _icon, ScaleMode.ScaleToFit);
+                contentRect.x += 38; // 移动到图标右侧
+                contentRect.width -= 38;
+            }
+
+            // 如果选中，显示标记
+            if (_isSelected)
+            {
+                Rect checkRect = new Rect(contentRect.x + contentRect.width - 18, contentRect.y + 5, 20, 20);
+                GUI.Label(checkRect, "✓", EditorStyles.boldLabel);
+                contentRect.width -= 22; // 为选中标记留出空间
+            }
+
+            // 创建更大字体的标题样式
+            GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
+            titleStyle.fontSize = 13; // 增大字体大小
+
+            // 创建更大字体的描述样式
+            GUIStyle descStyle = new GUIStyle(EditorStyles.wordWrappedMiniLabel);
+            descStyle.fontSize = 12; // 增大字体大小
+
+            // 标题
+            Rect titleRect = new Rect(contentRect.x, contentRect.y, contentRect.width, 20);
+            GUI.Label(titleRect, _title, titleStyle);
+
+            // 描述
+            Rect descRect = new Rect(contentRect.x, titleRect.y + titleRect.height + 2, contentRect.width, 25);
+            GUI.Label(descRect, _description, descStyle);
+
+            // 额外的空间用于卡片间隔 - 减少间隔高度从5到2
+            GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(2));
+
+            return result;
+        }
+
         #endregion
     }
 }

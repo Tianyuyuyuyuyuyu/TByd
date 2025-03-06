@@ -198,22 +198,14 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 绘制选项卡
             DrawTabs();
 
+            // 绘制固定在顶部的内容（根据当前选择的选项卡）
+            DrawFixedHeaderContent();
+
             // 开始滚动视图
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
-            // 基于选择的选项卡绘制内容
-            switch (_selectedTab)
-            {
-                case Tab.TemplateSelection:
-                    DrawTemplateSelectionTab();
-                    break;
-                case Tab.PackageConfiguration:
-                    DrawPackageConfigurationTab();
-                    break;
-                case Tab.CreationResult:
-                    DrawCreationResultTab();
-                    break;
-            }
+            // 绘制可滚动的内容（根据当前选择的选项卡）
+            DrawScrollableContent();
 
             // 结束滚动视图
             EditorGUILayout.EndScrollView();
@@ -287,49 +279,62 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         }
 
         /// <summary>
-        /// 绘制模板选择选项卡
+        /// 绘制固定在顶部的内容
         /// </summary>
-        private void DrawTemplateSelectionTab()
+        private void DrawFixedHeaderContent()
+        {
+            switch (_selectedTab)
+            {
+                case Tab.TemplateSelection:
+                    DrawTemplateSelectionHeader();
+                    break;
+                case Tab.PackageConfiguration:
+                    DrawPackageConfigurationHeader();
+                    break;
+                case Tab.CreationResult:
+                    DrawCreationResultHeader();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 绘制可滚动的内容
+        /// </summary>
+        private void DrawScrollableContent()
+        {
+            switch (_selectedTab)
+            {
+                case Tab.TemplateSelection:
+                    DrawTemplateSelectionContent();
+                    break;
+                case Tab.PackageConfiguration:
+                    DrawPackageConfigurationContent();
+                    break;
+                case Tab.CreationResult:
+                    DrawCreationResultContent();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 绘制模板选择选项卡的固定头部
+        /// </summary>
+        private void DrawTemplateSelectionHeader()
         {
             EditorGUILayout.LabelField("选择包模板", PackageCreatorStyles.TitleLabel);
             EditorGUILayout.HelpBox("选择要创建的包模板类型。不同的模板提供不同的结构和功能。", MessageType.Info);
 
-            // 添加搜索和过滤区域
-            EditorGUILayout.Space(10);
-            EditorGUILayout.BeginHorizontal();
+            // 添加分隔线
+            EditorGUILayout.Space(5);
+            PackageCreatorStyles.DrawSeparator();
+        }
 
-            // 搜索框
-            GUI.SetNextControlName("TemplateSearchField");
-            _templateSearchQuery = EditorGUILayout.TextField(_templateSearchQuery, EditorStyles.toolbarSearchField);
-
-            // 清除搜索按钮
-            if (!string.IsNullOrEmpty(_templateSearchQuery))
-            {
-                if (GUILayout.Button("×", EditorStyles.miniButton, GUILayout.Width(20)))
-                {
-                    _templateSearchQuery = "";
-                    GUI.FocusControl(null);
-                }
-            }
-
-            EditorGUILayout.EndHorizontal();
-
-            // 过滤选项
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("过滤:");
-            _showBasicTemplates = EditorGUILayout.ToggleLeft("基础模板", _showBasicTemplates, GUILayout.Width(80));
-            _showAdvancedTemplates = EditorGUILayout.ToggleLeft("高级模板", _showAdvancedTemplates, GUILayout.Width(80));
-            _showExperimentalTemplates = EditorGUILayout.ToggleLeft("实验性", _showExperimentalTemplates, GUILayout.Width(80));
-
-            // 添加对比模式按钮
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button(_compareMode ? "退出对比" : "对比模式", EditorStyles.miniButton, GUILayout.Width(70)))
-            {
-                ToggleCompareMode();
-            }
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space(15);
+        /// <summary>
+        /// 绘制模板选择选项卡的可滚动内容
+        /// </summary>
+        private void DrawTemplateSelectionContent()
+        {
+            EditorGUILayout.Space(5);
 
             if (_compareMode && _templatesForComparison.Count > 0)
             {
@@ -338,8 +343,50 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             }
             else
             {
+                // 水平分割左右两栏
+                EditorGUILayout.BeginHorizontal();
+
+                // 左侧模板列表区域，占总宽度的60%
+                EditorGUILayout.BeginVertical(GUILayout.Width(position.width * 0.6f - 15f));
+
+                // 添加搜索和过滤区域到左侧列表区域顶部
+                EditorGUILayout.BeginHorizontal();
+
+                // 搜索框
+                GUI.SetNextControlName("TemplateSearchField");
+                _templateSearchQuery = EditorGUILayout.TextField(_templateSearchQuery, EditorStyles.toolbarSearchField);
+
+                // 清除搜索按钮
+                if (!string.IsNullOrEmpty(_templateSearchQuery))
+                {
+                    if (GUILayout.Button("×", EditorStyles.miniButton, GUILayout.Width(20)))
+                    {
+                        _templateSearchQuery = "";
+                        GUI.FocusControl(null);
+                    }
+                }
+
+                EditorGUILayout.EndHorizontal();
+
+                // 过滤选项
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = 40;
+                EditorGUILayout.PrefixLabel("过滤:");
+                _showBasicTemplates = EditorGUILayout.ToggleLeft("基础", _showBasicTemplates, GUILayout.Width(50));
+                _showAdvancedTemplates = EditorGUILayout.ToggleLeft("高级", _showAdvancedTemplates, GUILayout.Width(50));
+                _showExperimentalTemplates = EditorGUILayout.ToggleLeft("实验", _showExperimentalTemplates, GUILayout.Width(50));
+
+                // 添加对比模式按钮
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button(_compareMode ? "退出对比" : "对比模式", EditorStyles.miniButton, GUILayout.Width(70)))
+                {
+                    ToggleCompareMode();
+                }
+                EditorGUILayout.EndHorizontal();
+
+                PackageCreatorStyles.DrawSeparator();
+
                 // 正常模式下显示模板卡片
-                // 创建模板卡片
                 if (ShouldShowTemplate(TemplateType.BasicPackage, "基础包模板", "创建一个基本的UPM包结构，包含必要的目录和文件。"))
                 {
                     DrawTemplateCard(TemplateType.BasicPackage, "基础包模板",
@@ -347,7 +394,7 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                         "适合创建简单的包或从头开始定制包结构。包含package.json、README、LICENSE和基本目录结构。",
                         _basicPackageIcon);
 
-                    EditorGUILayout.Space(5);
+                    EditorGUILayout.Space(-10);
                 }
 
                 if (ShouldShowTemplate(TemplateType.EditorTool, "编辑器工具包", "创建专为Unity编辑器扩展设计的包结构。"))
@@ -357,7 +404,7 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                         "包含编辑器UI组件、窗口和工具类的模板。适合开发Unity编辑器插件、扩展和工具。",
                         _editorToolIcon);
 
-                    EditorGUILayout.Space(5);
+                    EditorGUILayout.Space(-10);
                 }
 
                 if (ShouldShowTemplate(TemplateType.RuntimeLibrary, "运行时库", "创建专注于运行时功能的包结构。"))
@@ -366,6 +413,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                         "创建专注于运行时功能的包结构。",
                         "用于实现游戏运行时使用的功能模块，包含运行时组件、系统和API的模板结构。适合开发游戏框架和运行时库。",
                         _runtimeLibraryIcon);
+
+                    EditorGUILayout.Space(-10);
                 }
 
                 // 如果没有模板匹配，显示提示
@@ -376,18 +425,170 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                     EditorGUILayout.HelpBox("没有找到匹配的模板。请尝试修改搜索条件。", MessageType.Info);
                 }
 
-                // 添加模板预览区域
+                EditorGUILayout.EndVertical();
+
+                // 右侧预览区域
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
                 if (_selectedTemplate.HasValue)
                 {
-                    EditorGUILayout.Space(20);
-                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                     EditorGUILayout.LabelField("模板预览", EditorStyles.boldLabel);
+                    EditorGUILayout.Space(5);
 
+                    string templateTitle = "";
+                    switch (_selectedTemplate.Value)
+                    {
+                        case TemplateType.BasicPackage:
+                            templateTitle = "基础包模板";
+                            break;
+                        case TemplateType.EditorTool:
+                            templateTitle = "编辑器工具包";
+                            break;
+                        case TemplateType.RuntimeLibrary:
+                            templateTitle = "运行时库";
+                            break;
+                    }
+
+                    // 显示所选模板的标题
+                    EditorGUILayout.LabelField(templateTitle, EditorStyles.boldLabel);
+                    PackageCreatorStyles.DrawSeparator();
+                    EditorGUILayout.Space(5);
+
+                    // 显示文件结构预览
+                    EditorGUILayout.LabelField("文件结构:", EditorStyles.boldLabel);
                     DrawTemplatePreview(_selectedTemplate.Value);
 
-                    EditorGUILayout.EndVertical();
+                    EditorGUILayout.Space(10);
+
+                    // 添加"使用此模板"按钮
+                    EditorGUI.BeginDisabledGroup(false);
+                    if (GUILayout.Button("使用此模板", GUILayout.Height(30)))
+                    {
+                        _selectedTab = Tab.PackageConfiguration;
+                        Repaint();
+                    }
+                    EditorGUI.EndDisabledGroup();
                 }
+                else
+                {
+                    // 如果未选择模板，则显示提示信息
+                    EditorGUILayout.LabelField("预览区域", EditorStyles.boldLabel);
+                    EditorGUILayout.Space(10);
+                    EditorGUILayout.HelpBox("请从左侧选择一个模板以查看详细信息", MessageType.Info);
+                }
+
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.EndHorizontal();
             }
+        }
+
+        /// <summary>
+        /// 绘制包配置选项卡的固定头部
+        /// </summary>
+        private void DrawPackageConfigurationHeader()
+        {
+            EditorGUILayout.LabelField("配置包信息", PackageCreatorStyles.TitleLabel);
+            EditorGUILayout.HelpBox("设置包的基本信息和选项。这些信息将用于生成package.json和其他相关文件。", MessageType.Info);
+            EditorGUILayout.Space(5);
+            PackageCreatorStyles.DrawSeparator();
+        }
+
+        /// <summary>
+        /// 绘制创建结果选项卡的固定头部
+        /// </summary>
+        private void DrawCreationResultHeader()
+        {
+            EditorGUILayout.LabelField("创建结果", PackageCreatorStyles.TitleLabel);
+            EditorGUILayout.Space(5);
+            PackageCreatorStyles.DrawSeparator();
+        }
+
+        /// <summary>
+        /// 绘制包配置选项卡的可滚动内容
+        /// </summary>
+        private void DrawPackageConfigurationContent()
+        {
+            EditorGUILayout.Space(10);
+
+            // 这里保留原有的DrawPackageConfigurationTab方法中除头部之外的内容
+            // 基本信息区域
+            EditorGUILayout.LabelField("基本信息", EditorStyles.boldLabel);
+            PackageCreatorStyles.BeginGroup();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("包名");
+            _packageName = EditorGUILayout.TextField(_packageName);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("显示名称");
+            _displayName = EditorGUILayout.TextField(_displayName);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("版本");
+            _packageVersion = EditorGUILayout.TextField(_packageVersion);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("作者");
+            _authorName = EditorGUILayout.TextField(_authorName);
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PrefixLabel("描述");
+            _description = EditorGUILayout.TextArea(_description, GUILayout.Height(60));
+            EditorGUILayout.EndHorizontal();
+
+            PackageCreatorStyles.EndGroup();
+
+            // 选项区域
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("选项", EditorStyles.boldLabel);
+            PackageCreatorStyles.BeginGroup();
+
+            _includeTests = EditorGUILayout.ToggleLeft("包含测试文件夹", _includeTests);
+            _includeSamples = EditorGUILayout.ToggleLeft("包含示例文件夹", _includeSamples);
+            _includeDocumentation = EditorGUILayout.ToggleLeft("包含文档文件夹", _includeDocumentation);
+
+            PackageCreatorStyles.EndGroup();
+        }
+
+        /// <summary>
+        /// 绘制创建结果选项卡的可滚动内容
+        /// </summary>
+        private void DrawCreationResultContent()
+        {
+            EditorGUILayout.Space(10);
+
+            // 这里保留原有的DrawCreationResultTab方法中除头部之外的内容
+            EditorGUILayout.HelpBox("包已成功创建！", MessageType.Info);
+
+            // 创建结果信息区域
+            PackageCreatorStyles.BeginGroup();
+
+            EditorGUILayout.LabelField("包名: " + _packageName);
+            EditorGUILayout.LabelField("位置: " + "Assets/Packages/" + _packageName);
+            EditorGUILayout.Space(5);
+
+            if (GUILayout.Button("在项目中查看"))
+            {
+                // 这里添加打开包文件夹的功能
+                Debug.Log("打开包文件夹: " + "Assets/Packages/" + _packageName);
+            }
+
+            PackageCreatorStyles.EndGroup();
+        }
+
+        /// <summary>
+        /// 绘制模板选择选项卡
+        /// </summary>
+        private void DrawTemplateSelectionTab()
+        {
+            // 这个方法现在分为头部和内容两部分，仅作为兼容性保留
+            DrawTemplateSelectionHeader();
+            DrawTemplateSelectionContent();
         }
 
         /// <summary>
@@ -808,7 +1009,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                 // 正常模式下的卡片显示
                 var card = new TemplateCardControl(title, description, details, icon, isSelected);
 
-                if (card.DrawDetailed())
+                // 在左右分栏布局中，使用更紧凑的展示方式
+                if (card.DrawCompact())
                 {
                     // 选择此模板
                     _selectedTemplate = templateType;
@@ -884,91 +1086,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         }
 
         /// <summary>
-        /// 绘制包配置选项卡
-        /// </summary>
-        private void DrawPackageConfigurationTab()
-        {
-            EditorGUILayout.LabelField("包配置", PackageCreatorStyles.TitleLabel);
-            EditorGUILayout.HelpBox("配置包的基本信息、版本、依赖项等。", MessageType.Info);
-            EditorGUILayout.Space(15);
-
-            // 基本信息
-            PackageCreatorStyles.BeginGroup("基本信息");
-
-            _packageName = EditorGUILayout.TextField("包名称", _packageName);
-            if (!_packageName.StartsWith("com."))
-            {
-                EditorGUILayout.HelpBox("包名称应遵循反向域名格式，例如: 'com.yourcompany.packagename'", MessageType.Warning);
-            }
-
-            _displayName = EditorGUILayout.TextField("显示名称", _displayName);
-            _packageVersion = EditorGUILayout.TextField("版本", _packageVersion);
-            _authorName = EditorGUILayout.TextField("作者", _authorName);
-
-            EditorGUILayout.LabelField("描述");
-            _description = EditorGUILayout.TextArea(_description, GUILayout.Height(60));
-
-            PackageCreatorStyles.EndGroup();
-
-            // 可选功能
-            PackageCreatorStyles.BeginGroup("可选组件");
-
-            _includeTests = EditorGUILayout.Toggle("包含测试", _includeTests);
-            _includeSamples = EditorGUILayout.Toggle("包含示例", _includeSamples);
-            _includeDocumentation = EditorGUILayout.Toggle("包含文档", _includeDocumentation);
-
-            PackageCreatorStyles.EndGroup();
-
-            // 高级选项
-            PackageCreatorStyles.BeginGroup("高级选项");
-
-            EditorGUILayout.LabelField("目标Unity版本");
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("Unity 2021.3.8f1 及以上版本", EditorStyles.miniLabel);
-            if (GUILayout.Button("修改", GUILayout.Width(100)))
-            {
-                // TODO: 显示版本选择对话框
-                Debug.Log("版本选择功能将在未来实现");
-            }
-            EditorGUILayout.EndHorizontal();
-
-            PackageCreatorStyles.EndGroup();
-        }
-
-        /// <summary>
-        /// 绘制创建结果选项卡
-        /// </summary>
-        private void DrawCreationResultTab()
-        {
-            EditorGUILayout.LabelField("创建结果", PackageCreatorStyles.TitleLabel);
-
-            PackageCreatorStyles.BeginGroup();
-
-            EditorGUILayout.HelpBox("包已成功创建！", MessageType.Info);
-            EditorGUILayout.Space(10);
-
-            EditorGUILayout.LabelField("包信息", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("名称:", _packageName);
-            EditorGUILayout.LabelField("位置:", $"Assets/Packages/{_packageName}");
-
-            EditorGUILayout.Space(10);
-
-            if (GUILayout.Button("在资源管理器中显示", PackageCreatorStyles.SecondaryButton))
-            {
-                // TODO: 在资源管理器中显示包位置
-                Debug.Log("在资源管理器中显示功能将在未来实现");
-            }
-
-            if (GUILayout.Button("在Unity中查看", PackageCreatorStyles.SecondaryButton))
-            {
-                // TODO: 在Unity中打开包文件夹
-                Debug.Log("在Unity中查看功能将在未来实现");
-            }
-
-            PackageCreatorStyles.EndGroup();
-        }
-
-        /// <summary>
         /// 绘制底部按钮
         /// </summary>
         private void DrawBottomButtons()
@@ -1025,6 +1142,26 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// 绘制包配置选项卡
+        /// </summary>
+        private void DrawPackageConfigurationTab()
+        {
+            // 这个方法现在分为头部和内容两部分，仅作为兼容性保留
+            DrawPackageConfigurationHeader();
+            DrawPackageConfigurationContent();
+        }
+
+        /// <summary>
+        /// 绘制创建结果选项卡
+        /// </summary>
+        private void DrawCreationResultTab()
+        {
+            // 这个方法现在分为头部和内容两部分，仅作为兼容性保留
+            DrawCreationResultHeader();
+            DrawCreationResultContent();
         }
 
         #endregion
