@@ -6,6 +6,11 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
     public enum ErrorType
     {
         /// <summary>
+        /// 无错误，通常用于信息级别的日志
+        /// </summary>
+        None = -1,
+
+        /// <summary>
         /// 未知错误类型
         /// </summary>
         Unknown = 0,
@@ -63,6 +68,41 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <summary>
         /// 系统错误，如内存不足
         /// </summary>
-        System = 11
+        System = 11,
+
+        /// <summary>
+        /// 无效参数错误
+        /// </summary>
+        InvalidArgument = 12,
+
+        /// <summary>
+        /// 操作失败错误
+        /// </summary>
+        OperationFailed = 13,
+
+        /// <summary>
+        /// 无效数据错误
+        /// </summary>
+        InvalidData = 14,
+
+        /// <summary>
+        /// 文件未找到错误
+        /// </summary>
+        FileNotFound = 15,
+
+        /// <summary>
+        /// 文件读取错误
+        /// </summary>
+        FileReadError = 16,
+
+        /// <summary>
+        /// 资源未找到错误
+        /// </summary>
+        ResourceNotFound = 17,
+
+        /// <summary>
+        /// 重复资源错误
+        /// </summary>
+        DuplicateResource = 18
     }
 }
