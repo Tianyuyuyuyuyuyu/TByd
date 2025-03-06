@@ -29,8 +29,8 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>备份目录路径</returns>
         public static string GetBackupDirectory()
         {
-            string tempPath = Path.GetTempPath();
-            string backupPath = Path.Combine(tempPath, BackupDirectoryName);
+            var tempPath = Path.GetTempPath();
+            var backupPath = Path.Combine(tempPath, BackupDirectoryName);
 
             // 确保目录存在
             if (!Directory.Exists(backupPath))
@@ -56,11 +56,11 @@ namespace TByd.PackageCreator.Editor.Utils
 
             try
             {
-                string backupDirectory = GetBackupDirectory();
-                string fileName = Path.GetFileName(filePath);
-                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                string backupFileName = $"{fileName}.{timestamp}{BackupExtension}";
-                string backupPath = Path.Combine(backupDirectory, backupFileName);
+                var backupDirectory = GetBackupDirectory();
+                var fileName = Path.GetFileName(filePath);
+                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var backupFileName = $"{fileName}.{timestamp}{BackupExtension}";
+                var backupPath = Path.Combine(backupDirectory, backupFileName);
 
                 File.Copy(filePath, backupPath, true);
                 Debug.Log($"已创建备份: {backupPath}");
@@ -96,15 +96,15 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(targetPath))
                 {
                     // 从备份文件名中提取原始文件名
-                    string fileName = Path.GetFileName(backupPath);
-                    int dotIndex = fileName.IndexOf('.');
+                    var fileName = Path.GetFileName(backupPath);
+                    var dotIndex = fileName.IndexOf('.');
                     if (dotIndex > 0)
                     {
                         fileName = fileName.Substring(0, dotIndex);
                     }
 
                     // 获取文件的原始目录
-                    string originalDirectory = Path.GetDirectoryName(backupPath);
+                    var originalDirectory = Path.GetDirectoryName(backupPath);
                     if (originalDirectory.EndsWith(BackupDirectoryName))
                     {
                         // 如果是在备份目录中，需要询问用户
@@ -143,13 +143,13 @@ namespace TByd.PackageCreator.Editor.Utils
                 return false;
             }
 
-            string tempPath = filePath + TempExtension;
+            var tempPath = filePath + TempExtension;
             string backupPath = null;
 
             try
             {
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(filePath);
+                var directory = Path.GetDirectoryName(filePath);
                 if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
@@ -224,23 +224,23 @@ namespace TByd.PackageCreator.Editor.Utils
             }
 
             // 保存原始文件的备份路径
-            Dictionary<string, string> backups = new Dictionary<string, string>();
+            var backups = new Dictionary<string, string>();
             // 保存临时文件路径
-            List<string> tempFiles = new List<string>();
+            var tempFiles = new List<string>();
 
             try
             {
                 // 第一阶段：创建备份和临时文件
                 foreach (var kvp in fileContents)
                 {
-                    string filePath = kvp.Key;
-                    string content = kvp.Value;
+                    var filePath = kvp.Key;
+                    var content = kvp.Value;
 
                     if (string.IsNullOrEmpty(filePath))
                         continue;
 
                     // 确保目录存在
-                    string directory = Path.GetDirectoryName(filePath);
+                    var directory = Path.GetDirectoryName(filePath);
                     if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
@@ -249,7 +249,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     // 如果文件已存在且需要备份，创建备份
                     if (createBackups && File.Exists(filePath))
                     {
-                        string backupPath = CreateBackup(filePath);
+                        var backupPath = CreateBackup(filePath);
                         if (backupPath != null)
                         {
                             backups[filePath] = backupPath;
@@ -257,13 +257,13 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
 
                     // 创建临时文件
-                    string tempPath = filePath + TempExtension;
+                    var tempPath = filePath + TempExtension;
                     File.WriteAllText(tempPath, content);
                     tempFiles.Add(tempPath);
                 }
 
                 // 第二阶段：验证所有临时文件都写入成功
-                foreach (string tempPath in tempFiles)
+                foreach (var tempPath in tempFiles)
                 {
                     if (!File.Exists(tempPath))
                     {
@@ -274,8 +274,8 @@ namespace TByd.PackageCreator.Editor.Utils
                 // 第三阶段：替换目标文件
                 foreach (var kvp in fileContents)
                 {
-                    string filePath = kvp.Key;
-                    string tempPath = filePath + TempExtension;
+                    var filePath = kvp.Key;
+                    var tempPath = filePath + TempExtension;
 
                     if (File.Exists(filePath))
                     {
@@ -292,7 +292,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 Debug.LogError($"批量安全写入文件失败: {ex.Message}");
 
                 // 清理临时文件
-                foreach (string tempPath in tempFiles)
+                foreach (var tempPath in tempFiles)
                 {
                     if (File.Exists(tempPath))
                     {
@@ -307,8 +307,8 @@ namespace TByd.PackageCreator.Editor.Utils
                 // 恢复备份
                 foreach (var kvp in backups)
                 {
-                    string filePath = kvp.Key;
-                    string backupPath = kvp.Value;
+                    var filePath = kvp.Key;
+                    var backupPath = kvp.Value;
 
                     if (!File.Exists(filePath) && File.Exists(backupPath))
                     {
@@ -340,7 +340,7 @@ namespace TByd.PackageCreator.Editor.Utils
             try
             {
                 // 创建备份
-                string backupPath = CreateBackup(filePath);
+                var backupPath = CreateBackup(filePath);
 
                 // 删除文件
                 File.Delete(filePath);
@@ -362,18 +362,18 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                string backupDirectory = GetBackupDirectory();
+                var backupDirectory = GetBackupDirectory();
                 if (!Directory.Exists(backupDirectory))
                     return;
 
-                DateTime now = DateTime.Now;
+                var now = DateTime.Now;
                 var backupFiles = Directory.GetFiles(backupDirectory, $"*{BackupExtension}");
 
-                foreach (string backupFile in backupFiles)
+                foreach (var backupFile in backupFiles)
                 {
                     try
                     {
-                        FileInfo fileInfo = new FileInfo(backupFile);
+                        var fileInfo = new FileInfo(backupFile);
                         if (now - fileInfo.CreationTime > MaxBackupAge)
                         {
                             File.Delete(backupFile);
@@ -400,7 +400,7 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                string backupDirectory = GetBackupDirectory();
+                var backupDirectory = GetBackupDirectory();
                 if (!Directory.Exists(backupDirectory))
                     return new List<string>();
 
@@ -426,20 +426,20 @@ namespace TByd.PackageCreator.Editor.Utils
             try
             {
                 // 检查目录是否存在且可写
-                string directory = Path.GetDirectoryName(filePath);
+                var directory = Path.GetDirectoryName(filePath);
                 if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                     return false;
 
                 // 如果文件已存在，检查是否可写
                 if (File.Exists(filePath))
                 {
-                    FileInfo fileInfo = new FileInfo(filePath);
+                    var fileInfo = new FileInfo(filePath);
                     return !fileInfo.IsReadOnly;
                 }
 
                 // 如果文件不存在，尝试创建临时文件
-                string tempPath = filePath + TempExtension;
-                using (FileStream fs = File.Create(tempPath))
+                var tempPath = filePath + TempExtension;
+                using (var fs = File.Create(tempPath))
                 {
                     fs.Close();
                 }
@@ -482,12 +482,12 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 // 检查路径是否在任一安全根目录下
-                foreach (string safeRoot in safeRoots)
+                foreach (var safeRoot in safeRoots)
                 {
                     if (string.IsNullOrEmpty(safeRoot))
                         continue;
 
-                    string normalizedRoot = Path.GetFullPath(safeRoot).ToLowerInvariant();
+                    var normalizedRoot = Path.GetFullPath(safeRoot).ToLowerInvariant();
                     if (path.StartsWith(normalizedRoot))
                         return true;
                 }
@@ -532,7 +532,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 // 确保目标目录存在
-                string destDirectory = Path.GetDirectoryName(destinationPath);
+                var destDirectory = Path.GetDirectoryName(destinationPath);
                 if (!string.IsNullOrEmpty(destDirectory) && !Directory.Exists(destDirectory))
                 {
                     Directory.CreateDirectory(destDirectory);
@@ -549,8 +549,8 @@ namespace TByd.PackageCreator.Editor.Utils
                 Debug.LogError($"安全移动文件失败: {sourcePath} -> {destinationPath}, 错误: {ex.Message}");
 
                 // 尝试回滚
-                bool sourceMissing = !File.Exists(sourcePath);
-                bool destChanged = File.Exists(destinationPath);
+                var sourceMissing = !File.Exists(sourcePath);
+                var destChanged = File.Exists(destinationPath);
 
                 // 如果源文件丢失，尝试恢复
                 if (sourceMissing && sourceBackupPath != null)
@@ -595,7 +595,7 @@ namespace TByd.PackageCreator.Editor.Utils
             }
 
             // 备份目标目录中的文件
-            Dictionary<string, string> backups = new Dictionary<string, string>();
+            var backups = new Dictionary<string, string>();
 
             try
             {
@@ -606,16 +606,16 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 // 复制所有文件
-                string[] files = Directory.GetFiles(sourceDirectory);
-                foreach (string file in files)
+                var files = Directory.GetFiles(sourceDirectory);
+                foreach (var file in files)
                 {
-                    string fileName = Path.GetFileName(file);
-                    string targetFile = Path.Combine(targetDirectory, fileName);
+                    var fileName = Path.GetFileName(file);
+                    var targetFile = Path.Combine(targetDirectory, fileName);
 
                     // 如果目标文件已存在，创建备份
                     if (File.Exists(targetFile))
                     {
-                        string backupPath = CreateBackup(targetFile);
+                        var backupPath = CreateBackup(targetFile);
                         if (backupPath != null)
                         {
                             backups[targetFile] = backupPath;
@@ -628,11 +628,11 @@ namespace TByd.PackageCreator.Editor.Utils
                 // 如果需要递归复制
                 if (recursive)
                 {
-                    string[] directories = Directory.GetDirectories(sourceDirectory);
-                    foreach (string directory in directories)
+                    var directories = Directory.GetDirectories(sourceDirectory);
+                    foreach (var directory in directories)
                     {
-                        string dirName = Path.GetFileName(directory);
-                        string targetSubDir = Path.Combine(targetDirectory, dirName);
+                        var dirName = Path.GetFileName(directory);
+                        var targetSubDir = Path.Combine(targetDirectory, dirName);
 
                         if (!SafeCopyDirectory(directory, targetSubDir, true))
                         {
@@ -651,8 +651,8 @@ namespace TByd.PackageCreator.Editor.Utils
                 // 尝试恢复备份
                 foreach (var kvp in backups)
                 {
-                    string targetFile = kvp.Key;
-                    string backupPath = kvp.Value;
+                    var targetFile = kvp.Key;
+                    var backupPath = kvp.Value;
 
                     try
                     {

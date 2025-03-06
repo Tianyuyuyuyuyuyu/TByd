@@ -13,7 +13,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void Constructor_ShouldSetDefaultValues()
         {
             // 执行
-            ErrorInfo errorInfo = new ErrorInfo();
+            var errorInfo = new ErrorInfo();
 
             // 断言
             Assert.IsNotNull(errorInfo.ErrorId);
@@ -26,12 +26,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void Create_ShouldSetPropertiesCorrectly()
         {
             // 安排
-            ErrorType errorType = ErrorType.Validation;
-            string message = "测试消息";
-            ErrorLevel level = ErrorLevel.Warning;
+            var errorType = ErrorType.Validation;
+            var message = "测试消息";
+            var level = ErrorLevel.Warning;
 
             // 执行
-            ErrorInfo errorInfo = ErrorInfo.Create(errorType, message, level);
+            var errorInfo = ErrorInfo.Create(errorType, message, level);
 
             // 断言
             Assert.AreEqual(errorType, errorInfo.ErrorType);
@@ -46,11 +46,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         {
             // 安排
             Exception exception = new InvalidOperationException("测试异常");
-            ErrorType errorType = ErrorType.Configuration;
-            ErrorLevel level = ErrorLevel.Error;
+            var errorType = ErrorType.Configuration;
+            var level = ErrorLevel.Error;
 
             // 执行
-            ErrorInfo errorInfo = ErrorInfo.FromException(exception, errorType, level);
+            var errorInfo = ErrorInfo.FromException(exception, errorType, level);
 
             // 断言
             Assert.AreEqual(errorType, errorInfo.ErrorType);
@@ -66,7 +66,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             Exception exception = new InvalidOperationException("测试异常");
 
             // 执行
-            ErrorInfo errorInfo = ErrorInfo.FromException(exception);
+            var errorInfo = ErrorInfo.FromException(exception);
 
             // 断言
             Assert.AreEqual(ErrorType.Unknown, errorInfo.ErrorType);
@@ -78,7 +78,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ToString_ShouldFormatCorrectly()
         {
             // 安排
-            ErrorInfo errorInfo = new ErrorInfo
+            var errorInfo = new ErrorInfo
             {
                 ErrorType = ErrorType.FileOperation,
                 Message = "文件操作失败",
@@ -87,7 +87,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             };
 
             // 执行
-            string result = errorInfo.ToString();
+            var result = errorInfo.ToString();
 
             // 断言
             Assert.IsTrue(result.Contains("[2023-01-01 12:00:00]"));
@@ -100,7 +100,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ToDetailedString_WithoutException_ShouldFormatBasicInfo()
         {
             // 安排
-            ErrorInfo errorInfo = new ErrorInfo
+            var errorInfo = new ErrorInfo
             {
                 ErrorType = ErrorType.FileOperation,
                 Message = "文件操作失败",
@@ -109,7 +109,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             };
 
             // 执行
-            string result = errorInfo.ToDetailedString();
+            var result = errorInfo.ToDetailedString();
 
             // 断言
             Assert.IsTrue(result.Contains("[2023-01-01 12:00:00]"));
@@ -125,7 +125,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         {
             // 安排
             Exception exception = new InvalidOperationException("测试异常");
-            ErrorInfo errorInfo = new ErrorInfo
+            var errorInfo = new ErrorInfo
             {
                 ErrorType = ErrorType.FileOperation,
                 Message = "文件操作失败",
@@ -135,7 +135,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             };
 
             // 执行
-            string result = errorInfo.ToDetailedString();
+            var result = errorInfo.ToDetailedString();
 
             // 断言
             Assert.IsTrue(result.Contains("异常类型: InvalidOperationException"));

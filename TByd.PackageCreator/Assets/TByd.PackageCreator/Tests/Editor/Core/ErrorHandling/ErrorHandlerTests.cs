@@ -52,16 +52,16 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void LogError_ShouldAddErrorToLog()
         {
             // 预期日志消息
-            TestHelpers.ExpectLogMessages(ErrorLevel.Warning, "测试错误消息");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Warning, "测试错误消息");
 
             // 安排
-            string errorMessage = "测试错误消息";
-            ErrorType errorType = ErrorType.Validation;
-            ErrorLevel errorLevel = ErrorLevel.Warning;
+            var errorMessage = "测试错误消息";
+            var errorType = ErrorType.Validation;
+            var errorLevel = ErrorLevel.Warning;
 
             // 执行
-            ErrorInfo errorInfo = ErrorHandler.Instance.LogError(errorType, errorMessage, errorLevel);
-            List<ErrorInfo> errorLog = ErrorHandler.Instance.GetErrorLog();
+            var errorInfo = ErrorHandler.Instance.LogError(errorType, errorMessage, errorLevel);
+            var errorLog = ErrorHandler.Instance.GetErrorLog();
 
             // 断言
             Assert.IsNotNull(errorInfo);
@@ -75,20 +75,20 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ExportErrorLog_ShouldCreateLogFile()
         {
             // 预期日志消息
-            TestHelpers.ExpectLogMessages(ErrorLevel.Info, "测试配置错误");
-            TestHelpers.ExpectLogMessages(ErrorLevel.Error, "测试文件错误");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Info, "测试配置错误");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Error, "测试文件错误");
 
             // 安排
             ErrorHandler.Instance.LogError(ErrorType.Configuration, "测试配置错误", ErrorLevel.Info);
             ErrorHandler.Instance.LogError(ErrorType.FileOperation, "测试文件错误", ErrorLevel.Error);
 
             // 执行
-            string exportPath = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Tests", "ErrorLog.txt");
-            string filePath = ErrorHandler.Instance.ExportErrorLog(exportPath);
+            var exportPath = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Tests", "ErrorLog.txt");
+            var filePath = ErrorHandler.Instance.ExportErrorLog(exportPath);
 
             // 断言
             Assert.IsTrue(File.Exists(filePath));
-            string content = File.ReadAllText(filePath);
+            var content = File.ReadAllText(filePath);
             Assert.IsTrue(content.Contains("测试配置错误"));
             Assert.IsTrue(content.Contains("测试文件错误"));
 
@@ -105,10 +105,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             // 执行
             ErrorHandler.Instance.RecordFileCreation(_testFilePath);
             File.WriteAllText(_testFilePath, "测试内容");
-            bool fileCreated = File.Exists(_testFilePath);
+            var fileCreated = File.Exists(_testFilePath);
 
-            bool rollbackResult = ErrorHandler.Instance.RollbackOperations();
-            bool fileExists = File.Exists(_testFilePath);
+            var rollbackResult = ErrorHandler.Instance.RollbackOperations();
+            var fileExists = File.Exists(_testFilePath);
 
             // 断言
             Assert.IsTrue(fileCreated, "文件应该已创建");
@@ -125,10 +125,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             // 执行
             ErrorHandler.Instance.RecordDirectoryCreation(_testDirectoryPath);
             Directory.CreateDirectory(_testDirectoryPath);
-            bool dirCreated = Directory.Exists(_testDirectoryPath);
+            var dirCreated = Directory.Exists(_testDirectoryPath);
 
-            bool rollbackResult = ErrorHandler.Instance.RollbackOperations();
-            bool dirExists = Directory.Exists(_testDirectoryPath);
+            var rollbackResult = ErrorHandler.Instance.RollbackOperations();
+            var dirExists = Directory.Exists(_testDirectoryPath);
 
             // 断言
             Assert.IsTrue(dirCreated, "目录应该已创建");
@@ -140,8 +140,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void RecordAndRollbackFileModification_ShouldWorkCorrectly()
         {
             // 安排
-            string originalContent = "原始内容";
-            string newContent = "新内容";
+            var originalContent = "原始内容";
+            var newContent = "新内容";
             File.WriteAllText(_testFilePath, originalContent);
 
             ErrorHandler.Instance.StartRecordingOperations();
@@ -149,10 +149,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             // 执行
             ErrorHandler.Instance.RecordFileModification(_testFilePath);
             File.WriteAllText(_testFilePath, newContent);
-            string contentAfterModify = File.ReadAllText(_testFilePath);
+            var contentAfterModify = File.ReadAllText(_testFilePath);
 
-            bool rollbackResult = ErrorHandler.Instance.RollbackOperations();
-            string contentAfterRollback = File.ReadAllText(_testFilePath);
+            var rollbackResult = ErrorHandler.Instance.RollbackOperations();
+            var contentAfterRollback = File.ReadAllText(_testFilePath);
 
             // 断言
             Assert.AreEqual(newContent, contentAfterModify, "修改后内容应该是新内容");
@@ -164,8 +164,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ClearErrorLog_ShouldRemoveAllErrors()
         {
             // 预期日志消息
-            TestHelpers.ExpectLogMessages(ErrorLevel.Info, "错误1");
-            TestHelpers.ExpectLogMessages(ErrorLevel.Error, "错误2");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Info, "错误1");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Error, "错误2");
 
             // 安排
             ErrorHandler.Instance.LogError(ErrorType.Configuration, "错误1", ErrorLevel.Info);
@@ -173,7 +173,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
 
             // 执行
             ErrorHandler.Instance.ClearErrorLog();
-            List<ErrorInfo> errorLog = ErrorHandler.Instance.GetErrorLog();
+            var errorLog = ErrorHandler.Instance.GetErrorLog();
 
             // 断言
             Assert.AreEqual(0, errorLog.Count, "错误日志应该为空");

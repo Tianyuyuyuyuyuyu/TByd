@@ -11,6 +11,86 @@ namespace TByd.PackageCreator.Editor.Utils
     /// </summary>
     public static class StringUtils
     {
+        // C#关键字集合，用于标识符验证和转换
+        private static readonly HashSet<string> CSharpKeywords = new HashSet<string>
+        {
+            "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
+            "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
+            "enum", "event", "explicit", "extern", "false", "finally", "fixed", "float", "for",
+            "foreach", "goto", "if", "implicit", "in", "int", "interface", "internal", "is", "lock",
+            "long", "namespace", "new", "null", "object", "operator", "out", "override", "params",
+            "private", "protected", "public", "readonly", "ref", "return", "sbyte", "sealed",
+            "short", "sizeof", "stackalloc", "static", "string", "struct", "switch", "this", "throw",
+            "true", "try", "typeof", "uint", "ulong", "unchecked", "unsafe", "ushort", "using",
+            "virtual", "void", "volatile", "while"
+        };
+
+        // 常用字符串池缓存，用于减少相同字符串的内存分配
+        private static readonly Dictionary<string, string> StringPool = new Dictionary<string, string>();
+
+        // 最大缓存大小，防止内存泄漏
+        private const int MaxCacheSize = 10000;
+
+        // 字符串池中缓存的最大字符串长度
+        private const int MaxPoolStringLength = 128;
+
+        /// <summary>
+        /// 将字符串添加到字符串池中，如果池中已存在相同字符串，则返回池中的实例
+        /// 这有助于减少内存分配，特别是对于频繁使用的短字符串
+        /// </summary>
+        /// <param name="input">要池化的字符串</param>
+        /// <returns>池化后的字符串实例</returns>
+        public static string Intern(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            // 对于过长的字符串，不进行池化
+            if (input.Length > MaxPoolStringLength)
+                return input;
+
+            lock (StringPool)
+            {
+                // 如果池已满，清空一半的内容
+                if (StringPool.Count >= MaxCacheSize)
+                {
+                    // 随机清除一半的缓存以避免占用过多内存
+                    var keysToRemove = StringPool.Keys.Take(MaxCacheSize / 2).ToList();
+                    foreach (var key in keysToRemove)
+                    {
+                        StringPool.Remove(key);
+                    }
+                }
+
+                // 检查池中是否已有此字符串
+                if (StringPool.TryGetValue(input, out string pooledString))
+                    return pooledString;
+
+                // 将字符串添加到池中
+                StringPool[input] = input;
+                return input;
+            }
+        }
+
+        /// <summary>
+        /// 清空字符串池，释放内存
+        /// </summary>
+        public static void ClearStringPool()
+        {
+            lock (StringPool)
+            {
+                StringPool.Clear();
+            }
+        }
+
+        /// <summary>
+        /// 清空字符宽度缓存，释放内存（兼容性方法，无实际功能）
+        /// </summary>
+        public static void ClearWidthCache()
+        {
+            // 空方法，保留兼容性
+        }
+
         /// <summary>
         /// 将普通字符串转换为驼峰命名（第一个单词首字母小写，其他单词首字母大写）
         /// </summary>
@@ -22,16 +102,16 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 先分割为单词
-            string[] words = SplitIntoWords(input);
+            var words = SplitIntoWords(input);
 
             if (words.Length == 0)
                 return input;
 
             // 第一个单词首字母小写，其他单词首字母大写
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(words[0].ToLowerInvariant());
 
-            for (int i = 1; i < words.Length; i++)
+            for (var i = 1; i < words.Length; i++)
             {
                 if (words[i].Length > 0)
                 {
@@ -57,14 +137,14 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 先分割为单词
-            string[] words = SplitIntoWords(input);
+            var words = SplitIntoWords(input);
 
             if (words.Length == 0)
                 return input;
 
             // 所有单词首字母大写
-            StringBuilder sb = new StringBuilder();
-            foreach (string word in words)
+            var sb = new StringBuilder();
+            foreach (var word in words)
             {
                 if (word.Length > 0)
                 {
@@ -90,7 +170,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 先分割为单词
-            string[] words = SplitIntoWords(input);
+            var words = SplitIntoWords(input);
 
             if (words.Length == 0)
                 return input;
@@ -110,7 +190,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 先分割为单词
-            string[] words = SplitIntoWords(input);
+            var words = SplitIntoWords(input);
 
             if (words.Length == 0)
                 return input;
@@ -142,22 +222,223 @@ namespace TByd.PackageCreator.Editor.Utils
         }
 
         /// <summary>
-        /// 截断字符串到指定长度，并添加省略号（如果需要）
+        /// 截断字符串到指定长度，并添加省略号（如果需要）。
+        /// 截断后的总长度（包括省略号）将等于或小于指定的最大长度。
+        /// 此方法针对频繁调用进行了性能优化。
         /// </summary>
         /// <param name="input">输入字符串</param>
-        /// <param name="maxLength">最大长度</param>
+        /// <param name="maxLength">截断后的最大总长度（包括省略号）</param>
         /// <param name="ellipsis">省略号字符串</param>
         /// <returns>截断后的字符串</returns>
         public static string Truncate(string input, int maxLength, string ellipsis = "...")
         {
-            if (string.IsNullOrEmpty(input) || input.Length <= maxLength)
+            // 处理null或空字符串
+            if (string.IsNullOrEmpty(input))
                 return input;
 
-            int truncateLength = maxLength - ellipsis.Length;
-            if (truncateLength <= 0)
-                return ellipsis.Substring(0, maxLength);
+            // 处理maxLength小于等于0的情况
+            if (maxLength <= 0)
+                return string.Empty;
 
-            return input.Substring(0, truncateLength) + ellipsis;
+            // 如果输入长度小于等于最大长度，直接返回
+            // 注意：这里有个特殊情况，当包含中文等宽字符时，即使长度相等也可能需要截断
+            if (input.Length < maxLength || (input.Length == maxLength && !ContainsWideChar(input)))
+                return input;
+
+            // 使用内联计算避免额外的变量，计算需要保留的字符数
+            int charsToKeep = maxLength - ellipsis.Length;
+
+            // 处理边界情况
+            if (charsToKeep < 0)
+            {
+                // 如果maxLength小于ellipsis的长度，则返回ellipsis的前maxLength个字符
+                // 确保不会传递负数给Substring
+                int length = Math.Max(0, Math.Min(maxLength, ellipsis.Length));
+                return length > 0 ? ellipsis.Substring(0, length) : string.Empty;
+            }
+
+            if (charsToKeep == 0)
+                return ellipsis;
+
+            // 使用StringBuilder可以避免额外的字符串分配
+            StringBuilder sb = new StringBuilder(maxLength);
+            sb.Append(input, 0, charsToKeep);
+            sb.Append(ellipsis);
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 检查字符串是否包含宽字符（如中文、日文、韩文等）
+        /// </summary>
+        /// <param name="input">输入字符串</param>
+        /// <returns>如果包含宽字符则返回true，否则返回false</returns>
+        private static bool ContainsWideChar(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return false;
+
+            foreach (char c in input)
+            {
+                if (IsWideChar(c))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 基于显示宽度截断字符串，并添加省略号（如果需要）。
+        /// 此方法考虑了不同字符的显示宽度，例如中文字符通常是英文字符的两倍宽。
+        /// 截断后的总显示宽度（包括省略号）将等于或小于指定的最大宽度。
+        /// </summary>
+        /// <param name="input">输入字符串</param>
+        /// <param name="maxWidth">截断后的最大显示宽度（包括省略号）</param>
+        /// <param name="ellipsis">省略号字符串</param>
+        /// <returns>截断后的字符串</returns>
+        public static string TruncateByWidth(string input, int maxWidth, string ellipsis = "...")
+        {
+            // 处理null或空字符串
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            // 处理maxWidth小于等于0的情况
+            if (maxWidth <= 0)
+                return string.Empty;
+
+            // 计算省略号的宽度
+            int ellipsisWidth = GetStringDisplayWidth(ellipsis);
+
+            // 计算输入字符串的总宽度
+            int inputWidth = GetStringDisplayWidth(input);
+
+            // 如果输入宽度小于等于最大宽度，直接返回
+            if (inputWidth <= maxWidth)
+                return input;
+
+            // 计算可以保留的最大宽度
+            int widthToKeep = maxWidth - ellipsisWidth;
+
+            // 处理边界情况
+            if (widthToKeep < 0)
+                return string.Empty;
+
+            if (widthToKeep == 0)
+                return ellipsis;
+
+            // 逐字符计算累计宽度，找到合适的截断位置
+            int accumulatedWidth = 0;
+            int charIndex = 0;
+
+            StringBuilder sb = new StringBuilder(input.Length);
+
+            foreach (char c in input)
+            {
+                int charWidth = IsWideChar(c) ? 2 : 1;
+
+                if (accumulatedWidth + charWidth > widthToKeep)
+                    break;
+
+                accumulatedWidth += charWidth;
+                charIndex++;
+                sb.Append(c);
+            }
+
+            // 添加省略号
+            sb.Append(ellipsis);
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// 计算字符串的显示宽度。
+        /// 东亚文字（如中文、日文、韩文）的宽度通常是西文字符的两倍。
+        /// </summary>
+        /// <param name="input">输入字符串</param>
+        /// <returns>字符串的显示宽度</returns>
+        private static int GetStringDisplayWidth(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return 0;
+
+            int width = 0;
+            foreach (char c in input)
+            {
+                width += IsWideChar(c) ? 2 : 1;
+            }
+
+            return width;
+        }
+
+        /// <summary>
+        /// 判断字符是否为宽字符（如中文、日文、韩文等）
+        /// </summary>
+        /// <param name="c">要判断的字符</param>
+        /// <returns>如果是宽字符则返回true，否则返回false</returns>
+        private static bool IsWideChar(char c)
+        {
+            return IsWideChar((int)c);
+        }
+
+        /// <summary>
+        /// 判断字符是否为宽字符（如中文、日文、韩文等）
+        /// </summary>
+        /// <param name="codePoint">要判断的字符编码点</param>
+        /// <returns>如果是宽字符则返回true，否则返回false</returns>
+        private static bool IsWideChar(int codePoint)
+        {
+            // 基本拉丁字母和拉丁-1补充
+            if (codePoint <= 0x00FF)
+                return false;
+
+            // ASCII控制字符
+            if (codePoint < 0x0020)
+                return false;
+
+            // 半角字符
+            if (codePoint >= 0xFF00 && codePoint <= 0xFFEF)
+            {
+                // 全角ASCII、全角标点
+                if (codePoint >= 0xFF01 && codePoint <= 0xFF5E)
+                    return true;
+
+                // 半角片假名、半角标点符号等
+                return false;
+            }
+
+            // 组合字符（例如变音符号）
+            if (codePoint >= 0x0300 && codePoint <= 0x036F)
+                return false;
+
+            // CJK统一表意文字
+            if (codePoint >= 0x4E00 && codePoint <= 0x9FFF)
+                return true;
+
+            // 日文平假名
+            if (codePoint >= 0x3040 && codePoint <= 0x309F)
+                return true;
+
+            // 日文片假名
+            if (codePoint >= 0x30A0 && codePoint <= 0x30FF)
+                return true;
+
+            // 朝鲜文/韩文音节
+            if (codePoint >= 0xAC00 && codePoint <= 0xD7AF)
+                return true;
+
+            // 朝鲜文/韩文字母
+            if (codePoint >= 0x1100 && codePoint <= 0x11FF)
+                return true;
+
+            // 扩展CJK
+            if (codePoint >= 0x20000 && codePoint <= 0x2A6DF)
+                return true;
+
+            // 中文标点
+            if (codePoint >= 0x3000 && codePoint <= 0x303F)
+                return true;
+
+            // 其他情况：默认为非宽字符
+            return false;
         }
 
         /// <summary>
@@ -171,7 +452,7 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(template) || parameters == null || parameters.Count == 0)
                 return template;
 
-            StringBuilder sb = new StringBuilder(template);
+            var sb = new StringBuilder(template);
             foreach (var param in parameters)
             {
                 sb.Replace($"{{{param.Key}}}", param.Value);
@@ -191,7 +472,7 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(input) || replacements == null || replacements.Count == 0)
                 return input;
 
-            StringBuilder sb = new StringBuilder(input);
+            var sb = new StringBuilder(input);
             foreach (var replacement in replacements)
             {
                 sb.Replace(replacement.Key, replacement.Value);
@@ -201,7 +482,7 @@ namespace TByd.PackageCreator.Editor.Utils
         }
 
         /// <summary>
-        /// 检查字符串是否为有效的标识符（只包含字母、数字和下划线，且不以数字开头）
+        /// 检查字符串是否为有效的标识符（只包含字母、数字和下划线，且不以数字开头，且不是C#关键字）
         /// </summary>
         /// <param name="input">输入字符串</param>
         /// <returns>如果是有效标识符则返回true，否则返回false</returns>
@@ -215,17 +496,18 @@ namespace TByd.PackageCreator.Editor.Utils
                 return false;
 
             // 其余字符必须是字母、数字或下划线
-            for (int i = 1; i < input.Length; i++)
+            for (var i = 1; i < input.Length; i++)
             {
                 if (!char.IsLetterOrDigit(input[i]) && input[i] != '_')
                     return false;
             }
 
-            return true;
+            // 检查是否为C#关键字
+            return !CSharpKeywords.Contains(input);
         }
 
         /// <summary>
-        /// 将字符串转换为有效的标识符（替换无效字符为下划线，确保第一个字符不是数字）
+        /// 将字符串转换为有效的标识符（替换无效字符为下划线，确保第一个字符不是数字，为关键字添加前缀）
         /// </summary>
         /// <param name="input">输入字符串</param>
         /// <returns>有效的标识符</returns>
@@ -234,12 +516,13 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(input))
                 return "_";
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             // 处理第一个字符
             if (char.IsDigit(input[0]))
             {
                 sb.Append('_');
+                sb.Append(input[0]); // 保留原始数字字符
             }
             else if (char.IsLetter(input[0]) || input[0] == '_')
             {
@@ -250,8 +533,8 @@ namespace TByd.PackageCreator.Editor.Utils
                 sb.Append('_');
             }
 
-            // 处理其余字符
-            for (int i = 1; i < input.Length; i++)
+            // 处理剩余字符
+            for (var i = 1; i < input.Length; i++)
             {
                 if (char.IsLetterOrDigit(input[i]) || input[i] == '_')
                 {
@@ -263,7 +546,14 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
             }
 
-            return sb.ToString();
+            // 检查是否为C#关键字
+            string result = sb.ToString();
+            if (CSharpKeywords.Contains(result))
+            {
+                return "_" + result;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -277,7 +567,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 return string.Empty;
 
             // 替换常见分隔符为点
-            string result = input.Replace('-', '.')
+            var result = input.Replace('-', '.')
                                .Replace('_', '.')
                                .Replace(' ', '.');
 
@@ -285,10 +575,10 @@ namespace TByd.PackageCreator.Editor.Utils
             result = Regex.Replace(result, "\\.+", ".");
 
             // 分割成命名空间部分
-            string[] parts = result.Split('.');
-            List<string> validParts = new List<string>();
+            var parts = result.Split('.');
+            var validParts = new List<string>();
 
-            foreach (string part in parts)
+            foreach (var part in parts)
             {
                 if (!string.IsNullOrEmpty(part))
                 {
@@ -315,13 +605,13 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 分割为单词
-            string[] words = SplitIntoWords(input);
+            var words = SplitIntoWords(input);
 
             if (words.Length == 0)
                 return input;
 
             // 将每个单词转换为标题形式
-            for (int i = 0; i < words.Length; i++)
+            for (var i = 0; i < words.Length; i++)
             {
                 if (!string.IsNullOrEmpty(words[i]))
                 {
@@ -347,7 +637,7 @@ namespace TByd.PackageCreator.Editor.Utils
             var random = new Random();
 
             var result = new StringBuilder(length);
-            for (int i = 0; i < length; i++)
+            for (var i = 0; i < length; i++)
             {
                 result.Append(chars[random.Next(chars.Length)]);
             }
@@ -368,11 +658,11 @@ namespace TByd.PackageCreator.Editor.Utils
             using (var sha256 = System.Security.Cryptography.SHA256.Create())
             {
                 // 计算哈希
-                byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+                var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
 
                 // 转换为十六进制字符串
-                StringBuilder sb = new StringBuilder();
-                foreach (byte b in hashBytes)
+                var sb = new StringBuilder();
+                foreach (var b in hashBytes)
                 {
                     sb.Append(b.ToString("x2"));
                 }
@@ -391,7 +681,7 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(input))
                 return false;
 
-            char[] invalidChars = System.IO.Path.GetInvalidPathChars();
+            var invalidChars = System.IO.Path.GetInvalidPathChars();
             return input.IndexOfAny(invalidChars) >= 0;
         }
 
@@ -405,7 +695,7 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(input))
                 return false;
 
-            char[] invalidChars = System.IO.Path.GetInvalidFileNameChars();
+            var invalidChars = System.IO.Path.GetInvalidFileNameChars();
             return input.IndexOfAny(invalidChars) >= 0;
         }
 
@@ -424,7 +714,7 @@ namespace TByd.PackageCreator.Editor.Utils
             newLine = newLine ?? Environment.NewLine;
 
             // 首先将所有换行符转换为单个\n
-            string normalized = input.Replace("\r\n", "\n").Replace("\r", "\n");
+            var normalized = input.Replace("\r\n", "\n").Replace("\r", "\n");
 
             // 然后将所有\n转换为指定的换行符
             if (newLine != "\n")
@@ -447,12 +737,12 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(input) || string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(suffix))
                 return string.Empty;
 
-            int startIndex = input.IndexOf(prefix);
+            var startIndex = input.IndexOf(prefix);
             if (startIndex < 0)
                 return string.Empty;
 
             startIndex += prefix.Length;
-            int endIndex = input.IndexOf(suffix, startIndex);
+            var endIndex = input.IndexOf(suffix, startIndex);
             if (endIndex < 0)
                 return string.Empty;
 
@@ -468,20 +758,20 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>提取到的内容列表</returns>
         public static List<string> ExtractAllBetween(string input, string prefix, string suffix)
         {
-            List<string> results = new List<string>();
+            var results = new List<string>();
 
             if (string.IsNullOrEmpty(input) || string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(suffix))
                 return results;
 
-            int currentIndex = 0;
+            var currentIndex = 0;
             while (currentIndex < input.Length)
             {
-                int startIndex = input.IndexOf(prefix, currentIndex);
+                var startIndex = input.IndexOf(prefix, currentIndex);
                 if (startIndex < 0)
                     break;
 
                 startIndex += prefix.Length;
-                int endIndex = input.IndexOf(suffix, startIndex);
+                var endIndex = input.IndexOf(suffix, startIndex);
                 if (endIndex < 0)
                     break;
 

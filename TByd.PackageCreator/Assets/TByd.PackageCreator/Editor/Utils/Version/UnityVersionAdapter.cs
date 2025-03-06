@@ -28,7 +28,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// </summary>
         static UnityVersionAdapter()
         {
-            string[] versionComponents = Application.unityVersion.Split('.');
+            var versionComponents = Application.unityVersion.Split('.');
             int major = 0, minor = 0, patch = 0;
 
             if (versionComponents.Length >= 1)
@@ -40,8 +40,8 @@ namespace TByd.PackageCreator.Editor.Utils
             if (versionComponents.Length >= 3)
             {
                 // 处理形如"2021.3.8f1"的版本号，提取数字部分
-                string patchString = versionComponents[2];
-                for (int i = 0; i < patchString.Length; i++)
+                var patchString = versionComponents[2];
+                for (var i = 0; i < patchString.Length; i++)
                 {
                     if (!char.IsDigit(patchString[i]))
                     {
@@ -181,8 +181,8 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                Type type = typeof(T);
-                MethodInfo method = type.GetMethod(methodName,
+                var type = typeof(T);
+                var method = type.GetMethod(methodName,
                     BindingFlags.Public | BindingFlags.NonPublic |
                     BindingFlags.Instance | BindingFlags.Static);
 
@@ -192,7 +192,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return fallbackValue;
                 }
 
-                object result = method.Invoke(target, parameters);
+                var result = method.Invoke(target, parameters);
                 if (result == null)
                     return fallbackValue;
 
@@ -217,8 +217,8 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                Type type = typeof(T);
-                MethodInfo method = type.GetMethod(methodName,
+                var type = typeof(T);
+                var method = type.GetMethod(methodName,
                     BindingFlags.Public | BindingFlags.NonPublic |
                     BindingFlags.Instance | BindingFlags.Static);
 
@@ -251,8 +251,8 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                Type type = typeof(T);
-                PropertyInfo property = type.GetProperty(propertyName,
+                var type = typeof(T);
+                var property = type.GetProperty(propertyName,
                     BindingFlags.Public | BindingFlags.NonPublic |
                     BindingFlags.Instance | BindingFlags.Static);
 
@@ -262,7 +262,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return fallbackValue;
                 }
 
-                object value = property.GetValue(target);
+                var value = property.GetValue(target);
                 if (value == null)
                     return fallbackValue;
 
@@ -287,8 +287,8 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                Type type = typeof(T);
-                PropertyInfo property = type.GetProperty(propertyName,
+                var type = typeof(T);
+                var property = type.GetProperty(propertyName,
                     BindingFlags.Public | BindingFlags.NonPublic |
                     BindingFlags.Instance | BindingFlags.Static);
 
@@ -321,8 +321,8 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                Type type = typeof(T);
-                FieldInfo field = type.GetField(fieldName,
+                var type = typeof(T);
+                var field = type.GetField(fieldName,
                     BindingFlags.Public | BindingFlags.NonPublic |
                     BindingFlags.Instance | BindingFlags.Static);
 
@@ -332,7 +332,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return fallbackValue;
                 }
 
-                object value = field.GetValue(target);
+                var value = field.GetValue(target);
                 if (value == null)
                     return fallbackValue;
 
@@ -357,8 +357,8 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                Type type = typeof(T);
-                FieldInfo field = type.GetField(fieldName,
+                var type = typeof(T);
+                var field = type.GetField(fieldName,
                     BindingFlags.Public | BindingFlags.NonPublic |
                     BindingFlags.Instance | BindingFlags.Static);
 
@@ -393,7 +393,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 try
                 {
                     // 打开Package Manager窗口
-                    Type windowType = typeof(EditorWindow).Assembly.GetType("UnityEditor.PackageManager.UI.PackageManagerWindow");
+                    var windowType = typeof(EditorWindow).Assembly.GetType("UnityEditor.PackageManager.UI.PackageManagerWindow");
                     if (windowType == null)
                     {
                         Debug.LogWarning("找不到PackageManagerWindow类型");
@@ -401,7 +401,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
 
                     // 打开窗口
-                    MethodInfo showMethod = windowType.GetMethod("ShowPackageManager",
+                    var showMethod = windowType.GetMethod("ShowPackageManager",
                         BindingFlags.Public | BindingFlags.Static);
                     if (showMethod == null)
                     {
@@ -409,13 +409,13 @@ namespace TByd.PackageCreator.Editor.Utils
                         return false;
                     }
 
-                    EditorWindow window = (EditorWindow)showMethod.Invoke(null, null);
+                    var window = (EditorWindow)showMethod.Invoke(null, null);
 
                     // 在Unity 2022.1及更高版本中，尝试使用新的API选择包
                     if (IsUnity2022_1OrNewer())
                     {
                         // 尝试获取SetPackageSelection方法（Unity 2022.1+）
-                        MethodInfo setSelectionMethod = windowType.GetMethod("SetPackageSelection",
+                        var setSelectionMethod = windowType.GetMethod("SetPackageSelection",
                             BindingFlags.Public | BindingFlags.Instance);
                         if (setSelectionMethod != null)
                         {
@@ -425,7 +425,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
 
                     // 在低版本中尝试使用旧的API
-                    MethodInfo selectMethod = windowType.GetMethod("SelectPackage",
+                    var selectMethod = windowType.GetMethod("SelectPackage",
                         BindingFlags.Public | BindingFlags.NonPublic |
                         BindingFlags.Instance | BindingFlags.Static);
                     if (selectMethod != null)
@@ -459,7 +459,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 try
                 {
                     // Unity 2019.3及更高版本支持EditorGUIUtility.isProSkin
-                    PropertyInfo proSkinProperty = typeof(EditorGUIUtility).GetProperty("isProSkin",
+                    var proSkinProperty = typeof(EditorGUIUtility).GetProperty("isProSkin",
                         BindingFlags.Public | BindingFlags.Static);
                     if (proSkinProperty != null)
                     {
@@ -467,17 +467,17 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
 
                     // 低版本使用EditorGUIUtility.GetBuiltinSkin
-                    MethodInfo getSkinMethod = typeof(EditorGUIUtility).GetMethod("GetBuiltinSkin",
+                    var getSkinMethod = typeof(EditorGUIUtility).GetMethod("GetBuiltinSkin",
                         BindingFlags.Public | BindingFlags.Static);
                     if (getSkinMethod == null)
                         return false;
 
-                    object skin = getSkinMethod.Invoke(null, new object[] { 1 }); // 1 = Dark
-                    PropertyInfo nameProperty = skin.GetType().GetProperty("name");
+                    var skin = getSkinMethod.Invoke(null, new object[] { 1 }); // 1 = Dark
+                    var nameProperty = skin.GetType().GetProperty("name");
                     if (nameProperty == null)
                         return false;
 
-                    string name = (string)nameProperty.GetValue(skin);
+                    var name = (string)nameProperty.GetValue(skin);
                     return name.Contains("Dark") || name.Contains("Pro");
                 }
                 catch
@@ -502,11 +502,11 @@ namespace TByd.PackageCreator.Editor.Utils
                 try
                 {
                     // 获取当前构建目标
-                    BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+                    var target = EditorUserBuildSettings.activeBuildTarget;
 
                     // 获取脚本后端（通过反射，因为ScriptingImplementation枚举可能在不同版本中不同）
-                    Type playerSettingsType = typeof(PlayerSettings);
-                    MethodInfo getScriptingBackendMethod = playerSettingsType.GetMethod("GetScriptingBackend",
+                    var playerSettingsType = typeof(PlayerSettings);
+                    var getScriptingBackendMethod = playerSettingsType.GetMethod("GetScriptingBackend",
                         BindingFlags.Public | BindingFlags.Static);
 
                     if (getScriptingBackendMethod == null)
@@ -515,7 +515,7 @@ namespace TByd.PackageCreator.Editor.Utils
                         return "Unknown";
                     }
 
-                    object backend = getScriptingBackendMethod.Invoke(null, new object[] { GetBuildTargetGroup(target) });
+                    var backend = getScriptingBackendMethod.Invoke(null, new object[] { GetBuildTargetGroup(target) });
                     return backend.ToString();
                 }
                 catch (Exception ex)
@@ -571,17 +571,17 @@ namespace TByd.PackageCreator.Editor.Utils
                 try
                 {
                     // 获取当前构建目标
-                    BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
-                    BuildTargetGroup targetGroup = GetBuildTargetGroup(target);
+                    var target = EditorUserBuildSettings.activeBuildTarget;
+                    var targetGroup = GetBuildTargetGroup(target);
 
                     // 检查代码优化设置
-                    Type playerSettingsType = typeof(PlayerSettings);
-                    MethodInfo getScriptingOptimizationMethod = playerSettingsType.GetMethod("GetScriptingOptimizationLevel",
+                    var playerSettingsType = typeof(PlayerSettings);
+                    var getScriptingOptimizationMethod = playerSettingsType.GetMethod("GetScriptingOptimizationLevel",
                         BindingFlags.Public | BindingFlags.Static);
 
                     if (getScriptingOptimizationMethod != null)
                     {
-                        object level = getScriptingOptimizationMethod.Invoke(null, new object[] { targetGroup });
+                        var level = getScriptingOptimizationMethod.Invoke(null, new object[] { targetGroup });
                         return !level.ToString().Contains("Debug");
                     }
 

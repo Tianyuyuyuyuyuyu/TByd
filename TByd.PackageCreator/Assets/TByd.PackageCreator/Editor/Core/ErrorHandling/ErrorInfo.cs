@@ -101,7 +101,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>包含完整错误详情的字符串</returns>
         public string ToDetailedString()
         {
-            string result = ToString();
+            var result = ToString();
 
             if (Exception != null)
             {

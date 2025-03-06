@@ -13,7 +13,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void Constructor_ShouldSetDefaultValues()
         {
             // 执行
-            OperationRecord record = new OperationRecord();
+            var record = new OperationRecord();
 
             // 断言
             Assert.IsNotNull(record.OperationId);
@@ -26,11 +26,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void Create_ShouldSetBasicProperties()
         {
             // 安排
-            OperationType operationType = OperationType.CreateFile;
-            string targetPath = "test/path.txt";
+            var operationType = OperationType.CreateFile;
+            var targetPath = "test/path.txt";
 
             // 执行
-            OperationRecord record = OperationRecord.Create(operationType, targetPath);
+            var record = OperationRecord.Create(operationType, targetPath);
 
             // 断言
             Assert.AreEqual(operationType, record.OperationType);
@@ -43,12 +43,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateMoveOrCopy_WithMoveType_ShouldSetProperties()
         {
             // 安排
-            OperationType operationType = OperationType.Move;
-            string sourcePath = "source/path.txt";
-            string targetPath = "target/path.txt";
+            var operationType = OperationType.Move;
+            var sourcePath = "source/path.txt";
+            var targetPath = "target/path.txt";
 
             // 执行
-            OperationRecord record = OperationRecord.CreateMoveOrCopy(operationType, sourcePath, targetPath);
+            var record = OperationRecord.CreateMoveOrCopy(operationType, sourcePath, targetPath);
 
             // 断言
             Assert.AreEqual(operationType, record.OperationType);
@@ -60,12 +60,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateMoveOrCopy_WithCopyType_ShouldSetProperties()
         {
             // 安排
-            OperationType operationType = OperationType.Copy;
-            string sourcePath = "source/path.txt";
-            string targetPath = "target/path.txt";
+            var operationType = OperationType.Copy;
+            var sourcePath = "source/path.txt";
+            var targetPath = "target/path.txt";
 
             // 执行
-            OperationRecord record = OperationRecord.CreateMoveOrCopy(operationType, sourcePath, targetPath);
+            var record = OperationRecord.CreateMoveOrCopy(operationType, sourcePath, targetPath);
 
             // 断言
             Assert.AreEqual(operationType, record.OperationType);
@@ -77,9 +77,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateMoveOrCopy_WithInvalidType_ShouldThrowException()
         {
             // 安排
-            OperationType operationType = OperationType.CreateFile; // 不是Move或Copy
-            string sourcePath = "source/path.txt";
-            string targetPath = "target/path.txt";
+            var operationType = OperationType.CreateFile; // 不是Move或Copy
+            var sourcePath = "source/path.txt";
+            var targetPath = "target/path.txt";
 
             // 断言与执行
             Assert.Throws<ArgumentException>(() =>
@@ -90,12 +90,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateWithCustomHandler_ShouldSetProperties()
         {
             // 安排
-            OperationType operationType = OperationType.Custom;
-            string targetPath = "test/path.txt";
+            var operationType = OperationType.Custom;
+            var targetPath = "test/path.txt";
             Func<OperationRecord, bool> handler = (record) => true;
 
             // 执行
-            OperationRecord record = OperationRecord.CreateWithCustomHandler(operationType, targetPath, handler);
+            var record = OperationRecord.CreateWithCustomHandler(operationType, targetPath, handler);
 
             // 断言
             Assert.AreEqual(operationType, record.OperationType);
@@ -107,8 +107,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateWithCustomHandler_WithNullHandler_ShouldThrowException()
         {
             // 安排
-            OperationType operationType = OperationType.Custom;
-            string targetPath = "test/path.txt";
+            var operationType = OperationType.Custom;
+            var targetPath = "test/path.txt";
 
             // 断言与执行
             Assert.Throws<ArgumentNullException>(() =>
@@ -119,7 +119,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ToString_WithoutSourcePath_ShouldFormatCorrectly()
         {
             // 安排
-            OperationRecord record = new OperationRecord
+            var record = new OperationRecord
             {
                 OperationType = OperationType.CreateFile,
                 TargetPath = "test/path.txt",
@@ -127,7 +127,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             };
 
             // 执行
-            string result = record.ToString();
+            var result = record.ToString();
 
             // 断言
             Assert.IsTrue(result.Contains("[2023-01-01 12:00:00]"));
@@ -140,7 +140,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ToString_WithSourcePath_ShouldIncludeSourcePath()
         {
             // 安排
-            OperationRecord record = new OperationRecord
+            var record = new OperationRecord
             {
                 OperationType = OperationType.Move,
                 SourcePath = "source/path.txt",
@@ -149,7 +149,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             };
 
             // 执行
-            string result = record.ToString();
+            var result = record.ToString();
 
             // 断言
             Assert.IsTrue(result.Contains("[2023-01-01 12:00:00]"));

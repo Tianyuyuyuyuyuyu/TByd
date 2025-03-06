@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -18,7 +19,7 @@ namespace TByd.PackageCreator.Tests.Editor
         /// <returns>完整的临时文件路径</returns>
         public static string GetTestFilePath(string fileName)
         {
-            string directory = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Tests");
+            var directory = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Tests");
 
             if (!Directory.Exists(directory))
             {
@@ -112,25 +113,65 @@ namespace TByd.PackageCreator.Tests.Editor
         }
 
         /// <summary>
-        /// 预期错误处理器产生的日志消息
+        /// 期望特定的日志消息
+        /// </summary>
+        /// <param name="logType">日志类型</param>
+        /// <param name="exactMessage">完整的日志消息</param>
+        public static void ExpectLogMessage(LogType logType, string exactMessage)
+        {
+            LogAssert.Expect(logType, exactMessage);
+        }
+
+        /// <summary>
+        /// 期望包含特定内容的日志消息
+        /// </summary>
+        /// <param name="logType">日志类型</param>
+        /// <param name="messageContent">日志消息中应包含的文本</param>
+        public static void ExpectLogMessageContaining(LogType logType, string messageContent)
+        {
+            // 创建可以匹配任意包含指定内容的日志消息的正则表达式
+            var regex = new Regex($".*{Regex.Escape(messageContent)}.*");
+            LogAssert.Expect(logType, regex);
+        }
+
+        /// <summary>
+        /// 期望匹配特定正则表达式的日志消息
+        /// </summary>
+        /// <param name="logType">日志类型</param>
+        /// <param name="pattern">正则表达式模式</param>
+        public static void ExpectLogMessageMatching(LogType logType, string pattern)
+        {
+            LogAssert.Expect(logType, new Regex(pattern));
+        }
+
+        /// <summary>
+        /// 期望来自ErrorHandler的标准格式日志消息
         /// </summary>
         /// <param name="errorLevel">错误级别</param>
         /// <param name="message">错误消息</param>
-        public static void ExpectLogMessages(ErrorLevel errorLevel, string message)
+        public static void ExpectErrorHandlerMessage(ErrorLevel errorLevel, string message)
         {
+            LogType logType;
+            string prefix;
+
             switch (errorLevel)
             {
                 case ErrorLevel.Critical:
                 case ErrorLevel.Error:
-                    LogAssert.Expect(LogType.Error, $"[PackageCreator] {(errorLevel == ErrorLevel.Critical ? "严重错误" : "错误")}: {message}");
+                    logType = LogType.Error;
+                    prefix = errorLevel == ErrorLevel.Critical ? "严重错误" : "错误";
                     break;
                 case ErrorLevel.Warning:
-                    LogAssert.Expect(LogType.Warning, $"[PackageCreator] 警告: {message}");
+                    logType = LogType.Warning;
+                    prefix = "警告";
                     break;
-                case ErrorLevel.Info:
-                    LogAssert.Expect(LogType.Log, $"[PackageCreator] 信息: {message}");
+                default:
+                    logType = LogType.Log;
+                    prefix = "信息";
                     break;
             }
+
+            LogAssert.Expect(logType, $"[PackageCreator] {prefix}: {message}");
         }
     }
 }

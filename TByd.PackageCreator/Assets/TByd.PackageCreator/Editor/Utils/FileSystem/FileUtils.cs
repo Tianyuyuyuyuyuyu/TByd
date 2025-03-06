@@ -72,7 +72,7 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                string directory = Path.GetDirectoryName(filePath);
+                var directory = Path.GetDirectoryName(filePath);
                 if (!EnsureDirectoryExists(directory))
                 {
                     return false;
@@ -101,14 +101,14 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                string directory = Path.GetDirectoryName(filePath);
+                var directory = Path.GetDirectoryName(filePath);
                 if (!EnsureDirectoryExists(directory))
                 {
                     return false;
                 }
 
                 encoding = encoding ?? DefaultEncoding;
-                using (StreamWriter writer = new StreamWriter(filePath, false, encoding))
+                using (var writer = new StreamWriter(filePath, false, encoding))
                 {
                     await writer.WriteAsync(content);
                 }
@@ -168,7 +168,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 encoding = encoding ?? DefaultEncoding;
-                using (StreamReader reader = new StreamReader(filePath, encoding))
+                using (var reader = new StreamReader(filePath, encoding))
                 {
                     return await reader.ReadToEndAsync();
                 }
@@ -197,7 +197,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
                 }
 
-                string directory = Path.GetDirectoryName(destinationPath);
+                var directory = Path.GetDirectoryName(destinationPath);
                 if (!EnsureDirectoryExists(directory))
                 {
                     return false;
@@ -246,7 +246,7 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                FileAttributes attr = File.GetAttributes(path);
+                var attr = File.GetAttributes(path);
                 return (attr & FileAttributes.Directory) == FileAttributes.Directory;
             }
             catch
@@ -288,7 +288,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>文件路径列表，如果目录不存在或发生错误则返回空列表</returns>
         public static List<string> GetFiles(string directoryPath, string searchPattern = "*.*", bool recursive = false)
         {
-            List<string> files = new List<string>();
+            var files = new List<string>();
             try
             {
                 if (!Directory.Exists(directoryPath))
@@ -297,7 +297,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return files;
                 }
 
-                SearchOption option = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                var option = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
                 files.AddRange(Directory.GetFiles(directoryPath, searchPattern, option));
             }
             catch (Exception ex)
@@ -322,11 +322,11 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 // 读取文件前8KB检查是否包含空字节（二进制文件通常包含空字节）
-                byte[] buffer = new byte[8192];
-                using (FileStream fs = File.OpenRead(filePath))
+                var buffer = new byte[8192];
+                using (var fs = File.OpenRead(filePath))
                 {
-                    int bytesRead = fs.Read(buffer, 0, buffer.Length);
-                    for (int i = 0; i < bytesRead; i++)
+                    var bytesRead = fs.Read(buffer, 0, buffer.Length);
+                    for (var i = 0; i < bytesRead; i++)
                     {
                         if (buffer[i] == 0)
                         {
@@ -358,7 +358,7 @@ namespace TByd.PackageCreator.Editor.Utils
             try
             {
                 // 将所有路径分隔符转换为当前平台的分隔符
-                string normalizedPath = path.Replace('\\', Path.DirectorySeparatorChar)
+                var normalizedPath = path.Replace('\\', Path.DirectorySeparatorChar)
                                            .Replace('/', Path.DirectorySeparatorChar);
 
                 // 解析相对路径
@@ -390,11 +390,11 @@ namespace TByd.PackageCreator.Editor.Utils
                     basePath += Path.DirectorySeparatorChar;
                 }
 
-                Uri baseUri = new Uri(basePath);
-                Uri fullUri = new Uri(fullPath);
+                var baseUri = new Uri(basePath);
+                var fullUri = new Uri(fullPath);
 
-                Uri relativeUri = baseUri.MakeRelativeUri(fullUri);
-                string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+                var relativeUri = baseUri.MakeRelativeUri(fullUri);
+                var relativePath = Uri.UnescapeDataString(relativeUri.ToString());
 
                 // 将URL风格的路径分隔符转换为平台特定的分隔符
                 return relativePath.Replace('/', Path.DirectorySeparatorChar);

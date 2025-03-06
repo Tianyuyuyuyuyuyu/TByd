@@ -18,8 +18,8 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>条件编译符号列表</returns>
         public static HashSet<string> GetDefineSymbols()
         {
-            BuildTargetGroup targetGroup = GetCurrentBuildTargetGroup();
-            string defineSymbolsStr = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
+            var targetGroup = GetCurrentBuildTargetGroup();
+            var defineSymbolsStr = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
             return new HashSet<string>(defineSymbolsStr.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
@@ -30,7 +30,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>条件编译符号列表</returns>
         public static HashSet<string> GetDefineSymbols(BuildTargetGroup targetGroup)
         {
-            string defineSymbolsStr = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
+            var defineSymbolsStr = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
             return new HashSet<string>(defineSymbolsStr.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
@@ -57,7 +57,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
 
                 // 验证符号有效性
-                foreach (string symbol in symbols)
+                foreach (var symbol in symbols)
                 {
                     if (!IsValidDefineSymbol(symbol))
                     {
@@ -66,11 +66,11 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
                 }
 
-                BuildTargetGroup targetGroup = GetCurrentBuildTargetGroup();
-                HashSet<string> currentSymbols = GetDefineSymbols(targetGroup);
-                bool changed = false;
+                var targetGroup = GetCurrentBuildTargetGroup();
+                var currentSymbols = GetDefineSymbols(targetGroup);
+                var changed = false;
 
-                foreach (string symbol in symbols)
+                foreach (var symbol in symbols)
                 {
                     if (currentSymbols.Add(symbol)) // 如果添加成功，表示之前不存在
                     {
@@ -116,11 +116,11 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (symbols == null || symbols.Length == 0)
                     return false;
 
-                BuildTargetGroup targetGroup = GetCurrentBuildTargetGroup();
-                HashSet<string> currentSymbols = GetDefineSymbols(targetGroup);
-                bool changed = false;
+                var targetGroup = GetCurrentBuildTargetGroup();
+                var currentSymbols = GetDefineSymbols(targetGroup);
+                var changed = false;
 
-                foreach (string symbol in symbols)
+                foreach (var symbol in symbols)
                 {
                     if (currentSymbols.Remove(symbol)) // 如果移除成功，表示之前存在
                     {
@@ -156,7 +156,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(symbol))
                     return false;
 
-                HashSet<string> currentSymbols = GetDefineSymbols();
+                var currentSymbols = GetDefineSymbols();
                 return currentSymbols.Contains(symbol);
             }
             catch (Exception ex)
@@ -189,7 +189,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
 
                 // 验证符号有效性
-                foreach (string symbol in symbols)
+                foreach (var symbol in symbols)
                 {
                     if (!IsValidDefineSymbol(symbol))
                     {
@@ -198,13 +198,13 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
                 }
 
-                bool anyChanged = false;
-                foreach (BuildTargetGroup targetGroup in GetSupportedBuildTargetGroups())
+                var anyChanged = false;
+                foreach (var targetGroup in GetSupportedBuildTargetGroups())
                 {
-                    HashSet<string> currentSymbols = GetDefineSymbols(targetGroup);
-                    bool changed = false;
+                    var currentSymbols = GetDefineSymbols(targetGroup);
+                    var changed = false;
 
-                    foreach (string symbol in symbols)
+                    foreach (var symbol in symbols)
                     {
                         if (currentSymbols.Add(symbol)) // 如果添加成功，表示之前不存在
                         {
@@ -255,13 +255,13 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (symbols == null || symbols.Length == 0)
                     return false;
 
-                bool anyChanged = false;
-                foreach (BuildTargetGroup targetGroup in GetSupportedBuildTargetGroups())
+                var anyChanged = false;
+                foreach (var targetGroup in GetSupportedBuildTargetGroups())
                 {
-                    HashSet<string> currentSymbols = GetDefineSymbols(targetGroup);
-                    bool changed = false;
+                    var currentSymbols = GetDefineSymbols(targetGroup);
+                    var changed = false;
 
-                    foreach (string symbol in symbols)
+                    foreach (var symbol in symbols)
                     {
                         if (currentSymbols.Remove(symbol)) // 如果移除成功，表示之前存在
                         {
@@ -297,7 +297,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <param name="targetGroup">目标构建组</param>
         private static void SetDefineSymbols(HashSet<string> symbols, BuildTargetGroup targetGroup)
         {
-            string defineSymbolsStr = string.Join(";", symbols);
+            var defineSymbolsStr = string.Join(";", symbols);
             PlayerSettings.SetScriptingDefineSymbolsForGroup(targetGroup, defineSymbolsStr);
             AssetDatabase.SaveAssets();
         }
@@ -340,7 +340,7 @@ namespace TByd.PackageCreator.Editor.Utils
 
             // 条件编译符号必须遵循C#标识符规则
             // 首字符必须是字母或下划线，后续可以包含字母、数字或下划线
-            Regex validSymbolRegex = new Regex(@"^[a-zA-Z_][a-zA-Z0-9_]*$");
+            var validSymbolRegex = new Regex(@"^[a-zA-Z_][a-zA-Z0-9_]*$");
             return validSymbolRegex.IsMatch(symbol);
         }
 
@@ -357,7 +357,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (!System.IO.File.Exists(filePath))
                     return false;
 
-                string content = System.IO.File.ReadAllText(filePath);
+                var content = System.IO.File.ReadAllText(filePath);
 
                 // 检查 #if SYMBOL 形式
                 if (content.Contains($"#if {symbol}") || content.Contains($"#elif {symbol}"))
@@ -369,10 +369,10 @@ namespace TByd.PackageCreator.Editor.Utils
 
                 // 检查复杂条件中的符号，如 #if (SYMBOL && OTHER) || ANOTHER
                 // 这里简化处理，检查是否在 #if 或 #elif 后的同一行中包含该符号
-                string[] lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string line in lines)
+                var lines = content.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in lines)
                 {
-                    string trimmedLine = line.Trim();
+                    var trimmedLine = line.Trim();
                     if ((trimmedLine.StartsWith("#if ") || trimmedLine.StartsWith("#elif ")) &&
                         trimmedLine.Contains(symbol))
                     {
@@ -399,14 +399,14 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                List<string> results = new List<string>();
+                var results = new List<string>();
                 if (string.IsNullOrEmpty(symbol))
                     return results;
 
                 // 查找所有C#脚本
-                string[] csharpFiles = System.IO.Directory.GetFiles(searchPath, "*.cs", System.IO.SearchOption.AllDirectories);
+                var csharpFiles = System.IO.Directory.GetFiles(searchPath, "*.cs", System.IO.SearchOption.AllDirectories);
 
-                foreach (string file in csharpFiles)
+                foreach (var file in csharpFiles)
                 {
                     if (FileHasConditionalRegion(file, symbol))
                     {
@@ -432,7 +432,7 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                HashSet<string> symbols = new HashSet<string>();
+                var symbols = new HashSet<string>();
 
                 if (!System.IO.File.Exists(configPath))
                 {
@@ -440,17 +440,17 @@ namespace TByd.PackageCreator.Editor.Utils
                     return symbols;
                 }
 
-                string[] lines = System.IO.File.ReadAllLines(configPath);
-                foreach (string line in lines)
+                var lines = System.IO.File.ReadAllLines(configPath);
+                foreach (var line in lines)
                 {
-                    string trimmedLine = line.Trim();
+                    var trimmedLine = line.Trim();
 
                     // 跳过空行和注释行
                     if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("//") || trimmedLine.StartsWith("#"))
                         continue;
 
                     // 处理格式为: SYMBOL // 描述 的行
-                    int commentIndex = trimmedLine.IndexOf("//");
+                    var commentIndex = trimmedLine.IndexOf("//");
                     if (commentIndex > 0)
                     {
                         trimmedLine = trimmedLine.Substring(0, commentIndex).Trim();
@@ -484,7 +484,7 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                HashSet<string> symbols = ReadSymbolsFromConfigFile(configPath);
+                var symbols = ReadSymbolsFromConfigFile(configPath);
                 if (symbols.Count == 0)
                 {
                     Debug.LogWarning("配置文件中未找到有效的条件编译符号");
@@ -517,19 +517,19 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 // 确保目录存在
-                string directory = System.IO.Path.GetDirectoryName(configPath);
+                var directory = System.IO.Path.GetDirectoryName(configPath);
                 if (!string.IsNullOrEmpty(directory) && !System.IO.Directory.Exists(directory))
                 {
                     System.IO.Directory.CreateDirectory(directory);
                 }
 
                 // 生成配置文件内容
-                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                var sb = new System.Text.StringBuilder();
                 sb.AppendLine("// TByd.PackageCreator 条件编译符号配置文件");
                 sb.AppendLine("// 每行一个符号，可以添加注释");
                 sb.AppendLine();
 
-                foreach (string symbol in symbols.OrderBy(s => s))
+                foreach (var symbol in symbols.OrderBy(s => s))
                 {
                     if (IsValidDefineSymbol(symbol))
                     {
@@ -565,12 +565,12 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                HashSet<string> allSymbols = new HashSet<string>();
+                var allSymbols = new HashSet<string>();
 
-                foreach (BuildTargetGroup targetGroup in GetSupportedBuildTargetGroups())
+                foreach (var targetGroup in GetSupportedBuildTargetGroups())
                 {
-                    HashSet<string> symbols = GetDefineSymbols(targetGroup);
-                    foreach (string symbol in symbols)
+                    var symbols = GetDefineSymbols(targetGroup);
+                    foreach (var symbol in symbols)
                     {
                         allSymbols.Add(symbol);
                     }
@@ -594,35 +594,35 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             try
             {
-                HashSet<string> symbols = new HashSet<string>();
+                var symbols = new HashSet<string>();
 
                 // 查找所有C#脚本
-                string[] csharpFiles = System.IO.Directory.GetFiles(searchPath, "*.cs", System.IO.SearchOption.AllDirectories);
+                var csharpFiles = System.IO.Directory.GetFiles(searchPath, "*.cs", System.IO.SearchOption.AllDirectories);
 
                 // 匹配条件编译指令中的符号
-                Regex ifRegex = new Regex(@"#if\s+(!?\s*[A-Za-z_][A-Za-z0-9_]*|.*&&.*|\|\|.*)");
-                Regex elifRegex = new Regex(@"#elif\s+(!?\s*[A-Za-z_][A-Za-z0-9_]*|.*&&.*|\|\|.*)");
-                Regex symbolRegex = new Regex(@"[A-Za-z_][A-Za-z0-9_]*");
+                var ifRegex = new Regex(@"#if\s+(!?\s*[A-Za-z_][A-Za-z0-9_]*|.*&&.*|\|\|.*)");
+                var elifRegex = new Regex(@"#elif\s+(!?\s*[A-Za-z_][A-Za-z0-9_]*|.*&&.*|\|\|.*)");
+                var symbolRegex = new Regex(@"[A-Za-z_][A-Za-z0-9_]*");
 
-                foreach (string file in csharpFiles)
+                foreach (var file in csharpFiles)
                 {
-                    string content = System.IO.File.ReadAllText(file);
+                    var content = System.IO.File.ReadAllText(file);
 
                     // 查找所有 #if 和 #elif 指令
-                    MatchCollection ifMatches = ifRegex.Matches(content);
-                    MatchCollection elifMatches = elifRegex.Matches(content);
+                    var ifMatches = ifRegex.Matches(content);
+                    var elifMatches = elifRegex.Matches(content);
 
                     // 处理 #if 指令
                     foreach (Match match in ifMatches)
                     {
-                        string condition = match.Groups[1].Value.Trim();
+                        var condition = match.Groups[1].Value.Trim();
                         ExtractSymbolsFromCondition(condition, symbols);
                     }
 
                     // 处理 #elif 指令
                     foreach (Match match in elifMatches)
                     {
-                        string condition = match.Groups[1].Value.Trim();
+                        var condition = match.Groups[1].Value.Trim();
                         ExtractSymbolsFromCondition(condition, symbols);
                     }
                 }
@@ -649,11 +649,11 @@ namespace TByd.PackageCreator.Editor.Utils
                 condition = condition.Replace("!", " ").Replace("(", " ").Replace(")", " ");
 
                 // 分割复合条件
-                string[] parts = condition.Split(new[] { "&&", "||" }, StringSplitOptions.RemoveEmptyEntries);
+                var parts = condition.Split(new[] { "&&", "||" }, StringSplitOptions.RemoveEmptyEntries);
 
-                foreach (string part in parts)
+                foreach (var part in parts)
                 {
-                    string trimmedPart = part.Trim();
+                    var trimmedPart = part.Trim();
 
                     // 如果是有效的符号，直接添加
                     if (IsValidDefineSymbol(trimmedPart))
@@ -663,12 +663,12 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
 
                     // 否则尝试从部分中提取有效符号
-                    Regex symbolRegex = new Regex(@"[A-Za-z_][A-Za-z0-9_]*");
-                    MatchCollection matches = symbolRegex.Matches(trimmedPart);
+                    var symbolRegex = new Regex(@"[A-Za-z_][A-Za-z0-9_]*");
+                    var matches = symbolRegex.Matches(trimmedPart);
 
                     foreach (Match symbolMatch in matches)
                     {
-                        string symbol = symbolMatch.Value;
+                        var symbol = symbolMatch.Value;
 
                         // 排除C#关键字
                         if (!IsCSharpKeyword(symbol) && IsValidDefineSymbol(symbol))
@@ -692,7 +692,7 @@ namespace TByd.PackageCreator.Editor.Utils
         private static bool IsCSharpKeyword(string word)
         {
             // C#关键字列表
-            HashSet<string> keywords = new HashSet<string>
+            var keywords = new HashSet<string>
             {
                 "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
                 "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",

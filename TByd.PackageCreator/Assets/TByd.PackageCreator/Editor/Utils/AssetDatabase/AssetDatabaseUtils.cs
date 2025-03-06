@@ -23,7 +23,7 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(absolutePath))
                 return string.Empty;
 
-            string projectPath = Path.GetDirectoryName(Application.dataPath);
+            var projectPath = Path.GetDirectoryName(Application.dataPath);
             if (string.IsNullOrEmpty(projectPath))
                 return string.Empty;
 
@@ -49,7 +49,7 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(assetPath))
                 return string.Empty;
 
-            string projectPath = Path.GetDirectoryName(Application.dataPath);
+            var projectPath = Path.GetDirectoryName(Application.dataPath);
             if (string.IsNullOrEmpty(projectPath))
                 return string.Empty;
 
@@ -75,7 +75,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
 
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(assetPath);
+                var directory = Path.GetDirectoryName(assetPath);
                 if (!string.IsNullOrEmpty(directory))
                 {
                     EnsureDirectoryExists(directory);
@@ -108,7 +108,7 @@ namespace TByd.PackageCreator.Editor.Utils
 
                 if (assetDirectoryPath.StartsWith("Assets") || assetDirectoryPath.StartsWith("Packages"))
                 {
-                    string absolutePath = AssetPathToAbsolutePath(assetDirectoryPath);
+                    var absolutePath = AssetPathToAbsolutePath(assetDirectoryPath);
                     if (!Directory.Exists(absolutePath))
                     {
                         Directory.CreateDirectory(absolutePath);
@@ -191,22 +191,22 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>资源对象列表</returns>
         public static List<T> FindAssets<T>(string folderPath, bool searchSubFolders = true) where T : Object
         {
-            List<T> assets = new List<T>();
+            var assets = new List<T>();
             try
             {
                 if (string.IsNullOrEmpty(folderPath))
                     return assets;
 
-                string[] guids = AssetDatabase.FindAssets("t:" + typeof(T).Name, new[] { folderPath });
-                foreach (string guid in guids)
+                var guids = AssetDatabase.FindAssets("t:" + typeof(T).Name, new[] { folderPath });
+                foreach (var guid in guids)
                 {
-                    string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                    var assetPath = AssetDatabase.GUIDToAssetPath(guid);
 
                     // 判断是否要包含子目录的资源
                     if (!searchSubFolders && Path.GetDirectoryName(assetPath) != folderPath)
                         continue;
 
-                    T asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                    var asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
                     if (asset != null)
                     {
                         assets.Add(asset);
@@ -225,24 +225,24 @@ namespace TByd.PackageCreator.Editor.Utils
         /// </summary>
         /// <param name="folderPath">目录路径（相对于项目）</param>
         /// <returns>子目录路径列表</returns>
-        public static List<string> GetSubFolders(string folderPath)
+        public static string[] GetSubFolders(string folderPath)
         {
-            List<string> subFolders = new List<string>();
+            var subFolders = new List<string>();
             try
             {
                 if (string.IsNullOrEmpty(folderPath))
-                    return subFolders;
+                    return subFolders.ToArray();
 
                 if (!AssetDatabase.IsValidFolder(folderPath))
-                    return subFolders;
+                    return subFolders.ToArray();
 
-                string absolutePath = AssetPathToAbsolutePath(folderPath);
+                var absolutePath = AssetPathToAbsolutePath(folderPath);
                 if (Directory.Exists(absolutePath))
                 {
-                    string[] directories = Directory.GetDirectories(absolutePath);
-                    foreach (string dir in directories)
+                    var directories = Directory.GetDirectories(absolutePath);
+                    foreach (var dir in directories)
                     {
-                        string relativePath = AbsolutePathToAssetPath(dir);
+                        var relativePath = AbsolutePathToAssetPath(dir);
                         if (!string.IsNullOrEmpty(relativePath))
                         {
                             subFolders.Add(relativePath);
@@ -254,7 +254,7 @@ namespace TByd.PackageCreator.Editor.Utils
             {
                 Debug.LogError($"获取子目录失败: {folderPath}, 错误: {ex.Message}");
             }
-            return subFolders;
+            return subFolders.ToArray();
         }
 
         /// <summary>
@@ -277,16 +277,16 @@ namespace TByd.PackageCreator.Editor.Utils
                     return string.Empty;
                 }
 
-                string currentPath = basePath;
-                foreach (string folder in folders)
+                var currentPath = basePath;
+                foreach (var folder in folders)
                 {
                     if (string.IsNullOrEmpty(folder))
                         continue;
 
-                    string newPath = Path.Combine(currentPath, folder);
+                    var newPath = Path.Combine(currentPath, folder);
                     if (!AssetDatabase.IsValidFolder(newPath))
                     {
-                        string guid = AssetDatabase.CreateFolder(currentPath, folder);
+                        var guid = AssetDatabase.CreateFolder(currentPath, folder);
                         if (string.IsNullOrEmpty(guid))
                         {
                             Debug.LogError($"创建目录失败: {newPath}");
@@ -320,7 +320,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
 
                 // 确保目标目录存在
-                string destDir = Path.GetDirectoryName(destPath);
+                var destDir = Path.GetDirectoryName(destPath);
                 if (!string.IsNullOrEmpty(destDir))
                 {
                     EnsureDirectoryExists(destDir);
@@ -358,13 +358,13 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
 
                 // 确保目标目录存在
-                string destDir = Path.GetDirectoryName(destPath);
+                var destDir = Path.GetDirectoryName(destPath);
                 if (!string.IsNullOrEmpty(destDir))
                 {
                     EnsureDirectoryExists(destDir);
                 }
 
-                string error = AssetDatabase.MoveAsset(sourcePath, destPath);
+                var error = AssetDatabase.MoveAsset(sourcePath, destPath);
                 if (string.IsNullOrEmpty(error))
                 {
                     Debug.Log($"移动资源: {sourcePath} -> {destPath}");
@@ -396,7 +396,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(assetPath) || string.IsNullOrEmpty(newName))
                     return false;
 
-                string error = AssetDatabase.RenameAsset(assetPath, newName);
+                var error = AssetDatabase.RenameAsset(assetPath, newName);
                 if (string.IsNullOrEmpty(error))
                 {
                     Debug.Log($"重命名资源: {assetPath} -> {newName}");
@@ -429,7 +429,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return null;
 
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(assetPath);
+                var directory = Path.GetDirectoryName(assetPath);
                 if (!string.IsNullOrEmpty(directory))
                 {
                     EnsureDirectoryExists(directory);
@@ -441,7 +441,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     AssetDatabase.DeleteAsset(assetPath);
                 }
 
-                T asset = ScriptableObject.CreateInstance<T>();
+                var asset = ScriptableObject.CreateInstance<T>();
                 AssetDatabase.CreateAsset(asset, assetPath);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -467,7 +467,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(assetPath))
                     return string.Empty;
 
-                string guid = AssetDatabase.AssetPathToGUID(assetPath);
+                var guid = AssetDatabase.AssetPathToGUID(assetPath);
                 return string.IsNullOrEmpty(guid) ? string.Empty : guid;
             }
             catch (Exception ex)
@@ -489,7 +489,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(guid))
                     return string.Empty;
 
-                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var path = AssetDatabase.GUIDToAssetPath(guid);
                 return string.IsNullOrEmpty(path) ? string.Empty : path;
             }
             catch (Exception ex)
@@ -513,14 +513,14 @@ namespace TByd.PackageCreator.Editor.Utils
                     return null;
 
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(assetPath);
+                var directory = Path.GetDirectoryName(assetPath);
                 if (!string.IsNullOrEmpty(directory))
                 {
                     EnsureDirectoryExists(directory);
                 }
 
                 // 创建预制体
-                GameObject prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, assetPath);
+                var prefab = PrefabUtility.SaveAsPrefabAsset(gameObject, assetPath);
                 if (prefab != null)
                 {
                     Debug.Log($"创建预制体: {assetPath}");

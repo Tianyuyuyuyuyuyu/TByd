@@ -54,7 +54,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>记录的错误信息</returns>
         public ErrorInfo LogError(ErrorType errorType, string errorMessage, ErrorLevel errorLevel, Exception exception = null)
         {
-            ErrorInfo errorInfo = new ErrorInfo
+            var errorInfo = new ErrorInfo
             {
                 ErrorType = errorType,
                 Message = errorMessage,
@@ -109,7 +109,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
                     break;
             }
 
-            string message = errorInfo.Message;
+            var message = errorInfo.Message;
             if (showStackTrace && errorInfo.Exception != null)
             {
                 message += $"\n\n堆栈跟踪:\n{errorInfo.Exception.StackTrace}";
@@ -122,7 +122,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
                     EditorUtility.DisplayDialog(title, message, "确定");
                     break;
                 case ErrorLevel.Warning:
-                    bool proceed = EditorUtility.DisplayDialog(title, message, "继续", "取消");
+                    var proceed = EditorUtility.DisplayDialog(title, message, "继续", "取消");
                     if (!proceed)
                     {
                         throw new OperationCanceledException("用户取消了操作");
@@ -143,7 +143,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                string directory = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Logs");
+                var directory = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Logs");
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
@@ -152,7 +152,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
                 filePath = Path.Combine(directory, $"ErrorLog_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
             }
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.AppendLine("================ PackageCreator 错误日志 ================");
             sb.AppendLine($"导出时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
             sb.AppendLine($"总记录数: {_errorLog.Count}\n");
@@ -237,7 +237,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         {
             if (!_isRecordingOperations || !File.Exists(filePath)) return;
 
-            byte[] originalContent = File.ReadAllBytes(filePath);
+            var originalContent = File.ReadAllBytes(filePath);
             RecordOperation(OperationType.ModifyFile, filePath, originalContent);
         }
 
@@ -258,9 +258,9 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         {
             if (_operationHistory.Count == 0) return true;
 
-            bool success = true;
+            var success = true;
             // 逆序遍历操作历史，执行回滚
-            for (int i = _operationHistory.Count - 1; i >= 0; i--)
+            for (var i = _operationHistory.Count - 1; i >= 0; i--)
             {
                 var operation = _operationHistory[i];
                 try
