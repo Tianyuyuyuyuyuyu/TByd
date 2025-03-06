@@ -98,6 +98,16 @@ namespace TByd.PackageCreator.Editor.Core
         public string UnityVersion { get; set; } = "2021.3";
 
         /// <summary>
+        /// 最低Unity版本要求，用于向后兼容性校验
+        /// </summary>
+        public string MinUnityVersion { get; set; } = "2021.3";
+
+        /// <summary>
+        /// 根命名空间
+        /// </summary>
+        public string RootNamespace { get; set; }
+
+        /// <summary>
         /// 包依赖
         /// </summary>
         public List<PackageDependency> Dependencies { get; set; } = new List<PackageDependency>();
