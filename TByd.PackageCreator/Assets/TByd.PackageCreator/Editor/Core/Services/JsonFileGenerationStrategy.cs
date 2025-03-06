@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TByd.PackageCreator.Editor.Utils;
 using UnityEngine;
 
@@ -130,10 +131,10 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 先尝试解析为JSON对象
-                var jsonObject = JsonUtility.FromJson<object>(jsonContent);
+                var jsonObject = JsonConvert.DeserializeObject(jsonContent);
 
                 // 然后重新序列化为漂亮的JSON格式
-                string formattedJson = JsonUtility.ToJson(jsonObject, true);
+                string formattedJson = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
 
                 isValidJson = true;
                 return formattedJson;

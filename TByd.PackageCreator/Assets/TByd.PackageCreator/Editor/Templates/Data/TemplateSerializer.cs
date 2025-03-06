@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using UnityEditor;
@@ -44,7 +45,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
                     Options = template.Options.ToArray()
                 };
 
-                return JsonUtility.ToJson(jsonTemplate, true);
+                return JsonConvert.SerializeObject(jsonTemplate, Formatting.Indented);
             }
             catch (Exception ex)
             {
@@ -68,7 +69,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
 
             try
             {
-                var jsonTemplate = JsonUtility.FromJson<JsonTemplateData>(json);
+                var jsonTemplate = JsonConvert.DeserializeObject<JsonTemplateData>(json);
                 if (jsonTemplate == null)
                 {
                     ErrorHandler.LogError(ErrorType.InvalidData, "JSON解析失败");
@@ -122,14 +123,31 @@ namespace TByd.PackageCreator.Editor.Templates.Data
     [Serializable]
     public class JsonTemplateData
     {
+        [JsonProperty("id")]
         public string Id;
+
+        [JsonProperty("name")]
         public string Name;
+
+        [JsonProperty("description")]
         public string Description;
+
+        [JsonProperty("version")]
         public string Version;
+
+        [JsonProperty("author")]
         public string Author;
+
+        [JsonProperty("iconPath")]
         public string IconPath;
+
+        [JsonProperty("directories")]
         public TemplateDirectory[] Directories;
+
+        [JsonProperty("files")]
         public TemplateFile[] Files;
+
+        [JsonProperty("options")]
         public TemplateOption[] Options;
     }
 

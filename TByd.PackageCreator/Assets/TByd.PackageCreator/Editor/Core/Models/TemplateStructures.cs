@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace TByd.PackageCreator.Editor.Core
 {
@@ -12,21 +13,25 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 目录相对路径
         /// </summary>
+        [JsonProperty("relativePath")]
         public string RelativePath { get; set; }
 
         /// <summary>
         /// 目录描述
         /// </summary>
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
         /// 是否是必需目录
         /// </summary>
+        [JsonProperty("isRequired")]
         public bool IsRequired { get; set; } = true;
 
         /// <summary>
         /// 子目录列表
         /// </summary>
+        [JsonProperty("subdirectories")]
         public List<TemplateDirectory> Subdirectories { get; set; } = new List<TemplateDirectory>();
 
         /// <summary>
@@ -61,26 +66,31 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 文件相对路径
         /// </summary>
+        [JsonProperty("relativePath")]
         public string RelativePath { get; set; }
 
         /// <summary>
         /// 文件描述
         /// </summary>
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
         /// 是否是必需文件
         /// </summary>
+        [JsonProperty("isRequired")]
         public bool IsRequired { get; set; } = true;
 
         /// <summary>
         /// 文件内容模板
         /// </summary>
+        [JsonProperty("contentTemplate")]
         public string ContentTemplate { get; set; }
 
         /// <summary>
         /// 文件是否支持变量替换
         /// </summary>
+        [JsonProperty("supportsVariableReplacement")]
         public bool SupportsVariableReplacement { get; set; } = true;
 
         /// <summary>
@@ -111,21 +121,25 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 预览标题
         /// </summary>
+        [JsonProperty("title")]
         public string Title { get; set; }
 
         /// <summary>
         /// 预览内容
         /// </summary>
+        [JsonProperty("content")]
         public string Content { get; set; }
 
         /// <summary>
         /// 预览特点列表
         /// </summary>
+        [JsonProperty("features")]
         public List<string> Features { get; set; } = new List<string>();
 
         /// <summary>
         /// 示例图
         /// </summary>
+        [JsonProperty("previewImagePath")]
         public string PreviewImagePath { get; set; }
 
         /// <summary>

@@ -44,6 +44,12 @@
 - 期望改进: 提供更具体的优化技术，包括可测量的性能指标和基准测试方法
 - 参考资料: Unity 官方性能优化文档
 
+## 2025-03-06: 在 C#中，不能在包含 catch 子句的 try 块内使用 yield return 语句
+
+- 反馈类别: #测试策略#
+- 问题描述: 在包含 catch 子句的 try 块中，不能使用 yield return 语句
+- 期望改进: Unity 测试框架：使用[UnityTest]标记协程测试，异步等待：使用 while (!task.IsCompleted) yield return null;等待异步任务。
+
 ## 如何使用反馈系统
 
 1. 在与 AI 交互过程中，当发现回答不符合预期时，使用标准格式记录反馈

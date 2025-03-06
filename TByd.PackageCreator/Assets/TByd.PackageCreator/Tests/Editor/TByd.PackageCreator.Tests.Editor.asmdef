@@ -4,8 +4,7 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "TByd.PackageCreator.Editor",
-        "TByd.PackageCreator.Runtime"
+        "TByd.PackageCreator.Editor"
     ],
     "includePlatforms": [
         "Editor"
@@ -14,7 +13,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "nunit.framework.dll"
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [

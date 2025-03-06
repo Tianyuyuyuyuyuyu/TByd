@@ -19,14 +19,30 @@ namespace TByd.PackageCreator.Tests.Editor
         /// <returns>完整的临时文件路径</returns>
         public static string GetTestFilePath(string fileName)
         {
-            var directory = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Tests");
+            // 使用标准的临时目录而不是Application.temporaryCachePath
+            var tempPath = Path.GetTempPath();
+            var directory = Path.Combine(tempPath, "tbyd", "packagecreator", "tests");
 
-            if (!Directory.Exists(directory))
+            // 确保目录存在，并获取实际创建的目录路径
+            directory = EnsureTestDirectoryExists(directory);
+
+            // 使用Path.Combine确保路径分隔符的一致性
+            var fullPath = Path.Combine(directory, fileName);
+
+            // 如果文件已存在，先删除它
+            if (File.Exists(fullPath))
             {
-                Directory.CreateDirectory(directory);
+                try
+                {
+                    File.Delete(fullPath);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"清理测试文件失败: {fullPath}, 错误: {ex.Message}");
+                }
             }
 
-            return Path.Combine(directory, fileName);
+            return fullPath;
         }
 
         /// <summary>
@@ -84,11 +100,39 @@ namespace TByd.PackageCreator.Tests.Editor
         /// 确保测试目录存在
         /// </summary>
         /// <param name="directoryPath">目录路径</param>
-        public static void EnsureTestDirectoryExists(string directoryPath)
+        /// <returns>实际使用的目录路径</returns>
+        public static string EnsureTestDirectoryExists(string directoryPath)
         {
-            if (!Directory.Exists(directoryPath))
+            try
             {
-                Directory.CreateDirectory(directoryPath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    // 创建目录，包括所有必需的父目录
+                    Directory.CreateDirectory(directoryPath);
+
+                    // 验证目录已创建
+                    if (!Directory.Exists(directoryPath))
+                    {
+                        throw new DirectoryNotFoundException($"无法创建目录: {directoryPath}");
+                    }
+
+                    Debug.Log($"已创建测试目录: {directoryPath}");
+                }
+
+                return directoryPath;
+            }
+            catch (Exception ex)
+            {
+                // 如果创建失败，尝试使用应用程序的临时目录
+                var fallbackDir = Path.Combine(Application.temporaryCachePath, "PackageCreatorTests");
+                Debug.LogError($"创建目录失败: {directoryPath}, 错误: {ex.Message}. 使用备用目录: {fallbackDir}");
+
+                if (!Directory.Exists(fallbackDir))
+                {
+                    Directory.CreateDirectory(fallbackDir);
+                }
+
+                return fallbackDir;
             }
         }
 

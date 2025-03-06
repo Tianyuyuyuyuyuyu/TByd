@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace TByd.PackageCreator.Editor.Core
 {
     /// <summary>
     /// 模板选项类型
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum TemplateOptionType
     {
         /// <summary>
@@ -38,36 +41,43 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 选项键
         /// </summary>
+        [JsonProperty("key")]
         public string Key { get; set; }
 
         /// <summary>
         /// 选项显示名称
         /// </summary>
+        [JsonProperty("displayName")]
         public string DisplayName { get; set; }
 
         /// <summary>
         /// 选项描述
         /// </summary>
+        [JsonProperty("description")]
         public string Description { get; set; }
 
         /// <summary>
         /// 选项类型
         /// </summary>
+        [JsonProperty("type")]
         public TemplateOptionType Type { get; set; }
 
         /// <summary>
         /// 默认值
         /// </summary>
+        [JsonProperty("defaultValue")]
         public string DefaultValue { get; set; }
 
         /// <summary>
         /// 是否必需
         /// </summary>
+        [JsonProperty("isRequired")]
         public bool IsRequired { get; set; } = true;
 
         /// <summary>
         /// 可选值（用于枚举类型）
         /// </summary>
+        [JsonProperty("possibleValues")]
         public List<string> PossibleValues { get; set; } = new List<string>();
 
         /// <summary>

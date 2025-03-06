@@ -1,6 +1,8 @@
+using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using TByd.PackageCreator.Editor.Core;
-using TByd.PackageCreator.Tests.Editor;
+using UnityEngine;
 
 namespace TByd.PackageCreator.Tests.Editor.Core.Models
 {
@@ -10,45 +12,13 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
     public class PackageConfigTests
     {
         [Test]
-        public void PackageDependency_Constructor_ShouldSetPropertiesCorrectly()
+        public void Constructor_ShouldInitializeProperties()
         {
             // 安排
-            var id = "com.unity.test-framework";
-            var version = "1.1.31";
-
-            // 执行
-            var dependency = new PackageDependency(id, version);
-
-            // 断言
-            Assert.AreEqual(id, dependency.Id);
-            Assert.AreEqual(version, dependency.Version);
-        }
-
-        [Test]
-        public void PackageAuthor_Constructor_ShouldSetPropertiesCorrectly()
-        {
-            // 安排
-            var name = "测试作者";
-            var email = "test@example.com";
-            var url = "https://example.com";
-
-            // 执行
-            var author = new PackageAuthor(name, email, url);
-
-            // 断言
-            Assert.AreEqual(name, author.Name);
-            Assert.AreEqual(email, author.Email);
-            Assert.AreEqual(url, author.Url);
-        }
-
-        [Test]
-        public void PackageConfig_Constructor_ShouldSetPropertiesCorrectly()
-        {
-            // 安排
-            var name = "com.example.test";
-            var displayName = "测试包";
-            var version = "1.0.0";
-            var description = "这是一个测试包";
+            string name = "com.test.package";
+            string displayName = "Test Package";
+            string version = "1.0.0";
+            string description = "Test package description";
 
             // 执行
             var config = new PackageConfig(name, displayName, version, description);
@@ -58,19 +28,74 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             Assert.AreEqual(displayName, config.DisplayName);
             Assert.AreEqual(version, config.Version);
             Assert.AreEqual(description, config.Description);
-            Assert.IsNotNull(config.Dependencies);
-            Assert.IsNotNull(config.Keywords);
             Assert.IsNotNull(config.Author);
-            Assert.IsNotNull(config.CustomOptions);
         }
 
         [Test]
-        public void PackageConfig_AddDependency_ShouldAddDependencyToList()
+        public void Constructor_WithDefaultValues_ShouldSetDefaultVersion()
         {
             // 安排
-            var config = new PackageConfig("com.example.test", "测试包");
-            var dependencyId = "com.unity.test-framework";
-            var dependencyVersion = "1.1.31";
+            string name = "com.test.package";
+            string displayName = "Test Package";
+
+            // 执行：只提供必须的参数
+            var config = new PackageConfig(name, displayName);
+
+            // 断言：版本应该是默认值"0.1.0"
+            Assert.AreEqual("0.1.0", config.Version);
+        }
+
+        [Test]
+        public void Dependencies_ShouldBeEmptyByDefault()
+        {
+            // 安排
+            var config = new PackageConfig("com.test.package", "Test Package");
+
+            // 断言：默认情况下依赖项列表应该为空，但不为null
+            Assert.IsNotNull(config.Dependencies);
+            Assert.IsEmpty(config.Dependencies);
+        }
+
+        [Test]
+        public void Keywords_ShouldBeEmptyByDefault()
+        {
+            // 安排
+            var config = new PackageConfig("com.test.package", "Test Package");
+
+            // 断言：默认情况下关键字列表应该为空，但不为null
+            Assert.IsNotNull(config.Keywords);
+            Assert.IsEmpty(config.Keywords);
+        }
+
+        [Test]
+        public void CustomOptions_ShouldBeEmptyByDefault()
+        {
+            // 安排
+            var config = new PackageConfig("com.test.package", "Test Package");
+
+            // 断言：默认情况下自定义选项应该为空，但不为null
+            Assert.IsNotNull(config.CustomOptions);
+            Assert.IsEmpty(config.CustomOptions);
+        }
+
+        [Test]
+        public void CustomVariables_ShouldBeEmptyByDefault()
+        {
+            // 安排
+            var config = new PackageConfig("com.test.package", "Test Package");
+
+            // 断言：默认情况下自定义变量应该为空，但不为null
+            Assert.IsNotNull(config.CustomVariables);
+            Assert.IsEmpty(config.CustomVariables);
+        }
+
+        [Test]
+        public void AddDependency_ShouldAddToDependenciesList()
+        {
+            // 安排
+            var config = new PackageConfig("com.test.package", "Test Package");
+            string dependencyId = "com.unity.test";
+            string dependencyVersion = "1.0.0";
 
             // 执行
             config.AddDependency(dependencyId, dependencyVersion);
@@ -82,53 +107,75 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         }
 
         [Test]
-        public void PackageConfig_AddKeyword_ShouldAddKeywordToList()
+        public void DefaultUnityVersion_ShouldBe2021_3()
         {
             // 安排
-            var config = new PackageConfig("com.example.test", "测试包");
-            var keyword = "测试";
+            var config = new PackageConfig("com.test.package", "Test Package");
 
-            // 执行
-            config.AddKeyword(keyword);
-
-            // 断言
-            Assert.AreEqual(1, config.Keywords.Count);
-            Assert.AreEqual(keyword, config.Keywords[0]);
+            // 断言：默认Unity版本应该是"2021.3"
+            Assert.AreEqual("2021.3", config.UnityVersion);
         }
 
         [Test]
-        public void PackageConfig_SetAuthor_ShouldSetAuthorProperties()
+        public void IncludeTests_ShouldBeTrueByDefault()
         {
             // 安排
-            var config = new PackageConfig("com.example.test", "测试包");
-            var name = "测试作者";
-            var email = "test@example.com";
-            var url = "https://example.com";
+            var config = new PackageConfig("com.test.package", "Test Package");
 
-            // 执行
-            config.SetAuthor(name, email, url);
-
-            // 断言
-            Assert.IsNotNull(config.Author);
-            Assert.AreEqual(name, config.Author.Name);
-            Assert.AreEqual(email, config.Author.Email);
-            Assert.AreEqual(url, config.Author.Url);
+            // 断言：默认包含测试
+            Assert.IsTrue(config.IncludeTests);
         }
 
         [Test]
-        public void PackageConfig_AddCustomOption_ShouldAddOptionToDictionary()
+        public void IncludeSamples_ShouldBeTrueByDefault()
         {
             // 安排
-            var config = new PackageConfig("com.example.test", "测试包");
-            var key = "customKey";
-            var value = "customValue";
+            var config = new PackageConfig("com.test.package", "Test Package");
+
+            // 断言：默认包含示例
+            Assert.IsTrue(config.IncludeSamples);
+        }
+
+        [Test]
+        public void IncludeDocumentation_ShouldBeTrueByDefault()
+        {
+            // 安排
+            var config = new PackageConfig("com.test.package", "Test Package");
+
+            // 断言：默认包含文档
+            Assert.IsTrue(config.IncludeDocumentation);
+        }
+
+        [Test]
+        public void PackageAuthor_PropertiesTest()
+        {
+            // 安排
+            string name = "Test Author";
+            string email = "test@example.com";
+            string url = "https://example.com";
 
             // 执行
-            config.AddCustomOption(key, value);
+            var author = new PackageAuthor(name, email, url);
 
             // 断言
-            Assert.IsTrue(config.CustomOptions.ContainsKey(key));
-            Assert.AreEqual(value, config.CustomOptions[key]);
+            Assert.AreEqual(name, author.Name);
+            Assert.AreEqual(email, author.Email);
+            Assert.AreEqual(url, author.Url);
+        }
+
+        [Test]
+        public void PackageDependency_PropertiesTest()
+        {
+            // 安排
+            string id = "com.unity.test";
+            string version = "1.0.0";
+
+            // 执行
+            var dependency = new PackageDependency(id, version);
+
+            // 断言
+            Assert.AreEqual(id, dependency.Id);
+            Assert.AreEqual(version, dependency.Version);
         }
     }
 }

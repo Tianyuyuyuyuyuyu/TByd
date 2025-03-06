@@ -1,16 +1,16 @@
 {
     "name": "TByd.PackageCreator.Editor",
     "rootNamespace": "TByd.PackageCreator.Editor",
-    "references": [
-        "TByd.PackageCreator.Runtime"
-    ],
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll"
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

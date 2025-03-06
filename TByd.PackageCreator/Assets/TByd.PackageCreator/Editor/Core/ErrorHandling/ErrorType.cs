@@ -103,6 +103,21 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <summary>
         /// 重复资源错误
         /// </summary>
-        DuplicateResource = 18
+        DuplicateResource = 18,
+
+        /// <summary>
+        /// 反序列化错误
+        /// </summary>
+        DeserializationError = 19,
+
+        /// <summary>
+        /// 序列化错误
+        /// </summary>
+        SerializationError = 20,
+
+        /// <summary>
+        /// 文件写入错误
+        /// </summary>
+        FileWriteError = 21
     }
 }
