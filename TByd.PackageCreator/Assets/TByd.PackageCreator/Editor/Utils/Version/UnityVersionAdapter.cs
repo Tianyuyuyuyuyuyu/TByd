@@ -503,11 +503,17 @@ namespace TByd.PackageCreator.Editor.Utils
                 {
                     // 获取当前构建目标
                     var target = EditorUserBuildSettings.activeBuildTarget;
+                    var targetGroup = GetBuildTargetGroup(target);
 
                     // 获取脚本后端（通过反射，因为ScriptingImplementation枚举可能在不同版本中不同）
                     var playerSettingsType = typeof(PlayerSettings);
+
+                    // 指定参数类型，避免方法重载导致的歧义
                     var getScriptingBackendMethod = playerSettingsType.GetMethod("GetScriptingBackend",
-                        BindingFlags.Public | BindingFlags.Static);
+                        BindingFlags.Public | BindingFlags.Static,
+                        null,
+                        new Type[] { typeof(BuildTargetGroup) },
+                        null);
 
                     if (getScriptingBackendMethod == null)
                     {
@@ -515,8 +521,22 @@ namespace TByd.PackageCreator.Editor.Utils
                         return "Unknown";
                     }
 
-                    var backend = getScriptingBackendMethod.Invoke(null, new object[] { GetBuildTargetGroup(target) });
-                    return backend.ToString();
+                    var backend = getScriptingBackendMethod.Invoke(null, new object[] { targetGroup });
+
+                    // 检查返回值是否为枚举
+                    if (backend != null && backend.GetType().IsEnum)
+                    {
+                        // 处理枚举值，转换为友好的字符串
+                        int backendValue = Convert.ToInt32(backend);
+                        switch (backendValue)
+                        {
+                            case 0: return "Mono";
+                            case 1: return "IL2CPP";
+                            default: return backend.ToString();
+                        }
+                    }
+
+                    return backend?.ToString() ?? "Unknown";
                 }
                 catch (Exception ex)
                 {
