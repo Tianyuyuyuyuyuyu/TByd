@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.Core
@@ -61,12 +62,21 @@ namespace TByd.PackageCreator.Editor.Core
         ValidationResult ValidateConfig(PackageConfig config);
 
         /// <summary>
-        /// 根据配置生成包结构
+        /// 根据配置生成包结构（同步方法，为兼容保留）
         /// </summary>
         /// <param name="config">包配置</param>
         /// <param name="targetPath">目标路径</param>
         /// <returns>操作是否成功</returns>
         bool Generate(PackageConfig config, string targetPath);
+
+        /// <summary>
+        /// 根据配置异步生成包结构
+        /// </summary>
+        /// <param name="config">包配置</param>
+        /// <param name="targetPath">目标路径</param>
+        /// <param name="fileGenerator">文件生成器</param>
+        /// <returns>生成结果</returns>
+        Task<ValidationResult> GenerateAsync(PackageConfig config, string targetPath, FileGenerator fileGenerator = null);
 
         /// <summary>
         /// 获取模板预览信息

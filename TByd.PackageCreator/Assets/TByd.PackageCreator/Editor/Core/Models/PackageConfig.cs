@@ -163,6 +163,16 @@ namespace TByd.PackageCreator.Editor.Core
         public Dictionary<string, string> CustomOptions { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
+        /// 公司/组织名称
+        /// </summary>
+        public string Company { get; set; }
+
+        /// <summary>
+        /// 自定义变量字典，用于模板中的变量替换
+        /// </summary>
+        public Dictionary<string, string> CustomVariables { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// 创建一个新的包配置
         /// </summary>
         /// <param name="name">包名称</param>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using UnityEngine;
@@ -337,9 +338,47 @@ Copyright (c) #CURRENT_YEAR# #AUTHOR_NAME#
         /// <returns>操作是否成功</returns>
         public virtual bool Generate(PackageConfig config, string targetPath)
         {
-            // 实际生成逻辑将在FileGenerator中实现
-            // 这里只返回一个基本的结果
-            return true;
+            // 创建文件生成器
+            var fileGenerator = new FileGenerator();
+
+            // 注册标准策略
+            fileGenerator.RegisterStrategy(new JsonFileGenerationStrategy());
+            fileGenerator.RegisterStrategy(new CSharpFileGenerationStrategy());
+
+            // 执行异步生成并等待结果
+            var task = GenerateAsync(config, targetPath, fileGenerator);
+            task.Wait();
+
+            // 返回生成结果
+            return task.Result.IsValid;
+        }
+
+        /// <summary>
+        /// 根据配置异步生成包结构
+        /// </summary>
+        /// <param name="config">包配置</param>
+        /// <param name="targetPath">目标路径</param>
+        /// <param name="fileGenerator">文件生成器</param>
+        /// <returns>生成结果</returns>
+        public virtual async Task<ValidationResult> GenerateAsync(PackageConfig config, string targetPath, FileGenerator fileGenerator = null)
+        {
+            // 创建默认文件生成器（如果未提供）
+            if (fileGenerator == null)
+            {
+                fileGenerator = new FileGenerator();
+                fileGenerator.RegisterStrategy(new JsonFileGenerationStrategy());
+                fileGenerator.RegisterStrategy(new CSharpFileGenerationStrategy());
+            }
+
+            // 验证配置
+            var validationResult = ValidateConfig(config);
+            if (!validationResult.IsValid)
+            {
+                return validationResult;
+            }
+
+            // 使用文件生成器生成目录和文件
+            return await fileGenerator.GenerateAsync(this, config, targetPath);
         }
 
         /// <summary>

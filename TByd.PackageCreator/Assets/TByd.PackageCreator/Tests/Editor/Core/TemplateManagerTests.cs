@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.Services;
@@ -192,6 +193,13 @@ namespace TByd.PackageCreator.Tests.Editor.Core
         public bool Generate(PackageConfig config, string targetPath)
         {
             return true;
+        }
+
+        public async Task<ValidationResult> GenerateAsync(PackageConfig config, string targetPath, FileGenerator fileGenerator = null)
+        {
+            // 异步版本的生成方法，在测试中只返回成功结果
+            await Task.Delay(1); // 模拟异步操作
+            return new ValidationResult(); // 返回一个有效的验证结果
         }
 
         public TemplatePreviewInfo GetPreviewInfo()

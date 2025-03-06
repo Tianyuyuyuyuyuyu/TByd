@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Tests.Editor;
@@ -71,6 +72,13 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Interfaces
             {
                 // 这个方法在实际测试中会被模拟，这里只返回true
                 return true;
+            }
+
+            public async Task<ValidationResult> GenerateAsync(PackageConfig config, string targetPath, FileGenerator fileGenerator = null)
+            {
+                // 异步版本的生成方法，在测试中只返回成功结果
+                await Task.Delay(1); // 模拟异步操作
+                return new ValidationResult(); // 返回一个有效的验证结果
             }
 
             public TemplatePreviewInfo GetPreviewInfo()
