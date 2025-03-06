@@ -7,7 +7,7 @@ using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.Services;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Tests.Editor.Core
+namespace TByd.PackageCreator.Tests.Editor.Core.Services
 {
     /// <summary>
     /// 模板管理器测试
