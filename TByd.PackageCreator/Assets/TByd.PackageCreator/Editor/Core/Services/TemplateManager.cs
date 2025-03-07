@@ -30,14 +30,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         public static TemplateManager Instance
         {
-            get
-            {
-                if (_sInstance == null)
-                {
-                    _sInstance = new TemplateManager();
-                }
-                return _sInstance;
-            }
+            get { return _sInstance ??= new TemplateManager(); }
         }
 
         private TemplateManager()
@@ -94,8 +87,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
                             continue;
                         }
 
-                        var provider = Activator.CreateInstance(type) as ITemplateProvider;
-                        if (provider != null)
+                        if (Activator.CreateInstance(type) is ITemplateProvider provider)
                         {
                             RegisterProvider(provider);
                             _mErrorHandler.LogInfo($"已通过反射加载模板提供者: {provider.ProviderName}");
