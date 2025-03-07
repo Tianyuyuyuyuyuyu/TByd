@@ -864,7 +864,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                     switch (template)
                     {
                         case TemplateType.BasicPackage:
-                            return "基础支持";
                         case TemplateType.EditorTool:
                             return "基础支持";
                         case TemplateType.RuntimeLibrary:
@@ -890,9 +889,7 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                     switch (template)
                     {
                         case TemplateType.BasicPackage:
-                            return _mIncludeSamples ? "是" : "否";
                         case TemplateType.EditorTool:
-                            return _mIncludeSamples ? "是" : "否";
                         case TemplateType.RuntimeLibrary:
                             return _mIncludeSamples ? "是" : "否";
                         default:
@@ -944,7 +941,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                         case TemplateType.BasicPackage:
                             return "中";
                         case TemplateType.EditorTool:
-                            return "高";
                         case TemplateType.RuntimeLibrary:
                             return "高";
                         default:
