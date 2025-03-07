@@ -89,7 +89,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
             config.Version = "0.1.0";
             config.Description = $"{displayName} - 由TByd.PackageCreator创建";
             config.UnityVersion = "2021.3";
-            config.Author = new PackageAuthor("TByd", "", "");
+            config.Author = new PackageAuthor("TByd");
 
             _mCurrentConfig = config;
             AddToHistory(config, "创建新配置");
@@ -524,7 +524,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
             );
 
             config.UnityVersion = "2021.3";
-            config.Author = new PackageAuthor("Your Name", "your.email@example.com", "");
+            config.Author = new PackageAuthor("Your Name", "your.email@example.com");
 
             return config;
         }
@@ -573,7 +573,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented,
-                    Error = (sender, args) =>
+                    Error = (_, args) =>
                     {
                         _mErrorHandler.LogWarning(ErrorType.SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
@@ -604,7 +604,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     MissingMemberHandling = MissingMemberHandling.Ignore,
-                    Error = (sender, args) =>
+                    Error = (_, args) =>
                     {
                         _mErrorHandler.LogWarning(ErrorType.DeserializationError, $"JSON反序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
@@ -637,7 +637,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     MissingMemberHandling = MissingMemberHandling.Ignore,
-                    Error = (sender, args) =>
+                    Error = (_, args) =>
                     {
                         _mErrorHandler.LogWarning(ErrorType.SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;

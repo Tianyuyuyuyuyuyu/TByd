@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TByd.PackageCreator.Editor.UI.Controls;
 using TByd.PackageCreator.Editor.UI.Styles;
 using UnityEditor;
@@ -680,7 +681,7 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
 
-                foreach (var template in _mTemplatesForComparison)
+                foreach (var template in _mTemplatesForComparison.ToList())
                 {
                     var templateName = "";
                     switch (template)

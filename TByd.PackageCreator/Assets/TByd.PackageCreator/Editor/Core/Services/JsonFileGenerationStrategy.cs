@@ -33,7 +33,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         public JsonFileGenerationStrategy()
         {
-            _mVariableProcessor = new FileGenerator(null);
+            _mVariableProcessor = new FileGenerator();
         }
 
         /// <summary>

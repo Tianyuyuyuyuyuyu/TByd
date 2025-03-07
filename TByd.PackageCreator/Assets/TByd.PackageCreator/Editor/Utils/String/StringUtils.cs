@@ -12,7 +12,7 @@ namespace TByd.PackageCreator.Editor.Utils.String
     public static class StringUtils
     {
         // C#关键字集合，用于标识符验证和转换
-        private static readonly HashSet<string> SCSharpKeywords = new HashSet<string>
+        private static readonly HashSet<string> ScSharpKeywords = new HashSet<string>
         {
             "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
             "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
@@ -327,7 +327,6 @@ namespace TByd.PackageCreator.Editor.Utils.String
 
             // 逐字符计算累计宽度，找到合适的截断位置
             var accumulatedWidth = 0;
-            var charIndex = 0;
 
             var sb = new StringBuilder(input.Length);
 
@@ -339,7 +338,6 @@ namespace TByd.PackageCreator.Editor.Utils.String
                     break;
 
                 accumulatedWidth += charWidth;
-                charIndex++;
                 sb.Append(c);
             }
 
@@ -388,10 +386,6 @@ namespace TByd.PackageCreator.Editor.Utils.String
         {
             // 基本拉丁字母和拉丁-1补充
             if (codePoint <= 0x00FF)
-                return false;
-
-            // ASCII控制字符
-            if (codePoint < 0x0020)
                 return false;
 
             // 半角字符
@@ -503,7 +497,7 @@ namespace TByd.PackageCreator.Editor.Utils.String
             }
 
             // 检查是否为C#关键字
-            return !SCSharpKeywords.Contains(input);
+            return !ScSharpKeywords.Contains(input);
         }
 
         /// <summary>
@@ -548,7 +542,7 @@ namespace TByd.PackageCreator.Editor.Utils.String
 
             // 检查是否为C#关键字
             var result = sb.ToString();
-            if (SCSharpKeywords.Contains(result))
+            if (ScSharpKeywords.Contains(result))
             {
                 return "_" + result;
             }
@@ -737,12 +731,12 @@ namespace TByd.PackageCreator.Editor.Utils.String
             if (string.IsNullOrEmpty(input) || string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(suffix))
                 return string.Empty;
 
-            var startIndex = input.IndexOf(prefix);
+            var startIndex = input.IndexOf(prefix, StringComparison.Ordinal);
             if (startIndex < 0)
                 return string.Empty;
 
             startIndex += prefix.Length;
-            var endIndex = input.IndexOf(suffix, startIndex);
+            var endIndex = input.IndexOf(suffix, startIndex, StringComparison.Ordinal);
             if (endIndex < 0)
                 return string.Empty;
 
@@ -766,12 +760,12 @@ namespace TByd.PackageCreator.Editor.Utils.String
             var currentIndex = 0;
             while (currentIndex < input.Length)
             {
-                var startIndex = input.IndexOf(prefix, currentIndex);
+                var startIndex = input.IndexOf(prefix, currentIndex, StringComparison.Ordinal);
                 if (startIndex < 0)
                     break;
 
                 startIndex += prefix.Length;
-                var endIndex = input.IndexOf(suffix, startIndex);
+                var endIndex = input.IndexOf(suffix, startIndex, StringComparison.Ordinal);
                 if (endIndex < 0)
                     break;
 

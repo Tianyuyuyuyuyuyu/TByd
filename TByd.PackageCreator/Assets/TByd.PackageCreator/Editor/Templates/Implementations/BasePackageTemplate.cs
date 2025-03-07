@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;

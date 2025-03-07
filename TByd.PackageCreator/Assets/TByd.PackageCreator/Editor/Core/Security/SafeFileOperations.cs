@@ -211,27 +211,9 @@ namespace TByd.PackageCreator.Editor.Core.Security
                     }
                 }
 
-                // 原子写入文件
-                var writeSuccess = true;
+                File.WriteAllText(filePath, content);
 
-                try
-                {
-                    File.WriteAllText(filePath, content);
-                }
-                catch (Exception ex)
-                {
-                    writeSuccess = false;
-                    throw ex; // 重新抛出异常以便被上层 catch 捕获
-                }
-
-                if (writeSuccess)
-                {
-                    result.AddInfo($"成功写入文件: {filePath}");
-                }
-                else
-                {
-                    result.AddError($"写入文件失败: {filePath}");
-                }
+                result.AddInfo($"成功写入文件: {filePath}");
             }
             catch (Exception ex)
             {

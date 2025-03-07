@@ -135,17 +135,13 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (_sSecondaryButtonStyle == null)
+                return _sSecondaryButtonStyle ??= new GUIStyle(GUI.skin.button)
                 {
-                    _sSecondaryButtonStyle = new GUIStyle(GUI.skin.button)
-                    {
-                        fontSize = StandardFontSize,
-                        fixedHeight = 25,
-                        margin = new RectOffset(5, 5, 5, 5),
-                        padding = new RectOffset(10, 10, 3, 3)
-                    };
-                }
-                return _sSecondaryButtonStyle;
+                    fontSize = StandardFontSize,
+                    fixedHeight = 25,
+                    margin = new RectOffset(5, 5, 5, 5),
+                    padding = new RectOffset(10, 10, 3, 3)
+                };
             }
         }
 
@@ -156,15 +152,11 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (_sCardStyle == null)
+                return _sCardStyle ??= new GUIStyle(EditorStyles.helpBox)
                 {
-                    _sCardStyle = new GUIStyle(EditorStyles.helpBox)
-                    {
-                        margin = new RectOffset(5, 5, 5, 5),
-                        padding = new RectOffset(10, 10, 10, 10)
-                    };
-                }
-                return _sCardStyle;
+                    margin = new RectOffset(5, 5, 5, 5),
+                    padding = new RectOffset(10, 10, 10, 10)
+                };
             }
         }
 

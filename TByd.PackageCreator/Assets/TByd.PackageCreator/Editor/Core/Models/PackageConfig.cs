@@ -232,7 +232,7 @@ namespace TByd.PackageCreator.Editor.Core.Models
             DisplayName = displayName;
             Version = version;
             Description = description;
-            Author = new PackageAuthor("", "", "");
+            Author = new PackageAuthor("");
         }
 
         /// <summary>

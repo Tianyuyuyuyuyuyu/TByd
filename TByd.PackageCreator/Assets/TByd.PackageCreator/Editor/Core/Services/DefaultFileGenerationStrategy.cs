@@ -31,7 +31,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         public DefaultFileGenerationStrategy()
         {
-            _mVariableProcessor = new FileGenerator(null);
+            _mVariableProcessor = new FileGenerator();
         }
 
         /// <summary>

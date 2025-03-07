@@ -20,7 +20,7 @@ namespace TByd.PackageCreator.Editor.Utils.Compilation
         {
             var targetGroup = GetCurrentBuildTargetGroup();
             var defineSymbolsStr = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
-            return new HashSet<string>(defineSymbolsStr.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+            return new HashSet<string>(defineSymbolsStr.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace TByd.PackageCreator.Editor.Utils.Compilation
         public static HashSet<string> GetDefineSymbols(BuildTargetGroup targetGroup)
         {
             var defineSymbolsStr = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
-            return new HashSet<string>(defineSymbolsStr.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+            return new HashSet<string>(defineSymbolsStr.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
         }
 
         /// <summary>
@@ -318,7 +318,7 @@ namespace TByd.PackageCreator.Editor.Utils.Compilation
         private static BuildTargetGroup[] GetSupportedBuildTargetGroups()
         {
             // 只返回常用的构建目标组，避免使用已废弃的目标组
-            return new BuildTargetGroup[]
+            return new[]
             {
                 BuildTargetGroup.Standalone,
                 BuildTargetGroup.iOS,
@@ -450,7 +450,7 @@ namespace TByd.PackageCreator.Editor.Utils.Compilation
                         continue;
 
                     // 处理格式为: SYMBOL // 描述 的行
-                    var commentIndex = trimmedLine.IndexOf("//");
+                    var commentIndex = trimmedLine.IndexOf("//", StringComparison.Ordinal);
                     if (commentIndex > 0)
                     {
                         trimmedLine = trimmedLine.Substring(0, commentIndex).Trim();
@@ -510,7 +510,8 @@ namespace TByd.PackageCreator.Editor.Utils.Compilation
         {
             try
             {
-                if (symbols == null || !symbols.Any())
+                var enumerable = symbols as string[] ?? symbols.ToArray();
+                if (!enumerable.Any())
                 {
                     Debug.LogWarning("没有符号可以写入配置文件");
                     return false;
@@ -529,7 +530,7 @@ namespace TByd.PackageCreator.Editor.Utils.Compilation
                 sb.AppendLine("// 每行一个符号，可以添加注释");
                 sb.AppendLine();
 
-                foreach (var symbol in symbols.OrderBy(s => s))
+                foreach (var symbol in enumerable.OrderBy(s => s))
                 {
                     if (IsValidDefineSymbol(symbol))
                     {
@@ -602,7 +603,6 @@ namespace TByd.PackageCreator.Editor.Utils.Compilation
                 // 匹配条件编译指令中的符号
                 var ifRegex = new Regex(@"#if\s+(!?\s*[A-Za-z_][A-Za-z0-9_]*|.*&&.*|\|\|.*)");
                 var elifRegex = new Regex(@"#elif\s+(!?\s*[A-Za-z_][A-Za-z0-9_]*|.*&&.*|\|\|.*)");
-                var symbolRegex = new Regex(@"[A-Za-z_][A-Za-z0-9_]*");
 
                 foreach (var file in csharpFiles)
                 {

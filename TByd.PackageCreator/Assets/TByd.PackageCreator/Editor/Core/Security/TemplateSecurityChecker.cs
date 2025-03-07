@@ -412,7 +412,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
                     catch (Exception ex)
                     {
                         // 清理临时文件
-                        try { File.Delete(tempFilePath); } catch { }
+                        try { File.Delete(tempFilePath); }
+                        catch
+                        {
+                            // ignored
+                        }
 
                         _mErrorHandler.LogException(ErrorType.FileDeleteError, ex, $"删除目标文件失败: {filePath}");
                         return false;
@@ -440,7 +444,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 // 清理临时文件
-                try { if (File.Exists(tempFilePath)) File.Delete(tempFilePath); } catch { }
+                try { if (File.Exists(tempFilePath)) File.Delete(tempFilePath); }
+                catch
+                {
+                    // ignored
+                }
 
                 _mErrorHandler.LogException(ErrorType.FileWriteError, ex, $"写入文件失败: {filePath}");
 
@@ -488,7 +496,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             var invalidPathChars = Path.GetInvalidPathChars();
 
             // 额外检查一些特殊字符
-            var additionalInvalidChars = new char[] { '<', '>', '|', '*', '?', '\"' };
+            var additionalInvalidChars = new[] { '<', '>', '|', '*', '?', '\"' };
 
             // 检查每个路径段
             var segments = path.Split('/');
@@ -562,7 +570,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            var segments = path.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            var segments = path.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
             return segments.Length > maxDepth;
         }
 

@@ -36,7 +36,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         public CSharpFileGenerationStrategy()
         {
-            _mVariableProcessor = new FileGenerator(null);
+            _mVariableProcessor = new FileGenerator();
         }
 
         /// <summary>

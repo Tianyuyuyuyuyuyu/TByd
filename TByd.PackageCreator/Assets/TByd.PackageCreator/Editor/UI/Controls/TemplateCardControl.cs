@@ -48,16 +48,16 @@ namespace TByd.PackageCreator.Editor.UI.Controls
         /// <returns>如果卡片被点击则返回true</returns>
         public bool Draw()
         {
-            bool result = false;
+            var result = false;
 
             // 选择适当的样式
-            GUIStyle cardStyle = _mIsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
+            var cardStyle = _mIsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
 
             // 允许事件处理
-            Rect cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(100));
+            var cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(100));
 
             // 处理鼠标事件
-            Event evt = Event.current;
+            var evt = Event.current;
             if (evt.type == EventType.MouseDown && cardRect.Contains(evt.mousePosition))
             {
                 result = true;
@@ -68,23 +68,23 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             GUI.Box(cardRect, GUIContent.none, cardStyle);
 
             // 内容区域
-            Rect contentRect = new Rect(cardRect.x + 10, cardRect.y + 10, cardRect.width - 20, cardRect.height - 20);
+            var contentRect = new Rect(cardRect.x + 10, cardRect.y + 10, cardRect.width - 20, cardRect.height - 20);
 
             // 图标和标题
-            Rect iconRect = new Rect(contentRect.x, contentRect.y, 32, 32);
-            Rect titleRect = new Rect(iconRect.xMax + 10, contentRect.y, contentRect.width - iconRect.width - 10, 20);
+            var iconRect = new Rect(contentRect.x, contentRect.y, 32, 32);
+            var titleRect = new Rect(iconRect.xMax + 10, contentRect.y, contentRect.width - iconRect.width - 10, 20);
 
             // 描述区域
-            Rect descriptionRect = new Rect(contentRect.x, titleRect.yMax + 5, contentRect.width, 40);
+            var descriptionRect = new Rect(contentRect.x, titleRect.yMax + 5, contentRect.width, 40);
 
             // 绘制内容
-            if (_mIcon != null)
+            if (_mIcon)
             {
                 GUI.DrawTexture(iconRect, _mIcon, ScaleMode.ScaleToFit);
             }
 
             // 调整选中状态下的文本颜色
-            Color originalColor = GUI.color;
+            var originalColor = GUI.color;
             if (_mIsSelected)
             {
                 GUI.color = Color.white;
@@ -108,13 +108,11 @@ namespace TByd.PackageCreator.Editor.UI.Controls
         /// <returns>如果卡片被点击则返回true</returns>
         public bool DrawDetailed()
         {
-            bool cardClicked = false;
-
             // 开始卡片区域
             PackageCreatorStyles.BeginGroup();
 
             // 绘制基本卡片
-            cardClicked = Draw();
+            var cardClicked = Draw();
 
             // 如果选中，则显示详细信息
             if (_mIsSelected && !string.IsNullOrEmpty(_mDetails))
@@ -140,17 +138,17 @@ namespace TByd.PackageCreator.Editor.UI.Controls
         /// <returns>如果卡片被点击则返回true</returns>
         public bool DrawCompact()
         {
-            bool result = false;
+            var result = false;
 
             // 选择适当的样式
-            GUIStyle cardStyle = _mIsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
+            var cardStyle = _mIsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
 
             // 预先分配一个矩形区域（不是开始一个组）
             // 增加高度以适应更大的字体
-            Rect cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(65));
+            var cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(65));
 
             // 处理点击事件
-            Event evt = Event.current;
+            var evt = Event.current;
             if (evt.type == EventType.MouseDown && cardRect.Contains(evt.mousePosition))
             {
                 result = true;
@@ -161,12 +159,12 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             GUI.Box(cardRect, GUIContent.none, cardStyle);
 
             // 计算内容区域
-            Rect contentRect = new Rect(cardRect.x + 10, cardRect.y + 5, cardRect.width - 20, cardRect.height - 10);
+            var contentRect = new Rect(cardRect.x + 10, cardRect.y + 5, cardRect.width - 20, cardRect.height - 10);
 
             // 图标区域
-            if (_mIcon != null)
+            if (_mIcon)
             {
-                Rect iconRect = new Rect(contentRect.x, contentRect.y + 3, 30, 30);
+                var iconRect = new Rect(contentRect.x, contentRect.y + 3, 30, 30);
                 GUI.DrawTexture(iconRect, _mIcon, ScaleMode.ScaleToFit);
                 contentRect.x += 38; // 移动到图标右侧
                 contentRect.width -= 38;
@@ -175,25 +173,25 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             // 如果选中，显示标记
             if (_mIsSelected)
             {
-                Rect checkRect = new Rect(contentRect.x + contentRect.width - 18, contentRect.y + 5, 20, 20);
+                var checkRect = new Rect(contentRect.x + contentRect.width - 18, contentRect.y + 5, 20, 20);
                 GUI.Label(checkRect, "✓", EditorStyles.boldLabel);
                 contentRect.width -= 22; // 为选中标记留出空间
             }
 
             // 创建更大字体的标题样式
-            GUIStyle titleStyle = new GUIStyle(EditorStyles.boldLabel);
+            var titleStyle = new GUIStyle(EditorStyles.boldLabel);
             titleStyle.fontSize = 13; // 增大字体大小
 
             // 创建更大字体的描述样式
-            GUIStyle descStyle = new GUIStyle(EditorStyles.wordWrappedMiniLabel);
+            var descStyle = new GUIStyle(EditorStyles.wordWrappedMiniLabel);
             descStyle.fontSize = 12; // 增大字体大小
 
             // 标题
-            Rect titleRect = new Rect(contentRect.x, contentRect.y, contentRect.width, 20);
+            var titleRect = new Rect(contentRect.x, contentRect.y, contentRect.width, 20);
             GUI.Label(titleRect, _mTitle, titleStyle);
 
             // 描述
-            Rect descRect = new Rect(contentRect.x, titleRect.y + titleRect.height + 2, contentRect.width, 25);
+            var descRect = new Rect(contentRect.x, titleRect.y + titleRect.height + 2, contentRect.width, 25);
             GUI.Label(descRect, _mDescription, descStyle);
 
             // 额外的空间用于卡片间隔 - 减少间隔高度从5到2

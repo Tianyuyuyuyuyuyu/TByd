@@ -105,21 +105,29 @@ namespace TByd.PackageCreator.Editor.Utils.FileSystem
 
                     // 获取文件的原始目录
                     var originalDirectory = Path.GetDirectoryName(backupPath);
-                    if (originalDirectory.EndsWith(BackupDirectoryName))
+                    if (originalDirectory != null)
                     {
-                        // 如果是在备份目录中，需要询问用户
-                        Debug.LogWarning($"无法确定原始文件路径，请指定目标路径");
-                        return false;
-                    }
+                        if (originalDirectory.EndsWith(BackupDirectoryName))
+                        {
+                            // 如果是在备份目录中，需要询问用户
+                            Debug.LogWarning($"无法确定原始文件路径，请指定目标路径");
+                            return false;
+                        }
 
-                    targetPath = Path.Combine(originalDirectory, fileName);
+                        targetPath = Path.Combine(originalDirectory, fileName);
+                    }
                 }
 
                 // 恢复文件
-                File.Copy(backupPath, targetPath, true);
-                Debug.Log($"已恢复备份: {backupPath} -> {targetPath}");
+                if (targetPath != null)
+                {
+                    File.Copy(backupPath, targetPath, true);
+                    Debug.Log($"已恢复备份: {backupPath} -> {targetPath}");
 
-                return true;
+                    return true;
+                }
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -340,7 +348,7 @@ namespace TByd.PackageCreator.Editor.Utils.FileSystem
             try
             {
                 // 创建备份
-                var backupPath = CreateBackup(filePath);
+                CreateBackup(filePath);
 
                 // 删除文件
                 File.Delete(filePath);
@@ -634,7 +642,7 @@ namespace TByd.PackageCreator.Editor.Utils.FileSystem
                         var dirName = Path.GetFileName(directory);
                         var targetSubDir = Path.Combine(targetDirectory, dirName);
 
-                        if (!SafeCopyDirectory(directory, targetSubDir, true))
+                        if (!SafeCopyDirectory(directory, targetSubDir))
                         {
                             throw new Exception($"复制子目录失败: {directory}");
                         }

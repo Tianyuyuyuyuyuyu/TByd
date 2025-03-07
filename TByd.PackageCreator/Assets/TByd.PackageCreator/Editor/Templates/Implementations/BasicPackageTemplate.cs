@@ -1,4 +1,3 @@
-using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.Models;
 
 namespace TByd.PackageCreator.Editor.Templates.Implementations

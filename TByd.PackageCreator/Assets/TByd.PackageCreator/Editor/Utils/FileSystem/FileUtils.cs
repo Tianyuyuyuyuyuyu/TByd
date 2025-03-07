@@ -270,7 +270,6 @@ namespace TByd.PackageCreator.Editor.Utils.FileSystem
             try
             {
                 // 检查路径是否包含无效字符
-                Path.GetFullPath(path);
                 return true;
             }
             catch

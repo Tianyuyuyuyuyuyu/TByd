@@ -511,7 +511,7 @@ namespace TByd.PackageCreator.Editor.Utils.Version
                     var getScriptingBackendMethod = playerSettingsType.GetMethod("GetScriptingBackend",
                         BindingFlags.Public | BindingFlags.Static,
                         null,
-                        new Type[] { typeof(BuildTargetGroup) },
+                        new[] { typeof(BuildTargetGroup) },
                         null);
 
                     if (getScriptingBackendMethod == null)

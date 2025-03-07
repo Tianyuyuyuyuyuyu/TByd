@@ -101,7 +101,7 @@ namespace TByd.PackageCreator.Editor.Core.Interfaces
         /// 时间戳
         /// </summary>
         [JsonProperty("timestamp")]
-        public System.DateTime Timestamp { get; private set; }
+        public DateTime Timestamp { get; private set; }
 
         /// <summary>
         /// 描述
@@ -116,7 +116,7 @@ namespace TByd.PackageCreator.Editor.Core.Interfaces
         public ConfigHistoryEntry()
         {
             Config = null;
-            Timestamp = System.DateTime.Now;
+            Timestamp = DateTime.Now;
             Description = string.Empty;
         }
 
@@ -128,7 +128,7 @@ namespace TByd.PackageCreator.Editor.Core.Interfaces
         public ConfigHistoryEntry(PackageConfig config, string description)
         {
             Config = config;
-            Timestamp = System.DateTime.Now;
+            Timestamp = DateTime.Now;
             Description = description;
         }
     }
