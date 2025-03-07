@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using TByd.PackageCreator.Editor.Utils;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Utils.FileSystem;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Services
 {
     /// <summary>
     /// JSON文件生成策略，专门用于生成和格式化JSON文件
@@ -24,14 +26,14 @@ namespace TByd.PackageCreator.Editor.Core
         public string[] SupportedFileExtensions => new[] { ".json", ".jsonc", ".json5" };
 
         // 变量替换处理器（委托给FileGenerator处理）
-        private readonly FileGenerator m_VariableProcessor;
+        private readonly FileGenerator _mVariableProcessor;
 
         /// <summary>
         /// 创建JSON文件生成策略
         /// </summary>
         public JsonFileGenerationStrategy()
         {
-            m_VariableProcessor = new FileGenerator(null);
+            _mVariableProcessor = new FileGenerator(null);
         }
 
         /// <summary>
@@ -45,7 +47,7 @@ namespace TByd.PackageCreator.Editor.Core
                 return false;
 
             // 转为小写进行比较
-            string lowerExtension = fileExtension.ToLowerInvariant();
+            var lowerExtension = fileExtension.ToLowerInvariant();
             return SupportedFileExtensions.Contains(lowerExtension);
         }
 
@@ -63,16 +65,16 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 获取文件内容
-                string fileContent = templateFile.ContentTemplate;
+                var fileContent = templateFile.ContentTemplate;
 
                 // 如果文件支持变量替换，则进行替换
                 if (templateFile.SupportsVariableReplacement)
                 {
-                    fileContent = m_VariableProcessor.ReplaceVariables(fileContent, config);
+                    fileContent = _mVariableProcessor.ReplaceVariables(fileContent, config);
                 }
 
                 // 尝试格式化JSON
-                string formattedJson = FormatJson(fileContent, out bool isValidJson);
+                var formattedJson = FormatJson(fileContent, out var isValidJson);
 
                 // 如果是有效的JSON，使用格式化后的内容
                 if (isValidJson)
@@ -86,14 +88,14 @@ namespace TByd.PackageCreator.Editor.Core
                 }
 
                 // 确保目标目录存在
-                string directoryPath = Path.GetDirectoryName(targetPath);
+                var directoryPath = Path.GetDirectoryName(targetPath);
                 if (!string.IsNullOrEmpty(directoryPath))
                 {
                     FileUtils.EnsureDirectoryExists(directoryPath);
                 }
 
                 // 安全写入文件
-                bool writeSuccess = await WriteFileAsync(targetPath, fileContent);
+                var writeSuccess = await WriteFileAsync(targetPath, fileContent);
 
                 if (writeSuccess)
                 {
@@ -133,7 +135,7 @@ namespace TByd.PackageCreator.Editor.Core
                 var jsonObject = JsonConvert.DeserializeObject(jsonContent);
 
                 // 然后重新序列化为漂亮的JSON格式
-                string formattedJson = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
+                var formattedJson = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
 
                 isValidJson = true;
                 return formattedJson;

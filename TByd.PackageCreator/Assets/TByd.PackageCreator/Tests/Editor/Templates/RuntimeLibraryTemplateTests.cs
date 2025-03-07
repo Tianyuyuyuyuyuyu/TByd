@@ -1,6 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
+using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Templates.Implementations;
 
 namespace TByd.PackageCreator.Tests.Editor.Templates
@@ -84,7 +84,7 @@ namespace TByd.PackageCreator.Tests.Editor.Templates
             // 验证库类型选项
             var libraryTypeOption = options.FirstOrDefault(o => o.Key == "libraryType");
             Assert.IsNotNull(libraryTypeOption);
-            Assert.AreEqual(TemplateOptionType.k_Enum, libraryTypeOption.Type);
+            Assert.AreEqual(TemplateOptionType.Enum, libraryTypeOption.Type);
             Assert.AreEqual("Utility", libraryTypeOption.DefaultValue);
 
             // 验证库类型选项的可能值
@@ -104,8 +104,8 @@ namespace TByd.PackageCreator.Tests.Editor.Templates
 
             // 应该有警告但没有错误
             Assert.IsTrue(result.IsValid);
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count);
-            var warningMessages = result.GetMessages(ValidationMessageLevel.k_Warning);
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count);
+            var warningMessages = result.GetMessages(ValidationMessageLevel.Warning);
             Assert.IsTrue(warningMessages.Count > 0);
             Assert.IsTrue(warningMessages.Any(w => w.Message.Contains("Unity版本")));
 

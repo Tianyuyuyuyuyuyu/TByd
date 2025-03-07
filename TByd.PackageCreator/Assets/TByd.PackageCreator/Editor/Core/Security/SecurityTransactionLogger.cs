@@ -11,7 +11,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
     /// </summary>
     public class SecurityTransactionLogger
     {
-        private static SecurityTransactionLogger s_Instance;
+        private static SecurityTransactionLogger _sInstance;
 
         /// <summary>
         /// 单例实例
@@ -20,27 +20,27 @@ namespace TByd.PackageCreator.Editor.Core.Security
         {
             get
             {
-                if (s_Instance == null)
+                if (_sInstance == null)
                 {
-                    s_Instance = new SecurityTransactionLogger();
+                    _sInstance = new SecurityTransactionLogger();
                 }
-                return s_Instance;
+                return _sInstance;
             }
         }
 
-        private readonly ErrorHandler m_ErrorHandler;
-        private readonly TemplateSecurityChecker m_SecurityChecker;
+        private readonly ErrorHandler _mErrorHandler;
+        private readonly TemplateSecurityChecker _mSecurityChecker;
 
         // 事务ID与操作记录的映射
-        private readonly Dictionary<string, TransactionRecord> m_Transactions = new Dictionary<string, TransactionRecord>();
+        private readonly Dictionary<string, TransactionRecord> _mTransactions = new Dictionary<string, TransactionRecord>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         private SecurityTransactionLogger()
         {
-            m_ErrorHandler = ErrorHandler.Instance;
-            m_SecurityChecker = TemplateSecurityChecker.Instance;
+            _mErrorHandler = ErrorHandler.Instance;
+            _mSecurityChecker = TemplateSecurityChecker.Instance;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>事务ID</returns>
         public string BeginTransaction(string description)
         {
-            string transactionId = Guid.NewGuid().ToString();
+            var transactionId = Guid.NewGuid().ToString();
             var transaction = new TransactionRecord
             {
                 TransactionId = transactionId,
@@ -59,7 +59,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 Operations = new List<FileOperation>()
             };
 
-            m_Transactions[transactionId] = transaction;
+            _mTransactions[transactionId] = transaction;
 
             Debug.Log($"[SecurityTransactionLogger] 开始事务: {description} (ID: {transactionId})");
 
@@ -74,15 +74,15 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>是否记录成功</returns>
         public bool LogFileCreation(string transactionId, string filePath)
         {
-            if (!m_Transactions.TryGetValue(transactionId, out TransactionRecord transaction))
+            if (!_mTransactions.TryGetValue(transactionId, out var transaction))
             {
-                m_ErrorHandler.LogError(ErrorType.k_Security, $"尝试记录未知事务操作: {transactionId}");
+                _mErrorHandler.LogError(ErrorType.Security, $"尝试记录未知事务操作: {transactionId}");
                 return false;
             }
 
             var operation = new FileOperation
             {
-                OperationType = FileOperationType.k_Create,
+                OperationType = FileOperationType.Create,
                 FilePath = filePath,
                 Timestamp = DateTime.Now,
                 BackupPath = null // 新建文件不需要备份
@@ -100,9 +100,9 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>是否记录成功</returns>
         public bool LogFileModification(string transactionId, string filePath)
         {
-            if (!m_Transactions.TryGetValue(transactionId, out TransactionRecord transaction))
+            if (!_mTransactions.TryGetValue(transactionId, out var transaction))
             {
-                m_ErrorHandler.LogError(ErrorType.k_Security, $"尝试记录未知事务操作: {transactionId}");
+                _mErrorHandler.LogError(ErrorType.Security, $"尝试记录未知事务操作: {transactionId}");
                 return false;
             }
 
@@ -110,12 +110,12 @@ namespace TByd.PackageCreator.Editor.Core.Security
             string backupPath = null;
             if (File.Exists(filePath))
             {
-                backupPath = m_SecurityChecker.CreateFileBackup(filePath);
+                backupPath = _mSecurityChecker.CreateFileBackup(filePath);
             }
 
             var operation = new FileOperation
             {
-                OperationType = FileOperationType.k_Modify,
+                OperationType = FileOperationType.Modify,
                 FilePath = filePath,
                 Timestamp = DateTime.Now,
                 BackupPath = backupPath
@@ -133,9 +133,9 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>是否记录成功</returns>
         public bool LogFileDeletion(string transactionId, string filePath)
         {
-            if (!m_Transactions.TryGetValue(transactionId, out TransactionRecord transaction))
+            if (!_mTransactions.TryGetValue(transactionId, out var transaction))
             {
-                m_ErrorHandler.LogError(ErrorType.k_Security, $"尝试记录未知事务操作: {transactionId}");
+                _mErrorHandler.LogError(ErrorType.Security, $"尝试记录未知事务操作: {transactionId}");
                 return false;
             }
 
@@ -143,12 +143,12 @@ namespace TByd.PackageCreator.Editor.Core.Security
             string backupPath = null;
             if (File.Exists(filePath))
             {
-                backupPath = m_SecurityChecker.CreateFileBackup(filePath);
+                backupPath = _mSecurityChecker.CreateFileBackup(filePath);
             }
 
             var operation = new FileOperation
             {
-                OperationType = FileOperationType.k_Delete,
+                OperationType = FileOperationType.Delete,
                 FilePath = filePath,
                 Timestamp = DateTime.Now,
                 BackupPath = backupPath
@@ -166,15 +166,15 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>是否记录成功</returns>
         public bool LogDirectoryCreation(string transactionId, string directoryPath)
         {
-            if (!m_Transactions.TryGetValue(transactionId, out TransactionRecord transaction))
+            if (!_mTransactions.TryGetValue(transactionId, out var transaction))
             {
-                m_ErrorHandler.LogError(ErrorType.k_Security, $"尝试记录未知事务操作: {transactionId}");
+                _mErrorHandler.LogError(ErrorType.Security, $"尝试记录未知事务操作: {transactionId}");
                 return false;
             }
 
             var operation = new FileOperation
             {
-                OperationType = FileOperationType.k_CreateDirectory,
+                OperationType = FileOperationType.CreateDirectory,
                 FilePath = directoryPath,
                 Timestamp = DateTime.Now,
                 BackupPath = null
@@ -191,9 +191,9 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>是否提交成功</returns>
         public bool CommitTransaction(string transactionId)
         {
-            if (!m_Transactions.TryGetValue(transactionId, out TransactionRecord transaction))
+            if (!_mTransactions.TryGetValue(transactionId, out var transaction))
             {
-                m_ErrorHandler.LogError(ErrorType.k_Security, $"尝试提交未知事务: {transactionId}");
+                _mErrorHandler.LogError(ErrorType.Security, $"尝试提交未知事务: {transactionId}");
                 return false;
             }
 
@@ -215,16 +215,16 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>是否回滚成功</returns>
         public bool RollbackTransaction(string transactionId)
         {
-            if (!m_Transactions.TryGetValue(transactionId, out TransactionRecord transaction))
+            if (!_mTransactions.TryGetValue(transactionId, out var transaction))
             {
-                m_ErrorHandler.LogError(ErrorType.k_Security, $"尝试回滚未知事务: {transactionId}");
+                _mErrorHandler.LogError(ErrorType.Security, $"尝试回滚未知事务: {transactionId}");
                 return false;
             }
 
-            bool success = true;
+            var success = true;
 
             // 逆序遍历操作记录，进行回滚
-            for (int i = transaction.Operations.Count - 1; i >= 0; i--)
+            for (var i = transaction.Operations.Count - 1; i >= 0; i--)
             {
                 var operation = transaction.Operations[i];
 
@@ -232,7 +232,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 {
                     switch (operation.OperationType)
                     {
-                        case FileOperationType.k_Create:
+                        case FileOperationType.Create:
                             // 回滚创建操作：删除文件
                             if (File.Exists(operation.FilePath))
                             {
@@ -243,17 +243,17 @@ namespace TByd.PackageCreator.Editor.Core.Security
                                 }
                                 catch (Exception ex)
                                 {
-                                    m_ErrorHandler.LogException(ErrorType.k_FileDeleteError, ex, $"回滚时删除文件失败: {operation.FilePath}");
+                                    _mErrorHandler.LogException(ErrorType.FileDeleteError, ex, $"回滚时删除文件失败: {operation.FilePath}");
                                     success = false;
                                 }
                             }
                             break;
 
-                        case FileOperationType.k_Modify:
+                        case FileOperationType.Modify:
                             // 回滚修改操作：从备份恢复
                             if (!string.IsNullOrEmpty(operation.BackupPath) && File.Exists(operation.BackupPath))
                             {
-                                bool restored = m_SecurityChecker.RestoreFileFromBackup(operation.BackupPath, operation.FilePath);
+                                var restored = _mSecurityChecker.RestoreFileFromBackup(operation.BackupPath, operation.FilePath);
                                 Debug.Log(restored
                                     ? $"[SecurityTransactionLogger] 回滚：从备份恢复文件 {operation.FilePath}"
                                     : $"[SecurityTransactionLogger] 回滚失败：无法从备份恢复文件 {operation.FilePath}");
@@ -262,11 +262,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
                             }
                             break;
 
-                        case FileOperationType.k_Delete:
+                        case FileOperationType.Delete:
                             // 回滚删除操作：从备份恢复
                             if (!string.IsNullOrEmpty(operation.BackupPath) && File.Exists(operation.BackupPath))
                             {
-                                bool restored = m_SecurityChecker.RestoreFileFromBackup(operation.BackupPath, operation.FilePath);
+                                var restored = _mSecurityChecker.RestoreFileFromBackup(operation.BackupPath, operation.FilePath);
                                 Debug.Log(restored
                                     ? $"[SecurityTransactionLogger] 回滚：恢复已删除的文件 {operation.FilePath}"
                                     : $"[SecurityTransactionLogger] 回滚失败：无法恢复已删除的文件 {operation.FilePath}");
@@ -275,7 +275,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                             }
                             break;
 
-                        case FileOperationType.k_CreateDirectory:
+                        case FileOperationType.CreateDirectory:
                             // 回滚目录创建操作：删除目录
                             if (Directory.Exists(operation.FilePath))
                             {
@@ -290,7 +290,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                                 }
                                 catch (Exception ex)
                                 {
-                                    m_ErrorHandler.LogException(ErrorType.k_FileDeleteError, ex, $"回滚时删除目录失败: {operation.FilePath}");
+                                    _mErrorHandler.LogException(ErrorType.FileDeleteError, ex, $"回滚时删除目录失败: {operation.FilePath}");
                                     success = false;
                                 }
                             }
@@ -300,7 +300,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 catch (Exception ex)
                 {
                     success = false;
-                    m_ErrorHandler.LogException(ErrorType.k_Security, ex, $"回滚操作失败: {operation.OperationType} {operation.FilePath}");
+                    _mErrorHandler.LogException(ErrorType.Security, ex, $"回滚操作失败: {operation.OperationType} {operation.FilePath}");
                 }
             }
 
@@ -327,10 +327,10 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 {
                     writer.WriteLine("# 安全事务日志");
                     writer.WriteLine($"导出时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-                    writer.WriteLine($"事务总数: {m_Transactions.Count}");
+                    writer.WriteLine($"事务总数: {_mTransactions.Count}");
                     writer.WriteLine();
 
-                    foreach (var transaction in m_Transactions.Values)
+                    foreach (var transaction in _mTransactions.Values)
                     {
                         writer.WriteLine($"## 事务: {transaction.Description}");
                         writer.WriteLine($"ID: {transaction.TransactionId}");
@@ -340,7 +340,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                         writer.WriteLine($"操作数: {transaction.Operations.Count}");
                         writer.WriteLine();
 
-                        for (int i = 0; i < transaction.Operations.Count; i++)
+                        for (var i = 0; i < transaction.Operations.Count; i++)
                         {
                             var operation = transaction.Operations[i];
                             writer.WriteLine($"### 操作 {i + 1}: {operation.OperationType}");
@@ -363,7 +363,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             }
             catch (Exception ex)
             {
-                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, $"导出事务日志失败: {ex.Message}");
+                _mErrorHandler.LogException(ErrorType.FileWriteError, ex, $"导出事务日志失败: {ex.Message}");
                 return false;
             }
         }
@@ -375,10 +375,10 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// </summary>
         public enum FileOperationType
         {
-            k_Create,
-            k_Modify,
-            k_Delete,
-            k_CreateDirectory
+            Create,
+            Modify,
+            Delete,
+            CreateDirectory
         }
 
         /// <summary>

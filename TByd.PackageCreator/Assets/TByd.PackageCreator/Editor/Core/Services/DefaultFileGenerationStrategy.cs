@@ -1,10 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using TByd.PackageCreator.Editor.Utils;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Utils.FileSystem;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Services
 {
     /// <summary>
     /// 默认文件生成策略，支持所有类型的文件生成
@@ -22,14 +24,14 @@ namespace TByd.PackageCreator.Editor.Core
         public string[] SupportedFileExtensions => new[] { ".*" };
 
         // 变量替换正则表达式（委托给FileGenerator处理）
-        private readonly FileGenerator m_VariableProcessor;
+        private readonly FileGenerator _mVariableProcessor;
 
         /// <summary>
         /// 创建默认文件生成策略
         /// </summary>
         public DefaultFileGenerationStrategy()
         {
-            m_VariableProcessor = new FileGenerator(null);
+            _mVariableProcessor = new FileGenerator(null);
         }
 
         /// <summary>
@@ -57,23 +59,23 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 获取文件内容
-                string fileContent = templateFile.ContentTemplate;
+                var fileContent = templateFile.ContentTemplate;
 
                 // 如果文件支持变量替换，则进行替换
                 if (templateFile.SupportsVariableReplacement)
                 {
-                    fileContent = m_VariableProcessor.ReplaceVariables(fileContent, config);
+                    fileContent = _mVariableProcessor.ReplaceVariables(fileContent, config);
                 }
 
                 // 确保目标目录存在
-                string directoryPath = Path.GetDirectoryName(targetPath);
+                var directoryPath = Path.GetDirectoryName(targetPath);
                 if (!string.IsNullOrEmpty(directoryPath))
                 {
                     FileUtils.EnsureDirectoryExists(directoryPath);
                 }
 
                 // 安全写入文件
-                bool writeSuccess = await WriteFileAsync(targetPath, fileContent);
+                var writeSuccess = await WriteFileAsync(targetPath, fileContent);
 
                 if (writeSuccess)
                 {

@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
-using TByd.PackageCreator.Tests.Editor;
-using UnityEngine;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
 
 namespace TByd.PackageCreator.Tests.Editor.Core.Models
 {
@@ -41,7 +39,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             var originalConfig = CreateComplexConfig();
 
             // 执行：序列化和反序列化
-            string json = JsonConvert.SerializeObject(originalConfig, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(originalConfig, Formatting.Indented);
             var deserializedConfig = JsonConvert.DeserializeObject<PackageConfig>(json);
 
             // 断言：验证所有属性是否保持一致
@@ -59,7 +57,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
 
             // 验证依赖项
             Assert.AreEqual(originalConfig.Dependencies.Count, deserializedConfig.Dependencies.Count);
-            for (int i = 0; i < originalConfig.Dependencies.Count; i++)
+            for (var i = 0; i < originalConfig.Dependencies.Count; i++)
             {
                 Assert.AreEqual(originalConfig.Dependencies[i].Id, deserializedConfig.Dependencies[i].Id);
                 Assert.AreEqual(originalConfig.Dependencies[i].Version, deserializedConfig.Dependencies[i].Version);
@@ -67,7 +65,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
 
             // 验证关键字
             Assert.AreEqual(originalConfig.Keywords.Count, deserializedConfig.Keywords.Count);
-            for (int i = 0; i < originalConfig.Keywords.Count; i++)
+            for (var i = 0; i < originalConfig.Keywords.Count; i++)
             {
                 Assert.AreEqual(originalConfig.Keywords[i], deserializedConfig.Keywords[i]);
             }
@@ -96,9 +94,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             var originalConfig = CreateComplexConfig();
 
             // 执行：保存到文件和从文件加载
-            string json = JsonConvert.SerializeObject(originalConfig, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(originalConfig, Formatting.Indented);
             File.WriteAllText(_testFilePath, json);
-            string loadedJson = File.ReadAllText(_testFilePath);
+            var loadedJson = File.ReadAllText(_testFilePath);
             var loadedConfig = JsonConvert.DeserializeObject<PackageConfig>(loadedJson);
 
             // 断言：验证所有属性是否保持一致
@@ -132,7 +130,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
 
             // 执行：序列化ConfigHistoryEntry为JSON字符串
             var wrapper = new ConfigHistoryEntryWrapper(originalEntry);
-            string json = JsonConvert.SerializeObject(wrapper, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(wrapper, Formatting.Indented);
 
             // 反序列化为ConfigHistoryEntry
             var deserializedWrapper = JsonConvert.DeserializeObject<ConfigHistoryEntryWrapper>(json);

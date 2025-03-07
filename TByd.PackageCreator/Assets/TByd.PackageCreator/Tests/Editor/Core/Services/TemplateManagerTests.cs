@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Core.Services;
 using UnityEngine;
 
@@ -93,7 +94,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             _manager.RegisterProvider(_testProvider);
 
             // 移除提供者
-            bool result = _manager.RemoveProvider(_testProvider.ProviderName);
+            var result = _manager.RemoveProvider(_testProvider.ProviderName);
 
             // 验证移除成功
             Assert.IsTrue(result);
@@ -107,7 +108,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         public void RemoveProvider_NonExistingProvider_ReturnsFalse()
         {
             // 移除不存在的提供者
-            bool result = _manager.RemoveProvider("non.existing.provider");
+            var result = _manager.RemoveProvider("non.existing.provider");
 
             // 验证移除失败
             Assert.IsFalse(result);
@@ -116,7 +117,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         [Test]
         public void TemplateChanged_WhenRegisteringProvider_EventFired()
         {
-            bool eventFired = false;
+            var eventFired = false;
             TemplateChangedEventArgs eventArgs = null;
 
             // 订阅事件
@@ -134,7 +135,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             // 验证事件已触发
             Assert.IsTrue(eventFired);
             Assert.IsNotNull(eventArgs);
-            Assert.AreEqual(EnumTemplateChangeType.k_Reloaded, eventArgs.ChangeType);
+            Assert.AreEqual(EnumTemplateChangeType.Reloaded, eventArgs.ChangeType);
 
             // 取消订阅
             _manager.OnTemplateChanged -= handler;
@@ -182,7 +183,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
 
         public IReadOnlyList<TemplateOption> Options => new TemplateOption[]
         {
-            new TemplateOption("testOption", "测试选项", "测试选项描述", TemplateOptionType.k_Boolean, "true")
+            new TemplateOption("testOption", "测试选项", "测试选项描述", TemplateOptionType.Boolean, "true")
         };
 
         public ValidationResult ValidateConfig(PackageConfig config)

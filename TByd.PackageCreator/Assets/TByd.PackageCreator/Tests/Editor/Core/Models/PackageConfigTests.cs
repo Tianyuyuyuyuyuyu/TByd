@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
-using UnityEngine;
+using TByd.PackageCreator.Editor.Core.Models;
 
 namespace TByd.PackageCreator.Tests.Editor.Core.Models
 {
@@ -15,10 +12,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void Constructor_ShouldInitializeProperties()
         {
             // 安排
-            string name = "com.test.package";
-            string displayName = "Test Package";
-            string version = "1.0.0";
-            string description = "Test package description";
+            var name = "com.test.package";
+            var displayName = "Test Package";
+            var version = "1.0.0";
+            var description = "Test package description";
 
             // 执行
             var config = new PackageConfig(name, displayName, version, description);
@@ -35,8 +32,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void Constructor_WithDefaultValues_ShouldSetDefaultVersion()
         {
             // 安排
-            string name = "com.test.package";
-            string displayName = "Test Package";
+            var name = "com.test.package";
+            var displayName = "Test Package";
 
             // 执行：只提供必须的参数
             var config = new PackageConfig(name, displayName);
@@ -94,8 +91,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         {
             // 安排
             var config = new PackageConfig("com.test.package", "Test Package");
-            string dependencyId = "com.unity.test";
-            string dependencyVersion = "1.0.0";
+            var dependencyId = "com.unity.test";
+            var dependencyVersion = "1.0.0";
 
             // 执行
             config.AddDependency(dependencyId, dependencyVersion);
@@ -150,9 +147,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void PackageAuthor_PropertiesTest()
         {
             // 安排
-            string name = "Test Author";
-            string email = "test@example.com";
-            string url = "https://example.com";
+            var name = "Test Author";
+            var email = "test@example.com";
+            var url = "https://example.com";
 
             // 执行
             var author = new PackageAuthor(name, email, url);
@@ -167,8 +164,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void PackageDependency_PropertiesTest()
         {
             // 安排
-            string id = "com.unity.test";
-            string version = "1.0.0";
+            var id = "com.unity.test";
+            var version = "1.0.0";
 
             // 执行
             var dependency = new PackageDependency(id, version);

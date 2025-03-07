@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.Security;
 using UnityEngine;
 
@@ -47,10 +45,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void BeginTransaction_CreatesTransactionEntry()
         {
             // 安排
-            string transactionName = "CreatePackageFiles";
+            var transactionName = "CreatePackageFiles";
 
             // 执行
-            string transactionId = logger.BeginTransaction(transactionName);
+            var transactionId = logger.BeginTransaction(transactionName);
 
             // 断言
             Assert.IsNotNull(transactionId);
@@ -61,11 +59,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void LogFileCreation_LogsOperationCorrectly()
         {
             // 安排
-            string transactionId = logger.BeginTransaction("FileCreationTest");
-            string filePath = "C:/Project/Assets/MyFile.cs";
+            var transactionId = logger.BeginTransaction("FileCreationTest");
+            var filePath = "C:/Project/Assets/MyFile.cs";
 
             // 执行
-            bool result = logger.LogFileCreation(transactionId, filePath);
+            var result = logger.LogFileCreation(transactionId, filePath);
 
             // 断言
             Assert.IsTrue(result);
@@ -75,11 +73,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void LogFileModification_LogsOperationCorrectly()
         {
             // 安排
-            string transactionId = logger.BeginTransaction("FileModificationTest");
-            string filePath = "C:/Project/Assets/MyFile.cs";
+            var transactionId = logger.BeginTransaction("FileModificationTest");
+            var filePath = "C:/Project/Assets/MyFile.cs";
 
             // 执行
-            bool result = logger.LogFileModification(transactionId, filePath);
+            var result = logger.LogFileModification(transactionId, filePath);
 
             // 断言
             Assert.IsTrue(result);
@@ -89,11 +87,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void LogFileDeletion_LogsOperationCorrectly()
         {
             // 安排
-            string transactionId = logger.BeginTransaction("FileDeletionTest");
-            string filePath = "C:/Project/Assets/MyFile.cs";
+            var transactionId = logger.BeginTransaction("FileDeletionTest");
+            var filePath = "C:/Project/Assets/MyFile.cs";
 
             // 执行
-            bool result = logger.LogFileDeletion(transactionId, filePath);
+            var result = logger.LogFileDeletion(transactionId, filePath);
 
             // 断言
             Assert.IsTrue(result);
@@ -103,11 +101,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void LogDirectoryCreation_LogsOperationCorrectly()
         {
             // 安排
-            string transactionId = logger.BeginTransaction("DirectoryCreationTest");
-            string dirPath = "C:/Project/Assets/MyDirectory";
+            var transactionId = logger.BeginTransaction("DirectoryCreationTest");
+            var dirPath = "C:/Project/Assets/MyDirectory";
 
             // 执行
-            bool result = logger.LogDirectoryCreation(transactionId, dirPath);
+            var result = logger.LogDirectoryCreation(transactionId, dirPath);
 
             // 断言
             Assert.IsTrue(result);
@@ -117,11 +115,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void CommitTransaction_MarksTransactionComplete()
         {
             // 安排
-            string transactionName = "ModifyPackageConfig";
-            string transactionId = logger.BeginTransaction(transactionName);
+            var transactionName = "ModifyPackageConfig";
+            var transactionId = logger.BeginTransaction(transactionName);
 
             // 执行
-            bool result = logger.CommitTransaction(transactionId);
+            var result = logger.CommitTransaction(transactionId);
 
             // 断言
             Assert.IsTrue(result);
@@ -131,16 +129,16 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void Transaction_WithMultipleOperations_WorksCorrectly()
         {
             // 安排 - 创建一个事务和多个操作
-            string transactionId = logger.BeginTransaction("ComplexOperation");
-            string filePath1 = "C:/Project/Assets/file1.cs";
-            string filePath2 = "C:/Project/Assets/file2.cs";
-            string dirPath = "C:/Project/Assets/NewDir";
+            var transactionId = logger.BeginTransaction("ComplexOperation");
+            var filePath1 = "C:/Project/Assets/file1.cs";
+            var filePath2 = "C:/Project/Assets/file2.cs";
+            var dirPath = "C:/Project/Assets/NewDir";
 
             // 执行多个操作
             logger.LogFileCreation(transactionId, filePath1);
             logger.LogFileModification(transactionId, filePath2);
             logger.LogDirectoryCreation(transactionId, dirPath);
-            bool result = logger.CommitTransaction(transactionId);
+            var result = logger.CommitTransaction(transactionId);
 
             // 断言
             Assert.IsTrue(result);
@@ -150,9 +148,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void RollbackTransaction_RollsBackChanges()
         {
             // 安排
-            string transactionId = logger.BeginTransaction("RollbackTest");
-            string testFile = Path.Combine(tempTestDir, "rollback_test.txt");
-            string testContent = "Test rollback content";
+            var transactionId = logger.BeginTransaction("RollbackTest");
+            var testFile = Path.Combine(tempTestDir, "rollbactest.txt");
+            var testContent = "Test rollback content";
 
             // 创建实际文件（通常SafeFileOperations会代为处理）
             File.WriteAllText(testFile, testContent);
@@ -161,7 +159,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             logger.LogFileCreation(transactionId, testFile);
 
             // 回滚事务 (注意：实际回滚不由logger执行，只是记录)
-            bool result = logger.RollbackTransaction(transactionId);
+            var result = logger.RollbackTransaction(transactionId);
 
             // 模拟回滚效果
             if (File.Exists(testFile))
@@ -178,24 +176,24 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void ExportTransactionLogs_CreatesSeparateFile()
         {
             // 安排 - 创建一些事务
-            string transaction1 = logger.BeginTransaction("ExportTest1");
+            var transaction1 = logger.BeginTransaction("ExportTest1");
             logger.LogFileCreation(transaction1, "C:/Project/Assets/file1.cs");
             logger.CommitTransaction(transaction1);
 
-            string transaction2 = logger.BeginTransaction("ExportTest2");
+            var transaction2 = logger.BeginTransaction("ExportTest2");
             logger.LogFileModification(transaction2, "C:/Project/Assets/file2.cs");
             logger.CommitTransaction(transaction2);
 
-            string exportPath = Path.Combine(tempTestDir, "exported_log.txt");
+            var exportPath = Path.Combine(tempTestDir, "exported_log.txt");
 
             // 执行
-            bool result = logger.ExportTransactionLogs(exportPath);
+            var result = logger.ExportTransactionLogs(exportPath);
 
             // 断言
             Assert.IsTrue(result);
             Assert.IsTrue(File.Exists(exportPath));
 
-            string exportedContent = File.ReadAllText(exportPath);
+            var exportedContent = File.ReadAllText(exportPath);
             Assert.IsTrue(exportedContent.Contains("ExportTest1"));
             Assert.IsTrue(exportedContent.Contains("ExportTest2"));
         }

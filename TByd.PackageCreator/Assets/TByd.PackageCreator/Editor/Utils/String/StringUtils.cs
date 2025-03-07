@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace TByd.PackageCreator.Editor.Utils
+namespace TByd.PackageCreator.Editor.Utils.String
 {
     /// <summary>
     /// 字符串处理工具类，提供常用的字符串操作和转换功能
@@ -12,7 +12,7 @@ namespace TByd.PackageCreator.Editor.Utils
     public static class StringUtils
     {
         // C#关键字集合，用于标识符验证和转换
-        private static readonly HashSet<string> s_CSharpKeywords = new HashSet<string>
+        private static readonly HashSet<string> SCSharpKeywords = new HashSet<string>
         {
             "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
             "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
@@ -26,13 +26,13 @@ namespace TByd.PackageCreator.Editor.Utils
         };
 
         // 常用字符串池缓存，用于减少相同字符串的内存分配
-        private static readonly Dictionary<string, string> s_StringPool = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> SStringPool = new Dictionary<string, string>();
 
         // 最大缓存大小，防止内存泄漏
-        private const int k_MaxCacheSize = 10000;
+        private const int MaxCacheSize = 10000;
 
         // 字符串池中缓存的最大字符串长度
-        private const int k_MaxPoolStringLength = 128;
+        private const int MaxPoolStringLength = 128;
 
         /// <summary>
         /// 将字符串添加到字符串池中，如果池中已存在相同字符串，则返回池中的实例
@@ -46,28 +46,28 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 对于过长的字符串，不进行池化
-            if (input.Length > k_MaxPoolStringLength)
+            if (input.Length > MaxPoolStringLength)
                 return input;
 
-            lock (s_StringPool)
+            lock (SStringPool)
             {
                 // 如果池已满，清空一半的内容
-                if (s_StringPool.Count >= k_MaxCacheSize)
+                if (SStringPool.Count >= MaxCacheSize)
                 {
                     // 随机清除一半的缓存以避免占用过多内存
-                    var keysToRemove = s_StringPool.Keys.Take(k_MaxCacheSize / 2).ToList();
+                    var keysToRemove = SStringPool.Keys.Take(MaxCacheSize / 2).ToList();
                     foreach (var key in keysToRemove)
                     {
-                        s_StringPool.Remove(key);
+                        SStringPool.Remove(key);
                     }
                 }
 
                 // 检查池中是否已有此字符串
-                if (s_StringPool.TryGetValue(input, out string pooledString))
+                if (SStringPool.TryGetValue(input, out var pooledString))
                     return pooledString;
 
                 // 将字符串添加到池中
-                s_StringPool[input] = input;
+                SStringPool[input] = input;
                 return input;
             }
         }
@@ -77,9 +77,9 @@ namespace TByd.PackageCreator.Editor.Utils
         /// </summary>
         public static void ClearStringPool()
         {
-            lock (s_StringPool)
+            lock (SStringPool)
             {
-                s_StringPool.Clear();
+                SStringPool.Clear();
             }
         }
 
@@ -246,14 +246,14 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 使用内联计算避免额外的变量，计算需要保留的字符数
-            int charsToKeep = maxLength - ellipsis.Length;
+            var charsToKeep = maxLength - ellipsis.Length;
 
             // 处理边界情况
             if (charsToKeep < 0)
             {
                 // 如果maxLength小于ellipsis的长度，则返回ellipsis的前maxLength个字符
                 // 确保不会传递负数给Substring
-                int length = Math.Max(0, Math.Min(maxLength, ellipsis.Length));
+                var length = Math.Max(0, Math.Min(maxLength, ellipsis.Length));
                 return length > 0 ? ellipsis.Substring(0, length) : string.Empty;
             }
 
@@ -261,7 +261,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 return ellipsis;
 
             // 使用StringBuilder可以避免额外的字符串分配
-            StringBuilder sb = new StringBuilder(maxLength);
+            var sb = new StringBuilder(maxLength);
             sb.Append(input, 0, charsToKeep);
             sb.Append(ellipsis);
 
@@ -278,7 +278,7 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(input))
                 return false;
 
-            foreach (char c in input)
+            foreach (var c in input)
             {
                 if (IsWideChar(c))
                     return true;
@@ -306,17 +306,17 @@ namespace TByd.PackageCreator.Editor.Utils
                 return string.Empty;
 
             // 计算省略号的宽度
-            int ellipsisWidth = GetStringDisplayWidth(ellipsis);
+            var ellipsisWidth = GetStringDisplayWidth(ellipsis);
 
             // 计算输入字符串的总宽度
-            int inputWidth = GetStringDisplayWidth(input);
+            var inputWidth = GetStringDisplayWidth(input);
 
             // 如果输入宽度小于等于最大宽度，直接返回
             if (inputWidth <= maxWidth)
                 return input;
 
             // 计算可以保留的最大宽度
-            int widthToKeep = maxWidth - ellipsisWidth;
+            var widthToKeep = maxWidth - ellipsisWidth;
 
             // 处理边界情况
             if (widthToKeep < 0)
@@ -326,14 +326,14 @@ namespace TByd.PackageCreator.Editor.Utils
                 return ellipsis;
 
             // 逐字符计算累计宽度，找到合适的截断位置
-            int accumulatedWidth = 0;
-            int charIndex = 0;
+            var accumulatedWidth = 0;
+            var charIndex = 0;
 
-            StringBuilder sb = new StringBuilder(input.Length);
+            var sb = new StringBuilder(input.Length);
 
-            foreach (char c in input)
+            foreach (var c in input)
             {
-                int charWidth = IsWideChar(c) ? 2 : 1;
+                var charWidth = IsWideChar(c) ? 2 : 1;
 
                 if (accumulatedWidth + charWidth > widthToKeep)
                     break;
@@ -360,8 +360,8 @@ namespace TByd.PackageCreator.Editor.Utils
             if (string.IsNullOrEmpty(input))
                 return 0;
 
-            int width = 0;
-            foreach (char c in input)
+            var width = 0;
+            foreach (var c in input)
             {
                 width += IsWideChar(c) ? 2 : 1;
             }
@@ -503,7 +503,7 @@ namespace TByd.PackageCreator.Editor.Utils
             }
 
             // 检查是否为C#关键字
-            return !s_CSharpKeywords.Contains(input);
+            return !SCSharpKeywords.Contains(input);
         }
 
         /// <summary>
@@ -547,8 +547,8 @@ namespace TByd.PackageCreator.Editor.Utils
             }
 
             // 检查是否为C#关键字
-            string result = sb.ToString();
-            if (s_CSharpKeywords.Contains(result))
+            var result = sb.ToString();
+            if (SCSharpKeywords.Contains(result))
             {
                 return "_" + result;
             }

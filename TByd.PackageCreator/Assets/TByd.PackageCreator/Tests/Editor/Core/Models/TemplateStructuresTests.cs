@@ -1,7 +1,5 @@
-using System.IO;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
-using TByd.PackageCreator.Tests.Editor;
+using TByd.PackageCreator.Editor.Core.Models;
 
 namespace TByd.PackageCreator.Tests.Editor.Core.Models
 {

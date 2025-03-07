@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TByd.PackageCreator.Editor.Core;
+using TByd.PackageCreator.Editor.Core.Interfaces;
 
 namespace TByd.PackageCreator.Editor.Templates.Providers
 {
@@ -9,13 +10,13 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
     /// </summary>
     internal class CustomJsonTemplateProvider : ITemplateProvider
     {
-        private readonly IPackageTemplate m_Template;
-        private readonly string m_SourceFileName;
+        private readonly IPackageTemplate _mTemplate;
+        private readonly string _mSourceFileName;
 
         /// <summary>
         /// 提供者名称
         /// </summary>
-        public string ProviderName => $"CustomJson_{m_SourceFileName}";
+        public string ProviderName => $"CustomJson_{_mSourceFileName}";
 
         /// <summary>
         /// 提供者版本
@@ -29,8 +30,8 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
         /// <param name="sourceFileName">源文件名</param>
         public CustomJsonTemplateProvider(IPackageTemplate template, string sourceFileName)
         {
-            m_Template = template ?? throw new ArgumentNullException(nameof(template));
-            m_SourceFileName = sourceFileName ?? "unknown";
+            _mTemplate = template ?? throw new ArgumentNullException(nameof(template));
+            _mSourceFileName = sourceFileName ?? "unknown";
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
         /// <returns>模板集合</returns>
         public IEnumerable<IPackageTemplate> GetTemplates()
         {
-            yield return m_Template;
+            yield return _mTemplate;
         }
 
         /// <summary>
@@ -49,7 +50,7 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
         /// <returns>是否包含</returns>
         public bool ContainsTemplate(string templateId)
         {
-            return m_Template.Id == templateId;
+            return _mTemplate.Id == templateId;
         }
     }
 }

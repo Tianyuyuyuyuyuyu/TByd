@@ -2,11 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
-using TByd.PackageCreator.Tests.Editor;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Core.Services;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -72,8 +71,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         public void CreateNewConfig_ShouldReturnValidConfig()
         {
             // 安排：准备测试数据
-            string name = "com.test.package";
-            string displayName = "Test Package";
+            var name = "com.test.package";
+            var displayName = "Test Package";
 
             // 执行：创建新配置
             var config = _configManager.CreateNewConfig(name, displayName);
@@ -103,7 +102,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             // 安排：清除历史记录并准备测试数据
             _configManager.ClearHistory();
             var config = new PackageConfig("com.test.package", "Test Package");
-            string description = "测试历史记录";
+            var description = "测试历史记录";
 
             // 执行：添加到历史记录
             _configManager.AddToHistory(config, description);
@@ -121,7 +120,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             _configManager.ClearHistory();
 
             // 执行：添加多个历史记录（超过限制）
-            for (int i = 0; i < 25; i++)
+            for (var i = 0; i < 25; i++)
             {
                 var config = new PackageConfig($"com.test.package{i}", $"Test Package {i}");
                 _configManager.AddToHistory(config, $"测试 {i}");
@@ -138,7 +137,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         {
             // 安排：清除历史记录并添加多个历史记录
             _configManager.ClearHistory();
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 var config = new PackageConfig($"com.test.package{i}", $"Test Package {i}");
                 _configManager.AddToHistory(config, $"测试 {i}");
@@ -185,8 +184,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             Assert.IsFalse(result.IsValid);
             Assert.IsTrue(result.HasErrors);
 
-            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
-            bool hasNameError = false;
+            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+            var hasNameError = false;
             foreach (var error in errorMessages)
             {
                 if (error.Field == "Name" && error.Message.Contains("包名称格式无效"))
@@ -211,7 +210,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             Assert.IsFalse(result.IsValid);
             Assert.IsTrue(result.HasErrors);
 
-            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
             Assert.GreaterOrEqual(errorMessages.Count, 2, "应该至少有两个错误（名称和显示名称）");
         }
 
@@ -241,7 +240,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
                 Assert.IsTrue(File.Exists(_testFilePath), $"文件应该存在: {_testFilePath}");
 
                 // 验证文件内容
-                string json = File.ReadAllText(_testFilePath);
+                var json = File.ReadAllText(_testFilePath);
                 Assert.IsTrue(json.Contains("com.test.package"), "JSON应该包含包名");
                 Assert.IsTrue(json.Contains("Test Package"), "JSON应该包含显示名称");
             }
@@ -256,13 +255,13 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         public IEnumerator LoadConfigAsync_ShouldLoadConfigFromFile()
         {
             // 安排：创建并保存配置
-            string testName = "com.test.loadconfig";
-            string testDisplayName = "Test Load Config";
+            var testName = "com.test.loadconfig";
+            var testDisplayName = "Test Load Config";
 
             var config = new PackageConfig(testName, testDisplayName, "1.0.0", "This is a test package for loading");
 
             // 使用Newtonsoft.Json序列化，确保与反序列化方式匹配
-            string json = JsonConvert.SerializeObject(config, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(config, Formatting.Indented);
             Debug.Log($"序列化JSON: {json}"); // 添加日志帮助调试
             File.WriteAllText(_testFilePath, json);
 
@@ -282,7 +281,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             // 如果加载失败，打印详细信息帮助调试
             if (!result.IsValid)
             {
-                foreach (var msg in result.GetMessages(ValidationMessageLevel.k_Error))
+                foreach (var msg in result.GetMessages(ValidationMessageLevel.Error))
                 {
                     Debug.LogError($"加载错误: {msg.Message}");
                 }
@@ -306,7 +305,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             try
             {
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(_testExportPath);
+                var directory = Path.GetDirectoryName(_testExportPath);
                 if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
                     Debug.Log($"正在创建目录: {directory}");
@@ -321,7 +320,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             }
 
             // 首先验证序列化过程是否正常工作
-            string directJson = JsonUtility.ToJson(config, true);
+            var directJson = JsonUtility.ToJson(config, true);
             Debug.Log($"直接序列化结果: {directJson}");
 
             // 执行：导出配置
@@ -351,7 +350,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
                 Assert.IsTrue(File.Exists(_testExportPath), $"文件应该存在: {_testExportPath}");
 
                 // 验证文件内容
-                string json = File.ReadAllText(_testExportPath);
+                var json = File.ReadAllText(_testExportPath);
                 Debug.Log($"文件实际内容: {json}");
 
                 // 如果文件内容为空，这里可能有问题
@@ -361,8 +360,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
                 }
 
                 // 检查内容中是否包含关键信息
-                bool containsName = json.Contains("com.test.export");
-                bool containsDisplayName = json.Contains("Test Export");
+                var containsName = json.Contains("com.test.export");
+                var containsDisplayName = json.Contains("Test Export");
 
                 // 提供更详细的错误信息
                 Assert.IsTrue(containsName, $"JSON应该包含包名'com.test.export'，但实际内容是: {(json.Length > 100 ? json.Substring(0, 100) + "..." : json)}");
@@ -397,8 +396,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             Debug.Log($"测试导入文件路径: {_testImportPath}");
 
             // 安排：创建导出配置文件
-            string testName = "com.test.import";
-            string testDisplayName = "Test Import";
+            var testName = "com.test.import";
+            var testDisplayName = "Test Import";
 
             try
             {
@@ -420,14 +419,14 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
                 };
 
                 // 序列化为JSON字符串
-                string json = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+                var json = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
 
                 Debug.Log($"准备写入的JSON内容: {json}");
                 File.WriteAllText(_testImportPath, json);
 
                 // 验证文件是否正确创建
                 Assert.IsTrue(File.Exists(_testImportPath), "测试文件应该已创建");
-                string fileContent = File.ReadAllText(_testImportPath);
+                var fileContent = File.ReadAllText(_testImportPath);
                 Debug.Log($"文件实际内容: {fileContent}");
             }
             catch (Exception ex)
@@ -473,7 +472,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         public IEnumerator ImportConfigAsync_WithNonexistentFile_ShouldReturnError()
         {
             // 安排：确保文件不存在
-            string nonexistentFile = TestHelpers.GetTestFilePath("nonexistent.json");
+            var nonexistentFile = TestHelpers.GetTestFilePath("nonexistent.json");
             if (File.Exists(nonexistentFile))
                 File.Delete(nonexistentFile);
 
@@ -495,7 +494,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         public IEnumerator ImportConfigAsync_WithUnsupportedFormat_ShouldReturnError()
         {
             // 安排：创建非JSON格式的文件
-            string unsupportedFile = TestHelpers.GetTestFilePath("test.txt");
+            var unsupportedFile = TestHelpers.GetTestFilePath("test.txt");
 
             try
             {

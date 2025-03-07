@@ -3,7 +3,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Utils
+namespace TByd.PackageCreator.Editor.Utils.Version
 {
     /// <summary>
     /// Unity版本兼容适配器，提供不同Unity版本间的API兼容层
@@ -11,16 +11,16 @@ namespace TByd.PackageCreator.Editor.Utils
     public static class UnityVersionAdapter
     {
         // 当前Unity版本
-        private static readonly Version s_CurrentUnityVersion;
+        private static readonly System.Version SCurrentUnityVersion;
 
         // Unity 2021.3版本（我们支持的最低版本）
-        private static readonly Version s_Unity20213 = new Version(2021, 3);
+        private static readonly System.Version SUnity20213 = new System.Version(2021, 3);
 
         // Unity 2022.1版本
-        private static readonly Version s_Unity20221 = new Version(2022, 1);
+        private static readonly System.Version SUnity20221 = new System.Version(2022, 1);
 
         // Unity 2023.1版本
-        private static readonly Version s_Unity20231 = new Version(2023, 1);
+        private static readonly System.Version SUnity20231 = new System.Version(2023, 1);
 
         /// <summary>
         /// 静态构造函数，初始化当前Unity版本号
@@ -51,9 +51,9 @@ namespace TByd.PackageCreator.Editor.Utils
                 int.TryParse(patchString, out patch);
             }
 
-            s_CurrentUnityVersion = new Version(major, minor, patch);
+            SCurrentUnityVersion = new System.Version(major, minor, patch);
 
-            Debug.Log($"初始化Unity版本适配器: 当前版本 {s_CurrentUnityVersion}");
+            Debug.Log($"初始化Unity版本适配器: 当前版本 {SCurrentUnityVersion}");
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>如果当前版本大于或等于指定版本则返回true</returns>
         public static bool IsVersionAtLeast(int major, int minor, int patch = 0)
         {
-            return s_CurrentUnityVersion >= new Version(major, minor, patch);
+            return SCurrentUnityVersion >= new System.Version(major, minor, patch);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>如果是则返回true</returns>
         public static bool IsUnity2021_3OrNewer()
         {
-            return s_CurrentUnityVersion >= s_Unity20213;
+            return SCurrentUnityVersion >= SUnity20213;
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>如果是则返回true</returns>
         public static bool IsUnity2022_1OrNewer()
         {
-            return s_CurrentUnityVersion >= s_Unity20221;
+            return SCurrentUnityVersion >= SUnity20221;
         }
 
         /// <summary>
@@ -101,16 +101,16 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>如果是则返回true</returns>
         public static bool IsUnity2023_1OrNewer()
         {
-            return s_CurrentUnityVersion >= s_Unity20231;
+            return SCurrentUnityVersion >= SUnity20231;
         }
 
         /// <summary>
         /// 获取当前Unity版本号
         /// </summary>
         /// <returns>版本号</returns>
-        public static Version GetCurrentUnityVersion()
+        public static System.Version GetCurrentUnityVersion()
         {
-            return s_CurrentUnityVersion;
+            return SCurrentUnityVersion;
         }
 
         /// <summary>
@@ -121,11 +121,11 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <param name="fallbackValue">如果操作失败时的返回值</param>
         /// <param name="minRequiredVersion">最低需要的Unity版本</param>
         /// <returns>操作的返回值，或者失败时的回退值</returns>
-        public static T SafeCall<T>(Func<T> action, T fallbackValue, Version minRequiredVersion)
+        public static T SafeCall<T>(Func<T> action, T fallbackValue, System.Version minRequiredVersion)
         {
-            if (s_CurrentUnityVersion < minRequiredVersion)
+            if (SCurrentUnityVersion < minRequiredVersion)
             {
-                Debug.LogWarning($"尝试调用需要Unity {minRequiredVersion} 的API，但当前版本为 {s_CurrentUnityVersion}");
+                Debug.LogWarning($"尝试调用需要Unity {minRequiredVersion} 的API，但当前版本为 {SCurrentUnityVersion}");
                 return fallbackValue;
             }
 
@@ -146,11 +146,11 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <param name="action">要执行的操作</param>
         /// <param name="minRequiredVersion">最低需要的Unity版本</param>
         /// <returns>是否成功执行</returns>
-        public static bool SafeCall(Action action, Version minRequiredVersion)
+        public static bool SafeCall(Action action, System.Version minRequiredVersion)
         {
-            if (s_CurrentUnityVersion < minRequiredVersion)
+            if (SCurrentUnityVersion < minRequiredVersion)
             {
-                Debug.LogWarning($"尝试调用需要Unity {minRequiredVersion} 的API，但当前版本为 {s_CurrentUnityVersion}");
+                Debug.LogWarning($"尝试调用需要Unity {minRequiredVersion} 的API，但当前版本为 {SCurrentUnityVersion}");
                 return false;
             }
 
@@ -526,7 +526,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     if (backend != null && backend.GetType().IsEnum)
                     {
                         // 处理枚举值，转换为友好的字符串
-                        int backendValue = Convert.ToInt32(backend);
+                        var backendValue = Convert.ToInt32(backend);
                         switch (backendValue)
                         {
                             case 0: return "Mono";

@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
 using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.Core.Security
@@ -13,7 +15,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
     /// </summary>
     public class TemplateSecurityChecker
     {
-        private static TemplateSecurityChecker s_Instance;
+        private static TemplateSecurityChecker _sInstance;
 
         /// <summary>
         /// 单例实例
@@ -22,18 +24,18 @@ namespace TByd.PackageCreator.Editor.Core.Security
         {
             get
             {
-                if (s_Instance == null)
+                if (_sInstance == null)
                 {
-                    s_Instance = new TemplateSecurityChecker();
+                    _sInstance = new TemplateSecurityChecker();
                 }
-                return s_Instance;
+                return _sInstance;
             }
         }
 
-        private readonly ErrorHandler m_ErrorHandler;
+        private readonly ErrorHandler _mErrorHandler;
 
         // 受保护的关键目录列表（相对于Unity项目根目录）
-        private readonly List<string> m_ProtectedDirectories = new List<string>
+        private readonly List<string> _mProtectedDirectories = new List<string>
         {
             "Assets/Editor",
             "Assets/Plugins",
@@ -49,7 +51,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
         };
 
         // 允许的文件类型列表（扩展名）
-        private readonly HashSet<string> m_AllowedFileExtensions = new HashSet<string>
+        private readonly HashSet<string> _mAllowedFileExtensions = new HashSet<string>
         {
             ".cs", ".js", ".txt", ".md", ".json", ".asmdef", ".asmref", ".xml", ".yaml",
             ".yml", ".html", ".css", ".hlsl", ".shader", ".compute", ".cginc", ".meta",
@@ -59,21 +61,21 @@ namespace TByd.PackageCreator.Editor.Core.Security
         };
 
         // 潜在危险的文件扩展名列表
-        private readonly HashSet<string> m_DangerousFileExtensions = new HashSet<string>
+        private readonly HashSet<string> _mDangerousFileExtensions = new HashSet<string>
         {
             ".exe", ".dll", ".bat", ".cmd", ".sh", ".app", ".jar", ".msi", ".vbs",
             ".ps1", ".psd1", ".psm1", ".py", ".rb", ".php"
         };
 
         // 危险的模板内容正则表达式模式
-        private readonly List<Regex> m_DangerousContentPatterns = new List<Regex>();
+        private readonly List<Regex> _mDangerousContentPatterns = new List<Regex>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         private TemplateSecurityChecker()
         {
-            m_ErrorHandler = ErrorHandler.Instance;
+            _mErrorHandler = ErrorHandler.Instance;
             InitializeDangerousPatterns();
         }
 
@@ -83,20 +85,20 @@ namespace TByd.PackageCreator.Editor.Core.Security
         private void InitializeDangerousPatterns()
         {
             // 这些模式检测潜在的危险代码模式
-            m_DangerousContentPatterns.Add(new Regex(@"System\.Diagnostics\.Process\.Start", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"System\.IO\.File\.Delete", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"Directory\.Delete", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"DeleteAsset", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"AssetDatabase\.DeleteAsset", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"EditorApplication\.ExecuteMenuItem", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"Application\.Quit", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"Environment\.(Exit|FailFast)", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"System\.Net\.WebClient", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"System\.Net\.(Http|Web)", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"eval\s*\(", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"new\s+DynamicMethod", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"Assembly\.(Load|LoadFrom|LoadFile)", RegexOptions.Compiled));
-            m_DangerousContentPatterns.Add(new Regex(@"System\.Reflection\.(Emit|Invoke)", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"System\.Diagnostics\.Process\.Start", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"System\.IO\.File\.Delete", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"Directory\.Delete", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"DeleteAsset", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"AssetDatabase\.DeleteAsset", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"EditorApplication\.ExecuteMenuItem", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"Application\.Quit", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"Environment\.(Exit|FailFast)", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"System\.Net\.WebClient", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"System\.Net\.(Http|Web)", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"eval\s*\(", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"new\s+DynamicMethod", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"Assembly\.(Load|LoadFrom|LoadFile)", RegexOptions.Compiled));
+            _mDangerousContentPatterns.Add(new Regex(@"System\.Reflection\.(Emit|Invoke)", RegexOptions.Compiled));
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             }
 
             // 归一化路径（统一斜杠方向，移除多余斜杠）
-            string normalizedPath = NormalizePath(directoryPath);
+            var normalizedPath = NormalizePath(directoryPath);
 
             // 检查路径是否包含非法字符
             if (ContainsInvalidPathChars(normalizedPath))
@@ -160,7 +162,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             }
 
             // 归一化路径
-            string normalizedPath = NormalizePath(filePath);
+            var normalizedPath = NormalizePath(filePath);
 
             // 检查路径是否包含非法字符
             if (ContainsInvalidPathChars(normalizedPath))
@@ -181,13 +183,13 @@ namespace TByd.PackageCreator.Editor.Core.Security
             }
 
             // 检查文件扩展名是否被允许
-            string extension = Path.GetExtension(normalizedPath).ToLowerInvariant();
+            var extension = Path.GetExtension(normalizedPath).ToLowerInvariant();
 
-            if (m_DangerousFileExtensions.Contains(extension))
+            if (_mDangerousFileExtensions.Contains(extension))
             {
                 result.AddError($"安全限制：不允许创建潜在危险的文件类型: {extension}");
             }
-            else if (!m_AllowedFileExtensions.Contains(extension))
+            else if (!_mAllowedFileExtensions.Contains(extension))
             {
                 result.AddWarning($"未在已知安全文件类型列表中的扩展名: {extension}");
             }
@@ -210,7 +212,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 return result; // 空内容是安全的
             }
 
-            string extension = Path.GetExtension(filePath).ToLowerInvariant();
+            var extension = Path.GetExtension(filePath).ToLowerInvariant();
 
             // 只检查代码和脚本文件
             if (extension == ".cs" || extension == ".js" || extension == ".shader"
@@ -218,16 +220,16 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 || extension == ".bat" || extension == ".sh" || extension == ".cmd")
             {
                 // 检查危险内容模式
-                foreach (var pattern in m_DangerousContentPatterns)
+                foreach (var pattern in _mDangerousContentPatterns)
                 {
                     var matches = pattern.Matches(content);
 
                     if (matches.Count > 0)
                     {
                         // 获取匹配到的行号
-                        List<int> lineNumbers = new List<int>();
-                        int lineNumber = 1;
-                        int position = 0;
+                        var lineNumbers = new List<int>();
+                        var lineNumber = 1;
+                        var position = 0;
 
                         foreach (Match match in matches)
                         {
@@ -244,7 +246,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                             lineNumbers.Add(lineNumber);
                         }
 
-                        string lineInfo = string.Join(", ", lineNumbers.Select(l => $"行{l}"));
+                        var lineInfo = string.Join(", ", lineNumbers.Select(l => $"行{l}"));
                         result.AddWarning($"文件 {Path.GetFileName(filePath)} 包含潜在危险代码模式 ({pattern})，位于{lineInfo}");
                     }
                 }
@@ -313,20 +315,20 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 if (!File.Exists(filePath))
                     return null;
 
-                string backupFileName = $"{Path.GetFileName(filePath)}.{DateTime.Now:yyyyMMddHHmmss}.bak";
-                string backupDir = Path.Combine(Path.GetDirectoryName(Application.dataPath), "Temp", "PackageCreator", "Backups");
+                var backupFileName = $"{Path.GetFileName(filePath)}.{DateTime.Now:yyyyMMddHHmmss}.bak";
+                var backupDir = Path.Combine(Path.GetDirectoryName(Application.dataPath), "Temp", "PackageCreator", "Backups");
 
                 if (!Directory.Exists(backupDir))
                     Directory.CreateDirectory(backupDir);
 
-                string backupPath = Path.Combine(backupDir, backupFileName);
+                var backupPath = Path.Combine(backupDir, backupFileName);
                 File.Copy(filePath, backupPath, true);
 
                 return backupPath;
             }
             catch (Exception ex)
             {
-                m_ErrorHandler.LogException(ErrorType.k_FileCopyError, ex, $"创建文件备份失败: {filePath}");
+                _mErrorHandler.LogException(ErrorType.FileCopyError, ex, $"创建文件备份失败: {filePath}");
                 return null;
             }
         }
@@ -349,7 +351,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             }
             catch (Exception ex)
             {
-                m_ErrorHandler.LogException(ErrorType.k_FileCopyError, ex, $"从备份恢复文件失败: {targetPath}");
+                _mErrorHandler.LogException(ErrorType.FileCopyError, ex, $"从备份恢复文件失败: {targetPath}");
                 return false;
             }
         }
@@ -362,7 +364,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>是否成功写入</returns>
         public bool AtomicWriteFile(string filePath, string content)
         {
-            string tempFilePath = Path.Combine(
+            var tempFilePath = Path.Combine(
                 Path.GetDirectoryName(filePath),
                 $"{Path.GetFileNameWithoutExtension(filePath)}.temp{Path.GetExtension(filePath)}");
 
@@ -377,7 +379,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 }
 
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(filePath);
+                var directory = Path.GetDirectoryName(filePath);
                 if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
                     try
@@ -386,7 +388,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                     }
                     catch (Exception ex)
                     {
-                        m_ErrorHandler.LogException(ErrorType.k_FileOperation, ex, $"创建目录失败: {directory}");
+                        _mErrorHandler.LogException(ErrorType.FileOperation, ex, $"创建目录失败: {directory}");
                         return false;
                     }
                 }
@@ -412,7 +414,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                         // 清理临时文件
                         try { File.Delete(tempFilePath); } catch { }
 
-                        m_ErrorHandler.LogException(ErrorType.k_FileDeleteError, ex, $"删除目标文件失败: {filePath}");
+                        _mErrorHandler.LogException(ErrorType.FileDeleteError, ex, $"删除目标文件失败: {filePath}");
                         return false;
                     }
                 }
@@ -424,7 +426,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 }
                 catch (Exception ex)
                 {
-                    m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, $"移动临时文件到目标位置失败: {filePath}");
+                    _mErrorHandler.LogException(ErrorType.FileWriteError, ex, $"移动临时文件到目标位置失败: {filePath}");
 
                     // 尝试恢复备份
                     if (backupPath != null && File.Exists(backupPath))
@@ -440,7 +442,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 // 清理临时文件
                 try { if (File.Exists(tempFilePath)) File.Delete(tempFilePath); } catch { }
 
-                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, $"写入文件失败: {filePath}");
+                _mErrorHandler.LogException(ErrorType.FileWriteError, ex, $"写入文件失败: {filePath}");
 
                 // 尝试恢复备份
                 if (backupPath != null && File.Exists(backupPath))
@@ -463,7 +465,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 return path;
 
             // 替换反斜杠为正斜杠
-            string normalized = path.Replace('\\', '/');
+            var normalized = path.Replace('\\', '/');
 
             // 移除多余的斜杠
             while (normalized.Contains("//"))
@@ -482,15 +484,15 @@ namespace TByd.PackageCreator.Editor.Core.Security
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
-            char[] invalidPathChars = Path.GetInvalidPathChars();
+            var invalidFileNameChars = Path.GetInvalidFileNameChars();
+            var invalidPathChars = Path.GetInvalidPathChars();
 
             // 额外检查一些特殊字符
-            char[] additionalInvalidChars = new char[] { '<', '>', '|', '*', '?', '\"' };
+            var additionalInvalidChars = new char[] { '<', '>', '|', '*', '?', '\"' };
 
             // 检查每个路径段
-            string[] segments = path.Split('/');
-            foreach (string segment in segments)
+            var segments = path.Split('/');
+            foreach (var segment in segments)
             {
                 if (string.IsNullOrEmpty(segment))
                     continue;
@@ -514,11 +516,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            string normalizedPath = NormalizePath(path);
+            var normalizedPath = NormalizePath(path);
 
-            return m_ProtectedDirectories.Any(protectedDir =>
+            return _mProtectedDirectories.Any(protectedDir =>
             {
-                string normalizedProtectedDir = NormalizePath(protectedDir);
+                var normalizedProtectedDir = NormalizePath(protectedDir);
 
                 // 判断是否为保护目录自身或其子目录
                 return normalizedPath.Equals(normalizedProtectedDir, StringComparison.OrdinalIgnoreCase) ||
@@ -538,10 +540,10 @@ namespace TByd.PackageCreator.Editor.Core.Security
             // 使用绝对路径检查
             try
             {
-                string projectRoot = Path.GetDirectoryName(Application.dataPath);
-                string absolutePath = Path.GetFullPath(path);
-                string normalizedProjectRoot = NormalizePath(projectRoot);
-                string normalizedAbsolutePath = NormalizePath(absolutePath);
+                var projectRoot = Path.GetDirectoryName(Application.dataPath);
+                var absolutePath = Path.GetFullPath(path);
+                var normalizedProjectRoot = NormalizePath(projectRoot);
+                var normalizedAbsolutePath = NormalizePath(absolutePath);
 
                 return !normalizedAbsolutePath.StartsWith(normalizedProjectRoot, StringComparison.OrdinalIgnoreCase);
             }
@@ -560,7 +562,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            string[] segments = path.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            var segments = path.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
             return segments.Length > maxDepth;
         }
 

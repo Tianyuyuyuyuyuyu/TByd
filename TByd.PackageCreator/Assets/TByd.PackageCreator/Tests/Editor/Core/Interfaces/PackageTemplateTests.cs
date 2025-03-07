@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
-using TByd.PackageCreator.Tests.Editor;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Core.Services;
 using UnityEngine;
 
 namespace TByd.PackageCreator.Tests.Editor.Core.Interfaces
@@ -46,7 +47,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Interfaces
 
                 // 添加一些选项
                 var includeTestsOption = new TemplateOption("includeTests", "包含测试", "是否包含测试目录",
-                    TemplateOptionType.k_Boolean, "true");
+                    TemplateOptionType.Boolean, "true");
                 _options.Add(includeTestsOption);
             }
 

@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using TByd.PackageCreator.Editor.Core.Models;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Interfaces
 {
     /// <summary>
     /// 配置管理器接口，定义了配置管理的主要功能

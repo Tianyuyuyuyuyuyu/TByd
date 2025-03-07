@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
+using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Core.Security;
-using UnityEditor;
 using UnityEngine;
 
 namespace TByd.PackageCreator.Tests.Editor.Core.Security
@@ -29,7 +26,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                                        Guid.NewGuid().ToString());
 
             // 确保目录存在
-            string tempDirParent = Path.GetDirectoryName(tempTestDir);
+            var tempDirParent = Path.GetDirectoryName(tempTestDir);
             if (!Directory.Exists(tempDirParent))
             {
                 Directory.CreateDirectory(tempDirParent);
@@ -63,21 +60,21 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void ValidatePath_WithValidPath_ReturnsSuccess()
         {
             // 安排 - 设置有效路径
-            string validPath = Path.Combine(tempTestDir, "ValidPackage");
+            var validPath = Path.Combine(tempTestDir, "ValidPackage");
 
             // 执行
             var result = securityChecker.ValidateDirectoryPath(validPath);
 
             // 断言
             Assert.IsTrue(result.IsValid);
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count);
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count);
         }
 
         [Test]
         public void ValidatePath_WithPathOutsideProject_ReturnsFail()
         {
             // 将系统临时目录路径替换为模拟的外部路径
-            string invalidPath = Path.Combine(tempTestDir, "OutsideProject");
+            var invalidPath = Path.Combine(tempTestDir, "OutsideProject");
 
             // 故意加入上级目录引用，模拟跳出项目
             invalidPath = Path.Combine(invalidPath, "..\\..\\..\\..\\ExternalPath");
@@ -88,7 +85,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             // 断言 - 现在我们期望这个路径被检测为无效（因为我们使用了双点跳出）
             Assert.IsFalse(result.IsValid, "包含上级目录引用的路径应该被识别为无效");
 
-            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
             Debug.Log($"检测到的错误消息数量: {errorMessages.Count}");
 
             foreach (var msg in errorMessages)
@@ -99,7 +96,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             Assert.Greater(errorMessages.Count, 0, "应该有错误消息");
 
             // 断言错误消息应该包含"outside project"或"../",实际用中文，以实际输出为准
-            bool hasOutsideError = errorMessages.Any(e =>
+            var hasOutsideError = errorMessages.Any(e =>
                 e.Message.Contains("外部") ||
                 e.Message.Contains("outside") ||
                 e.Message.Contains("../") ||
@@ -120,13 +117,13 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 "ProjectSettings/ProjectSettings.asset" // ProjectSettings 是受保护目录
             };
 
-            bool foundProtectedPath = false;
+            var foundProtectedPath = false;
 
             // 尝试多个可能的受保护路径
-            foreach (string path in protectedPaths)
+            foreach (var path in protectedPaths)
             {
                 // 检查路径是否被标记为受保护
-                bool isProtected = securityChecker.IsPathProtected(path);
+                var isProtected = securityChecker.IsPathProtected(path);
                 Debug.Log($"路径 {path} 是否受保护: {isProtected}");
 
                 if (isProtected)
@@ -146,11 +143,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                     // 断言
                     Assert.IsFalse(result.IsValid, "受保护路径应该验证失败");
 
-                    var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
+                    var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
                     Assert.Greater(errorMessages.Count, 0, "应该有错误消息");
 
                     // 断言错误消息应该指明路径是受保护的
-                    bool hasProtectedError = errorMessages.Any(e =>
+                    var hasProtectedError = errorMessages.Any(e =>
                         e.Message.Contains("受保护") ||
                         e.Message.Contains("protected") ||
                         e.Message.Contains("reserved"));
@@ -179,18 +176,18 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             });
 
             // 执行 - 验证每个文件内容
-            ValidationResult result = new ValidationResult();
+            var result = new ValidationResult();
 
             foreach (var file in templateInfo.Files)
             {
-                string content = File.ReadAllText(file);
+                var content = File.ReadAllText(file);
                 var fileResult = securityChecker.ValidateFileContent(content, file);
                 result.Merge(fileResult);
             }
 
             // 断言
             Assert.IsTrue(result.IsValid);
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count);
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count);
         }
 
         [Test]
@@ -203,17 +200,17 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             });
 
             // 执行 - 验证每个文件内容
-            ValidationResult result = new ValidationResult();
+            var result = new ValidationResult();
 
             foreach (var file in templateInfo.Files)
             {
-                string content = File.ReadAllText(file);
+                var content = File.ReadAllText(file);
                 Debug.Log($"验证文件内容: {file}\n{content}");
 
                 var fileResult = securityChecker.ValidateFileContent(content, file);
 
                 // 查看每个文件的验证结果
-                var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.k_Warning);
+                var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.Warning);
                 Debug.Log($"文件 {Path.GetFileName(file)} 检测到的警告数: {fileWarnings.Count}");
                 foreach (var warning in fileWarnings)
                 {
@@ -224,7 +221,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 获取所有警告消息
-            var warningMessages = result.GetMessages(ValidationMessageLevel.k_Warning);
+            var warningMessages = result.GetMessages(ValidationMessageLevel.Warning);
             Debug.Log($"总警告消息数量: {warningMessages.Count}");
             foreach (var warning in warningMessages)
             {
@@ -232,11 +229,11 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 使用模式匹配来检查是否包含预期的警告
-            bool hasProcessStartWarning = warningMessages.Any(m =>
+            var hasProcessStartWarning = warningMessages.Any(m =>
                 m.Message.Contains("Process.Start") ||
                 m.Message.Contains("System.Diagnostics.Process.Start"));
 
-            bool hasFileDeleteWarning = warningMessages.Any(m =>
+            var hasFileDeleteWarning = warningMessages.Any(m =>
                 m.Message.Contains("File.Delete") ||
                 m.Message.Contains("System.IO.File.Delete"));
 
@@ -257,10 +254,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 改进的匹配方式：使用更宽松的匹配条件
-            bool hasProcessPattern = warningMessages.Any(m =>
+            var hasProcessPattern = warningMessages.Any(m =>
                 m.Message.IndexOf("Process", StringComparison.OrdinalIgnoreCase) >= 0);
 
-            bool hasFilePattern = warningMessages.Any(m =>
+            var hasFilePattern = warningMessages.Any(m =>
                 m.Message.IndexOf("File", StringComparison.OrdinalIgnoreCase) >= 0);
 
             Debug.Log($"松散匹配Process: {hasProcessPattern}");
@@ -278,7 +275,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void ValidateFilePaths_WithAllowedTypes_ReturnsSuccess()
         {
             // 安排 - 创建允许的文件类型，使用项目内部路径
-            List<string> filePaths = new List<string> {
+            var filePaths = new List<string> {
                 Path.Combine(tempTestDir, "test.cs"),
                 Path.Combine(tempTestDir, "test.json"),
                 Path.Combine(tempTestDir, "test.md")
@@ -287,7 +284,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             foreach (var path in filePaths)
             {
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(path);
+                var directory = Path.GetDirectoryName(path);
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
@@ -298,7 +295,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 执行
-            ValidationResult result = new ValidationResult();
+            var result = new ValidationResult();
 
             foreach (var filePath in filePaths)
             {
@@ -317,14 +314,14 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
 
             // 断言
             Assert.IsTrue(result.IsValid, "所有文件都应该通过验证");
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count, "不应该有错误消息");
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count, "不应该有错误消息");
         }
 
         [Test]
         public void ValidateFilePaths_WithForbiddenTypes_ReturnsFail()
         {
             // 安排 - 创建禁止的文件类型
-            List<string> filePaths = new List<string> {
+            var filePaths = new List<string> {
                 Path.Combine(tempTestDir, "test.cs"),
                 Path.Combine(tempTestDir, "test.exe"),
                 Path.Combine(tempTestDir, "test.dll")
@@ -336,7 +333,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 执行
-            ValidationResult result = new ValidationResult();
+            var result = new ValidationResult();
 
             foreach (var filePath in filePaths)
             {
@@ -346,7 +343,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
 
             // 断言
             Assert.IsFalse(result.IsValid);
-            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
             Assert.Greater(errorMessages.Count, 0);
         }
 
@@ -354,7 +351,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void ValidateProtectedDirectory_WhenTargetingProtectedDir_ReturnsFail()
         {
             // 安排 - 设置受保护目录路径
-            string protectedPath = Path.Combine(Application.dataPath, "Project Settings");
+            var protectedPath = Path.Combine(Application.dataPath, "Project Settings");
 
             // 执行
             var result = securityChecker.ValidateDirectoryPath(protectedPath);
@@ -367,7 +364,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void ValidateProtectedDirectory_WhenTargetingAllowedDir_ReturnsSuccess()
         {
             // 安排 - 设置允许的目录路径（在项目内部）
-            string allowedPath = Path.Combine(tempTestDir, "CustomPackages/MyNewPackage");
+            var allowedPath = Path.Combine(tempTestDir, "CustomPackages/MyNewPackage");
 
             // 确保目录存在
             Directory.CreateDirectory(allowedPath);
@@ -384,7 +381,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 确认这个目录不在受保护列表中
-            bool isProtected = securityChecker.IsPathProtected(allowedPath);
+            var isProtected = securityChecker.IsPathProtected(allowedPath);
             Debug.Log($"目录是否受保护: {isProtected}");
 
             // 断言
@@ -395,18 +392,18 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         // 辅助方法创建测试模板信息
         private TemplateInfo CreateTestTemplate(string templateName, Dictionary<string, string> files)
         {
-            string templateDir = Path.Combine(testResourcesDir, "ValidTemplates", templateName);
+            var templateDir = Path.Combine(testResourcesDir, "ValidTemplates", templateName);
             if (!Directory.Exists(templateDir))
             {
                 Directory.CreateDirectory(templateDir);
             }
 
-            List<string> filePaths = new List<string>();
+            var filePaths = new List<string>();
 
             foreach (var file in files)
             {
-                string filePath = Path.Combine(templateDir, file.Key);
-                string fileDir = Path.GetDirectoryName(filePath);
+                var filePath = Path.Combine(templateDir, file.Key);
+                var fileDir = Path.GetDirectoryName(filePath);
                 if (!Directory.Exists(fileDir))
                 {
                     Directory.CreateDirectory(fileDir);
@@ -432,7 +429,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
     {
         public static bool ContainsErrorMatching(this ValidationResult result, string pattern)
         {
-            foreach (var message in result.GetMessages(ValidationMessageLevel.k_Error))
+            foreach (var message in result.GetMessages(ValidationMessageLevel.Error))
             {
                 if (message.Message.Contains(pattern))
                 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Interfaces
 {
     /// <summary>
     /// 模板提供者接口，用于支持插件式模板提供

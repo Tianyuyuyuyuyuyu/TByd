@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Models
 {
     /// <summary>
     /// 验证消息级别
@@ -11,17 +11,17 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 信息
         /// </summary>
-        k_Info,
+        Info,
 
         /// <summary>
         /// 警告
         /// </summary>
-        k_Warning,
+        Warning,
 
         /// <summary>
         /// 错误
         /// </summary>
-        k_Error
+        Error
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="field">相关字段</param>
         public void AddInfo(string message, string field = "")
         {
-            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.k_Info, field));
+            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.Info, field));
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="field">相关字段</param>
         public void AddWarning(string message, string field = "")
         {
-            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.k_Warning, field));
+            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.Warning, field));
             HasWarnings = true;
         }
 
@@ -120,7 +120,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="field">相关字段</param>
         public void AddError(string message, string field = "")
         {
-            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.k_Error, field));
+            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.Error, field));
             HasErrors = true;
         }
 

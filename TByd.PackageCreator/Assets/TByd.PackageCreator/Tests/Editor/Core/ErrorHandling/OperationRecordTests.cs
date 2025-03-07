@@ -26,7 +26,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void Create_ShouldSetBasicProperties()
         {
             // 安排
-            var operationType = OperationType.k_CreateFile;
+            var operationType = OperationType.CreateFile;
             var targetPath = "test/path.txt";
 
             // 执行
@@ -43,7 +43,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateMoveOrCopy_WithMoveType_ShouldSetProperties()
         {
             // 安排
-            var operationType = OperationType.k_Move;
+            var operationType = OperationType.Move;
             var sourcePath = "source/path.txt";
             var targetPath = "target/path.txt";
 
@@ -60,7 +60,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateMoveOrCopy_WithCopyType_ShouldSetProperties()
         {
             // 安排
-            var operationType = OperationType.k_Copy;
+            var operationType = OperationType.Copy;
             var sourcePath = "source/path.txt";
             var targetPath = "target/path.txt";
 
@@ -77,7 +77,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateMoveOrCopy_WithInvalidType_ShouldThrowException()
         {
             // 安排
-            var operationType = OperationType.k_CreateFile; // 不是Move或Copy
+            var operationType = OperationType.CreateFile; // 不是Move或Copy
             var sourcePath = "source/path.txt";
             var targetPath = "target/path.txt";
 
@@ -90,7 +90,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateWithCustomHandler_ShouldSetProperties()
         {
             // 安排
-            var operationType = OperationType.k_Custom;
+            var operationType = OperationType.Custom;
             var targetPath = "test/path.txt";
             Func<OperationRecord, bool> handler = (record) => true;
 
@@ -107,7 +107,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void CreateWithCustomHandler_WithNullHandler_ShouldThrowException()
         {
             // 安排
-            var operationType = OperationType.k_Custom;
+            var operationType = OperationType.Custom;
             var targetPath = "test/path.txt";
 
             // 断言与执行
@@ -121,7 +121,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             // 安排
             var record = new OperationRecord
             {
-                OperationType = OperationType.k_CreateFile,
+                OperationType = OperationType.CreateFile,
                 TargetPath = "test/path.txt",
                 Timestamp = new DateTime(2023, 1, 1, 12, 0, 0)
             };
@@ -142,7 +142,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             // 安排
             var record = new OperationRecord
             {
-                OperationType = OperationType.k_Move,
+                OperationType = OperationType.Move,
                 SourcePath = "source/path.txt",
                 TargetPath = "target/path.txt",
                 Timestamp = new DateTime(2023, 1, 1, 12, 0, 0)

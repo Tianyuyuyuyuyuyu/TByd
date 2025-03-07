@@ -1,6 +1,5 @@
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
-using TByd.PackageCreator.Tests.Editor;
+using TByd.PackageCreator.Editor.Core.Models;
 
 namespace TByd.PackageCreator.Tests.Editor.Core.Models
 {
@@ -16,7 +15,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             var key = "includeTests";
             var displayName = "包含测试";
             var description = "是否包含测试目录";
-            var type = TemplateOptionType.k_Boolean;
+            var type = TemplateOptionType.Boolean;
             var defaultValue = "true";
             var isRequired = true;
 
@@ -38,7 +37,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_AddPossibleValue_ShouldAddValueToList()
         {
             // 安排
-            var option = new TemplateOption("theme", "主题", "选择主题", TemplateOptionType.k_Enum);
+            var option = new TemplateOption("theme", "主题", "选择主题", TemplateOptionType.Enum);
             var value = "dark";
 
             // 执行
@@ -53,7 +52,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldReturnValidForValidString()
         {
             // 安排
-            var option = new TemplateOption("name", "名称", "包名称", TemplateOptionType.k_String);
+            var option = new TemplateOption("name", "名称", "包名称", TemplateOptionType.String);
 
             // 执行
             var result = option.ValidateValue("test-package");
@@ -67,7 +66,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldFailForEmptyRequiredValue()
         {
             // 安排
-            var option = new TemplateOption("name", "名称", "包名称", TemplateOptionType.k_String);
+            var option = new TemplateOption("name", "名称", "包名称", TemplateOptionType.String);
 
             // 执行
             var result = option.ValidateValue("");
@@ -75,14 +74,14 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             // 断言
             Assert.IsFalse(result.IsValid);
             Assert.AreEqual(1, result.Messages.Count);
-            Assert.AreEqual(ValidationMessageLevel.k_Error, result.Messages[0].Level);
+            Assert.AreEqual(ValidationMessageLevel.Error, result.Messages[0].Level);
         }
 
         [Test]
         public void TemplateOption_ValidateValue_ShouldPassForEmptyOptionalValue()
         {
             // 安排
-            var option = new TemplateOption("description", "描述", "包描述", TemplateOptionType.k_String, "", false);
+            var option = new TemplateOption("description", "描述", "包描述", TemplateOptionType.String, "", false);
 
             // 执行
             var result = option.ValidateValue("");
@@ -96,7 +95,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldFailForInvalidBoolean()
         {
             // 安排
-            var option = new TemplateOption("includeTests", "包含测试", "是否包含测试", TemplateOptionType.k_Boolean);
+            var option = new TemplateOption("includeTests", "包含测试", "是否包含测试", TemplateOptionType.Boolean);
 
             // 执行
             var result = option.ValidateValue("notABoolean");
@@ -110,7 +109,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldPassForValidBoolean()
         {
             // 安排
-            var option = new TemplateOption("includeTests", "包含测试", "是否包含测试", TemplateOptionType.k_Boolean);
+            var option = new TemplateOption("includeTests", "包含测试", "是否包含测试", TemplateOptionType.Boolean);
 
             // 执行
             var result = option.ValidateValue("true");
@@ -124,7 +123,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldFailForInvalidInteger()
         {
             // 安排
-            var option = new TemplateOption("count", "数量", "项目数量", TemplateOptionType.k_Integer);
+            var option = new TemplateOption("count", "数量", "项目数量", TemplateOptionType.Integer);
 
             // 执行
             var result = option.ValidateValue("notAnInteger");
@@ -138,7 +137,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldPassForValidInteger()
         {
             // 安排
-            var option = new TemplateOption("count", "数量", "项目数量", TemplateOptionType.k_Integer);
+            var option = new TemplateOption("count", "数量", "项目数量", TemplateOptionType.Integer);
 
             // 执行
             var result = option.ValidateValue("123");
@@ -152,7 +151,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldFailForInvalidEnum()
         {
             // 安排
-            var option = new TemplateOption("theme", "主题", "选择主题", TemplateOptionType.k_Enum);
+            var option = new TemplateOption("theme", "主题", "选择主题", TemplateOptionType.Enum);
             option.AddPossibleValue("light");
             option.AddPossibleValue("dark");
 
@@ -168,7 +167,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         public void TemplateOption_ValidateValue_ShouldPassForValidEnum()
         {
             // 安排
-            var option = new TemplateOption("theme", "主题", "选择主题", TemplateOptionType.k_Enum);
+            var option = new TemplateOption("theme", "主题", "选择主题", TemplateOptionType.Enum);
             option.AddPossibleValue("light");
             option.AddPossibleValue("dark");
 

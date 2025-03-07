@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Utils;
-using UnityEngine;
+using TByd.PackageCreator.Editor.Utils.String;
 using Debug = UnityEngine.Debug;
 
 namespace TByd.PackageCreator.Tests.Editor.Utils

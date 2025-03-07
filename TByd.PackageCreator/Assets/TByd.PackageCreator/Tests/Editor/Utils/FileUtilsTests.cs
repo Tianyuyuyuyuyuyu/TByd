@@ -1,11 +1,7 @@
-using System;
 using System.IO;
-using System.Text;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core.ErrorHandling;
-using TByd.PackageCreator.Editor.Utils;
+using TByd.PackageCreator.Editor.Utils.FileSystem;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace TByd.PackageCreator.Tests.Editor.Utils
 {

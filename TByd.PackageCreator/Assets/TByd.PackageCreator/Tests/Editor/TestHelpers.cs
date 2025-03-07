@@ -200,12 +200,12 @@ namespace TByd.PackageCreator.Tests.Editor
 
             switch (errorLevel)
             {
-                case ErrorLevel.k_Critical:
-                case ErrorLevel.k_Error:
+                case ErrorLevel.Critical:
+                case ErrorLevel.Error:
                     logType = LogType.Error;
-                    prefix = errorLevel == ErrorLevel.k_Critical ? "严重错误" : "错误";
+                    prefix = errorLevel == ErrorLevel.Critical ? "严重错误" : "错误";
                     break;
-                case ErrorLevel.k_Warning:
+                case ErrorLevel.Warning:
                     logType = LogType.Warning;
                     prefix = "警告";
                     break;

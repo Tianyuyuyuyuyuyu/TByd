@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TByd.PackageCreator.Editor.Utils;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Utils.FileSystem;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Services
 {
     /// <summary>
     /// C#文件生成策略，专门用于生成C#代码文件
@@ -24,17 +26,17 @@ namespace TByd.PackageCreator.Editor.Core
         public string[] SupportedFileExtensions => new[] { ".cs" };
 
         // 变量替换处理器（委托给FileGenerator处理）
-        private readonly FileGenerator m_VariableProcessor;
+        private readonly FileGenerator _mVariableProcessor;
 
         // 命名空间占位符正则表达式
-        private static readonly Regex s_NamespacePattern = new Regex(@"namespace\s+\$\{namespace\}", RegexOptions.Compiled);
+        private static readonly Regex SNamespacePattern = new Regex(@"namespace\s+\$\{namespace\}", RegexOptions.Compiled);
 
         /// <summary>
         /// 创建C#文件生成策略
         /// </summary>
         public CSharpFileGenerationStrategy()
         {
-            m_VariableProcessor = new FileGenerator(null);
+            _mVariableProcessor = new FileGenerator(null);
         }
 
         /// <summary>
@@ -48,7 +50,7 @@ namespace TByd.PackageCreator.Editor.Core
                 return false;
 
             // 转为小写进行比较
-            string lowerExtension = fileExtension.ToLowerInvariant();
+            var lowerExtension = fileExtension.ToLowerInvariant();
             return SupportedFileExtensions.Contains(lowerExtension);
         }
 
@@ -66,28 +68,28 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 获取文件内容
-                string fileContent = templateFile.ContentTemplate;
+                var fileContent = templateFile.ContentTemplate;
 
                 // 如果文件支持变量替换，则进行替换
                 if (templateFile.SupportsVariableReplacement)
                 {
                     // 特殊处理命名空间
-                    string namespaceName = GetNamespaceFromConfig(config, targetPath);
-                    fileContent = s_NamespacePattern.Replace(fileContent, $"namespace {namespaceName}");
+                    var namespaceName = GetNamespaceFromConfig(config, targetPath);
+                    fileContent = SNamespacePattern.Replace(fileContent, $"namespace {namespaceName}");
 
                     // 处理其他变量
-                    fileContent = m_VariableProcessor.ReplaceVariables(fileContent, config);
+                    fileContent = _mVariableProcessor.ReplaceVariables(fileContent, config);
                 }
 
                 // 确保目标目录存在
-                string directoryPath = Path.GetDirectoryName(targetPath);
+                var directoryPath = Path.GetDirectoryName(targetPath);
                 if (!string.IsNullOrEmpty(directoryPath))
                 {
                     FileUtils.EnsureDirectoryExists(directoryPath);
                 }
 
                 // 安全写入文件
-                bool writeSuccess = await WriteFileAsync(targetPath, fileContent);
+                var writeSuccess = await WriteFileAsync(targetPath, fileContent);
 
                 if (writeSuccess)
                 {
@@ -116,12 +118,12 @@ namespace TByd.PackageCreator.Editor.Core
         private string GetNamespaceFromConfig(PackageConfig config, string filePath)
         {
             // 优先使用配置的根命名空间
-            string baseNamespace = !string.IsNullOrEmpty(config.RootNamespace)
+            var baseNamespace = !string.IsNullOrEmpty(config.RootNamespace)
                 ? config.RootNamespace
                 : GenerateNamespaceFromPackageName(config.Name);
 
             // 根据文件位置添加子命名空间
-            string subNamespace = GetSubNamespaceFromPath(filePath);
+            var subNamespace = GetSubNamespaceFromPath(filePath);
 
             // 组合命名空间
             if (!string.IsNullOrEmpty(subNamespace))
@@ -141,20 +143,20 @@ namespace TByd.PackageCreator.Editor.Core
         {
             try
             {
-                string directory = Path.GetDirectoryName(filePath);
+                var directory = Path.GetDirectoryName(filePath);
                 if (string.IsNullOrEmpty(directory))
                     return string.Empty;
 
                 // 获取相对于包根目录的路径
-                string[] parts = directory.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                var parts = directory.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 
                 // 查找关键目录标识
-                int runtimeIndex = Array.IndexOf(parts, "Runtime");
-                int editorIndex = Array.IndexOf(parts, "Editor");
-                int scriptsIndex = Array.IndexOf(parts, "Scripts");
+                var runtimeIndex = Array.IndexOf(parts, "Runtime");
+                var editorIndex = Array.IndexOf(parts, "Editor");
+                var scriptsIndex = Array.IndexOf(parts, "Scripts");
 
                 // 选择最靠前的索引
-                int startIndex = -1;
+                var startIndex = -1;
                 if (runtimeIndex >= 0) startIndex = runtimeIndex;
                 if (editorIndex >= 0 && (startIndex < 0 || editorIndex < startIndex)) startIndex = editorIndex;
                 if (scriptsIndex >= 0 && (startIndex < 0 || scriptsIndex < startIndex)) startIndex = scriptsIndex;
@@ -163,7 +165,7 @@ namespace TByd.PackageCreator.Editor.Core
                 if (startIndex >= 0 && startIndex + 1 < parts.Length)
                 {
                     // 连接子目录作为子命名空间
-                    string subNamespace = string.Join(".", parts.Skip(startIndex + 1)
+                    var subNamespace = string.Join(".", parts.Skip(startIndex + 1)
                         .Select(p => MakeSafeIdentifier(p)));
 
                     return subNamespace;
@@ -188,10 +190,10 @@ namespace TByd.PackageCreator.Editor.Core
                 return string.Empty;
 
             // 按点分隔
-            string[] parts = packageName.Split('.');
+            var parts = packageName.Split('.');
 
             // 将每个部分转换为有效的标识符
-            for (int i = 0; i < parts.Length; i++)
+            for (var i = 0; i < parts.Length; i++)
             {
                 parts[i] = MakeSafeIdentifier(parts[i]);
             }
@@ -211,8 +213,8 @@ namespace TByd.PackageCreator.Editor.Core
                 return "_";
 
             // 替换无效字符为下划线
-            Regex invalidChars = new Regex(@"[^\p{L}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]");
-            string safeName = invalidChars.Replace(input, "_");
+            var invalidChars = new Regex(@"[^\p{L}\p{Nl}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\p{Cf}]");
+            var safeName = invalidChars.Replace(input, "_");
 
             // 如果第一个字符不是字母或下划线，则添加前缀
             if (!char.IsLetter(safeName[0]) && safeName[0] != '_')
@@ -237,7 +239,7 @@ namespace TByd.PackageCreator.Editor.Core
         private bool IsCSharpKeyword(string identifier)
         {
             // C#关键字列表
-            string[] keywords = new[]
+            var keywords = new[]
             {
                 "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
                 "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",

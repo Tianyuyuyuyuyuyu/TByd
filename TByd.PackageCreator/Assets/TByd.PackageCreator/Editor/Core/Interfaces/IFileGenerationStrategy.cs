@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using TByd.PackageCreator.Editor.Core.Models;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Interfaces
 {
     /// <summary>
     /// 文件生成策略接口，用于支持不同的文件生成机制

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
@@ -52,12 +51,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void LogError_ShouldAddErrorToLog()
         {
             // 预期日志消息
-            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.k_Warning, "测试错误消息");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Warning, "测试错误消息");
 
             // 安排
             var errorMessage = "测试错误消息";
-            var errorType = ErrorType.k_Validation;
-            var errorLevel = ErrorLevel.k_Warning;
+            var errorType = ErrorType.Validation;
+            var errorLevel = ErrorLevel.Warning;
 
             // 执行
             var errorInfo = ErrorHandler.Instance.LogError(errorType, errorMessage, errorLevel);
@@ -75,12 +74,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ExportErrorLog_ShouldCreateLogFile()
         {
             // 预期日志消息
-            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.k_Info, "测试配置错误");
-            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.k_Error, "测试文件错误");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Info, "测试配置错误");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Error, "测试文件错误");
 
             // 安排
-            ErrorHandler.Instance.LogError(ErrorType.k_Configuration, "测试配置错误", ErrorLevel.k_Info);
-            ErrorHandler.Instance.LogError(ErrorType.k_FileOperation, "测试文件错误", ErrorLevel.k_Error);
+            ErrorHandler.Instance.LogError(ErrorType.Configuration, "测试配置错误", ErrorLevel.Info);
+            ErrorHandler.Instance.LogError(ErrorType.FileOperation, "测试文件错误", ErrorLevel.Error);
 
             // 执行
             var exportPath = Path.Combine(Application.temporaryCachePath, "PackageCreator", "Tests", "ErrorLog.txt");
@@ -164,12 +163,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void ClearErrorLog_ShouldRemoveAllErrors()
         {
             // 预期日志消息
-            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.k_Info, "错误1");
-            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.k_Error, "错误2");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Info, "错误1");
+            TestHelpers.ExpectErrorHandlerMessage(ErrorLevel.Error, "错误2");
 
             // 安排
-            ErrorHandler.Instance.LogError(ErrorType.k_Configuration, "错误1", ErrorLevel.k_Info);
-            ErrorHandler.Instance.LogError(ErrorType.k_FileOperation, "错误2", ErrorLevel.k_Error);
+            ErrorHandler.Instance.LogError(ErrorType.Configuration, "错误1", ErrorLevel.Info);
+            ErrorHandler.Instance.LogError(ErrorType.FileOperation, "错误2", ErrorLevel.Error);
 
             // 执行
             ErrorHandler.Instance.ClearErrorLog();

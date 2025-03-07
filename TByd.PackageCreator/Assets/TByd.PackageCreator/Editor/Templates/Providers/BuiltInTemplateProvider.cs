@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
+using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Templates.Implementations;
 
 namespace TByd.PackageCreator.Editor.Templates.Providers
@@ -11,8 +12,8 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
     /// </summary>
     public class BuiltInTemplateProvider : ITemplateProvider
     {
-        private readonly List<IPackageTemplate> m_Templates = new List<IPackageTemplate>();
-        private readonly ErrorHandler m_ErrorHandler;
+        private readonly List<IPackageTemplate> _mTemplates = new List<IPackageTemplate>();
+        private readonly ErrorHandler _mErrorHandler;
 
         /// <summary>
         /// 提供者名称
@@ -29,7 +30,7 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
         /// </summary>
         public BuiltInTemplateProvider()
         {
-            m_ErrorHandler = ErrorHandler.Instance;
+            _mErrorHandler = ErrorHandler.Instance;
             LoadBuiltInTemplates();
         }
 
@@ -39,7 +40,7 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
         /// <returns>模板集合</returns>
         public IEnumerable<IPackageTemplate> GetTemplates()
         {
-            return m_Templates.AsReadOnly();
+            return _mTemplates.AsReadOnly();
         }
 
         /// <summary>
@@ -49,22 +50,22 @@ namespace TByd.PackageCreator.Editor.Templates.Providers
         {
             try
             {
-                m_ErrorHandler.LogInfo("正在加载内置模板...");
+                _mErrorHandler.LogInfo("正在加载内置模板...");
 
                 // 添加基础包模板
-                m_Templates.Add(new BasicPackageTemplate());
+                _mTemplates.Add(new BasicPackageTemplate());
 
                 // 添加编辑器工具模板
-                m_Templates.Add(new EditorToolTemplate());
+                _mTemplates.Add(new EditorToolTemplate());
 
                 // 添加运行时库模板
-                m_Templates.Add(new RuntimeLibraryTemplate());
+                _mTemplates.Add(new RuntimeLibraryTemplate());
 
-                m_ErrorHandler.LogInfo($"已成功加载 {m_Templates.Count} 个内置模板");
+                _mErrorHandler.LogInfo($"已成功加载 {_mTemplates.Count} 个内置模板");
             }
             catch (Exception ex)
             {
-                m_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, "加载内置模板时出错");
+                _mErrorHandler.LogException(ErrorType.OperationFailed, ex, "加载内置模板时出错");
             }
         }
     }

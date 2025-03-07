@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Utils;
-using UnityEngine;
+using TByd.PackageCreator.Editor.Utils.String;
 
 namespace TByd.PackageCreator.Tests.Editor.Utils
 {

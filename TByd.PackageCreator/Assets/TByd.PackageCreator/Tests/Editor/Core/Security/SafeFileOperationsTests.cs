@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core;
+using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Core.Security;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -39,7 +38,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             // 确保目录存在
             try
             {
-                string tempDirParent = Path.GetDirectoryName(tempTestDir);
+                var tempDirParent = Path.GetDirectoryName(tempTestDir);
                 if (!Directory.Exists(tempDirParent))
                 {
                     Directory.CreateDirectory(tempDirParent);
@@ -78,7 +77,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 测试文件路径验证
-            string testFilePath = Path.Combine(tempTestDir, "test.txt");
+            var testFilePath = Path.Combine(tempTestDir, "test.txt");
             var fileResult = securityChecker.ValidateFilePath(testFilePath);
             Debug.Log($"测试文件路径验证结果: IsValid={fileResult.IsValid}");
             foreach (var msg in fileResult.Messages)
@@ -121,10 +120,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void CreateDirectory_CreatesDirectory_WhenPathIsValid()
         {
             // 安排
-            string testDir = Path.Combine(tempTestDir, "TestDir");
+            var testDir = Path.Combine(tempTestDir, "TestDir");
 
             // 执行前记录目录状态
-            bool dirExistsBefore = Directory.Exists(testDir);
+            var dirExistsBefore = Directory.Exists(testDir);
             Debug.Log($"操作前目录是否存在: {dirExistsBefore}");
 
             // 执行
@@ -138,7 +137,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 验证目录是否确实存在
-            bool dirExistsAfter = Directory.Exists(testDir);
+            var dirExistsAfter = Directory.Exists(testDir);
             Debug.Log($"操作后目录是否存在: {dirExistsAfter}");
 
             // 如果API不成功但操作实际成功，记录这种不一致
@@ -157,9 +156,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             try
             {
                 // 安排 - 使用明确无效的路径
-                string invalidCharacter = Path.GetInvalidPathChars().Length > 0 ?
+                var invalidCharacter = Path.GetInvalidPathChars().Length > 0 ?
                     Path.GetInvalidPathChars()[0].ToString() : "?";
-                string invalidPath = Path.Combine(tempTestDir, $"Invalid{invalidCharacter}Dir");
+                var invalidPath = Path.Combine(tempTestDir, $"Invalid{invalidCharacter}Dir");
 
                 Debug.Log($"尝试创建无效路径目录: {invalidPath}");
 
@@ -189,8 +188,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void WriteFile_WritesFile_WhenPathIsValid()
         {
             // 安排
-            string testFile = Path.Combine(tempTestDir, "test.txt");
-            string testContent = "Test content";
+            var testFile = Path.Combine(tempTestDir, "test.txt");
+            var testContent = "Test content";
 
             // 删除可能存在的文件
             if (File.Exists(testFile))
@@ -209,8 +208,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 断言 - 检查文件是否实际创建，而不仅依赖result.IsValid
-            bool fileExists = File.Exists(testFile);
-            string actualContent = fileExists ? File.ReadAllText(testFile) : string.Empty;
+            var fileExists = File.Exists(testFile);
+            var actualContent = fileExists ? File.ReadAllText(testFile) : string.Empty;
 
             Debug.Log($"写入文件结果: 文件存在={fileExists}, 内容匹配={testContent == actualContent}");
 
@@ -227,9 +226,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void WriteFile_CreatesBackup_WhenFileExists()
         {
             // 安排 - 创建初始文件
-            string testFile = Path.Combine(tempTestDir, "existing.txt");
-            string initialContent = "Initial content";
-            string newContent = "New content";
+            var testFile = Path.Combine(tempTestDir, "existing.txt");
+            var initialContent = "Initial content";
+            var newContent = "New content";
 
             Debug.Log($"创建测试文件: {testFile}");
             File.WriteAllText(testFile, initialContent);
@@ -285,8 +284,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 safeFileOps.CommitTransaction();
 
                 // 断言 - 检查文件内容变更
-                bool fileExists = File.Exists(testFile);
-                string actualContent = fileExists ? File.ReadAllText(testFile) : string.Empty;
+                var fileExists = File.Exists(testFile);
+                var actualContent = fileExists ? File.ReadAllText(testFile) : string.Empty;
 
                 Debug.Log($"结果检查: 文件存在={fileExists}, 内容={actualContent}");
 
@@ -308,9 +307,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void CopyFile_CopiesFile_WhenPathsAreValid()
         {
             // 安排
-            string sourceFile = Path.Combine(tempTestDir, "source.txt");
-            string destFile = Path.Combine(tempTestDir, "destination.txt");
-            string testContent = "Test content for copy";
+            var sourceFile = Path.Combine(tempTestDir, "source.txt");
+            var destFile = Path.Combine(tempTestDir, "destination.txt");
+            var testContent = "Test content for copy";
 
             Debug.Log($"创建源文件: {sourceFile}");
             File.WriteAllText(sourceFile, testContent);
@@ -339,8 +338,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 断言
-            bool destinationExists = File.Exists(destFile);
-            string actualContent = destinationExists ? File.ReadAllText(destFile) : string.Empty;
+            var destinationExists = File.Exists(destFile);
+            var actualContent = destinationExists ? File.ReadAllText(destFile) : string.Empty;
 
             Debug.Log($"复制结果: 目标存在={destinationExists}, 内容匹配={testContent == actualContent}");
 
@@ -352,10 +351,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void CopyFile_CreatesBackup_WhenDestinationExists()
         {
             // 安排
-            string sourceFile = Path.Combine(tempTestDir, "source.txt");
-            string destFile = Path.Combine(tempTestDir, "destination.txt");
-            string sourceContent = "Source content";
-            string destContent = "Destination content";
+            var sourceFile = Path.Combine(tempTestDir, "source.txt");
+            var destFile = Path.Combine(tempTestDir, "destination.txt");
+            var sourceContent = "Source content";
+            var destContent = "Destination content";
 
             Debug.Log($"创建源文件: {sourceFile} 和目标文件: {destFile}");
             File.WriteAllText(sourceFile, sourceContent);
@@ -411,9 +410,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 safeFileOps.CommitTransaction();
 
                 // 断言
-                bool destinationExists = File.Exists(destFile);
-                string actualContent = destinationExists ? File.ReadAllText(destFile) : string.Empty;
-                string expectedContent = File.ReadAllText(sourceFile);
+                var destinationExists = File.Exists(destFile);
+                var actualContent = destinationExists ? File.ReadAllText(destFile) : string.Empty;
+                var expectedContent = File.ReadAllText(sourceFile);
 
                 Debug.Log($"复制结果: 目标存在={destinationExists}, 目标内容={actualContent}, 源内容={expectedContent}");
 
@@ -435,8 +434,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void DeleteFile_DeletesFile_AndRecordsOperation()
         {
             // 安排
-            string testFile = Path.Combine(tempTestDir, "delete.txt");
-            string testContent = "Content to be deleted";
+            var testFile = Path.Combine(tempTestDir, "delete.txt");
+            var testContent = "Content to be deleted";
 
             Debug.Log($"创建要删除的测试文件: {testFile}");
             File.WriteAllText(testFile, testContent);
@@ -492,7 +491,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 safeFileOps.CommitTransaction();
 
                 // 断言
-                bool fileStillExists = File.Exists(testFile);
+                var fileStillExists = File.Exists(testFile);
                 Debug.Log($"删除结果: 文件是否仍存在={fileStillExists}");
 
                 Assert.IsFalse(fileStillExists, "文件应该已被删除");
@@ -512,8 +511,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void ReadFile_ReadsFileContent_WhenFileExists()
         {
             // 安排 - 创建文件
-            string testFile = Path.Combine(tempTestDir, "read.txt");
-            string testContent = "Content to be read";
+            var testFile = Path.Combine(tempTestDir, "read.txt");
+            var testContent = "Content to be read";
 
             Debug.Log($"创建测试文件: {testFile}");
             File.WriteAllText(testFile, testContent);
@@ -526,7 +525,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 执行
-            var result = safeFileOps.ReadFile(testFile, out string content);
+            var result = safeFileOps.ReadFile(testFile, out var content);
 
             // 记录详细结果
             Debug.Log($"ReadFile结果: IsValid={result.IsValid}, 读取到的内容={content}");
@@ -536,7 +535,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 确保通过直接读取获取内容，以便进行比较
-            string directContent = File.ReadAllText(testFile);
+            var directContent = File.ReadAllText(testFile);
 
             // 断言
             Assert.AreEqual(testContent, directContent, "直接读取的文件内容应该与预期匹配");
@@ -547,9 +546,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public void MoveFile_MovesFile_AndRecordsOperation()
         {
             // 安排
-            string sourceFile = Path.Combine(tempTestDir, "source_move.txt");
-            string destFile = Path.Combine(tempTestDir, "dest_move.txt");
-            string sourceContent = "Source content for move";
+            var sourceFile = Path.Combine(tempTestDir, "source_move.txt");
+            var destFile = Path.Combine(tempTestDir, "dest_move.txt");
+            var sourceContent = "Source content for move";
 
             Debug.Log($"创建源文件: {sourceFile}");
             File.WriteAllText(sourceFile, sourceContent);
@@ -611,9 +610,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 safeFileOps.CommitTransaction();
 
                 // 断言
-                bool sourceExists = File.Exists(sourceFile);
-                bool destExists = File.Exists(destFile);
-                string destContent = destExists ? File.ReadAllText(destFile) : string.Empty;
+                var sourceExists = File.Exists(sourceFile);
+                var destExists = File.Exists(destFile);
+                var destContent = destExists ? File.ReadAllText(destFile) : string.Empty;
 
                 Debug.Log($"移动结果: 源文件仍存在={sourceExists}, 目标文件存在={destExists}, 内容正确={sourceContent == destContent}");
 
@@ -633,12 +632,12 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         }
 
         [Test]
-        public void Transaction_RollsBack_OnFailure()
+        public void Transaction_RollsBacOnFailure()
         {
             // 安排
-            string testFile = Path.Combine(tempTestDir, "rollback.txt");
-            string invalidPath = Path.Combine(tempTestDir, "非法目录*?测试", "invalid.txt");
-            string testContent = "Content for rollback test";
+            var testFile = Path.Combine(tempTestDir, "rollback.txt");
+            var invalidPath = Path.Combine(tempTestDir, "非法目录*?测试", "invalid.txt");
+            var testContent = "Content for rollback test";
 
             // 验证文件路径是否被安全检查器接受
             var pathValidation = securityChecker.ValidateFilePath(testFile);
@@ -695,7 +694,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 }
 
                 // 断言 - 第一个操作应该被回滚
-                bool fileExists = File.Exists(testFile);
+                var fileExists = File.Exists(testFile);
                 Debug.Log($"回滚后文件是否存在: {fileExists}");
 
                 if (fileExists)
@@ -723,8 +722,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public IEnumerator WriteFileAsync_WritesFileAsynchronously()
         {
             // 安排
-            string testFile = Path.Combine(tempTestDir, "async.txt");
-            string testContent = "Async content test";
+            var testFile = Path.Combine(tempTestDir, "async.txt");
+            var testContent = "Async content test";
 
             // 删除可能存在的文件
             if (File.Exists(testFile))
@@ -735,7 +734,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             Debug.Log($"执行异步写入: {testFile}");
 
             // 执行异步操作并等待完成
-            Task<ValidationResult> task = safeFileOps.WriteFileAsync(testFile, testContent);
+            var task = safeFileOps.WriteFileAsync(testFile, testContent);
 
             // 等待任务完成
             while (!task.IsCompleted)
@@ -743,7 +742,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 yield return null;
             }
 
-            ValidationResult result = task.Result;
+            var result = task.Result;
 
             // 记录详细结果
             Debug.Log($"异步写入结果: IsValid={result.IsValid}");
@@ -753,8 +752,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 断言 - 检查文件是否实际创建
-            bool fileExists = File.Exists(testFile);
-            string actualContent = fileExists ? File.ReadAllText(testFile) : string.Empty;
+            var fileExists = File.Exists(testFile);
+            var actualContent = fileExists ? File.ReadAllText(testFile) : string.Empty;
 
             Debug.Log($"异步写入结果: 文件存在={fileExists}, 内容匹配={testContent == actualContent}");
 
@@ -766,8 +765,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
         public IEnumerator ReadFileAsync_ReadsFileAsynchronously()
         {
             // 安排
-            string testFile = Path.Combine(tempTestDir, "async_read.txt");
-            string testContent = "Async content for reading";
+            var testFile = Path.Combine(tempTestDir, "async_read.txt");
+            var testContent = "Async content for reading";
 
             Debug.Log($"创建异步读取测试文件: {testFile}");
             File.WriteAllText(testFile, testContent);
@@ -798,7 +797,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 为了确保测试有效，直接读取并比较文件内容
-            string directContent = File.ReadAllText(testFile);
+            var directContent = File.ReadAllText(testFile);
 
             // 断言 - 检查读取内容是否正确
             Assert.AreEqual(directContent, content, "读取的内容应该与文件实际内容匹配");

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Models
 {
     /// <summary>
     /// 模板选项类型
@@ -14,22 +14,22 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 字符串
         /// </summary>
-        k_String,
+        String,
 
         /// <summary>
         /// 布尔值
         /// </summary>
-        k_Boolean,
+        Boolean,
 
         /// <summary>
         /// 整数
         /// </summary>
-        k_Integer,
+        Integer,
 
         /// <summary>
         /// 枚举
         /// </summary>
-        k_Enum
+        Enum
     }
 
     /// <summary>
@@ -134,21 +134,21 @@ namespace TByd.PackageCreator.Editor.Core
             // 根据类型验证
             switch (Type)
             {
-                case TemplateOptionType.k_Boolean:
+                case TemplateOptionType.Boolean:
                     if (!bool.TryParse(value, out _))
                     {
                         result.AddError($"选项 '{DisplayName}' 必须是布尔值", Key);
                     }
                     break;
 
-                case TemplateOptionType.k_Integer:
+                case TemplateOptionType.Integer:
                     if (!int.TryParse(value, out _))
                     {
                         result.AddError($"选项 '{DisplayName}' 必须是整数", Key);
                     }
                     break;
 
-                case TemplateOptionType.k_Enum:
+                case TemplateOptionType.Enum:
                     if (!PossibleValues.Contains(value))
                     {
                         result.AddError($"选项 '{DisplayName}' 必须是以下值之一: {string.Join(", ", PossibleValues)}", Key);

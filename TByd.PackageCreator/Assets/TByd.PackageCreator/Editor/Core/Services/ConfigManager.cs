@@ -5,18 +5,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
-using TByd.PackageCreator.Editor.Utils;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Utils.FileSystem;
 using UnityEditor;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Services
 {
     /// <summary>
     /// 配置管理器类，实现配置的保存、加载、验证、导入/导出和历史记录功能
     /// </summary>
     public class ConfigManager : IConfigManager
     {
-        private static ConfigManager s_Instance;
+        private static ConfigManager _sInstance;
 
         /// <summary>
         /// 获取ConfigManager单例实例
@@ -25,52 +27,52 @@ namespace TByd.PackageCreator.Editor.Core
         {
             get
             {
-                if (s_Instance == null)
+                if (_sInstance == null)
                 {
-                    s_Instance = new ConfigManager();
+                    _sInstance = new ConfigManager();
                 }
-                return s_Instance;
+                return _sInstance;
             }
         }
 
         // 当前加载的配置
-        private PackageConfig m_CurrentConfig;
+        private PackageConfig _mCurrentConfig;
 
         // 配置历史记录
-        private List<ConfigHistoryEntry> m_History = new List<ConfigHistoryEntry>();
+        private readonly List<ConfigHistoryEntry> _mHistory = new List<ConfigHistoryEntry>();
 
         // 最后保存的文件路径
-        private string m_LastSavedPath;
+        private string _mLastSavedPath;
 
         // 最大历史记录数量
-        private const int k_MaxHistoryCount = 20;
+        private const int MaxHistoryCount = 20;
 
         // 默认配置保存目录
-        private const string k_DefaultConfigDirectory = "PackageConfigs";
+        private const string DefaultConfigDirectory = "PackageConfigs";
 
         // JSON文件扩展名
-        private const string k_JsonExtension = ".json";
+        private const string JsonExtension = ".json";
 
         // 错误处理器
-        private readonly ErrorHandler m_ErrorHandler;
+        private readonly ErrorHandler _mErrorHandler;
 
         /// <summary>
         /// 获取当前加载的配置
         /// </summary>
-        public PackageConfig CurrentConfig => m_CurrentConfig;
+        public PackageConfig CurrentConfig => _mCurrentConfig;
 
         /// <summary>
         /// 获取配置历史记录
         /// </summary>
-        public IReadOnlyList<ConfigHistoryEntry> History => m_History.AsReadOnly();
+        public IReadOnlyList<ConfigHistoryEntry> History => _mHistory.AsReadOnly();
 
         /// <summary>
         /// 创建ConfigManager实例
         /// </summary>
         private ConfigManager()
         {
-            m_ErrorHandler = ErrorHandler.Instance;
-            m_CurrentConfig = CreateDefaultConfig();
+            _mErrorHandler = ErrorHandler.Instance;
+            _mCurrentConfig = CreateDefaultConfig();
         }
 
         /// <summary>
@@ -89,7 +91,7 @@ namespace TByd.PackageCreator.Editor.Core
             config.UnityVersion = "2021.3";
             config.Author = new PackageAuthor("TByd", "", "");
 
-            m_CurrentConfig = config;
+            _mCurrentConfig = config;
             AddToHistory(config, "创建新配置");
 
             return config;
@@ -104,14 +106,14 @@ namespace TByd.PackageCreator.Editor.Core
         {
             var result = new ValidationResult();
 
-            if (m_CurrentConfig == null)
+            if (_mCurrentConfig == null)
             {
                 result.AddError("没有可保存的配置");
                 return result;
             }
 
             // 验证配置
-            var validationResult = ValidateConfig(m_CurrentConfig);
+            var validationResult = ValidateConfig(_mCurrentConfig);
             if (!validationResult.IsValid)
             {
                 result.Merge(validationResult);
@@ -122,7 +124,7 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 确定保存路径
-                string savePath = DetermineSavePath(filePath);
+                var savePath = DetermineSavePath(filePath);
                 if (string.IsNullOrEmpty(savePath))
                 {
                     result.AddError("无法确定保存路径");
@@ -130,14 +132,14 @@ namespace TByd.PackageCreator.Editor.Core
                 }
 
                 // 确保目录存在
-                string directory = Path.GetDirectoryName(savePath);
+                var directory = Path.GetDirectoryName(savePath);
                 if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
 
                 // 将配置序列化为JSON
-                string json = SerializeConfig(m_CurrentConfig);
+                var json = SerializeConfig(_mCurrentConfig);
                 if (string.IsNullOrEmpty(json))
                 {
                     result.AddError("配置序列化失败");
@@ -148,10 +150,10 @@ namespace TByd.PackageCreator.Editor.Core
                 await FileUtils.WriteTextFileAsync(savePath, json);
 
                 // 记录保存路径
-                m_LastSavedPath = savePath;
+                _mLastSavedPath = savePath;
 
                 // 添加到历史记录
-                AddToHistory(m_CurrentConfig, $"保存到 {Path.GetFileName(savePath)}");
+                AddToHistory(_mCurrentConfig, $"保存到 {Path.GetFileName(savePath)}");
 
                 result.AddInfo($"配置已保存到: {savePath}");
                 AssetDatabase.Refresh();
@@ -159,7 +161,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"保存配置时发生错误: {ex.Message}");
-                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, "保存配置时发生错误");
+                _mErrorHandler.LogException(ErrorType.FileWriteError, ex, "保存配置时发生错误");
             }
 
             return result;
@@ -189,7 +191,7 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 读取文件内容
-                string json = await FileUtils.ReadTextFileAsync(filePath);
+                var json = await FileUtils.ReadTextFileAsync(filePath);
                 if (string.IsNullOrEmpty(json))
                 {
                     result.AddError("文件内容为空");
@@ -209,8 +211,8 @@ namespace TByd.PackageCreator.Editor.Core
                 result.Merge(validationResult);
 
                 // 即使有警告也加载配置
-                m_CurrentConfig = config;
-                m_LastSavedPath = filePath;
+                _mCurrentConfig = config;
+                _mLastSavedPath = filePath;
 
                 // 添加到历史记录
                 AddToHistory(config, $"从 {Path.GetFileName(filePath)} 加载");
@@ -220,7 +222,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"加载配置时发生错误: {ex.Message}");
-                m_ErrorHandler.LogException(ErrorType.k_FileReadError, ex, "加载配置时发生错误");
+                _mErrorHandler.LogException(ErrorType.FileReadError, ex, "加载配置时发生错误");
             }
 
             return result;
@@ -250,12 +252,12 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 确定文件类型
-                string extension = Path.GetExtension(filePath).ToLowerInvariant();
+                var extension = Path.GetExtension(filePath).ToLowerInvariant();
 
                 // 根据文件类型选择导入方法
                 switch (extension)
                 {
-                    case k_JsonExtension:
+                    case JsonExtension:
                         // JSON文件直接加载
                         return await LoadConfigAsync(filePath);
 
@@ -279,7 +281,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"导入配置时发生错误: {ex.Message}");
-                m_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, "导入配置时发生错误");
+                _mErrorHandler.LogException(ErrorType.OperationFailed, ex, "导入配置时发生错误");
             }
 
             return result;
@@ -319,14 +321,14 @@ namespace TByd.PackageCreator.Editor.Core
                 }
 
                 // 确定文件类型
-                string extension = Path.GetExtension(filePath).ToLowerInvariant();
+                var extension = Path.GetExtension(filePath).ToLowerInvariant();
 
                 // 根据文件类型选择导出方法
                 switch (extension)
                 {
-                    case k_JsonExtension:
+                    case JsonExtension:
                         // 将配置序列化为JSON
-                        string json = SerializeConfig(config);
+                        var json = SerializeConfig(config);
                         if (string.IsNullOrEmpty(json))
                         {
                             result.AddError("配置序列化失败");
@@ -334,7 +336,7 @@ namespace TByd.PackageCreator.Editor.Core
                         }
 
                         // 确保目录存在
-                        string directory = Path.GetDirectoryName(filePath);
+                        var directory = Path.GetDirectoryName(filePath);
                         if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
                         {
                             Directory.CreateDirectory(directory);
@@ -353,7 +355,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"导出配置时发生错误: {ex.Message}");
-                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, "导出配置时发生错误");
+                _mErrorHandler.LogException(ErrorType.FileWriteError, ex, "导出配置时发生错误");
             }
 
             return result;
@@ -466,12 +468,12 @@ namespace TByd.PackageCreator.Editor.Core
             var entry = new ConfigHistoryEntry(configCopy, description);
 
             // 添加到历史记录
-            m_History.Insert(0, entry);
+            _mHistory.Insert(0, entry);
 
             // 限制历史记录数量
-            if (m_History.Count > k_MaxHistoryCount)
+            if (_mHistory.Count > MaxHistoryCount)
             {
-                m_History.RemoveAt(m_History.Count - 1);
+                _mHistory.RemoveAt(_mHistory.Count - 1);
             }
         }
 
@@ -482,17 +484,17 @@ namespace TByd.PackageCreator.Editor.Core
         /// <returns>恢复的配置</returns>
         public PackageConfig RestoreFromHistory(int entryIndex)
         {
-            if (entryIndex < 0 || entryIndex >= m_History.Count)
+            if (entryIndex < 0 || entryIndex >= _mHistory.Count)
                 return null;
 
             // 获取历史记录条目
-            var entry = m_History[entryIndex];
+            var entry = _mHistory[entryIndex];
 
             // 创建配置的深拷贝
             var configCopy = CloneConfig(entry.Config);
 
             // 设置为当前配置
-            m_CurrentConfig = configCopy;
+            _mCurrentConfig = configCopy;
 
             // 添加到历史记录
             AddToHistory(configCopy, $"从历史记录恢复：{entry.Description}");
@@ -505,7 +507,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// </summary>
         public void ClearHistory()
         {
-            m_History.Clear();
+            _mHistory.Clear();
         }
 
         /// <summary>
@@ -539,12 +541,12 @@ namespace TByd.PackageCreator.Editor.Core
                 return filePath;
 
             // 如果有上次保存的路径，则使用上次的路径
-            if (!string.IsNullOrEmpty(m_LastSavedPath))
-                return m_LastSavedPath;
+            if (!string.IsNullOrEmpty(_mLastSavedPath))
+                return _mLastSavedPath;
 
             // 否则使用默认路径
-            string projectPath = Application.dataPath.Replace("/Assets", "");
-            string configDirectory = Path.Combine(projectPath, k_DefaultConfigDirectory);
+            var projectPath = Application.dataPath.Replace("/Assets", "");
+            var configDirectory = Path.Combine(projectPath,DefaultConfigDirectory);
 
             // 确保目录存在
             if (!Directory.Exists(configDirectory))
@@ -553,8 +555,8 @@ namespace TByd.PackageCreator.Editor.Core
             }
 
             // 使用包名作为文件名
-            string fileName = m_CurrentConfig?.Name?.Replace(".", "-") ?? "config";
-            return Path.Combine(configDirectory, $"{fileName}{k_JsonExtension}");
+            var fileName = _mCurrentConfig?.Name?.Replace(".", "-") ?? "config";
+            return Path.Combine(configDirectory, $"{fileName}{JsonExtension}");
         }
 
         /// <summary>
@@ -573,7 +575,7 @@ namespace TByd.PackageCreator.Editor.Core
                     Formatting = Formatting.Indented,
                     Error = (sender, args) =>
                     {
-                        m_ErrorHandler.LogWarning(ErrorType.k_SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
+                        _mErrorHandler.LogWarning(ErrorType.SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
                     }
                 };
@@ -582,7 +584,7 @@ namespace TByd.PackageCreator.Editor.Core
             }
             catch (Exception ex)
             {
-                m_ErrorHandler.LogException(ErrorType.k_SerializationError, ex, "配置序列化失败");
+                _mErrorHandler.LogException(ErrorType.SerializationError, ex, "配置序列化失败");
                 Debug.LogError($"序列化错误：{ex.Message}\n{ex.StackTrace}");
                 return "{}"; // 返回空对象而不是null，避免空引用
             }
@@ -604,7 +606,7 @@ namespace TByd.PackageCreator.Editor.Core
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     Error = (sender, args) =>
                     {
-                        m_ErrorHandler.LogWarning(ErrorType.k_DeserializationError, $"JSON反序列化警告: {args.ErrorContext.Error.Message}");
+                        _mErrorHandler.LogWarning(ErrorType.DeserializationError, $"JSON反序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
                     }
                 };
@@ -613,7 +615,7 @@ namespace TByd.PackageCreator.Editor.Core
             }
             catch (Exception ex)
             {
-                m_ErrorHandler.LogException(ErrorType.k_DeserializationError, ex, "配置反序列化失败");
+                _mErrorHandler.LogException(ErrorType.DeserializationError, ex, "配置反序列化失败");
                 return null;
             }
         }
@@ -637,17 +639,17 @@ namespace TByd.PackageCreator.Editor.Core
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     Error = (sender, args) =>
                     {
-                        m_ErrorHandler.LogWarning(ErrorType.k_SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
+                        _mErrorHandler.LogWarning(ErrorType.SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
                     }
                 };
 
-                string json = JsonConvert.SerializeObject(config, settings);
+                var json = JsonConvert.SerializeObject(config, settings);
                 return JsonConvert.DeserializeObject<PackageConfig>(json, settings);
             }
             catch (Exception ex)
             {
-                m_ErrorHandler.LogException(ErrorType.k_SerializationError, ex, "配置克隆失败");
+                _mErrorHandler.LogException(ErrorType.SerializationError, ex, "配置克隆失败");
 
                 // 发生错误时回退到手动复制（确保不会返回null）
                 var fallbackConfig = new PackageConfig(
@@ -672,7 +674,7 @@ namespace TByd.PackageCreator.Editor.Core
                 return false;
 
             // 包名应该是反向域名格式，例如：com.company.package
-            string[] parts = name.Split('.');
+            var parts = name.Split('.');
             return parts.Length >= 2 && parts.All(p => !string.IsNullOrEmpty(p));
         }
 
@@ -687,8 +689,8 @@ namespace TByd.PackageCreator.Editor.Core
                 return false;
 
             // 简单的语义化版本验证
-            string[] parts = version.Split('-');
-            string[] versionParts = parts[0].Split('.');
+            var parts = version.Split('-');
+            var versionParts = parts[0].Split('.');
 
             return versionParts.Length >= 2 && versionParts.All(p => int.TryParse(p, out _));
         }

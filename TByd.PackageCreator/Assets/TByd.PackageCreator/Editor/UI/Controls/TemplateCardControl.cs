@@ -11,11 +11,11 @@ namespace TByd.PackageCreator.Editor.UI.Controls
     {
         #region 字段
 
-        private readonly string m_Title;
-        private readonly string m_Description;
-        private readonly string m_Details;
-        private readonly Texture2D m_Icon;
-        private readonly bool m_IsSelected;
+        private readonly string _mTitle;
+        private readonly string _mDescription;
+        private readonly string _mDetails;
+        private readonly Texture2D _mIcon;
+        private readonly bool _mIsSelected;
 
         #endregion
 
@@ -31,11 +31,11 @@ namespace TByd.PackageCreator.Editor.UI.Controls
         /// <param name="isSelected">是否选中</param>
         public TemplateCardControl(string title, string description, string details, Texture2D icon, bool isSelected)
         {
-            m_Title = title;
-            m_Description = description;
-            m_Details = details;
-            m_Icon = icon;
-            m_IsSelected = isSelected;
+            _mTitle = title;
+            _mDescription = description;
+            _mDetails = details;
+            _mIcon = icon;
+            _mIsSelected = isSelected;
         }
 
         #endregion
@@ -51,7 +51,7 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             bool result = false;
 
             // 选择适当的样式
-            GUIStyle cardStyle = m_IsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
+            GUIStyle cardStyle = _mIsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
 
             // 允许事件处理
             Rect cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(100));
@@ -78,23 +78,23 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             Rect descriptionRect = new Rect(contentRect.x, titleRect.yMax + 5, contentRect.width, 40);
 
             // 绘制内容
-            if (m_Icon != null)
+            if (_mIcon != null)
             {
-                GUI.DrawTexture(iconRect, m_Icon, ScaleMode.ScaleToFit);
+                GUI.DrawTexture(iconRect, _mIcon, ScaleMode.ScaleToFit);
             }
 
             // 调整选中状态下的文本颜色
             Color originalColor = GUI.color;
-            if (m_IsSelected)
+            if (_mIsSelected)
             {
                 GUI.color = Color.white;
             }
 
             // 绘制标题
-            GUI.Label(titleRect, m_Title, EditorStyles.boldLabel);
+            GUI.Label(titleRect, _mTitle, EditorStyles.boldLabel);
 
             // 描述
-            GUI.Label(descriptionRect, m_Description, EditorStyles.wordWrappedLabel);
+            GUI.Label(descriptionRect, _mDescription, EditorStyles.wordWrappedLabel);
 
             // 恢复颜色
             GUI.color = originalColor;
@@ -117,14 +117,14 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             cardClicked = Draw();
 
             // 如果选中，则显示详细信息
-            if (m_IsSelected && !string.IsNullOrEmpty(m_Details))
+            if (_mIsSelected && !string.IsNullOrEmpty(_mDetails))
             {
                 PackageCreatorStyles.DrawSeparator();
 
                 EditorGUILayout.BeginVertical();
                 EditorGUILayout.LabelField("详细信息", EditorStyles.boldLabel);
                 EditorGUILayout.Space(5);
-                EditorGUILayout.LabelField(m_Details, EditorStyles.wordWrappedLabel);
+                EditorGUILayout.LabelField(_mDetails, EditorStyles.wordWrappedLabel);
                 EditorGUILayout.EndVertical();
             }
 
@@ -143,7 +143,7 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             bool result = false;
 
             // 选择适当的样式
-            GUIStyle cardStyle = m_IsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
+            GUIStyle cardStyle = _mIsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
 
             // 预先分配一个矩形区域（不是开始一个组）
             // 增加高度以适应更大的字体
@@ -164,16 +164,16 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             Rect contentRect = new Rect(cardRect.x + 10, cardRect.y + 5, cardRect.width - 20, cardRect.height - 10);
 
             // 图标区域
-            if (m_Icon != null)
+            if (_mIcon != null)
             {
                 Rect iconRect = new Rect(contentRect.x, contentRect.y + 3, 30, 30);
-                GUI.DrawTexture(iconRect, m_Icon, ScaleMode.ScaleToFit);
+                GUI.DrawTexture(iconRect, _mIcon, ScaleMode.ScaleToFit);
                 contentRect.x += 38; // 移动到图标右侧
                 contentRect.width -= 38;
             }
 
             // 如果选中，显示标记
-            if (m_IsSelected)
+            if (_mIsSelected)
             {
                 Rect checkRect = new Rect(contentRect.x + contentRect.width - 18, contentRect.y + 5, 20, 20);
                 GUI.Label(checkRect, "✓", EditorStyles.boldLabel);
@@ -190,11 +190,11 @@ namespace TByd.PackageCreator.Editor.UI.Controls
 
             // 标题
             Rect titleRect = new Rect(contentRect.x, contentRect.y, contentRect.width, 20);
-            GUI.Label(titleRect, m_Title, titleStyle);
+            GUI.Label(titleRect, _mTitle, titleStyle);
 
             // 描述
             Rect descRect = new Rect(contentRect.x, titleRect.y + titleRect.height + 2, contentRect.width, 25);
-            GUI.Label(descRect, m_Description, descStyle);
+            GUI.Label(descRect, _mDescription, descStyle);
 
             // 额外的空间用于卡片间隔 - 减少间隔高度从5到2
             GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(2));

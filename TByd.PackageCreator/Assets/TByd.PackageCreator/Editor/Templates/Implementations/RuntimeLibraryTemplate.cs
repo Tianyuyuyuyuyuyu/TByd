@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TByd.PackageCreator.Editor.Core;
+using TByd.PackageCreator.Editor.Core.Models;
 
 namespace TByd.PackageCreator.Editor.Templates.Implementations
 {
@@ -42,11 +43,11 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
             AddFile("Runtime/Scripts/Example.cs", GetExampleClassTemplate(), "示例类", false);
 
             // 添加运行时库特有的选项
-            AddOption("includeScriptableObjects", "包含ScriptableObject", "是否包含ScriptableObject资源", TemplateOptionType.k_Boolean, "false");
-            AddOption("includeShaders", "包含着色器", "是否包含自定义着色器", TemplateOptionType.k_Boolean, "false");
-            AddOption("libraryType", "库类型", "库的主要功能类型", TemplateOptionType.k_Enum, "Utility").PossibleValues =
+            AddOption("includeScriptableObjects", "包含ScriptableObject", "是否包含ScriptableObject资源", TemplateOptionType.Boolean, "false");
+            AddOption("includeShaders", "包含着色器", "是否包含自定义着色器", TemplateOptionType.Boolean, "false");
+            AddOption("libraryType", "库类型", "库的主要功能类型", TemplateOptionType.Enum, "Utility").PossibleValues =
                 new List<string> { "Utility", "Gameplay", "Graphics", "Audio", "AI", "Physics", "Networking", "Other" };
-            AddOption("targetPlatforms", "目标平台", "库支持的主要平台", TemplateOptionType.k_Enum, "All").PossibleValues =
+            AddOption("targetPlatforms", "目标平台", "库支持的主要平台", TemplateOptionType.Enum, "All").PossibleValues =
                 new List<string> { "All", "Mobile", "Desktop", "Console", "WebGL", "VR/AR" };
         }
 
@@ -133,7 +134,7 @@ namespace #ROOT_NAMESPACE#
         protected override string GetPackageJsonTemplate()
         {
             // 扩展基础模板，添加运行时库特有的字段
-            string baseTemplate = base.GetPackageJsonTemplate();
+            var baseTemplate = base.GetPackageJsonTemplate();
 
             // 在运行时库中，我们可能需要添加额外的字段，如samples配置
             // 这里只是示例，实际实现可能需要更复杂的JSON处理

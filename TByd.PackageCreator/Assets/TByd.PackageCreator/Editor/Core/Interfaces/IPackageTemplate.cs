@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Core.Services;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Interfaces
 {
     /// <summary>
     /// 包模板接口，定义了包模板的基本属性和行为

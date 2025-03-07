@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Utils
+namespace TByd.PackageCreator.Editor.Utils.Compilation
 {
     /// <summary>
     /// 条件编译指令管理系统，用于管理和操作条件编译符号
@@ -299,7 +299,7 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             var defineSymbolsStr = string.Join(";", symbols);
             PlayerSettings.SetScriptingDefineSymbolsForGroup(targetGroup, defineSymbolsStr);
-            AssetDatabase.SaveAssets();
+            UnityEditor.AssetDatabase.SaveAssets();
         }
 
         /// <summary>
@@ -545,7 +545,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 System.IO.File.WriteAllText(configPath, sb.ToString());
 
                 Debug.Log($"成功生成条件编译符号配置文件: {configPath}");
-                AssetDatabase.Refresh();
+                UnityEditor.AssetDatabase.Refresh();
 
                 return true;
             }

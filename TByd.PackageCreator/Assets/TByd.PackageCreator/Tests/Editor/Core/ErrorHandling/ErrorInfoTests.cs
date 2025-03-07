@@ -26,9 +26,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         public void Create_ShouldSetPropertiesCorrectly()
         {
             // 安排
-            var errorType = ErrorType.k_Validation;
+            var errorType = ErrorType.Validation;
             var message = "测试消息";
-            var level = ErrorLevel.k_Warning;
+            var level = ErrorLevel.Warning;
 
             // 执行
             var errorInfo = ErrorInfo.Create(errorType, message, level);
@@ -46,8 +46,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
         {
             // 安排
             Exception exception = new InvalidOperationException("测试异常");
-            var errorType = ErrorType.k_Configuration;
-            var level = ErrorLevel.k_Error;
+            var errorType = ErrorType.Configuration;
+            var level = ErrorLevel.Error;
 
             // 执行
             var errorInfo = ErrorInfo.FromException(exception, errorType, level);
@@ -69,8 +69,8 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             var errorInfo = ErrorInfo.FromException(exception);
 
             // 断言
-            Assert.AreEqual(ErrorType.k_Unknown, errorInfo.ErrorType);
-            Assert.AreEqual(ErrorLevel.k_Error, errorInfo.Level);
+            Assert.AreEqual(ErrorType.Unknown, errorInfo.ErrorType);
+            Assert.AreEqual(ErrorLevel.Error, errorInfo.Level);
             Assert.AreEqual(exception, errorInfo.Exception);
         }
 
@@ -80,9 +80,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             // 安排
             var errorInfo = new ErrorInfo
             {
-                ErrorType = ErrorType.k_FileOperation,
+                ErrorType = ErrorType.FileOperation,
                 Message = "文件操作失败",
-                Level = ErrorLevel.k_Error,
+                Level = ErrorLevel.Error,
                 Timestamp = new DateTime(2023, 1, 1, 12, 0, 0)
             };
 
@@ -102,9 +102,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             // 安排
             var errorInfo = new ErrorInfo
             {
-                ErrorType = ErrorType.k_FileOperation,
+                ErrorType = ErrorType.FileOperation,
                 Message = "文件操作失败",
-                Level = ErrorLevel.k_Error,
+                Level = ErrorLevel.Error,
                 Timestamp = new DateTime(2023, 1, 1, 12, 0, 0)
             };
 
@@ -127,9 +127,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.ErrorHandling
             Exception exception = new InvalidOperationException("测试异常");
             var errorInfo = new ErrorInfo
             {
-                ErrorType = ErrorType.k_FileOperation,
+                ErrorType = ErrorType.FileOperation,
                 Message = "文件操作失败",
-                Level = ErrorLevel.k_Error,
+                Level = ErrorLevel.Error,
                 Timestamp = new DateTime(2023, 1, 1, 12, 0, 0),
                 Exception = exception
             };

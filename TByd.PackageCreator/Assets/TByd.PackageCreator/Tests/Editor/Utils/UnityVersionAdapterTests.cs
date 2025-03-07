@@ -1,8 +1,7 @@
 using System;
 using System.Reflection;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Utils;
-using UnityEditor;
+using TByd.PackageCreator.Editor.Utils.Version;
 using UnityEngine;
 
 namespace TByd.PackageCreator.Tests.Editor.Utils
@@ -17,14 +16,14 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void GetCurrentUnityVersion_ReturnsValidVersion()
         {
             // 获取当前Unity版本
-            Version unityVersion = UnityVersionAdapter.GetCurrentUnityVersion();
+            var unityVersion = UnityVersionAdapter.GetCurrentUnityVersion();
 
             // 验证版本号是否有效
             Assert.NotNull(unityVersion, "Unity版本不应为空");
             Assert.Greater(unityVersion.Major, 0, "主版本号应大于0");
 
             // 验证与Unity编辑器报告的版本一致
-            string editorVersion = Application.unityVersion;
+            var editorVersion = Application.unityVersion;
             Debug.Log($"编辑器版本: {editorVersion}, 适配器版本: {unityVersion}");
 
             // 检查主版本号一致
@@ -35,7 +34,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void IsVersionAtLeast_ComparesVersionsCorrectly()
         {
             // 假设当前版本为Unity 2021.3.8f1
-            Version currentVersion = UnityVersionAdapter.GetCurrentUnityVersion();
+            var currentVersion = UnityVersionAdapter.GetCurrentUnityVersion();
 
             // 当前版本应该至少是它自己的版本
             Assert.IsTrue(UnityVersionAdapter.IsVersionAtLeast(currentVersion.Major, currentVersion.Minor),
@@ -53,45 +52,40 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         [Test]
         public void SpecificVersionChecks_AreConsistent()
         {
-            Version currentVersion = UnityVersionAdapter.GetCurrentUnityVersion();
-
             // 检查版本特定方法与通用方法的一致性
-            bool isAtLeast2021_3 = UnityVersionAdapter.IsVersionAtLeast(2021, 3);
-            bool is2021_3OrNewer = UnityVersionAdapter.IsUnity2021_3OrNewer();
+            var isAtLeast2021_3 = UnityVersionAdapter.IsVersionAtLeast(2021, 3);
+            var is2021_3OrNewer = UnityVersionAdapter.IsUnity2021_3OrNewer();
             Assert.AreEqual(isAtLeast2021_3, is2021_3OrNewer, "IsUnity2021_3OrNewer应与IsVersionAtLeast(2021,3)一致");
 
-            bool isAtLeast2022_1 = UnityVersionAdapter.IsVersionAtLeast(2022, 1);
-            bool is2022_1OrNewer = UnityVersionAdapter.IsUnity2022_1OrNewer();
+            var isAtLeast2022_1 = UnityVersionAdapter.IsVersionAtLeast(2022, 1);
+            var is2022_1OrNewer = UnityVersionAdapter.IsUnity2022_1OrNewer();
             Assert.AreEqual(isAtLeast2022_1, is2022_1OrNewer, "IsUnity2022_1OrNewer应与IsVersionAtLeast(2022,1)一致");
 
-            bool isAtLeast2023_1 = UnityVersionAdapter.IsVersionAtLeast(2023, 1);
-            bool is2023_1OrNewer = UnityVersionAdapter.IsUnity2023_1OrNewer();
+            var isAtLeast2023_1 = UnityVersionAdapter.IsVersionAtLeast(2023, 1);
+            var is2023_1OrNewer = UnityVersionAdapter.IsUnity2023_1OrNewer();
             Assert.AreEqual(isAtLeast2023_1, is2023_1OrNewer, "IsUnity2023_1OrNewer应与IsVersionAtLeast(2023,1)一致");
         }
 
         [Test]
         public void SafeCall_HandlesVersionRequirements()
         {
-            // 当前版本
-            Version currentVersion = UnityVersionAdapter.GetCurrentUnityVersion();
-
             // 测试当需求版本低于当前版本时能正常调用
-            bool lowerVersionCalled = false;
-            bool lowerVersionResult = UnityVersionAdapter.SafeCall(() => { lowerVersionCalled = true; }, new Version(2017, 1));
+            var lowerVersionCalled = false;
+            var lowerVersionResult = UnityVersionAdapter.SafeCall(() => { lowerVersionCalled = true; }, new Version(2017, 1));
             Assert.IsTrue(lowerVersionCalled, "当需求版本低于当前版本时，应调用操作");
             Assert.IsTrue(lowerVersionResult, "对于低版本要求，SafeCall应返回true");
 
             // 测试当需求版本高于当前版本时不调用
-            bool higherVersionCalled = false;
-            bool higherVersionResult = UnityVersionAdapter.SafeCall(() => { higherVersionCalled = true; }, new Version(9999, 0));
+            var higherVersionCalled = false;
+            var higherVersionResult = UnityVersionAdapter.SafeCall(() => { higherVersionCalled = true; }, new Version(9999, 0));
             Assert.IsFalse(higherVersionCalled, "当需求版本高于当前版本时，不应调用操作");
             Assert.IsFalse(higherVersionResult, "对于高版本要求，SafeCall应返回false");
 
             // 测试泛型版本的SafeCall
-            string lowerVersionValue = UnityVersionAdapter.SafeCall(() => "Success", "Fallback", new Version(2017, 1));
+            var lowerVersionValue = UnityVersionAdapter.SafeCall(() => "Success", "Fallback", new Version(2017, 1));
             Assert.AreEqual("Success", lowerVersionValue, "低版本要求时应返回实际值");
 
-            string higherVersionValue = UnityVersionAdapter.SafeCall(() => "Success", "Fallback", new Version(9999, 0));
+            var higherVersionValue = UnityVersionAdapter.SafeCall(() => "Success", "Fallback", new Version(9999, 0));
             Assert.AreEqual("Fallback", higherVersionValue, "高版本要求时应返回后备值");
         }
 
@@ -99,28 +93,28 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void ReflectionMethods_WorkCorrectly()
         {
             // 创建测试对象
-            TestClass testObj = new TestClass();
+            var testObj = new TestClass();
 
             // 测试方法调用
-            bool methodCalled = UnityVersionAdapter.InvokeMethodByReflection(testObj, "TestMethod", new object[] { "param" });
+            var methodCalled = UnityVersionAdapter.InvokeMethodByReflection(testObj, "TestMethod", new object[] { "param" });
             Assert.IsTrue(methodCalled, "应成功调用测试方法");
             Assert.AreEqual("param", testObj.LastParameter, "方法参数应正确传递");
 
             // 测试获取属性
-            string propValue = UnityVersionAdapter.GetPropertyByReflection(testObj, "TestProperty", "fallback");
+            var propValue = UnityVersionAdapter.GetPropertyByReflection(testObj, "TestProperty", "fallback");
             Assert.AreEqual("TestValue", propValue, "应成功获取属性值");
 
             // 测试设置属性
-            bool setPropResult = UnityVersionAdapter.SetPropertyByReflection(testObj, "TestProperty", "NewValue");
+            var setPropResult = UnityVersionAdapter.SetPropertyByReflection(testObj, "TestProperty", "NewValue");
             Assert.IsTrue(setPropResult, "属性设置应成功");
             Assert.AreEqual("NewValue", testObj.TestProperty, "属性值应被正确设置");
 
             // 测试获取字段
-            int fieldValue = UnityVersionAdapter.GetFieldByReflection(testObj, "testField", -1);
+            var fieldValue = UnityVersionAdapter.GetFieldByReflection(testObj, "testField", -1);
             Assert.AreEqual(42, fieldValue, "应成功获取字段值");
 
             // 测试设置字段
-            bool setFieldResult = UnityVersionAdapter.SetFieldByReflection(testObj, "testField", 100);
+            var setFieldResult = UnityVersionAdapter.SetFieldByReflection(testObj, "testField", 100);
             Assert.IsTrue(setFieldResult, "字段设置应成功");
             Assert.AreEqual(100, testObj.testField, "字段值应被正确设置");
         }
@@ -129,7 +123,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void EditorUI_IsDarkTheme_ReturnsValidResult()
         {
             // 此测试主要确保方法不会抛出异常，结果取决于用户的Unity主题设置
-            bool isDarkTheme = UnityVersionAdapter.EditorUI.IsDarkTheme();
+            var isDarkTheme = UnityVersionAdapter.EditorUI.IsDarkTheme();
             Debug.Log($"当前编辑器主题: {(isDarkTheme ? "深色" : "浅色")}");
 
             // 结果应该是布尔值，无需断言具体值
@@ -140,7 +134,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void BuildSystem_GetScriptingBackend_ReturnsValidResult()
         {
             // 获取当前脚本后端
-            string backend = UnityVersionAdapter.BuildSystem.GetScriptingBackend();
+            var backend = UnityVersionAdapter.BuildSystem.GetScriptingBackend();
             Debug.Log($"当前脚本后端: {backend}");
 
             // 结果不应为空
@@ -163,7 +157,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void BuildSystem_IsCodeOptimizationEnabled_ReturnsValidResult()
         {
             // 获取代码优化状态
-            bool isOptimized = UnityVersionAdapter.BuildSystem.IsCodeOptimizationEnabled();
+            var isOptimized = UnityVersionAdapter.BuildSystem.IsCodeOptimizationEnabled();
             Debug.Log($"代码优化状态: {(isOptimized ? "已启用" : "已禁用")}");
 
             // 结果应该是布尔值，无需断言具体值
@@ -189,7 +183,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             Assert.AreEqual(typeof(bool), methodInfo.ReturnType, "返回类型应为bool");
 
             // 检查方法是否支持当前Unity版本
-            bool isSupported = UnityVersionAdapter.SupportsNewPackageManagerAPI();
+            var isSupported = UnityVersionAdapter.SupportsNewPackageManagerAPI();
             Debug.Log($"当前Unity版本{(isSupported ? "支持" : "不支持")}新的Package Manager API");
         }
 

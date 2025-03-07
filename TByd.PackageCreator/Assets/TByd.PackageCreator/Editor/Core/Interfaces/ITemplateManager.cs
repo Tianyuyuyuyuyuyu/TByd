@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Interfaces
 {
     /// <summary>
     /// 模板管理器接口，负责管理所有可用的包模板
@@ -98,16 +98,16 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 移除了模板
         /// </summary>
-        k_Removed,
+        Removed,
 
         /// <summary>
         /// 模板被更新
         /// </summary>
-        k_Updated,
+        Updated,
 
         /// <summary>
         /// 所有模板被重新加载
         /// </summary>
-        k_Reloaded
+        Reloaded
     }
 }

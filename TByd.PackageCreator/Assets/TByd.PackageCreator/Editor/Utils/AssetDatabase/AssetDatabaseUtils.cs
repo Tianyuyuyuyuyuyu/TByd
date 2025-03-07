@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace TByd.PackageCreator.Editor.Utils
+namespace TByd.PackageCreator.Editor.Utils.AssetDatabase
 {
     /// <summary>
     /// Unity资源数据库工具类，提供对Unity AssetDatabase的常用操作封装
@@ -81,9 +81,9 @@ namespace TByd.PackageCreator.Editor.Utils
                     EnsureDirectoryExists(directory);
                 }
 
-                AssetDatabase.CreateAsset(asset, assetPath);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
+                UnityEditor.AssetDatabase.CreateAsset(asset, assetPath);
+                UnityEditor.AssetDatabase.SaveAssets();
+                UnityEditor.AssetDatabase.Refresh();
                 Debug.Log($"创建资源: {assetPath}");
                 return true;
             }
@@ -112,7 +112,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     if (!Directory.Exists(absolutePath))
                     {
                         Directory.CreateDirectory(absolutePath);
-                        AssetDatabase.Refresh();
+                        UnityEditor.AssetDatabase.Refresh();
                         Debug.Log($"创建目录: {assetDirectoryPath}");
                     }
                     return true;
@@ -143,7 +143,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(assetPath))
                     return null;
 
-                return AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<T>(assetPath);
             }
             catch (Exception ex)
             {
@@ -164,7 +164,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(assetPath))
                     return false;
 
-                if (AssetDatabase.DeleteAsset(assetPath))
+                if (UnityEditor.AssetDatabase.DeleteAsset(assetPath))
                 {
                     Debug.Log($"删除资源: {assetPath}");
                     return true;
@@ -197,16 +197,16 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(folderPath))
                     return assets;
 
-                var guids = AssetDatabase.FindAssets("t:" + typeof(T).Name, new[] { folderPath });
+                var guids = UnityEditor.AssetDatabase.FindAssets("t:" + typeof(T).Name, new[] { folderPath });
                 foreach (var guid in guids)
                 {
-                    var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                    var assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
 
                     // 判断是否要包含子目录的资源
                     if (!searchSubFolders && Path.GetDirectoryName(assetPath) != folderPath)
                         continue;
 
-                    var asset = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                    var asset = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(assetPath);
                     if (asset != null)
                     {
                         assets.Add(asset);
@@ -233,7 +233,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(folderPath))
                     return subFolders.ToArray();
 
-                if (!AssetDatabase.IsValidFolder(folderPath))
+                if (!UnityEditor.AssetDatabase.IsValidFolder(folderPath))
                     return subFolders.ToArray();
 
                 var absolutePath = AssetPathToAbsolutePath(folderPath);
@@ -284,15 +284,15 @@ namespace TByd.PackageCreator.Editor.Utils
                         continue;
 
                     var newPath = Path.Combine(currentPath, folder);
-                    if (!AssetDatabase.IsValidFolder(newPath))
+                    if (!UnityEditor.AssetDatabase.IsValidFolder(newPath))
                     {
-                        var guid = AssetDatabase.CreateFolder(currentPath, folder);
+                        var guid = UnityEditor.AssetDatabase.CreateFolder(currentPath, folder);
                         if (string.IsNullOrEmpty(guid))
                         {
                             Debug.LogError($"创建目录失败: {newPath}");
                             return string.Empty;
                         }
-                        newPath = AssetDatabase.GUIDToAssetPath(guid);
+                        newPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                     }
                     currentPath = newPath;
                 }
@@ -326,7 +326,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     EnsureDirectoryExists(destDir);
                 }
 
-                if (AssetDatabase.CopyAsset(sourcePath, destPath))
+                if (UnityEditor.AssetDatabase.CopyAsset(sourcePath, destPath))
                 {
                     Debug.Log($"复制资源: {sourcePath} -> {destPath}");
                     return true;
@@ -364,7 +364,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     EnsureDirectoryExists(destDir);
                 }
 
-                var error = AssetDatabase.MoveAsset(sourcePath, destPath);
+                var error = UnityEditor.AssetDatabase.MoveAsset(sourcePath, destPath);
                 if (string.IsNullOrEmpty(error))
                 {
                     Debug.Log($"移动资源: {sourcePath} -> {destPath}");
@@ -396,7 +396,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(assetPath) || string.IsNullOrEmpty(newName))
                     return false;
 
-                var error = AssetDatabase.RenameAsset(assetPath, newName);
+                var error = UnityEditor.AssetDatabase.RenameAsset(assetPath, newName);
                 if (string.IsNullOrEmpty(error))
                 {
                     Debug.Log($"重命名资源: {assetPath} -> {newName}");
@@ -436,15 +436,15 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 // 如果资源已存在，先删除
-                if (AssetDatabase.LoadAssetAtPath<T>(assetPath) != null)
+                if (UnityEditor.AssetDatabase.LoadAssetAtPath<T>(assetPath) != null)
                 {
-                    AssetDatabase.DeleteAsset(assetPath);
+                    UnityEditor.AssetDatabase.DeleteAsset(assetPath);
                 }
 
                 var asset = ScriptableObject.CreateInstance<T>();
-                AssetDatabase.CreateAsset(asset, assetPath);
-                AssetDatabase.SaveAssets();
-                AssetDatabase.Refresh();
+                UnityEditor.AssetDatabase.CreateAsset(asset, assetPath);
+                UnityEditor.AssetDatabase.SaveAssets();
+                UnityEditor.AssetDatabase.Refresh();
                 Debug.Log($"创建ScriptableObject: {assetPath}");
                 return asset;
             }
@@ -467,7 +467,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(assetPath))
                     return string.Empty;
 
-                var guid = AssetDatabase.AssetPathToGUID(assetPath);
+                var guid = UnityEditor.AssetDatabase.AssetPathToGUID(assetPath);
                 return string.IsNullOrEmpty(guid) ? string.Empty : guid;
             }
             catch (Exception ex)
@@ -489,7 +489,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (string.IsNullOrEmpty(guid))
                     return string.Empty;
 
-                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
                 return string.IsNullOrEmpty(path) ? string.Empty : path;
             }
             catch (Exception ex)
@@ -547,11 +547,11 @@ namespace TByd.PackageCreator.Editor.Utils
         {
             if (importAllAssets)
             {
-                AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+                UnityEditor.AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             }
             else
             {
-                AssetDatabase.Refresh();
+                UnityEditor.AssetDatabase.Refresh();
             }
         }
 
@@ -562,7 +562,7 @@ namespace TByd.PackageCreator.Editor.Utils
         public static List<string> GetSelectedAssetPaths()
         {
             return Selection.assetGUIDs
-                .Select(guid => AssetDatabase.GUIDToAssetPath(guid))
+                .Select(guid => UnityEditor.AssetDatabase.GUIDToAssetPath(guid))
                 .Where(path => !string.IsNullOrEmpty(path))
                 .ToList();
         }

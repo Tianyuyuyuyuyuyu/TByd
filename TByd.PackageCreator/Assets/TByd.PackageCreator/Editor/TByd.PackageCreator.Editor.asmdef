@@ -1,6 +1,6 @@
 {
     "name": "TByd.PackageCreator.Editor",
-    "rootNamespace": "TByd.PackageCreator.Editor",
+    "rootNamespace": "",
     "references": [],
     "includePlatforms": [
         "Editor"

@@ -1,6 +1,6 @@
 {
     "name": "TByd.PackageCreator.Tests.Editor",
-    "rootNamespace": "TByd.PackageCreator.Tests.Editor",
+    "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",

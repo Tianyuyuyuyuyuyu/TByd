@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TByd.PackageCreator.Editor.Utils;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Utils.FileSystem;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Core
+namespace TByd.PackageCreator.Editor.Core.Services
 {
     /// <summary>
     /// 文件生成器类，负责根据模板创建目录结构和文件
@@ -15,13 +17,13 @@ namespace TByd.PackageCreator.Editor.Core
     public class FileGenerator
     {
         // 变量替换正则表达式，匹配 ${变量名}
-        private static readonly Regex s_VariablePattern = new Regex(@"\$\{([^}]+)\}", RegexOptions.Compiled);
+        private static readonly Regex SVariablePattern = new Regex(@"\$\{([^}]+)\}", RegexOptions.Compiled);
 
         // 文件生成策略集合
-        private readonly List<IFileGenerationStrategy> m_Strategies = new List<IFileGenerationStrategy>();
+        private readonly List<IFileGenerationStrategy> _mStrategies = new List<IFileGenerationStrategy>();
 
         // 默认文件生成策略
-        private readonly IFileGenerationStrategy m_DefaultStrategy;
+        private readonly IFileGenerationStrategy _mDefaultStrategy;
 
         // 事件：开始生成
         public event Action<string> OnGenerationStarted;
@@ -41,8 +43,8 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="defaultStrategy">默认文件生成策略</param>
         public FileGenerator(IFileGenerationStrategy defaultStrategy = null)
         {
-            m_DefaultStrategy = defaultStrategy ?? new DefaultFileGenerationStrategy();
-            m_Strategies.Add(m_DefaultStrategy);
+            _mDefaultStrategy = defaultStrategy ?? new DefaultFileGenerationStrategy();
+            _mStrategies.Add(_mDefaultStrategy);
         }
 
         /// <summary>
@@ -54,13 +56,13 @@ namespace TByd.PackageCreator.Editor.Core
             if (strategy == null) throw new ArgumentNullException(nameof(strategy));
 
             // 防止重复注册
-            if (m_Strategies.Any(s => s.StrategyName == strategy.StrategyName))
+            if (_mStrategies.Any(s => s.StrategyName == strategy.StrategyName))
             {
                 Debug.LogWarning($"策略 '{strategy.StrategyName}' 已经注册过，将被忽略。");
                 return;
             }
 
-            m_Strategies.Add(strategy);
+            _mStrategies.Add(strategy);
             Debug.Log($"注册文件生成策略: {strategy.StrategyName}");
         }
 
@@ -154,8 +156,8 @@ namespace TByd.PackageCreator.Editor.Core
         private async Task<ValidationResult> CreateDirectoriesAsync(IReadOnlyList<TemplateDirectory> directories, PackageConfig config, string targetPath)
         {
             var result = new ValidationResult();
-            int totalDirectories = CountTotalDirectories(directories);
-            int currentDirectory = 0;
+            var totalDirectories = CountTotalDirectories(directories);
+            var currentDirectory = 0;
 
             foreach (var directory in directories)
             {
@@ -180,8 +182,8 @@ namespace TByd.PackageCreator.Editor.Core
                                          ValidationResult result, int currentDirectory, int totalDirectories)
         {
             // 替换路径中的变量
-            string processedPath = ReplaceVariables(directory.RelativePath, config);
-            string fullPath = Path.Combine(basePath, processedPath);
+            var processedPath = ReplaceVariables(directory.RelativePath, config);
+            var fullPath = Path.Combine(basePath, processedPath);
 
             try
             {
@@ -243,7 +245,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <returns>目录总数</returns>
         private int CountTotalDirectories(IReadOnlyList<TemplateDirectory> directories)
         {
-            int count = 0;
+            var count = 0;
 
             foreach (var directory in directories)
             {
@@ -269,19 +271,19 @@ namespace TByd.PackageCreator.Editor.Core
         private async Task<ValidationResult> CreateFilesAsync(IReadOnlyList<TemplateFile> files, PackageConfig config, string targetPath)
         {
             var result = new ValidationResult();
-            int totalFiles = files.Count;
-            int currentFile = 0;
+            var totalFiles = files.Count;
+            var currentFile = 0;
 
             foreach (var file in files)
             {
                 currentFile++;
 
                 // 替换文件路径中的变量
-                string processedPath = ReplaceVariables(file.RelativePath, config);
-                string fullPath = Path.Combine(targetPath, processedPath);
+                var processedPath = ReplaceVariables(file.RelativePath, config);
+                var fullPath = Path.Combine(targetPath, processedPath);
 
                 // 确保父目录存在
-                string directoryPath = Path.GetDirectoryName(fullPath);
+                var directoryPath = Path.GetDirectoryName(fullPath);
                 if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
                 {
                     if (!FileUtils.EnsureDirectoryExists(directoryPath))
@@ -348,10 +350,10 @@ namespace TByd.PackageCreator.Editor.Core
         /// <returns>文件生成策略</returns>
         private IFileGenerationStrategy FindStrategyForFile(TemplateFile file)
         {
-            string extension = Path.GetExtension(file.RelativePath);
+            var extension = Path.GetExtension(file.RelativePath);
 
             // 查找支持此文件类型的策略
-            foreach (var strategy in m_Strategies)
+            foreach (var strategy in _mStrategies)
             {
                 if (strategy.SupportsFileType(extension))
                 {
@@ -360,7 +362,7 @@ namespace TByd.PackageCreator.Editor.Core
             }
 
             // 如果没有找到匹配的策略，使用默认策略
-            return m_DefaultStrategy;
+            return _mDefaultStrategy;
         }
 
         /// <summary>
@@ -374,9 +376,9 @@ namespace TByd.PackageCreator.Editor.Core
             if (string.IsNullOrEmpty(template))
                 return template;
 
-            return s_VariablePattern.Replace(template, match =>
+            return SVariablePattern.Replace(template, match =>
             {
-                string variableName = match.Groups[1].Value;
+                var variableName = match.Groups[1].Value;
                 return GetVariableValue(variableName, config);
             });
         }
@@ -418,7 +420,7 @@ namespace TByd.PackageCreator.Editor.Core
                 default:
                     // 查找自定义变量
                     if (config.CustomVariables != null &&
-                        config.CustomVariables.TryGetValue(variableName, out string value))
+                        config.CustomVariables.TryGetValue(variableName, out var value))
                     {
                         return value;
                     }
@@ -440,11 +442,11 @@ namespace TByd.PackageCreator.Editor.Core
                 return string.Empty;
 
             // 替换无效的字符为点
-            Regex invalidChars = new Regex(@"[^a-zA-Z0-9\.]");
-            string validName = invalidChars.Replace(packageName, ".");
+            var invalidChars = new Regex(@"[^a-zA-Z0-9\.]");
+            var validName = invalidChars.Replace(packageName, ".");
 
             // 替换多个连续的点为单个点
-            Regex multipleDots = new Regex(@"\.{2,}");
+            var multipleDots = new Regex(@"\.{2,}");
             validName = multipleDots.Replace(validName, ".");
 
             // 移除开头和结尾的点

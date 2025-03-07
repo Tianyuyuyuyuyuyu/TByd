@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
-using TByd.PackageCreator.Editor.Core.ErrorHandling;
-using TByd.PackageCreator.Editor.Utils;
+using TByd.PackageCreator.Editor.Utils.FileSystem;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace TByd.PackageCreator.Tests.Editor.Utils
 {
@@ -57,7 +55,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void GetBackupDirectory_ReturnsValidDirectory()
         {
             // 执行
-            string backupDir = SecureFileOperations.GetBackupDirectory();
+            var backupDir = SecureFileOperations.GetBackupDirectory();
 
             // 验证
             Assert.IsNotNull(backupDir, "备份目录不应为null");
@@ -71,7 +69,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             File.WriteAllText(_testFile, _testContent);
 
             // 执行
-            string backupPath = SecureFileOperations.CreateBackup(_testFile);
+            var backupPath = SecureFileOperations.CreateBackup(_testFile);
 
             // 验证
             Assert.IsNotNull(backupPath, "备份路径不应为null");
@@ -85,7 +83,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             // 准备
 
             // 执行
-            string backupPath = SecureFileOperations.CreateBackup(_testFile);
+            var backupPath = SecureFileOperations.CreateBackup(_testFile);
 
             // 验证
             Assert.IsNull(backupPath, "文件不存在时应返回null");
@@ -96,13 +94,13 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         {
             // 准备 - 创建原始文件和备份
             File.WriteAllText(_testFile, _testContent);
-            string backupPath = SecureFileOperations.CreateBackup(_testFile);
+            var backupPath = SecureFileOperations.CreateBackup(_testFile);
 
             // 修改原始文件
             File.WriteAllText(_testFile, "修改后的内容");
 
             // 执行
-            bool result = SecureFileOperations.RestoreBackup(backupPath, _testFile);
+            var result = SecureFileOperations.RestoreBackup(backupPath, _testFile);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示恢复成功");
@@ -113,10 +111,10 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void RestoreBackup_ReturnsFalse_WhenBackupDoesNotExist()
         {
             // 准备
-            string nonExistentBackup = Path.Combine(_backupDirectory, "nonexistent.backup");
+            var nonExistentBackup = Path.Combine(_backupDirectory, "nonexistent.backup");
 
             // 执行
-            bool result = SecureFileOperations.RestoreBackup(nonExistentBackup);
+            var result = SecureFileOperations.RestoreBackup(nonExistentBackup);
 
             // 验证
             Assert.IsFalse(result, "备份不存在时应返回false");
@@ -129,15 +127,15 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             File.WriteAllText(_testFile, "原始内容");
 
             // 执行
-            bool result = SecureFileOperations.SafeWriteFile(_testFile, _testContent, true);
+            var result = SecureFileOperations.SafeWriteFile(_testFile, _testContent, true);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示写入成功");
             Assert.AreEqual(_testContent, File.ReadAllText(_testFile), "文件内容应被更新");
 
             // 验证备份应该存在 - 但由于备份文件名包含时间戳，我们需检查备份目录是否存在备份文件
-            string[] backupFiles = Directory.GetFiles(_backupDirectory);
-            bool hasBackup = Array.Exists(backupFiles, f => f.Contains("testfile.txt") && f.EndsWith(".backup"));
+            var backupFiles = Directory.GetFiles(_backupDirectory);
+            var hasBackup = Array.Exists(backupFiles, f => f.Contains("testfile.txt") && f.EndsWith(".backup"));
             Assert.IsTrue(hasBackup, "应存在备份文件");
         }
 
@@ -148,7 +146,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             File.WriteAllText(_testFile, "原始内容");
 
             // 执行 - 不创建备份
-            bool result = SecureFileOperations.SafeWriteFile(_testFile, _testContent, false);
+            var result = SecureFileOperations.SafeWriteFile(_testFile, _testContent, false);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示写入成功");
@@ -159,11 +157,11 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void SafeWriteFile_CreatesDirectory_WhenItDoesNotExist()
         {
             // 准备
-            string subDir = Path.Combine(_testDirectory, "subdir");
-            string filePath = Path.Combine(subDir, "newfile.txt");
+            var subDir = Path.Combine(_testDirectory, "subdir");
+            var filePath = Path.Combine(subDir, "newfile.txt");
 
             // 执行
-            bool result = SecureFileOperations.SafeWriteFile(filePath, _testContent);
+            var result = SecureFileOperations.SafeWriteFile(filePath, _testContent);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示写入成功");
@@ -176,9 +174,9 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void SafeWriteFiles_WritesBatchFiles_WithBackups()
         {
             // 准备
-            string file1 = Path.Combine(_testDirectory, "file1.txt");
-            string file2 = Path.Combine(_testDirectory, "file2.txt");
-            Dictionary<string, string> fileContents = new Dictionary<string, string>
+            var file1 = Path.Combine(_testDirectory, "file1.txt");
+            var file2 = Path.Combine(_testDirectory, "file2.txt");
+            var fileContents = new Dictionary<string, string>
             {
                 { file1, "内容1" },
                 { file2, "内容2" }
@@ -188,7 +186,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             File.WriteAllText(file1, "原始内容1");
 
             // 执行
-            bool result = SecureFileOperations.SafeWriteFiles(fileContents);
+            var result = SecureFileOperations.SafeWriteFiles(fileContents);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示写入成功");
@@ -196,8 +194,8 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             Assert.AreEqual("内容2", File.ReadAllText(file2), "文件2内容应被更新");
 
             // 验证备份应该存在
-            string[] backupFiles = Directory.GetFiles(_backupDirectory);
-            bool hasBackup = Array.Exists(backupFiles, f => f.Contains("file1.txt") && f.EndsWith(".backup"));
+            var backupFiles = Directory.GetFiles(_backupDirectory);
+            var hasBackup = Array.Exists(backupFiles, f => f.Contains("file1.txt") && f.EndsWith(".backup"));
             Assert.IsTrue(hasBackup, "应存在备份文件");
         }
 
@@ -208,15 +206,15 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             File.WriteAllText(_testFile, _testContent);
 
             // 执行
-            bool result = SecureFileOperations.SafeDeleteFile(_testFile);
+            var result = SecureFileOperations.SafeDeleteFile(_testFile);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示删除成功");
             Assert.IsFalse(File.Exists(_testFile), "文件应该被删除");
 
             // 验证备份应该存在
-            string[] backupFiles = Directory.GetFiles(_backupDirectory);
-            bool hasBackup = Array.Exists(backupFiles, f => f.Contains("testfile.txt") && f.EndsWith(".backup"));
+            var backupFiles = Directory.GetFiles(_backupDirectory);
+            var hasBackup = Array.Exists(backupFiles, f => f.Contains("testfile.txt") && f.EndsWith(".backup"));
             Assert.IsTrue(hasBackup, "应存在备份文件");
         }
 
@@ -224,10 +222,10 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void SafeDeleteFile_ReturnsFalse_WhenFileDoesNotExist()
         {
             // 准备
-            string nonExistentFile = Path.Combine(_testDirectory, "nonexistent.txt");
+            var nonExistentFile = Path.Combine(_testDirectory, "nonexistent.txt");
 
             // 执行
-            bool result = SecureFileOperations.SafeDeleteFile(nonExistentFile);
+            var result = SecureFileOperations.SafeDeleteFile(nonExistentFile);
 
             // 验证
             Assert.IsFalse(result, "文件不存在时应返回false");
@@ -237,26 +235,26 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void GetAllBackups_ReturnsAllBackups()
         {
             // 准备 - 创建几个备份
-            for (int i = 1; i <= 3; i++)
+            for (var i = 1; i <= 3; i++)
             {
-                string filePath = Path.Combine(_testDirectory, $"file{i}.txt");
+                var filePath = Path.Combine(_testDirectory, $"file{i}.txt");
                 File.WriteAllText(filePath, $"内容{i}");
                 SecureFileOperations.CreateBackup(filePath);
             }
 
             // 执行
-            List<string> backups = SecureFileOperations.GetAllBackups();
+            var backups = SecureFileOperations.GetAllBackups();
 
             // 验证
             Assert.IsNotNull(backups, "备份列表不应为null");
             Assert.GreaterOrEqual(backups.Count, 3, "应至少包含创建的3个备份");
 
             // 验证所有创建的备份都在列表中
-            bool allFound = true;
-            for (int i = 1; i <= 3; i++)
+            var allFound = true;
+            for (var i = 1; i <= 3; i++)
             {
-                string fileName = $"file{i}.txt";
-                bool found = backups.Exists(b => Path.GetFileName(b).Contains(fileName));
+                var fileName = $"file{i}.txt";
+                var found = backups.Exists(b => Path.GetFileName(b).Contains(fileName));
                 allFound &= found;
             }
             Assert.IsTrue(allFound, "所有创建的备份都应在列表中");
@@ -270,7 +268,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
 
             // 准备 - 创建备份
             File.WriteAllText(_testFile, _testContent);
-            string backupPath = SecureFileOperations.CreateBackup(_testFile);
+            var backupPath = SecureFileOperations.CreateBackup(_testFile);
 
             // 执行
             SecureFileOperations.CleanupOldBackups();
@@ -286,7 +284,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             File.WriteAllText(_testFile, _testContent);
 
             // 执行
-            bool result = SecureFileOperations.IsFileWritable(_testFile);
+            var result = SecureFileOperations.IsFileWritable(_testFile);
 
             // 验证
             Assert.IsTrue(result, "可写文件应返回true");
@@ -302,7 +300,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             try
             {
                 // 执行
-                bool result = SecureFileOperations.IsFileWritable(_testFile);
+                var result = SecureFileOperations.IsFileWritable(_testFile);
 
                 // 验证
                 Assert.IsFalse(result, "只读文件应返回false");
@@ -318,10 +316,10 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void IsPathInSafeZone_ReturnsTrue_ForPathsInSafeZone()
         {
             // 准备 - 使用默认安全区（应用程序数据路径）
-            string safePath = Path.Combine(Application.dataPath, "SafeTest");
+            var safePath = Path.Combine(Application.dataPath, "SafeTest");
 
             // 执行
-            bool result = SecureFileOperations.IsPathInSafeZone(safePath);
+            var result = SecureFileOperations.IsPathInSafeZone(safePath);
 
             // 验证
             Assert.IsTrue(result, "应用程序数据路径内的路径应在安全区内");
@@ -331,11 +329,11 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void IsPathInSafeZone_ReturnsTrue_ForCustomSafeZones()
         {
             // 准备 - 自定义安全区
-            List<string> safeRoots = new List<string> { _testDirectory };
-            string safePath = Path.Combine(_testDirectory, "SafeTest");
+            var safeRoots = new List<string> { _testDirectory };
+            var safePath = Path.Combine(_testDirectory, "SafeTest");
 
             // 执行
-            bool result = SecureFileOperations.IsPathInSafeZone(safePath, safeRoots);
+            var result = SecureFileOperations.IsPathInSafeZone(safePath, safeRoots);
 
             // 验证
             Assert.IsTrue(result, "自定义安全区内的路径应返回true");
@@ -345,10 +343,10 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void IsPathInSafeZone_ReturnsFalse_ForPathsOutsideSafeZone()
         {
             // 准备 - 系统目录应该不在默认安全区内
-            string unsafePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "test");
+            var unsafePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "test");
 
             // 执行
-            bool result = SecureFileOperations.IsPathInSafeZone(unsafePath);
+            var result = SecureFileOperations.IsPathInSafeZone(unsafePath);
 
             // 验证
             Assert.IsFalse(result, "安全区外的路径应返回false");
@@ -358,12 +356,12 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void SafeMoveFile_MovesFile_WhenBothPathsInSafeZone()
         {
             // 准备
-            string sourceFile = Path.Combine(_testDirectory, "source.txt");
-            string destFile = Path.Combine(_testDirectory, "dest.txt");
+            var sourceFile = Path.Combine(_testDirectory, "source.txt");
+            var destFile = Path.Combine(_testDirectory, "dest.txt");
             File.WriteAllText(sourceFile, _testContent);
 
             // 执行
-            bool result = SecureFileOperations.SafeMoveFile(sourceFile, destFile);
+            var result = SecureFileOperations.SafeMoveFile(sourceFile, destFile);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示移动成功");
@@ -376,11 +374,11 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void SafeMoveFile_ReturnsFalse_WhenSourceFileDoesNotExist()
         {
             // 准备
-            string sourceFile = Path.Combine(_testDirectory, "nonexistent.txt");
-            string destFile = Path.Combine(_testDirectory, "dest.txt");
+            var sourceFile = Path.Combine(_testDirectory, "nonexistent.txt");
+            var destFile = Path.Combine(_testDirectory, "dest.txt");
 
             // 执行
-            bool result = SecureFileOperations.SafeMoveFile(sourceFile, destFile);
+            var result = SecureFileOperations.SafeMoveFile(sourceFile, destFile);
 
             // 验证
             Assert.IsFalse(result, "源文件不存在时应返回false");
@@ -391,11 +389,11 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void SafeCopyDirectory_CopiesDirectory()
         {
             // 准备 - 创建源目录结构
-            string sourceDir = Path.Combine(_testDirectory, "source");
-            string targetDir = Path.Combine(_testDirectory, "target");
-            string subDir = Path.Combine(sourceDir, "subdir");
-            string sourceFile1 = Path.Combine(sourceDir, "file1.txt");
-            string sourceFile2 = Path.Combine(subDir, "file2.txt");
+            var sourceDir = Path.Combine(_testDirectory, "source");
+            var targetDir = Path.Combine(_testDirectory, "target");
+            var subDir = Path.Combine(sourceDir, "subdir");
+            var sourceFile1 = Path.Combine(sourceDir, "file1.txt");
+            var sourceFile2 = Path.Combine(subDir, "file2.txt");
 
             Directory.CreateDirectory(sourceDir);
             Directory.CreateDirectory(subDir);
@@ -403,7 +401,7 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
             File.WriteAllText(sourceFile2, "内容2");
 
             // 执行
-            bool result = SecureFileOperations.SafeCopyDirectory(sourceDir, targetDir);
+            var result = SecureFileOperations.SafeCopyDirectory(sourceDir, targetDir);
 
             // 验证
             Assert.IsTrue(result, "应返回true表示复制成功");
@@ -419,11 +417,11 @@ namespace TByd.PackageCreator.Tests.Editor.Utils
         public void SafeCopyDirectory_ReturnsFalse_WhenSourceDirectoryDoesNotExist()
         {
             // 准备
-            string sourceDir = Path.Combine(_testDirectory, "nonexistent");
-            string targetDir = Path.Combine(_testDirectory, "target");
+            var sourceDir = Path.Combine(_testDirectory, "nonexistent");
+            var targetDir = Path.Combine(_testDirectory, "target");
 
             // 执行
-            bool result = SecureFileOperations.SafeCopyDirectory(sourceDir, targetDir);
+            var result = SecureFileOperations.SafeCopyDirectory(sourceDir, targetDir);
 
             // 验证
             Assert.IsFalse(result, "源目录不存在时应返回false");

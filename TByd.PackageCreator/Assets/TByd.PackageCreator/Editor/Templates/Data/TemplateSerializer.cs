@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TByd.PackageCreator.Editor.Core;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
+using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
+using TByd.PackageCreator.Editor.Core.Services;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -17,7 +20,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
     /// </summary>
     public static class TemplateSerializer
     {
-        private static readonly ErrorHandler s_ErrorHandler = ErrorHandler.Instance;
+        private static readonly ErrorHandler SErrorHandler = ErrorHandler.Instance;
 
         /// <summary>
         /// 将模板序列化为JSON字符串
@@ -28,7 +31,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
         {
             if (template == null)
             {
-                s_ErrorHandler.LogError(ErrorType.k_InvalidArgument, "不能序列化空模板");
+                SErrorHandler.LogError(ErrorType.InvalidArgument, "不能序列化空模板");
                 return null;
             }
 
@@ -50,7 +53,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
             }
             catch (Exception ex)
             {
-                s_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, $"序列化模板 {template.Id} 时出错");
+                SErrorHandler.LogException(ErrorType.OperationFailed, ex, $"序列化模板 {template.Id} 时出错");
                 return null;
             }
         }
@@ -64,7 +67,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
         {
             if (string.IsNullOrEmpty(json))
             {
-                s_ErrorHandler.LogError(ErrorType.k_InvalidArgument, "不能从空JSON字符串反序列化模板");
+                SErrorHandler.LogError(ErrorType.InvalidArgument, "不能从空JSON字符串反序列化模板");
                 return null;
             }
 
@@ -73,7 +76,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
                 var jsonTemplate = JsonConvert.DeserializeObject<JsonTemplateData>(json);
                 if (jsonTemplate == null)
                 {
-                    s_ErrorHandler.LogError(ErrorType.k_InvalidData, "JSON解析失败");
+                    SErrorHandler.LogError(ErrorType.InvalidData, "JSON解析失败");
                     return null;
                 }
 
@@ -81,7 +84,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
             }
             catch (Exception ex)
             {
-                s_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, "从JSON反序列化模板时出错");
+                SErrorHandler.LogException(ErrorType.OperationFailed, ex, "从JSON反序列化模板时出错");
                 return null;
             }
         }
@@ -95,24 +98,24 @@ namespace TByd.PackageCreator.Editor.Templates.Data
         {
             if (string.IsNullOrEmpty(filePath))
             {
-                s_ErrorHandler.LogError(ErrorType.k_InvalidArgument, "文件路径不能为空");
+                SErrorHandler.LogError(ErrorType.InvalidArgument, "文件路径不能为空");
                 return null;
             }
 
             if (!File.Exists(filePath))
             {
-                s_ErrorHandler.LogError(ErrorType.k_FileNotFound, $"未找到文件: {filePath}");
+                SErrorHandler.LogError(ErrorType.FileNotFound, $"未找到文件: {filePath}");
                 return null;
             }
 
             try
             {
-                string json = File.ReadAllText(filePath);
+                var json = File.ReadAllText(filePath);
                 return DeserializeFromJson(json);
             }
             catch (Exception ex)
             {
-                s_ErrorHandler.LogException(ErrorType.k_FileReadError, ex, $"读取模板文件时出错: {filePath}");
+                SErrorHandler.LogException(ErrorType.FileReadError, ex, $"读取模板文件时出错: {filePath}");
                 return null;
             }
         }
@@ -157,8 +160,8 @@ namespace TByd.PackageCreator.Editor.Templates.Data
     /// </summary>
     public class JsonPackageTemplate : IPackageTemplate
     {
-        private readonly JsonTemplateData m_Data;
-        private Texture2D m_Icon;
+        private readonly JsonTemplateData _mData;
+        private Texture2D _mIcon;
 
         /// <summary>
         /// 创建从JSON数据创建的包模板
@@ -166,7 +169,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
         /// <param name="data">JSON模板数据</param>
         public JsonPackageTemplate(JsonTemplateData data)
         {
-            m_Data = data ?? throw new ArgumentNullException(nameof(data));
+            _mData = data ?? throw new ArgumentNullException(nameof(data));
             LoadIcon();
         }
 
@@ -175,14 +178,14 @@ namespace TByd.PackageCreator.Editor.Templates.Data
         /// </summary>
         private void LoadIcon()
         {
-            if (string.IsNullOrEmpty(m_Data.iconPath)) return;
+            if (string.IsNullOrEmpty(_mData.iconPath)) return;
 
             try
             {
                 // 如果是资源路径，尝试加载
-                if (m_Data.iconPath.StartsWith("Assets/"))
+                if (_mData.iconPath.StartsWith("Assets/"))
                 {
-                    m_Icon = AssetDatabase.LoadAssetAtPath<Texture2D>(m_Data.iconPath);
+                    _mIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(_mData.iconPath);
                 }
                 // 未来可以添加从文件加载图标的逻辑
             }
@@ -192,21 +195,21 @@ namespace TByd.PackageCreator.Editor.Templates.Data
             }
         }
 
-        public string Id => m_Data.id;
-        public string Name => m_Data.name;
-        public string Description => m_Data.description;
-        public string Version => m_Data.version;
-        public string Author => m_Data.author;
-        public Texture2D Icon => m_Icon;
+        public string Id => _mData.id;
+        public string Name => _mData.name;
+        public string Description => _mData.description;
+        public string Version => _mData.version;
+        public string Author => _mData.author;
+        public Texture2D Icon => _mIcon;
 
         public IReadOnlyList<TemplateDirectory> Directories =>
-            m_Data.directories != null ? Array.AsReadOnly(m_Data.directories) : Array.Empty<TemplateDirectory>();
+            _mData.directories != null ? Array.AsReadOnly(_mData.directories) : Array.Empty<TemplateDirectory>();
 
         public IReadOnlyList<TemplateFile> Files =>
-            m_Data.files != null ? Array.AsReadOnly(m_Data.files) : Array.Empty<TemplateFile>();
+            _mData.files != null ? Array.AsReadOnly(_mData.files) : Array.Empty<TemplateFile>();
 
         public IReadOnlyList<TemplateOption> Options =>
-            m_Data.options != null ? Array.AsReadOnly(m_Data.options) : Array.Empty<TemplateOption>();
+            _mData.options != null ? Array.AsReadOnly(_mData.options) : Array.Empty<TemplateOption>();
 
         public ValidationResult ValidateConfig(PackageConfig config)
         {

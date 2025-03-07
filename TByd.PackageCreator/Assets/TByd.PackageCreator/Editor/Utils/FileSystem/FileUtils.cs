@@ -5,14 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace TByd.PackageCreator.Editor.Utils
+namespace TByd.PackageCreator.Editor.Utils.FileSystem
 {
     /// <summary>
     /// 文件操作工具类，提供安全的文件读写、复制、删除等功能
     /// </summary>
     public static class FileUtils
     {
-        private static readonly Encoding s_DefaultEncoding = new UTF8Encoding(false);
+        private static readonly Encoding SDefaultEncoding = new UTF8Encoding(false);
 
         /// <summary>
         /// 安全地创建目录，如果目录已存在则不会抛出异常
@@ -78,7 +78,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
                 }
 
-                encoding = encoding ?? s_DefaultEncoding;
+                encoding = encoding ?? SDefaultEncoding;
                 File.WriteAllText(filePath, content, encoding);
                 Debug.Log($"写入文件: {filePath}");
                 return true;
@@ -107,7 +107,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
                 }
 
-                encoding = encoding ?? s_DefaultEncoding;
+                encoding = encoding ?? SDefaultEncoding;
                 using (var writer = new StreamWriter(filePath, false, encoding))
                 {
                     await writer.WriteAsync(content);
@@ -140,7 +140,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
                 }
 
-                encoding = encoding ?? s_DefaultEncoding;
+                encoding = encoding ?? SDefaultEncoding;
                 content = File.ReadAllText(filePath, encoding);
                 return true;
             }
@@ -167,7 +167,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return null;
                 }
 
-                encoding = encoding ?? s_DefaultEncoding;
+                encoding = encoding ?? SDefaultEncoding;
                 using (var reader = new StreamReader(filePath, encoding))
                 {
                     return await reader.ReadToEndAsync();

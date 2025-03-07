@@ -8,21 +8,21 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <summary>
         /// 信息级别，仅提供参考信息，不影响操作
         /// </summary>
-        k_Info = 0,
+        Info = 0,
 
         /// <summary>
         /// 警告级别，可能会影响结果，但不阻止操作继续
         /// </summary>
-        k_Warning = 1,
+        Warning = 1,
 
         /// <summary>
         /// 错误级别，表示操作遇到问题，但系统仍能继续运行
         /// </summary>
-        k_Error = 2,
+        Error = 2,
 
         /// <summary>
         /// 严重错误级别，表示发生了致命错误，系统无法继续运行
         /// </summary>
-        k_Critical = 3
+        Critical = 3
     }
 }

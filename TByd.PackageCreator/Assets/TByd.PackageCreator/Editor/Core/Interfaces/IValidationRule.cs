@@ -1,4 +1,6 @@
-namespace TByd.PackageCreator.Editor.Core
+using TByd.PackageCreator.Editor.Core.Models;
+
+namespace TByd.PackageCreator.Editor.Core.Interfaces
 {
     /// <summary>
     /// 验证规则接口，用于实现可扩展的验证规则系统
