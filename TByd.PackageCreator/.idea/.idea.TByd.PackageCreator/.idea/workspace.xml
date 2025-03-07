@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="896a7003-dd9c-4224-8b84-5e2df7a1ae8f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/vcs.xml" afterDir="false" />
-    </list>
+    <list default="true" id="896a7003-dd9c-4224-8b84-5e2df7a1ae8f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -90,7 +88,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1741329788937</updated>
-      <workItem from="1741329790814" duration="941000" />
+      <workItem from="1741329790814" duration="1060000" />
     </task>
     <servers />
   </component>
