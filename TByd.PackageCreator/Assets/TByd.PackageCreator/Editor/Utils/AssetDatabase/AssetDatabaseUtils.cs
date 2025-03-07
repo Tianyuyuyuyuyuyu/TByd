@@ -460,7 +460,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// </summary>
         /// <param name="assetPath">资源路径</param>
         /// <returns>资源的GUID，如果失败则返回空字符串</returns>
-        public static string GetAssetGUID(string assetPath)
+        public static string GetAssetGuid(string assetPath)
         {
             try
             {

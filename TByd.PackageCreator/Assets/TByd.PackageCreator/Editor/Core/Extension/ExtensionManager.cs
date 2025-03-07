@@ -55,22 +55,22 @@ namespace TByd.PackageCreator.Editor.Core.Extension
         /// <summary>
         /// 扩展注册事件
         /// </summary>
-        public event Action<PackageCreatorExtension> ExtensionRegistered;
+        public event Action<PackageCreatorExtension> OnExtensionRegistered;
 
         /// <summary>
         /// 模板提供者注册事件
         /// </summary>
-        public event Action<ITemplateProvider> TemplateProviderRegistered;
+        public event Action<ITemplateProvider> OnTemplateProviderRegistered;
 
         /// <summary>
         /// 文件生成策略注册事件
         /// </summary>
-        public event Action<IFileGenerationStrategy> FileGenerationStrategyRegistered;
+        public event Action<IFileGenerationStrategy> OnFileGenerationStrategyRegistered;
 
         /// <summary>
         /// 验证规则注册事件
         /// </summary>
-        public event Action<IValidationRule> ValidationRuleRegistered;
+        public event Action<IValidationRule> OnValidationRuleRegistered;
 
         /// <summary>
         /// 初始化扩展管理器
@@ -128,7 +128,7 @@ namespace TByd.PackageCreator.Editor.Core.Extension
             extension.Initialize();
 
             // 触发事件
-            ExtensionRegistered?.Invoke(extension);
+            OnExtensionRegistered?.Invoke(extension);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace TByd.PackageCreator.Editor.Core.Extension
             Debug.Log($"注册模板提供者: {provider.ProviderName} v{provider.ProviderVersion}");
 
             // 触发事件
-            TemplateProviderRegistered?.Invoke(provider);
+            OnTemplateProviderRegistered?.Invoke(provider);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace TByd.PackageCreator.Editor.Core.Extension
             Debug.Log($"注册文件生成策略: {strategy.StrategyName}，支持文件类型: {string.Join(", ", strategy.SupportedFileExtensions)}");
 
             // 触发事件
-            FileGenerationStrategyRegistered?.Invoke(strategy);
+            OnFileGenerationStrategyRegistered?.Invoke(strategy);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace TByd.PackageCreator.Editor.Core.Extension
             m_ValidationRules.Sort((a, b) => a.Priority.CompareTo(b.Priority));
 
             // 触发事件
-            ValidationRuleRegistered?.Invoke(rule);
+            OnValidationRuleRegistered?.Invoke(rule);
         }
 
         /// <summary>

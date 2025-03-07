@@ -75,7 +75,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <param name="errorType">错误类型（默认为Unknown）</param>
         /// <param name="level">错误级别（默认为Error）</param>
         /// <returns>错误信息实例</returns>
-        public static ErrorInfo FromException(Exception exception, ErrorType errorType = ErrorType.Unknown, ErrorLevel level = ErrorLevel.Error)
+        public static ErrorInfo FromException(Exception exception, ErrorType errorType = ErrorType.k_Unknown, ErrorLevel level = ErrorLevel.k_Error)
         {
             return new ErrorInfo
             {

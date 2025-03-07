@@ -70,7 +70,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
 
             // 断言
             Assert.IsTrue(result.IsValid);
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count);
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count);
         }
 
         [Test]
@@ -88,7 +88,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             // 断言 - 现在我们期望这个路径被检测为无效（因为我们使用了双点跳出）
             Assert.IsFalse(result.IsValid, "包含上级目录引用的路径应该被识别为无效");
 
-            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
             Debug.Log($"检测到的错误消息数量: {errorMessages.Count}");
 
             foreach (var msg in errorMessages)
@@ -146,7 +146,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                     // 断言
                     Assert.IsFalse(result.IsValid, "受保护路径应该验证失败");
 
-                    var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+                    var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
                     Assert.Greater(errorMessages.Count, 0, "应该有错误消息");
 
                     // 断言错误消息应该指明路径是受保护的
@@ -190,7 +190,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
 
             // 断言
             Assert.IsTrue(result.IsValid);
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count);
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count);
         }
 
         [Test]
@@ -213,7 +213,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 var fileResult = securityChecker.ValidateFileContent(content, file);
 
                 // 查看每个文件的验证结果
-                var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.Warning);
+                var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.k_Warning);
                 Debug.Log($"文件 {Path.GetFileName(file)} 检测到的警告数: {fileWarnings.Count}");
                 foreach (var warning in fileWarnings)
                 {
@@ -224,7 +224,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
             }
 
             // 获取所有警告消息
-            var warningMessages = result.GetMessages(ValidationMessageLevel.Warning);
+            var warningMessages = result.GetMessages(ValidationMessageLevel.k_Warning);
             Debug.Log($"总警告消息数量: {warningMessages.Count}");
             foreach (var warning in warningMessages)
             {
@@ -317,7 +317,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
 
             // 断言
             Assert.IsTrue(result.IsValid, "所有文件都应该通过验证");
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count, "不应该有错误消息");
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count, "不应该有错误消息");
         }
 
         [Test]
@@ -346,7 +346,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
 
             // 断言
             Assert.IsFalse(result.IsValid);
-            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
             Assert.Greater(errorMessages.Count, 0);
         }
 
@@ -432,7 +432,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
     {
         public static bool ContainsErrorMatching(this ValidationResult result, string pattern)
         {
-            foreach (var message in result.GetMessages(ValidationMessageLevel.Error))
+            foreach (var message in result.GetMessages(ValidationMessageLevel.k_Error))
             {
                 if (message.Message.Contains(pattern))
                 {

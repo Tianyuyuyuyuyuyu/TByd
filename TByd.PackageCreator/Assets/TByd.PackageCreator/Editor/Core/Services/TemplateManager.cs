@@ -6,8 +6,6 @@ using System.Reflection;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using TByd.PackageCreator.Editor.Templates.Data;
 using TByd.PackageCreator.Editor.Templates.Providers;
-using UnityEditor;
-using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.Core.Services
 {
@@ -16,15 +14,15 @@ namespace TByd.PackageCreator.Editor.Core.Services
     /// </summary>
     public class TemplateManager : ITemplateManager
     {
-        private readonly List<ITemplateProvider> _providers = new List<ITemplateProvider>();
-        private readonly Dictionary<string, IPackageTemplate> _templatesCache = new Dictionary<string, IPackageTemplate>();
-        private static TemplateManager _instance;
-        private readonly ErrorHandler _errorHandler;
+        private readonly List<ITemplateProvider> m_Providers = new List<ITemplateProvider>();
+        private readonly Dictionary<string, IPackageTemplate> m_TemplatesCache = new Dictionary<string, IPackageTemplate>();
+        private static TemplateManager s_Instance;
+        private readonly ErrorHandler m_ErrorHandler;
 
         /// <summary>
         /// 模板变更事件
         /// </summary>
-        public event EventHandler<TemplateChangedEventArgs> TemplateChanged;
+        public event EventHandler<TemplateChangedEventArgs> OnTemplateChanged;
 
         /// <summary>
         /// 获取TemplateManager实例
@@ -33,17 +31,17 @@ namespace TByd.PackageCreator.Editor.Core.Services
         {
             get
             {
-                if (_instance == null)
+                if (s_Instance == null)
                 {
-                    _instance = new TemplateManager();
+                    s_Instance = new TemplateManager();
                 }
-                return _instance;
+                return s_Instance;
             }
         }
 
         private TemplateManager()
         {
-            _errorHandler = ErrorHandler.Instance;
+            m_ErrorHandler = ErrorHandler.Instance;
             LoadInternalProviders();
         }
 
@@ -63,7 +61,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
             }
             catch (Exception ex)
             {
-                _errorHandler.LogException(ErrorType.OperationFailed, ex, "加载内置模板提供者时出错");
+                m_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, "加载内置模板提供者时出错");
             }
         }
 
@@ -91,7 +89,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
                         var hasDefaultConstructor = type.GetConstructor(Type.EmptyTypes) != null;
                         if (!hasDefaultConstructor)
                         {
-                            _errorHandler.LogInfo($"跳过模板提供者 {type.Name}，因为它没有无参构造函数");
+                            m_ErrorHandler.LogInfo($"跳过模板提供者 {type.Name}，因为它没有无参构造函数");
                             continue;
                         }
 
@@ -99,18 +97,18 @@ namespace TByd.PackageCreator.Editor.Core.Services
                         if (provider != null)
                         {
                             RegisterProvider(provider);
-                            _errorHandler.LogInfo($"已通过反射加载模板提供者: {provider.ProviderName}");
+                            m_ErrorHandler.LogInfo($"已通过反射加载模板提供者: {provider.ProviderName}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        _errorHandler.LogException(ErrorType.OperationFailed, ex, $"实例化模板提供者类型 {type.Name} 时出错");
+                        m_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, $"实例化模板提供者类型 {type.Name} 时出错");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _errorHandler.LogException(ErrorType.OperationFailed, ex, "通过反射查找模板提供者时出错");
+                m_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, "通过反射查找模板提供者时出错");
             }
         }
 
@@ -121,7 +119,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         public IReadOnlyList<IPackageTemplate> GetAllTemplates()
         {
             RefreshTemplatesCache();
-            return _templatesCache.Values.ToList().AsReadOnly();
+            return m_TemplatesCache.Values.ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -133,18 +131,18 @@ namespace TByd.PackageCreator.Editor.Core.Services
         {
             if (string.IsNullOrEmpty(templateId))
             {
-                _errorHandler.LogError(ErrorType.InvalidArgument, "模板ID不能为空");
+                m_ErrorHandler.LogError(ErrorType.k_InvalidArgument, "模板ID不能为空");
                 return null;
             }
 
             RefreshTemplatesCache();
 
-            if (_templatesCache.TryGetValue(templateId, out var template))
+            if (m_TemplatesCache.TryGetValue(templateId, out var template))
             {
                 return template;
             }
 
-            _errorHandler.LogWarning(ErrorType.ResourceNotFound, $"未找到ID为 {templateId} 的模板");
+            m_ErrorHandler.LogWarning(ErrorType.k_ResourceNotFound, $"未找到ID为 {templateId} 的模板");
             return null;
         }
 
@@ -156,25 +154,25 @@ namespace TByd.PackageCreator.Editor.Core.Services
         {
             if (provider == null)
             {
-                _errorHandler.LogError(ErrorType.InvalidArgument, "不能注册空的模板提供者");
+                m_ErrorHandler.LogError(ErrorType.k_InvalidArgument, "不能注册空的模板提供者");
                 return;
             }
 
-            if (_providers.Any(p => p.ProviderName == provider.ProviderName))
+            if (m_Providers.Any(p => p.ProviderName == provider.ProviderName))
             {
-                _errorHandler.LogWarning(ErrorType.DuplicateResource, $"模板提供者 '{provider.ProviderName}' 已经注册");
+                m_ErrorHandler.LogWarning(ErrorType.k_DuplicateResource, $"模板提供者 '{provider.ProviderName}' 已经注册");
                 return;
             }
 
-            _providers.Add(provider);
+            m_Providers.Add(provider);
 
             // 注册新提供者后刷新缓存
             RefreshTemplatesCache();
 
-            _errorHandler.LogInfo($"已注册模板提供者: {provider.ProviderName} v{provider.ProviderVersion}");
+            m_ErrorHandler.LogInfo($"已注册模板提供者: {provider.ProviderName} v{provider.ProviderVersion}");
 
             // 触发模板变更事件
-            OnTemplateChanged(TemplateChangeType.Reloaded, null);
+            OnTemplateChangedMethod(EnumTemplateChangeType.k_Reloaded, null);
         }
 
         /// <summary>
@@ -186,26 +184,26 @@ namespace TByd.PackageCreator.Editor.Core.Services
         {
             if (string.IsNullOrEmpty(providerName))
             {
-                _errorHandler.LogError(ErrorType.InvalidArgument, "提供者名称不能为空");
+                m_ErrorHandler.LogError(ErrorType.k_InvalidArgument, "提供者名称不能为空");
                 return false;
             }
 
-            var provider = _providers.FirstOrDefault(p => p.ProviderName == providerName);
+            var provider = m_Providers.FirstOrDefault(p => p.ProviderName == providerName);
             if (provider == null)
             {
-                _errorHandler.LogWarning(ErrorType.ResourceNotFound, $"未找到名称为 {providerName} 的模板提供者");
+                m_ErrorHandler.LogWarning(ErrorType.k_ResourceNotFound, $"未找到名称为 {providerName} 的模板提供者");
                 return false;
             }
 
-            _providers.Remove(provider);
+            m_Providers.Remove(provider);
 
             // 移除提供者后刷新缓存
             RefreshTemplatesCache();
 
-            _errorHandler.LogInfo($"已移除模板提供者: {providerName}");
+            m_ErrorHandler.LogInfo($"已移除模板提供者: {providerName}");
 
             // 触发模板变更事件
-            OnTemplateChanged(TemplateChangeType.Reloaded, null);
+            OnTemplateChangedMethod(EnumTemplateChangeType.k_Reloaded, null);
 
             return true;
         }
@@ -216,7 +214,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// <returns>模板提供者集合</returns>
         public IReadOnlyList<ITemplateProvider> GetRegisteredProviders()
         {
-            return _providers.AsReadOnly();
+            return m_Providers.AsReadOnly();
         }
 
         /// <summary>
@@ -228,13 +226,13 @@ namespace TByd.PackageCreator.Editor.Core.Services
         {
             if (string.IsNullOrEmpty(jsonFilePath))
             {
-                _errorHandler.LogError(ErrorType.InvalidArgument, "JSON文件路径不能为空");
+                m_ErrorHandler.LogError(ErrorType.k_InvalidArgument, "JSON文件路径不能为空");
                 return null;
             }
 
             if (!File.Exists(jsonFilePath))
             {
-                _errorHandler.LogError(ErrorType.FileNotFound, $"未找到JSON文件: {jsonFilePath}");
+                m_ErrorHandler.LogError(ErrorType.k_FileNotFound, $"未找到JSON文件: {jsonFilePath}");
                 return null;
             }
 
@@ -245,32 +243,32 @@ namespace TByd.PackageCreator.Editor.Core.Services
 
                 if (template == null)
                 {
-                    _errorHandler.LogError(ErrorType.InvalidData, $"无法从JSON文件加载有效模板: {jsonFilePath}");
+                    m_ErrorHandler.LogError(ErrorType.k_InvalidData, $"无法从JSON文件加载有效模板: {jsonFilePath}");
                     return null;
                 }
 
                 // 检查模板ID是否有效
                 if (string.IsNullOrEmpty(template.Id))
                 {
-                    _errorHandler.LogError(ErrorType.InvalidData, $"从JSON加载的模板ID不能为空: {jsonFilePath}");
+                    m_ErrorHandler.LogError(ErrorType.k_InvalidData, $"从JSON加载的模板ID不能为空: {jsonFilePath}");
                     return null;
                 }
 
                 // 检查是否已存在同ID的模板
                 RefreshTemplatesCache();
-                if (_templatesCache.ContainsKey(template.Id))
+                if (m_TemplatesCache.ContainsKey(template.Id))
                 {
-                    _errorHandler.LogWarning(ErrorType.DuplicateResource,
+                    m_ErrorHandler.LogWarning(ErrorType.k_DuplicateResource,
                         $"已存在ID为 {template.Id} 的模板，将被覆盖");
 
                     // 先移除旧模板的提供者(如果是自定义JSON提供者)
-                    var customProvider = _providers.FirstOrDefault(p =>
+                    var customProvider = m_Providers.FirstOrDefault(p =>
                         p is CustomJsonTemplateProvider jsonProvider &&
                         jsonProvider.ContainsTemplate(template.Id));
 
                     if (customProvider != null)
                     {
-                        _providers.Remove(customProvider);
+                        m_Providers.Remove(customProvider);
                     }
                 }
 
@@ -278,16 +276,16 @@ namespace TByd.PackageCreator.Editor.Core.Services
                 var provider = new CustomJsonTemplateProvider(template, Path.GetFileName(jsonFilePath));
                 RegisterProvider(provider);
 
-                _errorHandler.LogInfo($"已成功从JSON加载模板: {template.Id} ({template.Name})");
+                m_ErrorHandler.LogInfo($"已成功从JSON加载模板: {template.Id} ({template.Name})");
 
                 // 通知模板已添加
-                OnTemplateChanged(TemplateChangeType.Added, template.Id);
+                OnTemplateChangedMethod(EnumTemplateChangeType.Added, template.Id);
 
                 return template;
             }
             catch (Exception ex)
             {
-                _errorHandler.LogException(ErrorType.FileReadError, ex, $"加载JSON模板文件时出错: {jsonFilePath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileReadError, ex, $"加载JSON模板文件时出错: {jsonFilePath}");
                 return null;
             }
         }
@@ -298,8 +296,8 @@ namespace TByd.PackageCreator.Editor.Core.Services
         public void ReloadTemplates()
         {
             RefreshTemplatesCache();
-            OnTemplateChanged(TemplateChangeType.Reloaded, null);
-            _errorHandler.LogInfo("已重新加载所有模板");
+            OnTemplateChangedMethod(EnumTemplateChangeType.k_Reloaded, null);
+            m_ErrorHandler.LogInfo("已重新加载所有模板");
         }
 
         /// <summary>
@@ -307,9 +305,9 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         private void RefreshTemplatesCache()
         {
-            _templatesCache.Clear();
+            m_TemplatesCache.Clear();
 
-            foreach (var provider in _providers)
+            foreach (var provider in m_Providers)
             {
                 try
                 {
@@ -322,23 +320,23 @@ namespace TByd.PackageCreator.Editor.Core.Services
 
                         if (string.IsNullOrEmpty(template.Id))
                         {
-                            _errorHandler.LogWarning(ErrorType.InvalidData, $"提供者 {provider.ProviderName} 返回了一个无效的模板(ID为空)");
+                            m_ErrorHandler.LogWarning(ErrorType.k_InvalidData, $"提供者 {provider.ProviderName} 返回了一个无效的模板(ID为空)");
                             continue;
                         }
 
-                        if (_templatesCache.ContainsKey(template.Id))
+                        if (m_TemplatesCache.ContainsKey(template.Id))
                         {
-                            _errorHandler.LogWarning(ErrorType.DuplicateResource,
+                            m_ErrorHandler.LogWarning(ErrorType.k_DuplicateResource,
                                 $"模板ID冲突: {template.Id}, 来自提供者 {provider.ProviderName}. 该模板将被忽略");
                             continue;
                         }
 
-                        _templatesCache.Add(template.Id, template);
+                        m_TemplatesCache.Add(template.Id, template);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _errorHandler.LogException(ErrorType.OperationFailed, ex,
+                    m_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex,
                         $"从提供者 {provider.ProviderName} 获取模板时出错");
                 }
             }
@@ -349,58 +347,9 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         /// <param name="changeType">变更类型</param>
         /// <param name="templateId">模板ID</param>
-        private void OnTemplateChanged(TemplateChangeType changeType, string templateId)
+        private void OnTemplateChangedMethod(EnumTemplateChangeType changeType, string templateId)
         {
-            TemplateChanged?.Invoke(this, new TemplateChangedEventArgs(changeType, templateId));
-        }
-    }
-
-    /// <summary>
-    /// 自定义JSON模板提供者，用于提供从JSON文件加载的模板
-    /// </summary>
-    internal class CustomJsonTemplateProvider : ITemplateProvider
-    {
-        private readonly IPackageTemplate _template;
-        private readonly string _sourceFileName;
-
-        /// <summary>
-        /// 提供者名称
-        /// </summary>
-        public string ProviderName => $"CustomJson_{_sourceFileName}";
-
-        /// <summary>
-        /// 提供者版本
-        /// </summary>
-        public Version ProviderVersion => new Version(1, 0, 0);
-
-        /// <summary>
-        /// 创建自定义JSON模板提供者
-        /// </summary>
-        /// <param name="template">模板</param>
-        /// <param name="sourceFileName">源文件名</param>
-        public CustomJsonTemplateProvider(IPackageTemplate template, string sourceFileName)
-        {
-            _template = template ?? throw new ArgumentNullException(nameof(template));
-            _sourceFileName = sourceFileName ?? "unknown";
-        }
-
-        /// <summary>
-        /// 获取此提供者提供的所有模板
-        /// </summary>
-        /// <returns>模板集合</returns>
-        public IEnumerable<IPackageTemplate> GetTemplates()
-        {
-            yield return _template;
-        }
-
-        /// <summary>
-        /// 检查是否包含指定ID的模板
-        /// </summary>
-        /// <param name="templateId">模板ID</param>
-        /// <returns>是否包含</returns>
-        public bool ContainsTemplate(string templateId)
-        {
-            return _template.Id == templateId;
+            OnTemplateChanged?.Invoke(this, new TemplateChangedEventArgs(changeType, templateId));
         }
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TByd.PackageCreator.Editor.Core;
 
 namespace TByd.PackageCreator.Editor.Templates.Implementations
@@ -45,9 +44,9 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
             AddFile("Tests/Runtime/[PACKAGE_NAME].Runtime.Tests.asmdef", GetRuntimeTestsAsmdefTemplate(), "运行时测试程序集定义文件", false);
 
             // 添加基础包特有的选项
-            AddOption("includeEditor", "包含编辑器模块", "是否包含编辑器特定代码", TemplateOptionType.Boolean, "true");
-            AddOption("includeTests", "包含测试", "是否包含测试代码", TemplateOptionType.Boolean, "true");
-            AddOption("includeSamples", "包含示例", "是否包含示例代码", TemplateOptionType.Boolean, "false");
+            AddOption("includeEditor", "包含编辑器模块", "是否包含编辑器特定代码", TemplateOptionType.k_Boolean, "true");
+            AddOption("includeTests", "包含测试", "是否包含测试代码", TemplateOptionType.k_Boolean, "true");
+            AddOption("includeSamples", "包含示例", "是否包含示例代码", TemplateOptionType.k_Boolean, "false");
         }
 
         /// <summary>

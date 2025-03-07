@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using TByd.PackageCreator.Editor.Utils;
 using UnityEngine;
@@ -23,14 +22,14 @@ namespace TByd.PackageCreator.Editor.Core
         public string[] SupportedFileExtensions => new[] { ".*" };
 
         // 变量替换正则表达式（委托给FileGenerator处理）
-        private readonly FileGenerator _variableProcessor;
+        private readonly FileGenerator m_VariableProcessor;
 
         /// <summary>
         /// 创建默认文件生成策略
         /// </summary>
         public DefaultFileGenerationStrategy()
         {
-            _variableProcessor = new FileGenerator(null);
+            m_VariableProcessor = new FileGenerator(null);
         }
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace TByd.PackageCreator.Editor.Core
                 // 如果文件支持变量替换，则进行替换
                 if (templateFile.SupportsVariableReplacement)
                 {
-                    fileContent = _variableProcessor.ReplaceVariables(fileContent, config);
+                    fileContent = m_VariableProcessor.ReplaceVariables(fileContent, config);
                 }
 
                 // 确保目标目录存在

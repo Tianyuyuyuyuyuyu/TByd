@@ -11,17 +11,17 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 信息
         /// </summary>
-        Info,
+        k_Info,
 
         /// <summary>
         /// 警告
         /// </summary>
-        Warning,
+        k_Warning,
 
         /// <summary>
         /// 错误
         /// </summary>
-        Error
+        k_Error
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="field">相关字段</param>
         public void AddInfo(string message, string field = "")
         {
-            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.Info, field));
+            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.k_Info, field));
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="field">相关字段</param>
         public void AddWarning(string message, string field = "")
         {
-            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.Warning, field));
+            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.k_Warning, field));
             HasWarnings = true;
         }
 
@@ -120,7 +120,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="field">相关字段</param>
         public void AddError(string message, string field = "")
         {
-            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.Error, field));
+            Messages.Add(new ValidationMessage(message, ValidationMessageLevel.k_Error, field));
             HasErrors = true;
         }
 

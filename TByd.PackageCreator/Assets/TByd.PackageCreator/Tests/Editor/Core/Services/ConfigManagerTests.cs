@@ -185,7 +185,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             Assert.IsFalse(result.IsValid);
             Assert.IsTrue(result.HasErrors);
 
-            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
             bool hasNameError = false;
             foreach (var error in errorMessages)
             {
@@ -211,7 +211,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             Assert.IsFalse(result.IsValid);
             Assert.IsTrue(result.HasErrors);
 
-            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
             Assert.GreaterOrEqual(errorMessages.Count, 2, "应该至少有两个错误（名称和显示名称）");
         }
 
@@ -282,7 +282,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             // 如果加载失败，打印详细信息帮助调试
             if (!result.IsValid)
             {
-                foreach (var msg in result.GetMessages(ValidationMessageLevel.Error))
+                foreach (var msg in result.GetMessages(ValidationMessageLevel.k_Error))
                 {
                     Debug.LogError($"加载错误: {msg.Message}");
                 }

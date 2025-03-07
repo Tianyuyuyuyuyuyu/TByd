@@ -12,16 +12,16 @@ namespace TByd.PackageCreator.Editor.Utils
     public static class SecureFileOperations
     {
         // 备份文件后缀
-        private const string BackupExtension = ".backup";
+        private const string k_BackupExtension = ".backup";
 
         // 临时文件后缀
-        private const string TempExtension = ".temp";
+        private const string k_TempExtension = ".temp";
 
         // 备份目录名称
-        private const string BackupDirectoryName = "TByd.PackageCreator.Backups";
+        private const string k_BackupDirectoryName = "TByd.PackageCreator.Backups";
 
         // 最大备份保留时间（7天）
-        private static readonly TimeSpan MaxBackupAge = TimeSpan.FromDays(7);
+        private static readonly TimeSpan s_MaxBackupAge = TimeSpan.FromDays(7);
 
         /// <summary>
         /// 获取备份目录路径
@@ -30,7 +30,7 @@ namespace TByd.PackageCreator.Editor.Utils
         public static string GetBackupDirectory()
         {
             var tempPath = Path.GetTempPath();
-            var backupPath = Path.Combine(tempPath, BackupDirectoryName);
+            var backupPath = Path.Combine(tempPath, k_BackupDirectoryName);
 
             // 确保目录存在
             if (!Directory.Exists(backupPath))
@@ -59,7 +59,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 var backupDirectory = GetBackupDirectory();
                 var fileName = Path.GetFileName(filePath);
                 var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                var backupFileName = $"{fileName}.{timestamp}{BackupExtension}";
+                var backupFileName = $"{fileName}.{timestamp}{k_BackupExtension}";
                 var backupPath = Path.Combine(backupDirectory, backupFileName);
 
                 File.Copy(filePath, backupPath, true);
@@ -105,7 +105,7 @@ namespace TByd.PackageCreator.Editor.Utils
 
                     // 获取文件的原始目录
                     var originalDirectory = Path.GetDirectoryName(backupPath);
-                    if (originalDirectory.EndsWith(BackupDirectoryName))
+                    if (originalDirectory.EndsWith(k_BackupDirectoryName))
                     {
                         // 如果是在备份目录中，需要询问用户
                         Debug.LogWarning($"无法确定原始文件路径，请指定目标路径");
@@ -143,7 +143,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 return false;
             }
 
-            var tempPath = filePath + TempExtension;
+            var tempPath = filePath + k_TempExtension;
             string backupPath = null;
 
             try
@@ -257,7 +257,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     }
 
                     // 创建临时文件
-                    var tempPath = filePath + TempExtension;
+                    var tempPath = filePath + k_TempExtension;
                     File.WriteAllText(tempPath, content);
                     tempFiles.Add(tempPath);
                 }
@@ -275,7 +275,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 foreach (var kvp in fileContents)
                 {
                     var filePath = kvp.Key;
-                    var tempPath = filePath + TempExtension;
+                    var tempPath = filePath + k_TempExtension;
 
                     if (File.Exists(filePath))
                     {
@@ -367,14 +367,14 @@ namespace TByd.PackageCreator.Editor.Utils
                     return;
 
                 var now = DateTime.Now;
-                var backupFiles = Directory.GetFiles(backupDirectory, $"*{BackupExtension}");
+                var backupFiles = Directory.GetFiles(backupDirectory, $"*{k_BackupExtension}");
 
                 foreach (var backupFile in backupFiles)
                 {
                     try
                     {
                         var fileInfo = new FileInfo(backupFile);
-                        if (now - fileInfo.CreationTime > MaxBackupAge)
+                        if (now - fileInfo.CreationTime > s_MaxBackupAge)
                         {
                             File.Delete(backupFile);
                             Debug.Log($"已删除过期备份: {backupFile}");
@@ -404,7 +404,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 if (!Directory.Exists(backupDirectory))
                     return new List<string>();
 
-                return Directory.GetFiles(backupDirectory, $"*{BackupExtension}").ToList();
+                return Directory.GetFiles(backupDirectory, $"*{k_BackupExtension}").ToList();
             }
             catch (Exception ex)
             {
@@ -438,7 +438,7 @@ namespace TByd.PackageCreator.Editor.Utils
                 }
 
                 // 如果文件不存在，尝试创建临时文件
-                var tempPath = filePath + TempExtension;
+                var tempPath = filePath + k_TempExtension;
                 using (var fs = File.Create(tempPath))
                 {
                     fs.Close();

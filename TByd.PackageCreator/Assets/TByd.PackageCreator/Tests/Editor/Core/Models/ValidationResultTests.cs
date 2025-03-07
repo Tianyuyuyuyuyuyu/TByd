@@ -15,7 +15,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
         {
             // 安排
             var message = "包名不能为空";
-            var level = ValidationMessageLevel.Error;
+            var level = ValidationMessageLevel.k_Error;
             var field = "Name";
 
             // 执行
@@ -55,7 +55,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             // 断言
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(message, result.Messages[0].Message);
-            Assert.AreEqual(ValidationMessageLevel.Info, result.Messages[0].Level);
+            Assert.AreEqual(ValidationMessageLevel.k_Info, result.Messages[0].Level);
             Assert.AreEqual(field, result.Messages[0].Field);
             Assert.IsFalse(result.HasErrors);
             Assert.IsFalse(result.HasWarnings);
@@ -76,7 +76,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             // 断言
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(message, result.Messages[0].Message);
-            Assert.AreEqual(ValidationMessageLevel.Warning, result.Messages[0].Level);
+            Assert.AreEqual(ValidationMessageLevel.k_Warning, result.Messages[0].Level);
             Assert.AreEqual(field, result.Messages[0].Field);
             Assert.IsFalse(result.HasErrors);
             Assert.IsTrue(result.HasWarnings);
@@ -97,7 +97,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             // 断言
             Assert.AreEqual(1, result.Messages.Count);
             Assert.AreEqual(message, result.Messages[0].Message);
-            Assert.AreEqual(ValidationMessageLevel.Error, result.Messages[0].Level);
+            Assert.AreEqual(ValidationMessageLevel.k_Error, result.Messages[0].Level);
             Assert.AreEqual(field, result.Messages[0].Field);
             Assert.IsTrue(result.HasErrors);
             Assert.IsFalse(result.HasWarnings);
@@ -137,9 +137,9 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Models
             result.AddError("错误1");
 
             // 执行
-            var infoMessages = result.GetMessages(ValidationMessageLevel.Info);
-            var warningMessages = result.GetMessages(ValidationMessageLevel.Warning);
-            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+            var infoMessages = result.GetMessages(ValidationMessageLevel.k_Info);
+            var warningMessages = result.GetMessages(ValidationMessageLevel.k_Warning);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
 
             // 断言
             Assert.AreEqual(2, infoMessages.Count);

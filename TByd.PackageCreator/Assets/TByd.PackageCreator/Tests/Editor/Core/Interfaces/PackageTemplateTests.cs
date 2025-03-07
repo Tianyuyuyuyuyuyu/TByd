@@ -46,7 +46,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Interfaces
 
                 // 添加一些选项
                 var includeTestsOption = new TemplateOption("includeTests", "包含测试", "是否包含测试目录",
-                    TemplateOptionType.Boolean, "true");
+                    TemplateOptionType.k_Boolean, "true");
                 _options.Add(includeTestsOption);
             }
 

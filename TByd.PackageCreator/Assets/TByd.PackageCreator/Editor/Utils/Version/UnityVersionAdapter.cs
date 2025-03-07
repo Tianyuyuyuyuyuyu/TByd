@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -15,13 +14,13 @@ namespace TByd.PackageCreator.Editor.Utils
         private static readonly Version s_CurrentUnityVersion;
 
         // Unity 2021.3版本（我们支持的最低版本）
-        private static readonly Version s_Unity2021_3 = new Version(2021, 3);
+        private static readonly Version s_Unity20213 = new Version(2021, 3);
 
         // Unity 2022.1版本
-        private static readonly Version s_Unity2022_1 = new Version(2022, 1);
+        private static readonly Version s_Unity20221 = new Version(2022, 1);
 
         // Unity 2023.1版本
-        private static readonly Version s_Unity2023_1 = new Version(2023, 1);
+        private static readonly Version s_Unity20231 = new Version(2023, 1);
 
         /// <summary>
         /// 静态构造函数，初始化当前Unity版本号
@@ -84,7 +83,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>如果是则返回true</returns>
         public static bool IsUnity2021_3OrNewer()
         {
-            return s_CurrentUnityVersion >= s_Unity2021_3;
+            return s_CurrentUnityVersion >= s_Unity20213;
         }
 
         /// <summary>
@@ -93,7 +92,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>如果是则返回true</returns>
         public static bool IsUnity2022_1OrNewer()
         {
-            return s_CurrentUnityVersion >= s_Unity2022_1;
+            return s_CurrentUnityVersion >= s_Unity20221;
         }
 
         /// <summary>
@@ -102,7 +101,7 @@ namespace TByd.PackageCreator.Editor.Utils
         /// <returns>如果是则返回true</returns>
         public static bool IsUnity2023_1OrNewer()
         {
-            return s_CurrentUnityVersion >= s_Unity2023_1;
+            return s_CurrentUnityVersion >= s_Unity20231;
         }
 
         /// <summary>

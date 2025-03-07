@@ -15,7 +15,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>错误信息</returns>
         public static ErrorInfo LogInfo(this ErrorHandler handler, string message)
         {
-            return handler.LogError(ErrorType.None, message, ErrorLevel.Info);
+            return handler.LogError(ErrorType.k_None, message, ErrorLevel.k_Info);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>错误信息</returns>
         public static ErrorInfo LogWarning(this ErrorHandler handler, ErrorType errorType, string message)
         {
-            return handler.LogError(errorType, message, ErrorLevel.Warning);
+            return handler.LogError(errorType, message, ErrorLevel.k_Warning);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>错误信息</returns>
         public static ErrorInfo LogError(this ErrorHandler handler, ErrorType errorType, string message)
         {
-            return handler.LogError(errorType, message, ErrorLevel.Error);
+            return handler.LogError(errorType, message, ErrorLevel.k_Error);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         public static ErrorInfo LogException(this ErrorHandler handler, ErrorType errorType, Exception exception, string message)
         {
             string fullMessage = $"{message} 异常: {exception.Message}";
-            return handler.LogError(errorType, fullMessage, ErrorLevel.Error, exception);
+            return handler.LogError(errorType, fullMessage, ErrorLevel.k_Error, exception);
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>错误信息</returns>
         public static ErrorInfo LogCritical(this ErrorHandler handler, ErrorType errorType, string message, Exception exception = null)
         {
-            return handler.LogError(errorType, message, ErrorLevel.Critical, exception);
+            return handler.LogError(errorType, message, ErrorLevel.k_Critical, exception);
         }
     }
 }

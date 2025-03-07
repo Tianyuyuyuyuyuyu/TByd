@@ -126,7 +126,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
                 eventArgs = args;
             };
 
-            _manager.TemplateChanged += handler;
+            _manager.OnTemplateChanged += handler;
 
             // 注册测试提供者
             _manager.RegisterProvider(_testProvider);
@@ -134,10 +134,10 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
             // 验证事件已触发
             Assert.IsTrue(eventFired);
             Assert.IsNotNull(eventArgs);
-            Assert.AreEqual(TemplateChangeType.Reloaded, eventArgs.ChangeType);
+            Assert.AreEqual(EnumTemplateChangeType.k_Reloaded, eventArgs.ChangeType);
 
             // 取消订阅
-            _manager.TemplateChanged -= handler;
+            _manager.OnTemplateChanged -= handler;
 
             // 清理
             _manager.RemoveProvider(_testProvider.ProviderName);
@@ -182,7 +182,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
 
         public IReadOnlyList<TemplateOption> Options => new TemplateOption[]
         {
-            new TemplateOption("testOption", "测试选项", "测试选项描述", TemplateOptionType.Boolean, "true")
+            new TemplateOption("testOption", "测试选项", "测试选项描述", TemplateOptionType.k_Boolean, "true")
         };
 
         public ValidationResult ValidateConfig(PackageConfig config)

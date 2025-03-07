@@ -42,10 +42,10 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
             AddFile("Editor/Styles/EditorStyles.cs", GetEditorStylesTemplate(), "编辑器样式类", false);
 
             // 添加编辑器工具特有的选项
-            AddOption("includeCustomEditor", "包含自定义Inspector", "是否包含自定义Inspector编辑器", TemplateOptionType.Boolean, "false");
-            AddOption("includeEditorWindow", "包含编辑器窗口", "是否包含自定义编辑器窗口", TemplateOptionType.Boolean, "true");
-            AddOption("includePropertyDrawer", "包含属性绘制器", "是否包含自定义属性绘制器", TemplateOptionType.Boolean, "false");
-            AddOption("uiFramework", "UI框架", "使用的UI框架", TemplateOptionType.Enum, "IMGUI").PossibleValues =
+            AddOption("includeCustomEditor", "包含自定义Inspector", "是否包含自定义Inspector编辑器", TemplateOptionType.k_Boolean, "false");
+            AddOption("includeEditorWindow", "包含编辑器窗口", "是否包含自定义编辑器窗口", TemplateOptionType.k_Boolean, "true");
+            AddOption("includePropertyDrawer", "包含属性绘制器", "是否包含自定义属性绘制器", TemplateOptionType.k_Boolean, "false");
+            AddOption("uiFramework", "UI框架", "使用的UI框架", TemplateOptionType.k_Enum, "IMGUI").PossibleValues =
                 new List<string> { "IMGUI", "UIElements", "Hybrid" };
         }
 

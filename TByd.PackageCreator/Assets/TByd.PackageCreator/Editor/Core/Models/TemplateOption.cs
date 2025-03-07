@@ -14,22 +14,22 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 字符串
         /// </summary>
-        String,
+        k_String,
 
         /// <summary>
         /// 布尔值
         /// </summary>
-        Boolean,
+        k_Boolean,
 
         /// <summary>
         /// 整数
         /// </summary>
-        Integer,
+        k_Integer,
 
         /// <summary>
         /// 枚举
         /// </summary>
-        Enum
+        k_Enum
     }
 
     /// <summary>
@@ -134,21 +134,21 @@ namespace TByd.PackageCreator.Editor.Core
             // 根据类型验证
             switch (Type)
             {
-                case TemplateOptionType.Boolean:
+                case TemplateOptionType.k_Boolean:
                     if (!bool.TryParse(value, out _))
                     {
                         result.AddError($"选项 '{DisplayName}' 必须是布尔值", Key);
                     }
                     break;
 
-                case TemplateOptionType.Integer:
+                case TemplateOptionType.k_Integer:
                     if (!int.TryParse(value, out _))
                     {
                         result.AddError($"选项 '{DisplayName}' 必须是整数", Key);
                     }
                     break;
 
-                case TemplateOptionType.Enum:
+                case TemplateOptionType.k_Enum:
                     if (!PossibleValues.Contains(value))
                     {
                         result.AddError($"选项 '{DisplayName}' 必须是以下值之一: {string.Join(", ", PossibleValues)}", Key);

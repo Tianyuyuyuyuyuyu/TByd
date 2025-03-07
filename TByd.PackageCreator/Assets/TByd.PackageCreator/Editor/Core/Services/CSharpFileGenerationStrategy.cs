@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TByd.PackageCreator.Editor.Utils;
@@ -25,17 +24,17 @@ namespace TByd.PackageCreator.Editor.Core
         public string[] SupportedFileExtensions => new[] { ".cs" };
 
         // 变量替换处理器（委托给FileGenerator处理）
-        private readonly FileGenerator _variableProcessor;
+        private readonly FileGenerator m_VariableProcessor;
 
         // 命名空间占位符正则表达式
-        private static readonly Regex NamespacePattern = new Regex(@"namespace\s+\$\{namespace\}", RegexOptions.Compiled);
+        private static readonly Regex s_NamespacePattern = new Regex(@"namespace\s+\$\{namespace\}", RegexOptions.Compiled);
 
         /// <summary>
         /// 创建C#文件生成策略
         /// </summary>
         public CSharpFileGenerationStrategy()
         {
-            _variableProcessor = new FileGenerator(null);
+            m_VariableProcessor = new FileGenerator(null);
         }
 
         /// <summary>
@@ -74,10 +73,10 @@ namespace TByd.PackageCreator.Editor.Core
                 {
                     // 特殊处理命名空间
                     string namespaceName = GetNamespaceFromConfig(config, targetPath);
-                    fileContent = NamespacePattern.Replace(fileContent, $"namespace {namespaceName}");
+                    fileContent = s_NamespacePattern.Replace(fileContent, $"namespace {namespaceName}");
 
                     // 处理其他变量
-                    fileContent = _variableProcessor.ReplaceVariables(fileContent, config);
+                    fileContent = m_VariableProcessor.ReplaceVariables(fileContent, config);
                 }
 
                 // 确保目标目录存在

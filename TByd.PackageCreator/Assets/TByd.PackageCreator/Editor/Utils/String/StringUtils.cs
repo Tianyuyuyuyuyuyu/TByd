@@ -12,7 +12,7 @@ namespace TByd.PackageCreator.Editor.Utils
     public static class StringUtils
     {
         // C#关键字集合，用于标识符验证和转换
-        private static readonly HashSet<string> CSharpKeywords = new HashSet<string>
+        private static readonly HashSet<string> s_CSharpKeywords = new HashSet<string>
         {
             "abstract", "as", "base", "bool", "break", "byte", "case", "catch", "char", "checked",
             "class", "const", "continue", "decimal", "default", "delegate", "do", "double", "else",
@@ -26,13 +26,13 @@ namespace TByd.PackageCreator.Editor.Utils
         };
 
         // 常用字符串池缓存，用于减少相同字符串的内存分配
-        private static readonly Dictionary<string, string> StringPool = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> s_StringPool = new Dictionary<string, string>();
 
         // 最大缓存大小，防止内存泄漏
-        private const int MaxCacheSize = 10000;
+        private const int k_MaxCacheSize = 10000;
 
         // 字符串池中缓存的最大字符串长度
-        private const int MaxPoolStringLength = 128;
+        private const int k_MaxPoolStringLength = 128;
 
         /// <summary>
         /// 将字符串添加到字符串池中，如果池中已存在相同字符串，则返回池中的实例
@@ -46,28 +46,28 @@ namespace TByd.PackageCreator.Editor.Utils
                 return input;
 
             // 对于过长的字符串，不进行池化
-            if (input.Length > MaxPoolStringLength)
+            if (input.Length > k_MaxPoolStringLength)
                 return input;
 
-            lock (StringPool)
+            lock (s_StringPool)
             {
                 // 如果池已满，清空一半的内容
-                if (StringPool.Count >= MaxCacheSize)
+                if (s_StringPool.Count >= k_MaxCacheSize)
                 {
                     // 随机清除一半的缓存以避免占用过多内存
-                    var keysToRemove = StringPool.Keys.Take(MaxCacheSize / 2).ToList();
+                    var keysToRemove = s_StringPool.Keys.Take(k_MaxCacheSize / 2).ToList();
                     foreach (var key in keysToRemove)
                     {
-                        StringPool.Remove(key);
+                        s_StringPool.Remove(key);
                     }
                 }
 
                 // 检查池中是否已有此字符串
-                if (StringPool.TryGetValue(input, out string pooledString))
+                if (s_StringPool.TryGetValue(input, out string pooledString))
                     return pooledString;
 
                 // 将字符串添加到池中
-                StringPool[input] = input;
+                s_StringPool[input] = input;
                 return input;
             }
         }
@@ -77,9 +77,9 @@ namespace TByd.PackageCreator.Editor.Utils
         /// </summary>
         public static void ClearStringPool()
         {
-            lock (StringPool)
+            lock (s_StringPool)
             {
-                StringPool.Clear();
+                s_StringPool.Clear();
             }
         }
 
@@ -503,7 +503,7 @@ namespace TByd.PackageCreator.Editor.Utils
             }
 
             // 检查是否为C#关键字
-            return !CSharpKeywords.Contains(input);
+            return !s_CSharpKeywords.Contains(input);
         }
 
         /// <summary>
@@ -548,7 +548,7 @@ namespace TByd.PackageCreator.Editor.Utils
 
             // 检查是否为C#关键字
             string result = sb.ToString();
-            if (CSharpKeywords.Contains(result))
+            if (s_CSharpKeywords.Contains(result))
             {
                 return "_" + result;
             }

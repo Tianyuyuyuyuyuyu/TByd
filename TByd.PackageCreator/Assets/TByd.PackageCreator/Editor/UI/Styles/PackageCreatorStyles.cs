@@ -10,36 +10,36 @@ namespace TByd.PackageCreator.Editor.UI.Styles
     {
         #region 常量
 
-        private const int HEADER_FONT_SIZE = 18;
-        private const int TITLE_FONT_SIZE = 14;
-        private const int STANDARD_FONT_SIZE = 12;
+        private const int k_HeaderFontSize = 18;
+        private const int k_TitleFontSize = 14;
+        private const int k_StandardFontSize = 12;
 
         #endregion
 
         #region 字段
 
         // 标题样式
-        private static GUIStyle s_headerLabelStyle;
-        private static GUIStyle s_titleLabelStyle;
+        private static GUIStyle s_HeaderLabelStyle;
+        private static GUIStyle s_TitleLabelStyle;
 
         // 描述样式
-        private static GUIStyle s_descriptionStyle;
+        private static GUIStyle s_DescriptionStyle;
 
         // 按钮样式
-        private static GUIStyle s_primaryButtonStyle;
-        private static GUIStyle s_secondaryButtonStyle;
+        private static GUIStyle s_PrimaryButtonStyle;
+        private static GUIStyle s_SecondaryButtonStyle;
 
         // 卡片样式
-        private static GUIStyle s_cardStyle;
-        private static GUIStyle s_selectedCardStyle;
+        private static GUIStyle s_CardStyle;
+        private static GUIStyle s_SelectedCardStyle;
 
         // 分割线样式
-        private static GUIStyle s_separatorStyle;
+        private static GUIStyle s_SeparatorStyle;
 
         // 图标尺寸
-        private static readonly Vector2 s_largeIconSize = new Vector2(32, 32);
-        private static readonly Vector2 s_mediumIconSize = new Vector2(24, 24);
-        private static readonly Vector2 s_smallIconSize = new Vector2(16, 16);
+        private static readonly Vector2 s_LargeIconSize = new Vector2(32, 32);
+        private static readonly Vector2 s_MediumIconSize = new Vector2(24, 24);
+        private static readonly Vector2 s_SmallIconSize = new Vector2(16, 16);
 
         #endregion
 
@@ -52,17 +52,17 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_headerLabelStyle == null)
+                if (s_HeaderLabelStyle == null)
                 {
-                    s_headerLabelStyle = new GUIStyle(EditorStyles.largeLabel)
+                    s_HeaderLabelStyle = new GUIStyle(EditorStyles.largeLabel)
                     {
-                        fontSize = HEADER_FONT_SIZE,
+                        fontSize = k_HeaderFontSize,
                         fontStyle = FontStyle.Bold,
                         alignment = TextAnchor.MiddleLeft,
                         margin = new RectOffset(0, 0, 10, 10)
                     };
                 }
-                return s_headerLabelStyle;
+                return s_HeaderLabelStyle;
             }
         }
 
@@ -73,16 +73,16 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_titleLabelStyle == null)
+                if (s_TitleLabelStyle == null)
                 {
-                    s_titleLabelStyle = new GUIStyle(EditorStyles.boldLabel)
+                    s_TitleLabelStyle = new GUIStyle(EditorStyles.boldLabel)
                     {
-                        fontSize = TITLE_FONT_SIZE,
+                        fontSize = k_TitleFontSize,
                         alignment = TextAnchor.MiddleLeft,
                         margin = new RectOffset(0, 0, 5, 5)
                     };
                 }
-                return s_titleLabelStyle;
+                return s_TitleLabelStyle;
             }
         }
 
@@ -93,16 +93,16 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_descriptionStyle == null)
+                if (s_DescriptionStyle == null)
                 {
-                    s_descriptionStyle = new GUIStyle(EditorStyles.label)
+                    s_DescriptionStyle = new GUIStyle(EditorStyles.label)
                     {
                         wordWrap = true,
-                        fontSize = STANDARD_FONT_SIZE,
+                        fontSize = k_StandardFontSize,
                         margin = new RectOffset(5, 5, 5, 10)
                     };
                 }
-                return s_descriptionStyle;
+                return s_DescriptionStyle;
             }
         }
 
@@ -113,18 +113,18 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_primaryButtonStyle == null)
+                if (s_PrimaryButtonStyle == null)
                 {
-                    s_primaryButtonStyle = new GUIStyle(GUI.skin.button)
+                    s_PrimaryButtonStyle = new GUIStyle(GUI.skin.button)
                     {
-                        fontSize = STANDARD_FONT_SIZE,
+                        fontSize = k_StandardFontSize,
                         fontStyle = FontStyle.Bold,
                         fixedHeight = 30,
                         margin = new RectOffset(10, 10, 5, 5),
                         padding = new RectOffset(15, 15, 5, 5)
                     };
                 }
-                return s_primaryButtonStyle;
+                return s_PrimaryButtonStyle;
             }
         }
 
@@ -135,17 +135,17 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_secondaryButtonStyle == null)
+                if (s_SecondaryButtonStyle == null)
                 {
-                    s_secondaryButtonStyle = new GUIStyle(GUI.skin.button)
+                    s_SecondaryButtonStyle = new GUIStyle(GUI.skin.button)
                     {
-                        fontSize = STANDARD_FONT_SIZE,
+                        fontSize = k_StandardFontSize,
                         fixedHeight = 25,
                         margin = new RectOffset(5, 5, 5, 5),
                         padding = new RectOffset(10, 10, 3, 3)
                     };
                 }
-                return s_secondaryButtonStyle;
+                return s_SecondaryButtonStyle;
             }
         }
 
@@ -156,15 +156,15 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_cardStyle == null)
+                if (s_CardStyle == null)
                 {
-                    s_cardStyle = new GUIStyle(EditorStyles.helpBox)
+                    s_CardStyle = new GUIStyle(EditorStyles.helpBox)
                     {
                         margin = new RectOffset(5, 5, 5, 5),
                         padding = new RectOffset(10, 10, 10, 10)
                     };
                 }
-                return s_cardStyle;
+                return s_CardStyle;
             }
         }
 
@@ -175,9 +175,9 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_selectedCardStyle == null)
+                if (s_SelectedCardStyle == null)
                 {
-                    s_selectedCardStyle = new GUIStyle(Card)
+                    s_SelectedCardStyle = new GUIStyle(Card)
                     {
                         border = new RectOffset(3, 3, 3, 3)
                     };
@@ -192,12 +192,12 @@ namespace TByd.PackageCreator.Editor.UI.Styles
                     backgroundTexture.SetPixel(0, 0, selectionColor);
                     backgroundTexture.Apply();
 
-                    s_selectedCardStyle.normal.background = backgroundTexture;
+                    s_SelectedCardStyle.normal.background = backgroundTexture;
 
                     // 调整选中状态的文本颜色
-                    s_selectedCardStyle.normal.textColor = Color.white;
+                    s_SelectedCardStyle.normal.textColor = Color.white;
                 }
-                return s_selectedCardStyle;
+                return s_SelectedCardStyle;
             }
         }
 
@@ -208,9 +208,9 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                if (s_separatorStyle == null)
+                if (s_SeparatorStyle == null)
                 {
-                    s_separatorStyle = new GUIStyle()
+                    s_SeparatorStyle = new GUIStyle()
                     {
                         margin = new RectOffset(0, 0, 10, 10),
                         fixedHeight = 1,
@@ -226,9 +226,9 @@ namespace TByd.PackageCreator.Editor.UI.Styles
                     lineTexture.SetPixel(0, 0, separatorColor);
                     lineTexture.Apply();
 
-                    s_separatorStyle.normal.background = lineTexture;
+                    s_SeparatorStyle.normal.background = lineTexture;
                 }
-                return s_separatorStyle;
+                return s_SeparatorStyle;
             }
         }
 
@@ -239,17 +239,17 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         /// <summary>
         /// 大图标尺寸 (32x32)
         /// </summary>
-        public static Vector2 LargeIconSize => s_largeIconSize;
+        public static Vector2 LargeIconSize => s_LargeIconSize;
 
         /// <summary>
         /// 中等图标尺寸 (24x24)
         /// </summary>
-        public static Vector2 MediumIconSize => s_mediumIconSize;
+        public static Vector2 MediumIconSize => s_MediumIconSize;
 
         /// <summary>
         /// 小图标尺寸 (16x16)
         /// </summary>
-        public static Vector2 SmallIconSize => s_smallIconSize;
+        public static Vector2 SmallIconSize => s_SmallIconSize;
 
         #endregion
 

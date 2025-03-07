@@ -70,7 +70,7 @@ namespace TByd.PackageCreator.Tests.Editor.Templates
             Assert.IsTrue(options.Count >= 1);
             var licenseOption = options.FirstOrDefault(o => o.Key == "licenseType");
             Assert.IsNotNull(licenseOption);
-            Assert.AreEqual(TemplateOptionType.Enum, licenseOption.Type);
+            Assert.AreEqual(TemplateOptionType.k_Enum, licenseOption.Type);
             Assert.AreEqual("MIT", licenseOption.DefaultValue);
 
             // 检查许可选项的可选值
@@ -91,7 +91,7 @@ namespace TByd.PackageCreator.Tests.Editor.Templates
             // 应该有两个错误（Name为空，Version为空）
             Assert.IsFalse(result.IsValid);
             Assert.IsTrue(result.HasErrors);
-            var errorMessages = result.GetMessages(ValidationMessageLevel.Error);
+            var errorMessages = result.GetMessages(ValidationMessageLevel.k_Error);
             Assert.AreEqual(2, errorMessages.Count);
             Assert.IsTrue(errorMessages.Any(e => e.Message.Contains("包名称不能为空")));
             Assert.IsTrue(errorMessages.Any(e => e.Message.Contains("包版本不能为空")));
@@ -101,7 +101,7 @@ namespace TByd.PackageCreator.Tests.Editor.Templates
             result = _template.ValidateConfig(validConfig);
 
             // 不应该有错误，可能有警告
-            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.Error).Count);
+            Assert.AreEqual(0, result.GetMessages(ValidationMessageLevel.k_Error).Count);
         }
 
         [Test]

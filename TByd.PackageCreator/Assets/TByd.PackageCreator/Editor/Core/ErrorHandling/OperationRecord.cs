@@ -80,7 +80,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>操作记录实例</returns>
         public static OperationRecord CreateMoveOrCopy(OperationType operationType, string sourcePath, string targetPath)
         {
-            if (operationType != OperationType.Move && operationType != OperationType.Copy)
+            if (operationType != OperationType.k_Move && operationType != OperationType.k_Copy)
             {
                 throw new ArgumentException("Operation type must be Move or Copy", nameof(operationType));
             }

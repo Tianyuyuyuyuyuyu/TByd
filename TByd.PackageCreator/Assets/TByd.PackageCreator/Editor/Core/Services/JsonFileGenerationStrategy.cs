@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TByd.PackageCreator.Editor.Utils;
@@ -25,14 +24,14 @@ namespace TByd.PackageCreator.Editor.Core
         public string[] SupportedFileExtensions => new[] { ".json", ".jsonc", ".json5" };
 
         // 变量替换处理器（委托给FileGenerator处理）
-        private readonly FileGenerator _variableProcessor;
+        private readonly FileGenerator m_VariableProcessor;
 
         /// <summary>
         /// 创建JSON文件生成策略
         /// </summary>
         public JsonFileGenerationStrategy()
         {
-            _variableProcessor = new FileGenerator(null);
+            m_VariableProcessor = new FileGenerator(null);
         }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace TByd.PackageCreator.Editor.Core
                 // 如果文件支持变量替换，则进行替换
                 if (templateFile.SupportsVariableReplacement)
                 {
-                    fileContent = _variableProcessor.ReplaceVariables(fileContent, config);
+                    fileContent = m_VariableProcessor.ReplaceVariables(fileContent, config);
                 }
 
                 // 尝试格式化JSON

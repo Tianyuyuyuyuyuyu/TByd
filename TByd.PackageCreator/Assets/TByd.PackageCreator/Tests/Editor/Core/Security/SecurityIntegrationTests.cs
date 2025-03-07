@@ -375,7 +375,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                     var fileResult = securityChecker.ValidateFileContent(content, file);
 
                     // 记录每个文件的验证结果
-                    var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.Warning);
+                    var fileWarnings = fileResult.GetMessages(ValidationMessageLevel.k_Warning);
                     Debug.Log($"文件 {Path.GetFileName(file)} 检测到的警告数: {fileWarnings.Count}");
 
                     foreach (var warning in fileWarnings)
@@ -387,7 +387,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Security
                 }
 
                 // 内容验证应该失败，但由于使用警告而不是错误，我们需要检查警告
-                var warningMessages = contentResult.GetMessages(ValidationMessageLevel.Warning);
+                var warningMessages = contentResult.GetMessages(ValidationMessageLevel.k_Warning);
                 Debug.Log($"总警告消息数量: {warningMessages.Count}");
                 foreach (var msg in warningMessages)
                 {

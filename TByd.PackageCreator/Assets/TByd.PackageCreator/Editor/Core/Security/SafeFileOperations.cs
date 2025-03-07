@@ -1,10 +1,7 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
-using TByd.PackageCreator.Editor.Utils;
-using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.Core.Security
 {
@@ -13,7 +10,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
     /// </summary>
     public class SafeFileOperations
     {
-        private static SafeFileOperations _instance;
+        private static SafeFileOperations s_Instance;
 
         /// <summary>
         /// 单例实例
@@ -22,34 +19,34 @@ namespace TByd.PackageCreator.Editor.Core.Security
         {
             get
             {
-                if (_instance == null)
+                if (s_Instance == null)
                 {
-                    _instance = new SafeFileOperations();
+                    s_Instance = new SafeFileOperations();
                 }
-                return _instance;
+                return s_Instance;
             }
         }
 
-        private readonly ErrorHandler _errorHandler;
-        private readonly TemplateSecurityChecker _securityChecker;
-        private readonly SecurityTransactionLogger _transactionLogger;
+        private readonly ErrorHandler m_ErrorHandler;
+        private readonly TemplateSecurityChecker m_SecurityChecker;
+        private readonly SecurityTransactionLogger m_TransactionLogger;
 
         // 当前活动事务ID
-        private string _currentTransactionId = null;
+        private string m_CurrentTransactionId = null;
 
         /// <summary>
         /// 是否有活动的事务
         /// </summary>
-        public bool HasActiveTransaction => !string.IsNullOrEmpty(_currentTransactionId);
+        public bool HasActiveTransaction => !string.IsNullOrEmpty(m_CurrentTransactionId);
 
         /// <summary>
         /// 构造函数
         /// </summary>
         private SafeFileOperations()
         {
-            _errorHandler = ErrorHandler.Instance;
-            _securityChecker = TemplateSecurityChecker.Instance;
-            _transactionLogger = SecurityTransactionLogger.Instance;
+            m_ErrorHandler = ErrorHandler.Instance;
+            m_SecurityChecker = TemplateSecurityChecker.Instance;
+            m_TransactionLogger = SecurityTransactionLogger.Instance;
         }
 
         /// <summary>
@@ -61,11 +58,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
         {
             if (HasActiveTransaction)
             {
-                _errorHandler.LogError(ErrorType.Security, "尝试开始新事务时存在活动事务");
+                m_ErrorHandler.LogError(ErrorType.k_Security, "尝试开始新事务时存在活动事务");
                 return false;
             }
 
-            _currentTransactionId = _transactionLogger.BeginTransaction(description);
+            m_CurrentTransactionId = m_TransactionLogger.BeginTransaction(description);
             return true;
         }
 
@@ -77,12 +74,12 @@ namespace TByd.PackageCreator.Editor.Core.Security
         {
             if (!HasActiveTransaction)
             {
-                _errorHandler.LogError(ErrorType.Security, "尝试提交不存在的事务");
+                m_ErrorHandler.LogError(ErrorType.k_Security, "尝试提交不存在的事务");
                 return false;
             }
 
-            bool result = _transactionLogger.CommitTransaction(_currentTransactionId);
-            _currentTransactionId = null;
+            bool result = m_TransactionLogger.CommitTransaction(m_CurrentTransactionId);
+            m_CurrentTransactionId = null;
             return result;
         }
 
@@ -94,12 +91,12 @@ namespace TByd.PackageCreator.Editor.Core.Security
         {
             if (!HasActiveTransaction)
             {
-                _errorHandler.LogError(ErrorType.Security, "尝试回滚不存在的事务");
+                m_ErrorHandler.LogError(ErrorType.k_Security, "尝试回滚不存在的事务");
                 return false;
             }
 
-            bool result = _transactionLogger.RollbackTransaction(_currentTransactionId);
-            _currentTransactionId = null;
+            bool result = m_TransactionLogger.RollbackTransaction(m_CurrentTransactionId);
+            m_CurrentTransactionId = null;
             return result;
         }
 
@@ -117,7 +114,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 return result;
             }
 
-            return _securityChecker.ValidateTemplate(template);
+            return m_SecurityChecker.ValidateTemplate(template);
         }
 
         /// <summary>
@@ -127,7 +124,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>验证结果</returns>
         public ValidationResult CreateDirectory(string directoryPath)
         {
-            var result = _securityChecker.ValidateDirectoryPath(directoryPath);
+            var result = m_SecurityChecker.ValidateDirectoryPath(directoryPath);
             if (!result.IsValid)
             {
                 return result;
@@ -140,7 +137,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                     // 记录目录创建操作（如果在事务中）
                     if (HasActiveTransaction)
                     {
-                        _transactionLogger.LogDirectoryCreation(_currentTransactionId, directoryPath);
+                        m_TransactionLogger.LogDirectoryCreation(m_CurrentTransactionId, directoryPath);
                     }
 
                     Directory.CreateDirectory(directoryPath);
@@ -154,7 +151,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"创建目录时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileOperation, ex, $"创建目录失败: {directoryPath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileOperation, ex, $"创建目录失败: {directoryPath}");
             }
 
             return result;
@@ -169,14 +166,14 @@ namespace TByd.PackageCreator.Editor.Core.Security
         public ValidationResult WriteFile(string filePath, string content)
         {
             // 验证文件路径
-            var result = _securityChecker.ValidateFilePath(filePath);
+            var result = m_SecurityChecker.ValidateFilePath(filePath);
             if (!result.IsValid)
             {
                 return result;
             }
 
             // 验证文件内容
-            var contentResult = _securityChecker.ValidateFileContent(content, filePath);
+            var contentResult = m_SecurityChecker.ValidateFileContent(content, filePath);
             result.Merge(contentResult);
 
             if (result.HasErrors)
@@ -204,11 +201,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 {
                     if (File.Exists(filePath))
                     {
-                        _transactionLogger.LogFileModification(_currentTransactionId, filePath);
+                        m_TransactionLogger.LogFileModification(m_CurrentTransactionId, filePath);
                     }
                     else
                     {
-                        _transactionLogger.LogFileCreation(_currentTransactionId, filePath);
+                        m_TransactionLogger.LogFileCreation(m_CurrentTransactionId, filePath);
                     }
                 }
 
@@ -237,7 +234,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"写入文件时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileWriteError, ex, $"写入文件失败: {filePath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, $"写入文件失败: {filePath}");
             }
 
             return result;
@@ -252,14 +249,14 @@ namespace TByd.PackageCreator.Editor.Core.Security
         public async Task<ValidationResult> WriteFileAsync(string filePath, string content)
         {
             // 验证文件路径
-            var result = _securityChecker.ValidateFilePath(filePath);
+            var result = m_SecurityChecker.ValidateFilePath(filePath);
             if (!result.IsValid)
             {
                 return result;
             }
 
             // 验证文件内容
-            var contentResult = _securityChecker.ValidateFileContent(content, filePath);
+            var contentResult = m_SecurityChecker.ValidateFileContent(content, filePath);
             result.Merge(contentResult);
 
             if (result.HasErrors)
@@ -287,11 +284,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 {
                     if (File.Exists(filePath))
                     {
-                        _transactionLogger.LogFileModification(_currentTransactionId, filePath);
+                        m_TransactionLogger.LogFileModification(m_CurrentTransactionId, filePath);
                     }
                     else
                     {
-                        _transactionLogger.LogFileCreation(_currentTransactionId, filePath);
+                        m_TransactionLogger.LogFileCreation(m_CurrentTransactionId, filePath);
                     }
                 }
 
@@ -306,7 +303,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"写入文件时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileWriteError, ex, $"写入文件失败: {filePath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, $"写入文件失败: {filePath}");
             }
 
             return result;
@@ -319,7 +316,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>验证结果</returns>
         public ValidationResult DeleteFile(string filePath)
         {
-            var result = _securityChecker.ValidateFilePath(filePath);
+            var result = m_SecurityChecker.ValidateFilePath(filePath);
             if (!result.IsValid)
             {
                 return result;
@@ -336,7 +333,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 // 记录文件删除操作（如果在事务中）
                 if (HasActiveTransaction)
                 {
-                    _transactionLogger.LogFileDeletion(_currentTransactionId, filePath);
+                    m_TransactionLogger.LogFileDeletion(m_CurrentTransactionId, filePath);
                 }
 
                 File.Delete(filePath);
@@ -345,7 +342,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"删除文件时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileDeleteError, ex, $"删除文件失败: {filePath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileDeleteError, ex, $"删除文件失败: {filePath}");
             }
 
             return result;
@@ -363,15 +360,15 @@ namespace TByd.PackageCreator.Editor.Core.Security
             var result = new ValidationResult();
 
             // 验证源文件路径
-            var sourceResult = _securityChecker.ValidateFilePath(sourcePath);
+            var sourceResult = m_SecurityChecker.ValidateFilePath(sourcePath);
             // 验证目标文件路径
-            var targetResult = _securityChecker.ValidateFilePath(targetPath);
+            var targetResult = m_SecurityChecker.ValidateFilePath(targetPath);
 
             // 首先检查源文件是否存在
             if (!File.Exists(sourcePath))
             {
                 result.AddError($"源文件不存在: {sourcePath}");
-                _errorHandler.LogError(ErrorType.FileNotFound, $"源文件不存在: {sourcePath}");
+                m_ErrorHandler.LogError(ErrorType.k_FileNotFound, $"源文件不存在: {sourcePath}");
             }
 
             // 合并其他验证结果
@@ -403,11 +400,11 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 {
                     if (File.Exists(targetPath))
                     {
-                        _transactionLogger.LogFileModification(_currentTransactionId, targetPath);
+                        m_TransactionLogger.LogFileModification(m_CurrentTransactionId, targetPath);
                     }
                     else
                     {
-                        _transactionLogger.LogFileCreation(_currentTransactionId, targetPath);
+                        m_TransactionLogger.LogFileCreation(m_CurrentTransactionId, targetPath);
                     }
                 }
 
@@ -418,7 +415,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"复制文件时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileCopyError, ex, $"复制文件失败: {sourcePath} -> {targetPath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileCopyError, ex, $"复制文件失败: {sourcePath} -> {targetPath}");
             }
 
             return result;
@@ -434,14 +431,14 @@ namespace TByd.PackageCreator.Editor.Core.Security
         public ValidationResult MoveFile(string sourcePath, string targetPath, bool overwrite = true)
         {
             // 验证源文件路径
-            var sourceResult = _securityChecker.ValidateFilePath(sourcePath);
+            var sourceResult = m_SecurityChecker.ValidateFilePath(sourcePath);
             if (!sourceResult.IsValid)
             {
                 return sourceResult;
             }
 
             // 验证目标文件路径
-            var targetResult = _securityChecker.ValidateFilePath(targetPath);
+            var targetResult = m_SecurityChecker.ValidateFilePath(targetPath);
             if (!targetResult.IsValid)
             {
                 return targetResult;
@@ -461,7 +458,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 if (!File.Exists(sourcePath))
                 {
                     result.AddError($"源文件不存在: {sourcePath}");
-                    _errorHandler.LogError(ErrorType.FileNotFound, $"源文件不存在: {sourcePath}");
+                    m_ErrorHandler.LogError(ErrorType.k_FileNotFound, $"源文件不存在: {sourcePath}");
                     return result;
                 }
 
@@ -483,14 +480,14 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 {
                     if (File.Exists(targetPath))
                     {
-                        _transactionLogger.LogFileModification(_currentTransactionId, targetPath);
+                        m_TransactionLogger.LogFileModification(m_CurrentTransactionId, targetPath);
                     }
                     else
                     {
-                        _transactionLogger.LogFileCreation(_currentTransactionId, targetPath);
+                        m_TransactionLogger.LogFileCreation(m_CurrentTransactionId, targetPath);
                     }
 
-                    _transactionLogger.LogFileDeletion(_currentTransactionId, sourcePath);
+                    m_TransactionLogger.LogFileDeletion(m_CurrentTransactionId, sourcePath);
                 }
 
                 // 如果目标文件存在且不允许覆盖，则返回错误
@@ -512,7 +509,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"移动文件时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileOperation, ex, $"移动文件失败: {sourcePath} -> {targetPath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileOperation, ex, $"移动文件失败: {sourcePath} -> {targetPath}");
             }
 
             return result;
@@ -527,7 +524,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
         public ValidationResult ReadFile(string filePath, out string content)
         {
             content = null;
-            var result = _securityChecker.ValidateFilePath(filePath);
+            var result = m_SecurityChecker.ValidateFilePath(filePath);
 
             if (!result.IsValid)
             {
@@ -539,7 +536,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 if (!File.Exists(filePath))
                 {
                     result.AddError($"文件不存在: {filePath}");
-                    _errorHandler.LogError(ErrorType.FileNotFound, $"尝试读取不存在的文件: {filePath}");
+                    m_ErrorHandler.LogError(ErrorType.k_FileNotFound, $"尝试读取不存在的文件: {filePath}");
                     return result;
                 }
 
@@ -549,7 +546,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"读取文件时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileReadError, ex, $"读取文件失败: {filePath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileReadError, ex, $"读取文件失败: {filePath}");
             }
 
             return result;
@@ -562,7 +559,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
         /// <returns>文件内容和验证结果的元组</returns>
         public async Task<(string content, ValidationResult result)> ReadFileAsync(string filePath)
         {
-            var result = _securityChecker.ValidateFilePath(filePath);
+            var result = m_SecurityChecker.ValidateFilePath(filePath);
             string content = null;
 
             if (!result.IsValid)
@@ -575,7 +572,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
                 if (!File.Exists(filePath))
                 {
                     result.AddError($"文件不存在: {filePath}");
-                    _errorHandler.LogError(ErrorType.FileNotFound, $"尝试读取不存在的文件: {filePath}");
+                    m_ErrorHandler.LogError(ErrorType.k_FileNotFound, $"尝试读取不存在的文件: {filePath}");
                     return (null, result);
                 }
 
@@ -590,7 +587,7 @@ namespace TByd.PackageCreator.Editor.Core.Security
             catch (Exception ex)
             {
                 result.AddError($"读取文件时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileReadError, ex, $"读取文件失败: {filePath}");
+                m_ErrorHandler.LogException(ErrorType.k_FileReadError, ex, $"读取文件失败: {filePath}");
             }
 
             return (content, result);

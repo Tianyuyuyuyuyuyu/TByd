@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
@@ -17,7 +16,7 @@ namespace TByd.PackageCreator.Editor.Core
     /// </summary>
     public class ConfigManager : IConfigManager
     {
-        private static ConfigManager _instance;
+        private static ConfigManager s_Instance;
 
         /// <summary>
         /// 获取ConfigManager单例实例
@@ -26,52 +25,52 @@ namespace TByd.PackageCreator.Editor.Core
         {
             get
             {
-                if (_instance == null)
+                if (s_Instance == null)
                 {
-                    _instance = new ConfigManager();
+                    s_Instance = new ConfigManager();
                 }
-                return _instance;
+                return s_Instance;
             }
         }
 
         // 当前加载的配置
-        private PackageConfig _currentConfig;
+        private PackageConfig m_CurrentConfig;
 
         // 配置历史记录
-        private List<ConfigHistoryEntry> _history = new List<ConfigHistoryEntry>();
+        private List<ConfigHistoryEntry> m_History = new List<ConfigHistoryEntry>();
 
         // 最后保存的文件路径
-        private string _lastSavedPath;
+        private string m_LastSavedPath;
 
         // 最大历史记录数量
-        private const int MaxHistoryCount = 20;
+        private const int k_MaxHistoryCount = 20;
 
         // 默认配置保存目录
-        private const string DefaultConfigDirectory = "PackageConfigs";
+        private const string k_DefaultConfigDirectory = "PackageConfigs";
 
         // JSON文件扩展名
-        private const string JsonExtension = ".json";
+        private const string k_JsonExtension = ".json";
 
         // 错误处理器
-        private readonly ErrorHandler _errorHandler;
+        private readonly ErrorHandler m_ErrorHandler;
 
         /// <summary>
         /// 获取当前加载的配置
         /// </summary>
-        public PackageConfig CurrentConfig => _currentConfig;
+        public PackageConfig CurrentConfig => m_CurrentConfig;
 
         /// <summary>
         /// 获取配置历史记录
         /// </summary>
-        public IReadOnlyList<ConfigHistoryEntry> History => _history.AsReadOnly();
+        public IReadOnlyList<ConfigHistoryEntry> History => m_History.AsReadOnly();
 
         /// <summary>
         /// 创建ConfigManager实例
         /// </summary>
         private ConfigManager()
         {
-            _errorHandler = ErrorHandler.Instance;
-            _currentConfig = CreateDefaultConfig();
+            m_ErrorHandler = ErrorHandler.Instance;
+            m_CurrentConfig = CreateDefaultConfig();
         }
 
         /// <summary>
@@ -90,7 +89,7 @@ namespace TByd.PackageCreator.Editor.Core
             config.UnityVersion = "2021.3";
             config.Author = new PackageAuthor("TByd", "", "");
 
-            _currentConfig = config;
+            m_CurrentConfig = config;
             AddToHistory(config, "创建新配置");
 
             return config;
@@ -105,14 +104,14 @@ namespace TByd.PackageCreator.Editor.Core
         {
             var result = new ValidationResult();
 
-            if (_currentConfig == null)
+            if (m_CurrentConfig == null)
             {
                 result.AddError("没有可保存的配置");
                 return result;
             }
 
             // 验证配置
-            var validationResult = ValidateConfig(_currentConfig);
+            var validationResult = ValidateConfig(m_CurrentConfig);
             if (!validationResult.IsValid)
             {
                 result.Merge(validationResult);
@@ -138,7 +137,7 @@ namespace TByd.PackageCreator.Editor.Core
                 }
 
                 // 将配置序列化为JSON
-                string json = SerializeConfig(_currentConfig);
+                string json = SerializeConfig(m_CurrentConfig);
                 if (string.IsNullOrEmpty(json))
                 {
                     result.AddError("配置序列化失败");
@@ -149,10 +148,10 @@ namespace TByd.PackageCreator.Editor.Core
                 await FileUtils.WriteTextFileAsync(savePath, json);
 
                 // 记录保存路径
-                _lastSavedPath = savePath;
+                m_LastSavedPath = savePath;
 
                 // 添加到历史记录
-                AddToHistory(_currentConfig, $"保存到 {Path.GetFileName(savePath)}");
+                AddToHistory(m_CurrentConfig, $"保存到 {Path.GetFileName(savePath)}");
 
                 result.AddInfo($"配置已保存到: {savePath}");
                 AssetDatabase.Refresh();
@@ -160,7 +159,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"保存配置时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileWriteError, ex, "保存配置时发生错误");
+                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, "保存配置时发生错误");
             }
 
             return result;
@@ -210,8 +209,8 @@ namespace TByd.PackageCreator.Editor.Core
                 result.Merge(validationResult);
 
                 // 即使有警告也加载配置
-                _currentConfig = config;
-                _lastSavedPath = filePath;
+                m_CurrentConfig = config;
+                m_LastSavedPath = filePath;
 
                 // 添加到历史记录
                 AddToHistory(config, $"从 {Path.GetFileName(filePath)} 加载");
@@ -221,7 +220,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"加载配置时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileReadError, ex, "加载配置时发生错误");
+                m_ErrorHandler.LogException(ErrorType.k_FileReadError, ex, "加载配置时发生错误");
             }
 
             return result;
@@ -256,7 +255,7 @@ namespace TByd.PackageCreator.Editor.Core
                 // 根据文件类型选择导入方法
                 switch (extension)
                 {
-                    case JsonExtension:
+                    case k_JsonExtension:
                         // JSON文件直接加载
                         return await LoadConfigAsync(filePath);
 
@@ -280,7 +279,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"导入配置时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.OperationFailed, ex, "导入配置时发生错误");
+                m_ErrorHandler.LogException(ErrorType.k_OperationFailed, ex, "导入配置时发生错误");
             }
 
             return result;
@@ -325,7 +324,7 @@ namespace TByd.PackageCreator.Editor.Core
                 // 根据文件类型选择导出方法
                 switch (extension)
                 {
-                    case JsonExtension:
+                    case k_JsonExtension:
                         // 将配置序列化为JSON
                         string json = SerializeConfig(config);
                         if (string.IsNullOrEmpty(json))
@@ -354,7 +353,7 @@ namespace TByd.PackageCreator.Editor.Core
             catch (Exception ex)
             {
                 result.AddError($"导出配置时发生错误: {ex.Message}");
-                _errorHandler.LogException(ErrorType.FileWriteError, ex, "导出配置时发生错误");
+                m_ErrorHandler.LogException(ErrorType.k_FileWriteError, ex, "导出配置时发生错误");
             }
 
             return result;
@@ -467,12 +466,12 @@ namespace TByd.PackageCreator.Editor.Core
             var entry = new ConfigHistoryEntry(configCopy, description);
 
             // 添加到历史记录
-            _history.Insert(0, entry);
+            m_History.Insert(0, entry);
 
             // 限制历史记录数量
-            if (_history.Count > MaxHistoryCount)
+            if (m_History.Count > k_MaxHistoryCount)
             {
-                _history.RemoveAt(_history.Count - 1);
+                m_History.RemoveAt(m_History.Count - 1);
             }
         }
 
@@ -483,17 +482,17 @@ namespace TByd.PackageCreator.Editor.Core
         /// <returns>恢复的配置</returns>
         public PackageConfig RestoreFromHistory(int entryIndex)
         {
-            if (entryIndex < 0 || entryIndex >= _history.Count)
+            if (entryIndex < 0 || entryIndex >= m_History.Count)
                 return null;
 
             // 获取历史记录条目
-            var entry = _history[entryIndex];
+            var entry = m_History[entryIndex];
 
             // 创建配置的深拷贝
             var configCopy = CloneConfig(entry.Config);
 
             // 设置为当前配置
-            _currentConfig = configCopy;
+            m_CurrentConfig = configCopy;
 
             // 添加到历史记录
             AddToHistory(configCopy, $"从历史记录恢复：{entry.Description}");
@@ -506,7 +505,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// </summary>
         public void ClearHistory()
         {
-            _history.Clear();
+            m_History.Clear();
         }
 
         /// <summary>
@@ -540,12 +539,12 @@ namespace TByd.PackageCreator.Editor.Core
                 return filePath;
 
             // 如果有上次保存的路径，则使用上次的路径
-            if (!string.IsNullOrEmpty(_lastSavedPath))
-                return _lastSavedPath;
+            if (!string.IsNullOrEmpty(m_LastSavedPath))
+                return m_LastSavedPath;
 
             // 否则使用默认路径
             string projectPath = Application.dataPath.Replace("/Assets", "");
-            string configDirectory = Path.Combine(projectPath, DefaultConfigDirectory);
+            string configDirectory = Path.Combine(projectPath, k_DefaultConfigDirectory);
 
             // 确保目录存在
             if (!Directory.Exists(configDirectory))
@@ -554,8 +553,8 @@ namespace TByd.PackageCreator.Editor.Core
             }
 
             // 使用包名作为文件名
-            string fileName = _currentConfig?.Name?.Replace(".", "-") ?? "config";
-            return Path.Combine(configDirectory, $"{fileName}{JsonExtension}");
+            string fileName = m_CurrentConfig?.Name?.Replace(".", "-") ?? "config";
+            return Path.Combine(configDirectory, $"{fileName}{k_JsonExtension}");
         }
 
         /// <summary>
@@ -574,7 +573,7 @@ namespace TByd.PackageCreator.Editor.Core
                     Formatting = Formatting.Indented,
                     Error = (sender, args) =>
                     {
-                        _errorHandler.LogWarning(ErrorType.SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
+                        m_ErrorHandler.LogWarning(ErrorType.k_SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
                     }
                 };
@@ -583,7 +582,7 @@ namespace TByd.PackageCreator.Editor.Core
             }
             catch (Exception ex)
             {
-                _errorHandler.LogException(ErrorType.SerializationError, ex, "配置序列化失败");
+                m_ErrorHandler.LogException(ErrorType.k_SerializationError, ex, "配置序列化失败");
                 Debug.LogError($"序列化错误：{ex.Message}\n{ex.StackTrace}");
                 return "{}"; // 返回空对象而不是null，避免空引用
             }
@@ -605,7 +604,7 @@ namespace TByd.PackageCreator.Editor.Core
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     Error = (sender, args) =>
                     {
-                        _errorHandler.LogWarning(ErrorType.DeserializationError, $"JSON反序列化警告: {args.ErrorContext.Error.Message}");
+                        m_ErrorHandler.LogWarning(ErrorType.k_DeserializationError, $"JSON反序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
                     }
                 };
@@ -614,7 +613,7 @@ namespace TByd.PackageCreator.Editor.Core
             }
             catch (Exception ex)
             {
-                _errorHandler.LogException(ErrorType.DeserializationError, ex, "配置反序列化失败");
+                m_ErrorHandler.LogException(ErrorType.k_DeserializationError, ex, "配置反序列化失败");
                 return null;
             }
         }
@@ -638,7 +637,7 @@ namespace TByd.PackageCreator.Editor.Core
                     MissingMemberHandling = MissingMemberHandling.Ignore,
                     Error = (sender, args) =>
                     {
-                        _errorHandler.LogWarning(ErrorType.SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
+                        m_ErrorHandler.LogWarning(ErrorType.k_SerializationError, $"JSON序列化警告: {args.ErrorContext.Error.Message}");
                         args.ErrorContext.Handled = true;
                     }
                 };
@@ -648,7 +647,7 @@ namespace TByd.PackageCreator.Editor.Core
             }
             catch (Exception ex)
             {
-                _errorHandler.LogException(ErrorType.SerializationError, ex, "配置克隆失败");
+                m_ErrorHandler.LogException(ErrorType.k_SerializationError, ex, "配置克隆失败");
 
                 // 发生错误时回退到手动复制（确保不会返回null）
                 var fallbackConfig = new PackageConfig(

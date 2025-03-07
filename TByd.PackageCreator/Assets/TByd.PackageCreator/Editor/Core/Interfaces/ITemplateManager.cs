@@ -50,7 +50,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 模板变更事件
         /// </summary>
-        event EventHandler<TemplateChangedEventArgs> TemplateChanged;
+        event EventHandler<TemplateChangedEventArgs> OnTemplateChanged;
 
         /// <summary>
         /// 重新加载所有模板
@@ -66,7 +66,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 变更类型
         /// </summary>
-        public TemplateChangeType ChangeType { get; }
+        public EnumTemplateChangeType ChangeType { get; }
 
         /// <summary>
         /// 受影响的模板ID
@@ -78,7 +78,7 @@ namespace TByd.PackageCreator.Editor.Core
         /// </summary>
         /// <param name="changeType">变更类型</param>
         /// <param name="templateId">模板ID</param>
-        public TemplateChangedEventArgs(TemplateChangeType changeType, string templateId)
+        public TemplateChangedEventArgs(EnumTemplateChangeType changeType, string templateId)
         {
             ChangeType = changeType;
             TemplateId = templateId;
@@ -88,7 +88,7 @@ namespace TByd.PackageCreator.Editor.Core
     /// <summary>
     /// 模板变更类型
     /// </summary>
-    public enum TemplateChangeType
+    public enum EnumTemplateChangeType
     {
         /// <summary>
         /// 添加了新模板
@@ -98,16 +98,16 @@ namespace TByd.PackageCreator.Editor.Core
         /// <summary>
         /// 移除了模板
         /// </summary>
-        Removed,
+        k_Removed,
 
         /// <summary>
         /// 模板被更新
         /// </summary>
-        Updated,
+        k_Updated,
 
         /// <summary>
         /// 所有模板被重新加载
         /// </summary>
-        Reloaded
+        k_Reloaded
     }
 }

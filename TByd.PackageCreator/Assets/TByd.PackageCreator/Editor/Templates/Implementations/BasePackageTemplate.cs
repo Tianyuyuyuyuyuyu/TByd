@@ -13,11 +13,11 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
     /// </summary>
     public abstract class BasePackageTemplate : IPackageTemplate
     {
-        private readonly ErrorHandler _errorHandler;
-        private readonly List<TemplateDirectory> _directories = new List<TemplateDirectory>();
-        private readonly List<TemplateFile> _files = new List<TemplateFile>();
-        private readonly List<TemplateOption> _options = new List<TemplateOption>();
-        private Texture2D _icon;
+        private readonly ErrorHandler m_ErrorHandler;
+        private readonly List<TemplateDirectory> m_Directories = new List<TemplateDirectory>();
+        private readonly List<TemplateFile> m_Files = new List<TemplateFile>();
+        private readonly List<TemplateOption> m_Options = new List<TemplateOption>();
+        private Texture2D m_Icon;
 
         /// <summary>
         /// 模板唯一标识符
@@ -47,29 +47,29 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         /// <summary>
         /// 模板图标
         /// </summary>
-        public virtual Texture2D Icon => _icon;
+        public virtual Texture2D Icon => m_Icon;
 
         /// <summary>
         /// 模板目录结构
         /// </summary>
-        public IReadOnlyList<TemplateDirectory> Directories => _directories.AsReadOnly();
+        public IReadOnlyList<TemplateDirectory> Directories => m_Directories.AsReadOnly();
 
         /// <summary>
         /// 模板文件
         /// </summary>
-        public IReadOnlyList<TemplateFile> Files => _files.AsReadOnly();
+        public IReadOnlyList<TemplateFile> Files => m_Files.AsReadOnly();
 
         /// <summary>
         /// 模板选项
         /// </summary>
-        public IReadOnlyList<TemplateOption> Options => _options.AsReadOnly();
+        public IReadOnlyList<TemplateOption> Options => m_Options.AsReadOnly();
 
         /// <summary>
         /// 初始化模板基类
         /// </summary>
         protected BasePackageTemplate()
         {
-            _errorHandler = ErrorHandler.Instance;
+            m_ErrorHandler = ErrorHandler.Instance;
             InitializeTemplate();
         }
 
@@ -97,17 +97,17 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
                 // 图标路径约定为"Editor/Templates/Icons/{模板ID的最后一部分}.png"
                 string iconName = Id.Split('.').Last();
                 string iconPath = $"Packages/com.tbyd.packagecreator/Editor/Templates/Icons/{iconName}.png";
-                _icon = Resources.Load<Texture2D>(iconPath);
+                m_Icon = Resources.Load<Texture2D>(iconPath);
 
                 // 如果找不到特定图标，加载默认图标
-                if (_icon == null)
+                if (m_Icon == null)
                 {
-                    _icon = Resources.Load<Texture2D>("Packages/com.tbyd.packagecreator/Editor/Templates/Icons/default.png");
+                    m_Icon = Resources.Load<Texture2D>("Packages/com.tbyd.packagecreator/Editor/Templates/Icons/default.png");
                 }
             }
             catch (Exception ex)
             {
-                _errorHandler.LogWarning(ErrorType.ResourceNotFound, $"加载模板图标时出错: {ex.Message}");
+                m_ErrorHandler.LogWarning(ErrorType.k_ResourceNotFound, $"加载模板图标时出错: {ex.Message}");
             }
         }
 
@@ -139,7 +139,7 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
                 "licenseType",
                 "许可类型",
                 "包使用的许可类型",
-                TemplateOptionType.Enum,
+                TemplateOptionType.k_Enum,
                 "MIT"
             ).PossibleValues = new List<string> { "MIT", "Apache-2.0", "GPL-3.0", "Custom" };
         }
@@ -154,7 +154,7 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         protected TemplateDirectory AddDirectory(string relativePath, string description = "", bool isRequired = true)
         {
             var directory = new TemplateDirectory(relativePath, description, isRequired);
-            _directories.Add(directory);
+            m_Directories.Add(directory);
             return directory;
         }
 
@@ -171,7 +171,7 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
             bool isRequired = true, bool supportsVariableReplacement = true)
         {
             var file = new TemplateFile(relativePath, contentTemplate, description, isRequired, supportsVariableReplacement);
-            _files.Add(file);
+            m_Files.Add(file);
             return file;
         }
 
@@ -189,7 +189,7 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
             TemplateOptionType optionType, string defaultValue = "", bool isRequired = true)
         {
             var option = new TemplateOption(key, displayName, description, optionType, defaultValue, isRequired);
-            _options.Add(option);
+            m_Options.Add(option);
             return option;
         }
 
@@ -200,10 +200,10 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         /// <returns>是否成功移除</returns>
         protected bool RemoveOption(string key)
         {
-            int index = _options.FindIndex(o => o.Key == key);
+            int index = m_Options.FindIndex(o => o.Key == key);
             if (index >= 0)
             {
-                _options.RemoveAt(index);
+                m_Options.RemoveAt(index);
                 return true;
             }
             return false;

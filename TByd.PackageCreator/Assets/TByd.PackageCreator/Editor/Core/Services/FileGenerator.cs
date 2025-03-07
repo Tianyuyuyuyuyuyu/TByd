@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TByd.PackageCreator.Editor.Utils;
@@ -16,25 +15,25 @@ namespace TByd.PackageCreator.Editor.Core
     public class FileGenerator
     {
         // 变量替换正则表达式，匹配 ${变量名}
-        private static readonly Regex VariablePattern = new Regex(@"\$\{([^}]+)\}", RegexOptions.Compiled);
+        private static readonly Regex s_VariablePattern = new Regex(@"\$\{([^}]+)\}", RegexOptions.Compiled);
 
         // 文件生成策略集合
-        private readonly List<IFileGenerationStrategy> _strategies = new List<IFileGenerationStrategy>();
+        private readonly List<IFileGenerationStrategy> m_Strategies = new List<IFileGenerationStrategy>();
 
         // 默认文件生成策略
-        private readonly IFileGenerationStrategy _defaultStrategy;
+        private readonly IFileGenerationStrategy m_DefaultStrategy;
 
         // 事件：开始生成
-        public event Action<string> GenerationStarted;
+        public event Action<string> OnGenerationStarted;
 
         // 事件：目录创建
-        public event Action<string, int, int> DirectoryCreated;
+        public event Action<string, int, int> OnDirectoryCreated;
 
         // 事件：文件创建
-        public event Action<string, int, int> FileCreated;
+        public event Action<string, int, int> OnFileCreated;
 
         // 事件：生成完成
-        public event Action<bool, string> GenerationCompleted;
+        public event Action<bool, string> OnGenerationCompleted;
 
         /// <summary>
         /// 创建文件生成器实例
@@ -42,8 +41,8 @@ namespace TByd.PackageCreator.Editor.Core
         /// <param name="defaultStrategy">默认文件生成策略</param>
         public FileGenerator(IFileGenerationStrategy defaultStrategy = null)
         {
-            _defaultStrategy = defaultStrategy ?? new DefaultFileGenerationStrategy();
-            _strategies.Add(_defaultStrategy);
+            m_DefaultStrategy = defaultStrategy ?? new DefaultFileGenerationStrategy();
+            m_Strategies.Add(m_DefaultStrategy);
         }
 
         /// <summary>
@@ -55,13 +54,13 @@ namespace TByd.PackageCreator.Editor.Core
             if (strategy == null) throw new ArgumentNullException(nameof(strategy));
 
             // 防止重复注册
-            if (_strategies.Any(s => s.StrategyName == strategy.StrategyName))
+            if (m_Strategies.Any(s => s.StrategyName == strategy.StrategyName))
             {
                 Debug.LogWarning($"策略 '{strategy.StrategyName}' 已经注册过，将被忽略。");
                 return;
             }
 
-            _strategies.Add(strategy);
+            m_Strategies.Add(strategy);
             Debug.Log($"注册文件生成策略: {strategy.StrategyName}");
         }
 
@@ -79,12 +78,12 @@ namespace TByd.PackageCreator.Editor.Core
             try
             {
                 // 通知开始生成
-                GenerationStarted?.Invoke(template.Name);
+                OnGenerationStarted?.Invoke(template.Name);
 
                 // 验证目标路径
                 if (!ValidateTargetPath(targetPath, result))
                 {
-                    GenerationCompleted?.Invoke(false, "目标路径验证失败");
+                    OnGenerationCompleted?.Invoke(false, "目标路径验证失败");
                     return result;
                 }
 
@@ -94,7 +93,7 @@ namespace TByd.PackageCreator.Editor.Core
 
                 if (!result.IsValid)
                 {
-                    GenerationCompleted?.Invoke(false, "目录结构创建失败");
+                    OnGenerationCompleted?.Invoke(false, "目录结构创建失败");
                     return result;
                 }
 
@@ -103,7 +102,7 @@ namespace TByd.PackageCreator.Editor.Core
                 result.Merge(fileResult);
 
                 // 通知生成完成
-                GenerationCompleted?.Invoke(result.IsValid, result.IsValid ? "生成成功" : "生成过程中出现错误");
+                OnGenerationCompleted?.Invoke(result.IsValid, result.IsValid ? "生成成功" : "生成过程中出现错误");
 
                 return result;
             }
@@ -111,7 +110,7 @@ namespace TByd.PackageCreator.Editor.Core
             {
                 result.AddError($"生成过程中发生异常: {ex.Message}");
                 Debug.LogException(ex);
-                GenerationCompleted?.Invoke(false, $"生成过程中发生异常: {ex.Message}");
+                OnGenerationCompleted?.Invoke(false, $"生成过程中发生异常: {ex.Message}");
                 return result;
             }
         }
@@ -192,7 +191,7 @@ namespace TByd.PackageCreator.Editor.Core
                 // 创建目录
                 if (FileUtils.EnsureDirectoryExists(fullPath))
                 {
-                    DirectoryCreated?.Invoke(processedPath, currentDirectory, totalDirectories);
+                    OnDirectoryCreated?.Invoke(processedPath, currentDirectory, totalDirectories);
                     result.AddInfo($"创建目录: {processedPath}");
                 }
                 else
@@ -310,7 +309,7 @@ namespace TByd.PackageCreator.Editor.Core
 
                     if (fileResult.IsValid)
                     {
-                        FileCreated?.Invoke(processedPath, currentFile, totalFiles);
+                        OnFileCreated?.Invoke(processedPath, currentFile, totalFiles);
                         result.AddInfo($"创建文件: {processedPath}");
                     }
                     else if (file.IsRequired)
@@ -352,7 +351,7 @@ namespace TByd.PackageCreator.Editor.Core
             string extension = Path.GetExtension(file.RelativePath);
 
             // 查找支持此文件类型的策略
-            foreach (var strategy in _strategies)
+            foreach (var strategy in m_Strategies)
             {
                 if (strategy.SupportsFileType(extension))
                 {
@@ -361,7 +360,7 @@ namespace TByd.PackageCreator.Editor.Core
             }
 
             // 如果没有找到匹配的策略，使用默认策略
-            return _defaultStrategy;
+            return m_DefaultStrategy;
         }
 
         /// <summary>
@@ -375,7 +374,7 @@ namespace TByd.PackageCreator.Editor.Core
             if (string.IsNullOrEmpty(template))
                 return template;
 
-            return VariablePattern.Replace(template, match =>
+            return s_VariablePattern.Replace(template, match =>
             {
                 string variableName = match.Groups[1].Value;
                 return GetVariableValue(variableName, config);

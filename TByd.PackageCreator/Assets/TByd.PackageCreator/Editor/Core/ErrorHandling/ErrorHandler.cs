@@ -13,28 +13,28 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
     public class ErrorHandler
     {
         #region 单例实现
-        private static ErrorHandler _instance;
-        private static readonly object _lock = new object();
+        private static ErrorHandler s_Instance;
+        private static readonly object s_Lock = new object();
 
         public static ErrorHandler Instance
         {
             get
             {
-                lock (_lock)
+                lock (s_Lock)
                 {
-                    if (_instance == null)
+                    if (s_Instance == null)
                     {
-                        _instance = new ErrorHandler();
+                        s_Instance = new ErrorHandler();
                     }
-                    return _instance;
+                    return s_Instance;
                 }
             }
         }
         #endregion
 
-        private List<ErrorInfo> _errorLog = new List<ErrorInfo>();
-        private List<OperationRecord> _operationHistory = new List<OperationRecord>();
-        private bool _isRecordingOperations = false;
+        private List<ErrorInfo> m_ErrorLog = new List<ErrorInfo>();
+        private List<OperationRecord> m_OperationHistory = new List<OperationRecord>();
+        private bool m_IsRecordingOperations = false;
 
         /// <summary>
         /// 错误处理器构造函数
@@ -63,21 +63,21 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
                 Exception = exception
             };
 
-            _errorLog.Add(errorInfo);
+            m_ErrorLog.Add(errorInfo);
 
             // 根据错误级别选择不同的日志记录方式
             switch (errorLevel)
             {
-                case ErrorLevel.Critical:
+                case ErrorLevel.k_Critical:
                     Debug.LogError($"[PackageCreator] 严重错误: {errorMessage}");
                     break;
-                case ErrorLevel.Error:
+                case ErrorLevel.k_Error:
                     Debug.LogError($"[PackageCreator] 错误: {errorMessage}");
                     break;
-                case ErrorLevel.Warning:
+                case ErrorLevel.k_Warning:
                     Debug.LogWarning($"[PackageCreator] 警告: {errorMessage}");
                     break;
-                case ErrorLevel.Info:
+                case ErrorLevel.k_Info:
                     Debug.Log($"[PackageCreator] 信息: {errorMessage}");
                     break;
             }
@@ -95,13 +95,13 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
             string title;
             switch (errorInfo.Level)
             {
-                case ErrorLevel.Critical:
+                case ErrorLevel.k_Critical:
                     title = "严重错误";
                     break;
-                case ErrorLevel.Error:
+                case ErrorLevel.k_Error:
                     title = "错误";
                     break;
-                case ErrorLevel.Warning:
+                case ErrorLevel.k_Warning:
                     title = "警告";
                     break;
                 default:
@@ -117,18 +117,18 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
 
             switch (errorInfo.Level)
             {
-                case ErrorLevel.Critical:
-                case ErrorLevel.Error:
+                case ErrorLevel.k_Critical:
+                case ErrorLevel.k_Error:
                     EditorUtility.DisplayDialog(title, message, "确定");
                     break;
-                case ErrorLevel.Warning:
+                case ErrorLevel.k_Warning:
                     var proceed = EditorUtility.DisplayDialog(title, message, "继续", "取消");
                     if (!proceed)
                     {
                         throw new OperationCanceledException("用户取消了操作");
                     }
                     break;
-                case ErrorLevel.Info:
+                case ErrorLevel.k_Info:
                     EditorUtility.DisplayDialog(title, message, "确定");
                     break;
             }
@@ -155,9 +155,9 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
             var sb = new StringBuilder();
             sb.AppendLine("================ PackageCreator 错误日志 ================");
             sb.AppendLine($"导出时间: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
-            sb.AppendLine($"总记录数: {_errorLog.Count}\n");
+            sb.AppendLine($"总记录数: {m_ErrorLog.Count}\n");
 
-            foreach (var error in _errorLog)
+            foreach (var error in m_ErrorLog)
             {
                 sb.AppendLine($"[{error.Timestamp:yyyy-MM-dd HH:mm:ss}] [{error.Level}] [{error.ErrorType}]");
                 sb.AppendLine($"消息: {error.Message}");
@@ -181,7 +181,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// </summary>
         public void ClearErrorLog()
         {
-            _errorLog.Clear();
+            m_ErrorLog.Clear();
         }
 
         /// <summary>
@@ -189,8 +189,8 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// </summary>
         public void StartRecordingOperations()
         {
-            _isRecordingOperations = true;
-            _operationHistory.Clear();
+            m_IsRecordingOperations = true;
+            m_OperationHistory.Clear();
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// </summary>
         public void StopRecordingOperations()
         {
-            _isRecordingOperations = false;
+            m_IsRecordingOperations = false;
         }
 
         /// <summary>
@@ -209,9 +209,9 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <param name="backupData">备份数据（可选）</param>
         public void RecordOperation(OperationType operationType, string targetPath, byte[] backupData = null)
         {
-            if (!_isRecordingOperations) return;
+            if (!m_IsRecordingOperations) return;
 
-            _operationHistory.Add(new OperationRecord
+            m_OperationHistory.Add(new OperationRecord
             {
                 OperationType = operationType,
                 TargetPath = targetPath,
@@ -226,7 +226,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <param name="filePath">文件路径</param>
         public void RecordFileCreation(string filePath)
         {
-            RecordOperation(OperationType.CreateFile, filePath);
+            RecordOperation(OperationType.k_CreateFile, filePath);
         }
 
         /// <summary>
@@ -235,10 +235,10 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <param name="filePath">文件路径</param>
         public void RecordFileModification(string filePath)
         {
-            if (!_isRecordingOperations || !File.Exists(filePath)) return;
+            if (!m_IsRecordingOperations || !File.Exists(filePath)) return;
 
             var originalContent = File.ReadAllBytes(filePath);
-            RecordOperation(OperationType.ModifyFile, filePath, originalContent);
+            RecordOperation(OperationType.k_ModifyFile, filePath, originalContent);
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <param name="directoryPath">目录路径</param>
         public void RecordDirectoryCreation(string directoryPath)
         {
-            RecordOperation(OperationType.CreateDirectory, directoryPath);
+            RecordOperation(OperationType.k_CreateDirectory, directoryPath);
         }
 
         /// <summary>
@@ -256,18 +256,18 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>回滚是否成功</returns>
         public bool RollbackOperations()
         {
-            if (_operationHistory.Count == 0) return true;
+            if (m_OperationHistory.Count == 0) return true;
 
             var success = true;
             // 逆序遍历操作历史，执行回滚
-            for (var i = _operationHistory.Count - 1; i >= 0; i--)
+            for (var i = m_OperationHistory.Count - 1; i >= 0; i--)
             {
-                var operation = _operationHistory[i];
+                var operation = m_OperationHistory[i];
                 try
                 {
                     switch (operation.OperationType)
                     {
-                        case OperationType.CreateFile:
+                        case OperationType.k_CreateFile:
                             if (File.Exists(operation.TargetPath))
                             {
                                 File.Delete(operation.TargetPath);
@@ -275,7 +275,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
                             }
                             break;
 
-                        case OperationType.ModifyFile:
+                        case OperationType.k_ModifyFile:
                             if (operation.BackupData != null && File.Exists(operation.TargetPath))
                             {
                                 File.WriteAllBytes(operation.TargetPath, operation.BackupData);
@@ -283,7 +283,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
                             }
                             break;
 
-                        case OperationType.CreateDirectory:
+                        case OperationType.k_CreateDirectory:
                             if (Directory.Exists(operation.TargetPath))
                             {
                                 // 尝试删除目录，但只有在目录为空时才能成功
@@ -307,7 +307,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
                 }
             }
 
-            _operationHistory.Clear();
+            m_OperationHistory.Clear();
             return success;
         }
 
@@ -317,7 +317,7 @@ namespace TByd.PackageCreator.Editor.Core.ErrorHandling
         /// <returns>错误日志列表的副本</returns>
         public List<ErrorInfo> GetErrorLog()
         {
-            return new List<ErrorInfo>(_errorLog);
+            return new List<ErrorInfo>(m_ErrorLog);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace TByd.PackageCreator.Editor.Utils
     /// </summary>
     public static class FileUtils
     {
-        private static readonly Encoding DefaultEncoding = new UTF8Encoding(false);
+        private static readonly Encoding s_DefaultEncoding = new UTF8Encoding(false);
 
         /// <summary>
         /// 安全地创建目录，如果目录已存在则不会抛出异常
@@ -78,7 +78,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
                 }
 
-                encoding = encoding ?? DefaultEncoding;
+                encoding = encoding ?? s_DefaultEncoding;
                 File.WriteAllText(filePath, content, encoding);
                 Debug.Log($"写入文件: {filePath}");
                 return true;
@@ -107,7 +107,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
                 }
 
-                encoding = encoding ?? DefaultEncoding;
+                encoding = encoding ?? s_DefaultEncoding;
                 using (var writer = new StreamWriter(filePath, false, encoding))
                 {
                     await writer.WriteAsync(content);
@@ -140,7 +140,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return false;
                 }
 
-                encoding = encoding ?? DefaultEncoding;
+                encoding = encoding ?? s_DefaultEncoding;
                 content = File.ReadAllText(filePath, encoding);
                 return true;
             }
@@ -167,7 +167,7 @@ namespace TByd.PackageCreator.Editor.Utils
                     return null;
                 }
 
-                encoding = encoding ?? DefaultEncoding;
+                encoding = encoding ?? s_DefaultEncoding;
                 using (var reader = new StreamReader(filePath, encoding))
                 {
                     return await reader.ReadToEndAsync();
