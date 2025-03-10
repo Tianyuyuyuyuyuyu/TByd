@@ -13,17 +13,11 @@ namespace TByd.PackageCreator.Editor.UI.Controls
         // 搜索图标
         private static Texture2D _searchIcon;
 
-        // 清除图标
-        private static Texture2D _clearIcon;
-
         // 搜索框样式
         private static GUIStyle _searchFieldStyle;
 
         // 搜索按钮样式
         private static GUIStyle _searchButtonStyle;
-
-        // 清除按钮样式
-        private static GUIStyle _clearButtonStyle;
 
         /// <summary>
         /// 初始化资源
@@ -35,17 +29,12 @@ namespace TByd.PackageCreator.Editor.UI.Controls
                 _searchIcon = EditorGUIUtility.FindTexture("Search Icon");
             }
 
-            if (_clearIcon == null)
-            {
-                _clearIcon = EditorGUIUtility.FindTexture("d_winbtn_win_close");
-            }
-
             if (_searchFieldStyle == null)
             {
                 _searchFieldStyle = new GUIStyle(EditorStyles.toolbarSearchField)
                 {
                     margin = new RectOffset(0, 0, 2, 2),
-                    padding = new RectOffset(20, 20, 0, 0),
+                    padding = new RectOffset(20, 5, 0, 0),
                     fixedHeight = 22
                 };
             }
@@ -55,15 +44,6 @@ namespace TByd.PackageCreator.Editor.UI.Controls
                 _searchButtonStyle = new GUIStyle(EditorStyles.label)
                 {
                     margin = new RectOffset(4, 0, 4, 0),
-                    padding = new RectOffset(0, 0, 0, 0)
-                };
-            }
-
-            if (_clearButtonStyle == null)
-            {
-                _clearButtonStyle = new GUIStyle(EditorStyles.label)
-                {
-                    margin = new RectOffset(0, 4, 4, 0),
                     padding = new RectOffset(0, 0, 0, 0)
                 };
             }
@@ -91,38 +71,38 @@ namespace TByd.PackageCreator.Editor.UI.Controls
                 controlRect = EditorGUILayout.GetControlRect(false, _searchFieldStyle.fixedHeight, _searchFieldStyle);
             }
 
+            // 为搜索框创建唯一的控件ID
+            string controlName = "SearchBarControl" + controlRect.GetHashCode();
+            GUI.SetNextControlName(controlName);
+
             // 绘制搜索图标
             Rect searchIconRect = new Rect(controlRect.x + 4, controlRect.y + 3, 16, 16);
             GUI.Label(searchIconRect, _searchIcon, _searchButtonStyle);
 
             // 绘制搜索框
-            string newSearchText = searchText;
+            string newSearchText;
 
             // 如果搜索文本为空，显示占位符
             if (string.IsNullOrEmpty(searchText))
             {
-                // 绘制占位符
-                GUI.enabled = false;
-                EditorGUI.TextField(controlRect, placeholder, _searchFieldStyle);
-                GUI.enabled = true;
+                // 创建一个临时的样式来显示占位符
+                GUIStyle placeholderStyle = new GUIStyle(_searchFieldStyle);
+                placeholderStyle.normal.textColor = new Color(0.5f, 0.5f, 0.5f, 0.8f);
 
-                // 处理用户输入
+                // 绘制实际的输入框
                 newSearchText = EditorGUI.TextField(controlRect, "", _searchFieldStyle);
+
+                // 如果输入框为空，绘制占位符文本
+                if (string.IsNullOrEmpty(newSearchText) && GUI.GetNameOfFocusedControl() != controlName)
+                {
+                    // 使用 GUI.Label 绘制占位符，避免与输入冲突
+                    EditorGUI.LabelField(controlRect, placeholder, placeholderStyle);
+                }
             }
             else
             {
                 // 绘制搜索文本
                 newSearchText = EditorGUI.TextField(controlRect, searchText, _searchFieldStyle);
-
-                // 绘制清除按钮
-                Rect clearIconRect = new Rect(controlRect.xMax - 20, controlRect.y + 3, 16, 16);
-                if (GUI.Button(clearIconRect, _clearIcon, _clearButtonStyle))
-                {
-                    newSearchText = "";
-                    GUI.FocusControl(null);
-                    // 立即重绘UI，确保变更立即生效
-                    EditorGUIUtility.ExitGUI();
-                }
             }
 
             return newSearchText;

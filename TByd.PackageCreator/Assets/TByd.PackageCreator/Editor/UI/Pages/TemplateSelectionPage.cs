@@ -34,6 +34,9 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             "最近使用"
         };
 
+        // 模板选择变化处理程序
+        private readonly Action<IPackageTemplate, IPackageTemplate> _templateSelectedHandler;
+
         /// <summary>
         /// 页面标题
         /// </summary>
@@ -51,6 +54,16 @@ namespace TByd.PackageCreator.Editor.UI.Pages
         public TemplateSelectionPage(ITemplateManager templateManager)
         {
             _viewModel = new TemplateSelectionViewModel(templateManager);
+
+            // 创建模板选择变化处理程序
+            _templateSelectedHandler = (oldTemplate, newTemplate) =>
+            {
+                // 当选择的模板发生变化时，重置详情滚动条位置
+                if (oldTemplate != newTemplate)
+                {
+                    _detailsScrollPosition = Vector2.zero;
+                }
+            };
         }
 
         /// <summary>
@@ -58,7 +71,11 @@ namespace TByd.PackageCreator.Editor.UI.Pages
         /// </summary>
         public override void OnEnter()
         {
+            // 初始化视图模型
             _viewModel.Initialize();
+
+            // 监听模板选择变化
+            _viewModel.SelectedTemplate.OnValueChanged += _templateSelectedHandler;
         }
 
         /// <summary>
@@ -66,6 +83,10 @@ namespace TByd.PackageCreator.Editor.UI.Pages
         /// </summary>
         public override void OnExit()
         {
+            // 移除模板选择变化监听
+            _viewModel.SelectedTemplate.OnValueChanged -= _templateSelectedHandler;
+
+            // 清理视图模型
             _viewModel.Cleanup();
         }
 
@@ -112,11 +133,17 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             // 绘制搜索栏
             EditorGUI.BeginChangeCheck();
             string newSearchText = SearchBarControl.Draw(_viewModel.SearchKeyword.Value, "搜索模板...");
-            if (EditorGUI.EndChangeCheck() && newSearchText != _viewModel.SearchKeyword.Value)
+            if (EditorGUI.EndChangeCheck() || newSearchText != _viewModel.SearchKeyword.Value)
             {
+                // 更新搜索关键字
                 _viewModel.SearchKeyword.Value = newSearchText;
+
                 // 强制重绘
-                EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
+                EditorApplication.delayCall += () =>
+                {
+                    // 确保在主线程中执行
+                    EditorApplication.QueuePlayerLoopUpdate();
+                };
             }
 
             GUILayout.Space(10);
@@ -196,6 +223,12 @@ namespace TByd.PackageCreator.Editor.UI.Pages
                     // 使用模板卡片控件
                     if (cardControl.DrawCompact())
                     {
+                        // 如果选择了新的模板，重置详情滚动条位置
+                        if (_viewModel.SelectedTemplate.Value != template)
+                        {
+                            _detailsScrollPosition = Vector2.zero;
+                        }
+
                         _viewModel.SelectTemplate(template);
                     }
                 }

@@ -5,16 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="896a7003-dd9c-4224-8b84-5e2df7a1ae8f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Controls/SearchBarControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Controls/SearchBarControl.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/TemplateSelectionPage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/TemplateSelectionPage.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/ViewModels/TemplateSelectionViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/ViewModels/TemplateSelectionViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -110,7 +110,7 @@
       <workItem from="1741333163247" duration="546000" />
       <workItem from="1741333725047" duration="5242000" />
       <workItem from="1741339030927" duration="614000" />
-      <workItem from="1741584692723" duration="5570000" />
+      <workItem from="1741584692723" duration="7158000" />
     </task>
     <servers />
   </component>

@@ -188,9 +188,7 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
                 {
                     string keyword = SearchKeyword.Value.ToLowerInvariant();
                     allTemplates = allTemplates.Where(t =>
-                        t.Name.ToLowerInvariant().Contains(keyword) ||
-                        t.Description.ToLowerInvariant().Contains(keyword) ||
-                        t.Category.ToLowerInvariant().Contains(keyword)
+                        t.Name.ToLowerInvariant().Contains(keyword)
                     ).ToList();
                 }
 
