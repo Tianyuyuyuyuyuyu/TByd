@@ -169,6 +169,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Services
         public string Description => "用于测试的模板";
         public string Version => "1.0.0";
         public string Author => "TByd Test";
+        public string Category => "Test";
         public Texture2D Icon => null;
 
         public IReadOnlyList<TemplateDirectory> Directories => new TemplateDirectory[]

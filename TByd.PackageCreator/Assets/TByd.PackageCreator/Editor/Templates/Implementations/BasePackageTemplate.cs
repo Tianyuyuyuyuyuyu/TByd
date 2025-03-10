@@ -47,6 +47,11 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         public virtual string Author => "TByd";
 
         /// <summary>
+        /// 模板分类
+        /// </summary>
+        public virtual string Category => "通用";
+
+        /// <summary>
         /// 模板图标
         /// </summary>
         public virtual Texture2D Icon => _mIcon;

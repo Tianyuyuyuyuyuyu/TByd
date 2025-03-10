@@ -203,11 +203,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         /// </summary>
         private void CreatePages()
         {
-            // 这里将添加所有页面
-            // 目前只是占位，后续会实现具体页面
-
-            // 添加模板选择页面（占位）
-            _pageNavigator.AddPage(new PlaceholderPage("模板选择", "选择要创建的包模板类型"));
+            // 添加模板选择页面
+            _pageNavigator.AddPage(new TemplateSelectionPage(_templateManager));
 
             // 添加配置页面（占位）
             _pageNavigator.AddPage(new PlaceholderPage("基本配置", "配置包的基本信息"));

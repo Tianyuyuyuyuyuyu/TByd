@@ -24,6 +24,11 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         public override string Description => "专为Unity运行时功能库设计的包模板，提供运行时功能开发的基础结构";
 
         /// <summary>
+        /// 模板分类
+        /// </summary>
+        public override string Category => "运行时";
+
+        /// <summary>
         /// 初始化模板
         /// </summary>
         protected override void InitializeTemplate()

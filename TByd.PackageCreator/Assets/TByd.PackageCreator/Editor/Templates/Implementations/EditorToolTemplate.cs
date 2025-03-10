@@ -21,7 +21,12 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         /// <summary>
         /// 模板描述
         /// </summary>
-        public override string Description => "专为Unity编辑器扩展工具设计的包模板，提供编辑器UI和工具开发的基础结构";
+        public override string Description => "专为Unity编辑器扩展设计的包模板，提供编辑器工具开发的基础结构";
+
+        /// <summary>
+        /// 模板分类
+        /// </summary>
+        public override string Category => "编辑器";
 
         /// <summary>
         /// 初始化模板

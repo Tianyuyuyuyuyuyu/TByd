@@ -37,6 +37,11 @@ namespace TByd.PackageCreator.Editor.Core.Interfaces
         string Author { get; }
 
         /// <summary>
+        /// 模板分类
+        /// </summary>
+        string Category { get; }
+
+        /// <summary>
         /// 模板图标
         /// </summary>
         Texture2D Icon { get; }

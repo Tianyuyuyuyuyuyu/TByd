@@ -43,6 +43,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
                     description = template.Description,
                     version = template.Version,
                     author = template.Author,
+                    category = template.Category,
                     directories = template.Directories.ToArray(),
                     files = template.Files.ToArray(),
                     options = template.Options.ToArray()
@@ -126,31 +127,44 @@ namespace TByd.PackageCreator.Editor.Templates.Data
     [Serializable]
     public class JsonTemplateData
     {
-        [FormerlySerializedAs("Id")] [JsonProperty("id")]
+        [FormerlySerializedAs("Id")]
+        [JsonProperty("id")]
         public string id;
 
-        [FormerlySerializedAs("Name")] [JsonProperty("name")]
+        [FormerlySerializedAs("Name")]
+        [JsonProperty("name")]
         public string name;
 
-        [FormerlySerializedAs("Description")] [JsonProperty("description")]
+        [FormerlySerializedAs("Description")]
+        [JsonProperty("description")]
         public string description;
 
-        [FormerlySerializedAs("Version")] [JsonProperty("version")]
+        [FormerlySerializedAs("Version")]
+        [JsonProperty("version")]
         public string version;
 
-        [FormerlySerializedAs("Author")] [JsonProperty("author")]
+        [FormerlySerializedAs("Author")]
+        [JsonProperty("author")]
         public string author;
 
-        [FormerlySerializedAs("IconPath")] [JsonProperty("iconPath")]
+        [FormerlySerializedAs("Category")]
+        [JsonProperty("category")]
+        public string category;
+
+        [FormerlySerializedAs("IconPath")]
+        [JsonProperty("iconPath")]
         public string iconPath;
 
-        [FormerlySerializedAs("Directories")] [JsonProperty("directories")]
+        [FormerlySerializedAs("Directories")]
+        [JsonProperty("directories")]
         public TemplateDirectory[] directories;
 
-        [FormerlySerializedAs("Files")] [JsonProperty("files")]
+        [FormerlySerializedAs("Files")]
+        [JsonProperty("files")]
         public TemplateFile[] files;
 
-        [FormerlySerializedAs("Options")] [JsonProperty("options")]
+        [FormerlySerializedAs("Options")]
+        [JsonProperty("options")]
         public TemplateOption[] options;
     }
 
@@ -199,6 +213,7 @@ namespace TByd.PackageCreator.Editor.Templates.Data
         public string Description => _mData.description;
         public string Version => _mData.version;
         public string Author => _mData.author;
+        public string Category => string.IsNullOrEmpty(_mData.category) ? "自定义" : _mData.category;
         public Texture2D Icon => _mIcon;
 
         public IReadOnlyList<TemplateDirectory> Directories =>

@@ -20,7 +20,12 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         /// <summary>
         /// 模板描述
         /// </summary>
-        public override string Description => "提供基础的Unity包结构，包含标准目录和必要文件";
+        public override string Description => "创建基本的UPM包结构，包含标准目录和基础文件";
+
+        /// <summary>
+        /// 模板分类
+        /// </summary>
+        public override string Category => "基础";
 
         /// <summary>
         /// 初始化模板

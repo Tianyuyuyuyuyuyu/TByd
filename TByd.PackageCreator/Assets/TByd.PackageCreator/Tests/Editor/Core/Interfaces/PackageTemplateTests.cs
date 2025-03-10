@@ -23,6 +23,7 @@ namespace TByd.PackageCreator.Tests.Editor.Core.Interfaces
             public string Description => "用于测试的模拟模板";
             public string Version => "1.0.0";
             public string Author => "测试人员";
+            public string Category => "测试";
             public Texture2D Icon => null;
 
             private List<TemplateDirectory> _directories = new List<TemplateDirectory>();
