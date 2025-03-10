@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Services;
 using TByd.PackageCreator.Editor.UI.Controls;
 using TByd.PackageCreator.Editor.UI.Styles;
 using TByd.PackageCreator.Editor.UI.Utils;
 using TByd.PackageCreator.Editor.UI.ViewModels;
+using TByd.PackageCreator.Editor.UI.Windows;
 using UnityEditor;
 using UnityEngine;
 
@@ -143,6 +145,7 @@ namespace TByd.PackageCreator.Editor.UI.Pages
                 {
                     // 确保在主线程中执行
                     EditorApplication.QueuePlayerLoopUpdate();
+                    EditorWindow.GetWindow<PackageCreatorWindow>().Repaint();
                 };
             }
 
@@ -156,8 +159,6 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             if (EditorGUI.EndChangeCheck() && newCategoryIndex != _viewModel.SelectedCategoryIndex.Value)
             {
                 _viewModel.SelectedCategoryIndex.Value = newCategoryIndex;
-                // 强制重绘
-                EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
             }
             EditorGUILayout.EndHorizontal();
 
@@ -168,18 +169,38 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             EditorGUILayout.LabelField("排序:", GUILayout.Width(40));
             EditorGUI.BeginChangeCheck();
             int sortIndex = (int)_viewModel.CurrentSortMode.Value;
-            int newSortIndex = EditorGUILayout.Popup(sortIndex, _sortOptions, GUILayout.Width(120));
-            if (EditorGUI.EndChangeCheck() && newSortIndex != sortIndex)
+            sortIndex = EditorGUILayout.Popup(sortIndex, _sortOptions, GUILayout.Width(120));
+            if (EditorGUI.EndChangeCheck())
             {
-                _viewModel.SetSortMode((TemplateSelectionViewModel.SortMode)newSortIndex);
-                // 强制重绘
-                EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
+                _viewModel.CurrentSortMode.Value = (TemplateSelectionViewModel.SortMode)sortIndex;
             }
             EditorGUILayout.EndHorizontal();
 
+            // 添加弹性空间
             GUILayout.FlexibleSpace();
 
-            // 删除详情切换按钮，详情常驻显示
+            // 添加"刷新模板"按钮
+            if (GUILayout.Button("刷新模板", GUILayout.Width(100)))
+            {
+                // 重新加载模板
+                TemplateManager.Instance.ReloadTemplates();
+
+                // 清空当前选择
+                _viewModel.SelectedTemplate.Value = null;
+
+                // 重新初始化视图模型
+                _viewModel.Initialize();
+
+                // 重置滚动位置
+                _scrollPosition = Vector2.zero;
+                _detailsScrollPosition = Vector2.zero;
+
+                // 显示提示信息
+                EditorUtility.DisplayDialog("刷新完成", "模板已成功刷新", "确定");
+
+                // 刷新编辑器窗口
+                EditorWindow.GetWindow<PackageCreatorWindow>().Repaint();
+            }
 
             EditorGUILayout.EndHorizontal();
         }
@@ -279,6 +300,11 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             EditorGUILayout.LabelField(template.Category, EditorStyles.wordWrappedLabel);
             EditorGUILayout.EndHorizontal();
 
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("当前日期:", GUILayout.Width(50));
+            EditorGUILayout.LabelField(DateTime.Now.ToString("yyyy-MM-dd"), EditorStyles.wordWrappedLabel);
+            EditorGUILayout.EndHorizontal();
+
             EditorGUILayout.LabelField("描述:", EditorStyles.boldLabel);
             EditorGUILayout.LabelField(template.Description, EditorStyles.wordWrappedLabel);
 
@@ -309,12 +335,33 @@ namespace TByd.PackageCreator.Editor.UI.Pages
                 EditorGUILayout.Space(5);
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 EditorGUILayout.LabelField("目录结构", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField($"目录数量: {template.Directories.Count}", EditorStyles.miniLabel);
 
                 foreach (var directory in template.Directories)
                 {
-                    EditorGUILayout.LabelField($"• {directory.RelativePath}", EditorStyles.miniLabel);
+                    if (string.IsNullOrEmpty(directory.RelativePath))
+                    {
+                        EditorGUILayout.LabelField("• [空路径]", EditorStyles.miniLabel);
+                        continue;
+                    }
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"• {directory.RelativePath}", EditorStyles.miniLabel, GUILayout.Width(200));
+                    if (!string.IsNullOrEmpty(directory.Description))
+                    {
+                        EditorGUILayout.LabelField(directory.Description, EditorStyles.miniLabel);
+                    }
+                    EditorGUILayout.EndHorizontal();
                 }
 
+                EditorGUILayout.EndVertical();
+            }
+            else
+            {
+                EditorGUILayout.Space(5);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("目录结构", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("没有目录结构信息", EditorStyles.miniLabel);
                 EditorGUILayout.EndVertical();
             }
 
@@ -324,12 +371,33 @@ namespace TByd.PackageCreator.Editor.UI.Pages
                 EditorGUILayout.Space(5);
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 EditorGUILayout.LabelField("包含文件", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField($"文件数量: {template.Files.Count}", EditorStyles.miniLabel);
 
                 foreach (var file in template.Files)
                 {
-                    EditorGUILayout.LabelField($"• {file.RelativePath}", EditorStyles.miniLabel);
+                    if (string.IsNullOrEmpty(file.RelativePath))
+                    {
+                        EditorGUILayout.LabelField("• [空路径]", EditorStyles.miniLabel);
+                        continue;
+                    }
+
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField($"• {file.RelativePath}", EditorStyles.miniLabel, GUILayout.Width(200));
+                    if (!string.IsNullOrEmpty(file.Description))
+                    {
+                        EditorGUILayout.LabelField(file.Description, EditorStyles.miniLabel);
+                    }
+                    EditorGUILayout.EndHorizontal();
                 }
 
+                EditorGUILayout.EndVertical();
+            }
+            else
+            {
+                EditorGUILayout.Space(5);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("包含文件", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField("没有文件信息", EditorStyles.miniLabel);
                 EditorGUILayout.EndVertical();
             }
 

@@ -1,0 +1,232 @@
+{
+  "id": "com.tbyd.editor-tool-example",
+  "name": "编辑器工具包示例",
+  "description": "专为Unity编辑器扩展设计的包模板，提供编辑器工具功能",
+  "version": "1.0.0",
+  "author": "TByd",
+  "category": "示例",
+  "iconPath": "Assets/TByd.PackageCreator/EditorResources/Icons/EditorIcon.png",
+  "directories": [
+    {
+      "relativePath": "Editor",
+      "description": "编辑器脚本目录"
+    },
+    {
+      "relativePath": "Editor/Scripts",
+      "description": "主要脚本目录"
+    },
+    {
+      "relativePath": "Editor/Resources",
+      "description": "编辑器资源目录"
+    },
+    {
+      "relativePath": "Editor/UI",
+      "description": "编辑器UI目录"
+    },
+    {
+      "relativePath": "Runtime",
+      "description": "运行时脚本目录"
+    },
+    {
+      "relativePath": "Tests",
+      "description": "测试目录"
+    },
+    {
+      "relativePath": "Tests/Editor",
+      "description": "编辑器测试目录"
+    },
+    {
+      "relativePath": "Documentation~",
+      "description": "文档目录"
+    }
+  ],
+  "files": [
+    {
+      "relativePath": "package.json",
+      "contentTemplate": "{\n  \"name\": \"${packageName}\",\n  \"version\": \"${packageVersion}\",\n  \"displayName\": \"${displayName}\",\n  \"description\": \"${description}\",\n  \"unity\": \"2021.3\",\n  \"documentationUrl\": \"${documentationUrl}\",\n  \"changelogUrl\": \"${changelogUrl}\",\n  \"licensesUrl\": \"${licensesUrl}\",\n  \"dependencies\": {\n  },\n  \"keywords\": [\n    \"${keyword1}\",\n    \"${keyword2}\",\n    \"editor\",\n    \"tool\"\n  ],\n  \"author\": {\n    \"name\": \"${authorName}\",\n    \"email\": \"${authorEmail}\",\n    \"url\": \"${authorUrl}\"\n  }\n}",
+      "description": "包配置文件"
+    },
+    {
+      "relativePath": "Editor/Scripts/ExampleEditorWindow.cs",
+      "contentTemplate": "using UnityEditor;\nusing UnityEngine;\n\nnamespace ${namespace}.Editor\n{\n    /// <summary>\n    /// 示例编辑器窗口\n    /// </summary>\n    public class ExampleEditorWindow : EditorWindow\n    {\n        private string _message = \"Hello from ${packageName}!\";\n\n        /// <summary>\n        /// 打开窗口的菜单项\n        /// </summary>\n        [MenuItem(\"Tools/${menuPath}\")]\n        public static void ShowWindow()\n        {\n            var window = GetWindow<ExampleEditorWindow>(\"${windowTitle}\");\n            window.minSize = new Vector2(300, 200);\n            window.Show();\n        }\n\n        /// <summary>\n        /// 绘制GUI\n        /// </summary>\n        private void OnGUI()\n        {\n            EditorGUILayout.LabelField(\"示例编辑器窗口\", EditorStyles.boldLabel);\n            EditorGUILayout.Space(10);\n\n            _message = EditorGUILayout.TextField(\"消息\", _message);\n\n            EditorGUILayout.Space(10);\n\n            if (GUILayout.Button(\"显示消息\"))\n            {\n                EditorUtility.DisplayDialog(\"消息\", _message, \"确定\");\n            }\n        }\n    }\n}",
+      "description": "示例编辑器窗口脚本"
+    },
+    {
+      "relativePath": "Editor/${assemblyName}.Editor.asmdef",
+      "contentTemplate": "{\n    \"name\": \"${assemblyName}.Editor\",\n    \"rootNamespace\": \"${namespace}.Editor\",\n    \"references\": [],\n    \"includePlatforms\": [\n        \"Editor\"\n    ],\n    \"excludePlatforms\": [],\n    \"allowUnsafeCode\": false,\n    \"overrideReferences\": false,\n    \"precompiledReferences\": [],\n    \"autoReferenced\": true,\n    \"defineConstraints\": [],\n    \"versionDefines\": [],\n    \"noEngineReferences\": false\n}",
+      "description": "编辑器程序集定义文件"
+    },
+    {
+      "relativePath": "Runtime/${assemblyName}.asmdef",
+      "contentTemplate": "{\n    \"name\": \"${assemblyName}\",\n    \"rootNamespace\": \"${namespace}\",\n    \"references\": [],\n    \"includePlatforms\": [],\n    \"excludePlatforms\": [],\n    \"allowUnsafeCode\": false,\n    \"overrideReferences\": false,\n    \"precompiledReferences\": [],\n    \"autoReferenced\": true,\n    \"defineConstraints\": [],\n    \"versionDefines\": [],\n    \"noEngineReferences\": false\n}",
+      "description": "运行时程序集定义文件"
+    },
+    {
+      "relativePath": "Tests/Editor/${assemblyName}.Editor.Tests.asmdef",
+      "contentTemplate": "{\n    \"name\": \"${assemblyName}.Editor.Tests\",\n    \"rootNamespace\": \"${namespace}.Editor.Tests\",\n    \"references\": [\n        \"UnityEngine.TestRunner\",\n        \"UnityEditor.TestRunner\",\n        \"${assemblyName}\",\n        \"${assemblyName}.Editor\"\n    ],\n    \"includePlatforms\": [\n        \"Editor\"\n    ],\n    \"excludePlatforms\": [],\n    \"allowUnsafeCode\": false,\n    \"overrideReferences\": true,\n    \"precompiledReferences\": [\n        \"nunit.framework.dll\"\n    ],\n    \"autoReferenced\": false,\n    \"defineConstraints\": [\n        \"UNITY_INCLUDE_TESTS\"\n    ],\n    \"versionDefines\": [],\n    \"noEngineReferences\": false\n}",
+      "description": "编辑器测试程序集定义文件"
+    },
+    {
+      "relativePath": "README.md",
+      "contentTemplate": "# ${displayName}\n\n${description}\n\n## 安装\n\n### 通过 Unity Package Manager\n\n1. 打开 Package Manager 窗口\n2. 点击 + 按钮\n3. 选择 \"Add package from git URL...\"\n4. 输入 \"${gitUrl}\"\n5. 点击 Add\n\n## 使用方法\n\n```csharp\nusing ${namespace}.Editor;\n\n// 示例代码\nExampleEditorWindow.ShowWindow();\n```\n\n## 许可证\n\n${license}\n",
+      "description": "README文件"
+    },
+    {
+      "relativePath": "CHANGELOG.md",
+      "contentTemplate": "# 更新日志\n\n## [${packageVersion}] - ${currentDate}\n\n### 新增\n\n- 初始版本\n",
+      "description": "更新日志文件"
+    },
+    {
+      "relativePath": "LICENSE.md",
+      "contentTemplate": "# ${license}\n\n${licenseText}\n",
+      "description": "许可证文件"
+    },
+    {
+      "relativePath": "Documentation~/index.md",
+      "contentTemplate": "# ${displayName}\n\n${description}\n\n## 安装\n\n### 通过 Unity Package Manager\n\n1. 打开 Package Manager 窗口\n2. 点击 + 按钮\n3. 选择 \"Add package from git URL...\"\n4. 输入 \"${gitUrl}\"\n5. 点击 Add\n\n## API 文档\n\n### ExampleEditorWindow 类\n\n```csharp\nnamespace ${namespace}.Editor\n{\n    public class ExampleEditorWindow : EditorWindow\n    {\n        public static void ShowWindow();\n    }\n}\n```\n",
+      "description": "文档索引文件"
+    }
+  ],
+  "options": [
+    {
+      "name": "packageName",
+      "displayName": "包名称",
+      "description": "包的唯一标识符，例如：com.company.package-name",
+      "defaultValue": "com.company.editor-tool",
+      "required": true
+    },
+    {
+      "name": "displayName",
+      "displayName": "显示名称",
+      "description": "包的显示名称",
+      "defaultValue": "Editor Tool",
+      "required": true
+    },
+    {
+      "name": "packageVersion",
+      "displayName": "包版本",
+      "description": "包的版本号，遵循语义化版本规范",
+      "defaultValue": "1.0.0",
+      "required": true
+    },
+    {
+      "name": "description",
+      "displayName": "描述",
+      "description": "包的简要描述",
+      "defaultValue": "A description of the editor tool",
+      "required": true
+    },
+    {
+      "name": "namespace",
+      "displayName": "命名空间",
+      "description": "包的根命名空间",
+      "defaultValue": "Company.EditorTool",
+      "required": true
+    },
+    {
+      "name": "assemblyName",
+      "displayName": "程序集名称",
+      "description": "包的程序集名称",
+      "defaultValue": "Company.EditorTool",
+      "required": true
+    },
+    {
+      "name": "menuPath",
+      "displayName": "菜单路径",
+      "description": "编辑器窗口的菜单路径",
+      "defaultValue": "My Tools/Example Tool",
+      "required": true
+    },
+    {
+      "name": "windowTitle",
+      "displayName": "窗口标题",
+      "description": "编辑器窗口的标题",
+      "defaultValue": "Example Tool",
+      "required": true
+    },
+    {
+      "name": "authorName",
+      "displayName": "作者名称",
+      "description": "包的作者名称",
+      "defaultValue": "Your Name",
+      "required": true
+    },
+    {
+      "name": "authorEmail",
+      "displayName": "作者邮箱",
+      "description": "包的作者邮箱",
+      "defaultValue": "your.email@example.com",
+      "required": false
+    },
+    {
+      "name": "authorUrl",
+      "displayName": "作者网址",
+      "description": "包的作者网址",
+      "defaultValue": "https://example.com",
+      "required": false
+    },
+    {
+      "name": "gitUrl",
+      "displayName": "Git URL",
+      "description": "包的Git仓库URL",
+      "defaultValue": "https://github.com/username/repo.git",
+      "required": false
+    },
+    {
+      "name": "documentationUrl",
+      "displayName": "文档URL",
+      "description": "包的文档URL",
+      "defaultValue": "https://example.com/docs",
+      "required": false
+    },
+    {
+      "name": "changelogUrl",
+      "displayName": "更新日志URL",
+      "description": "包的更新日志URL",
+      "defaultValue": "https://example.com/changelog",
+      "required": false
+    },
+    {
+      "name": "licensesUrl",
+      "displayName": "许可证URL",
+      "description": "包的许可证URL",
+      "defaultValue": "https://example.com/license",
+      "required": false
+    },
+    {
+      "name": "keyword1",
+      "displayName": "关键词1",
+      "description": "包的关键词1",
+      "defaultValue": "unity",
+      "required": false
+    },
+    {
+      "name": "keyword2",
+      "displayName": "关键词2",
+      "description": "包的关键词2",
+      "defaultValue": "editor",
+      "required": false
+    },
+    {
+      "name": "license",
+      "displayName": "许可证",
+      "description": "包的许可证类型",
+      "defaultValue": "MIT",
+      "required": true
+    },
+    {
+      "name": "licenseText",
+      "displayName": "许可证文本",
+      "description": "包的许可证文本",
+      "defaultValue": "MIT License\n\nCopyright (c) [year] [fullname]\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
+      "required": true
+    },
+    {
+      "name": "currentDate",
+      "displayName": "当前日期",
+      "description": "当前日期，格式为YYYY-MM-DD",
+      "defaultValue": "2025-01-01",
+      "required": true
+    }
+  ]
+}

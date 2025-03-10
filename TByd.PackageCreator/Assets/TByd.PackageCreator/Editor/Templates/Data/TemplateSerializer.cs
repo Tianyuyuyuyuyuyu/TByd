@@ -8,6 +8,7 @@ using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Core.Services;
+using TByd.PackageCreator.Editor.Templates.Implementations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -73,6 +74,8 @@ namespace TByd.PackageCreator.Editor.Templates.Data
 
             try
             {
+                SErrorHandler.LogInfo($"开始反序列化JSON模板，内容预览: {(json.Length > 100 ? json.Substring(0, 100) + "..." : json)}");
+
                 var jsonTemplate = JsonConvert.DeserializeObject<JsonTemplateData>(json);
                 if (jsonTemplate == null)
                 {
@@ -80,7 +83,13 @@ namespace TByd.PackageCreator.Editor.Templates.Data
                     return null;
                 }
 
-                return new JsonPackageTemplate(jsonTemplate);
+                SErrorHandler.LogInfo($"JSON模板反序列化成功，ID: {jsonTemplate.id}, 名称: {jsonTemplate.name}, 分类: {jsonTemplate.category}");
+                SErrorHandler.LogInfo($"目录数量: {(jsonTemplate.directories != null ? jsonTemplate.directories.Length : 0)}, 文件数量: {(jsonTemplate.files != null ? jsonTemplate.files.Length : 0)}");
+
+                var template = new JsonPackageTemplate(jsonTemplate);
+                SErrorHandler.LogInfo($"已创建模板对象，ID: {template.Id}, 名称: {template.Name}, 分类: {template.Category}");
+
+                return template;
             }
             catch (Exception ex)
             {
@@ -127,178 +136,34 @@ namespace TByd.PackageCreator.Editor.Templates.Data
     [Serializable]
     public class JsonTemplateData
     {
-        [FormerlySerializedAs("Id")]
         [JsonProperty("id")]
         public string id;
 
-        [FormerlySerializedAs("Name")]
         [JsonProperty("name")]
         public string name;
 
-        [FormerlySerializedAs("Description")]
         [JsonProperty("description")]
         public string description;
 
-        [FormerlySerializedAs("Version")]
         [JsonProperty("version")]
         public string version;
 
-        [FormerlySerializedAs("Author")]
         [JsonProperty("author")]
         public string author;
 
-        [FormerlySerializedAs("Category")]
         [JsonProperty("category")]
         public string category;
 
-        [FormerlySerializedAs("IconPath")]
         [JsonProperty("iconPath")]
         public string iconPath;
 
-        [FormerlySerializedAs("Directories")]
         [JsonProperty("directories")]
         public TemplateDirectory[] directories;
 
-        [FormerlySerializedAs("Files")]
         [JsonProperty("files")]
         public TemplateFile[] files;
 
-        [FormerlySerializedAs("Options")]
         [JsonProperty("options")]
         public TemplateOption[] options;
-    }
-
-    /// <summary>
-    /// 从JSON数据创建的包模板实现
-    /// </summary>
-    public class JsonPackageTemplate : IPackageTemplate
-    {
-        private readonly JsonTemplateData _mData;
-        private Texture2D _mIcon;
-
-        /// <summary>
-        /// 创建从JSON数据创建的包模板
-        /// </summary>
-        /// <param name="data">JSON模板数据</param>
-        public JsonPackageTemplate(JsonTemplateData data)
-        {
-            _mData = data ?? throw new ArgumentNullException(nameof(data));
-            LoadIcon();
-        }
-
-        /// <summary>
-        /// 加载图标资源
-        /// </summary>
-        private void LoadIcon()
-        {
-            if (string.IsNullOrEmpty(_mData.iconPath)) return;
-
-            try
-            {
-                // 如果是资源路径，尝试加载
-                if (_mData.iconPath.StartsWith("Assets/"))
-                {
-                    _mIcon = AssetDatabase.LoadAssetAtPath<Texture2D>(_mData.iconPath);
-                }
-                // 未来可以添加从文件加载图标的逻辑
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"加载模板图标时出错: {ex.Message}");
-            }
-        }
-
-        public string Id => _mData.id;
-        public string Name => _mData.name;
-        public string Description => _mData.description;
-        public string Version => _mData.version;
-        public string Author => _mData.author;
-        public string Category => string.IsNullOrEmpty(_mData.category) ? "自定义" : _mData.category;
-        public Texture2D Icon => _mIcon;
-
-        public IReadOnlyList<TemplateDirectory> Directories =>
-            _mData.directories != null ? Array.AsReadOnly(_mData.directories) : Array.Empty<TemplateDirectory>();
-
-        public IReadOnlyList<TemplateFile> Files =>
-            _mData.files != null ? Array.AsReadOnly(_mData.files) : Array.Empty<TemplateFile>();
-
-        public IReadOnlyList<TemplateOption> Options =>
-            _mData.options != null ? Array.AsReadOnly(_mData.options) : Array.Empty<TemplateOption>();
-
-        public ValidationResult ValidateConfig(PackageConfig config)
-        {
-            var result = new ValidationResult();
-
-            // 基本验证逻辑
-            if (string.IsNullOrEmpty(config.Name))
-            {
-                result.AddError("包名称不能为空");
-            }
-
-            if (string.IsNullOrEmpty(config.Version))
-            {
-                result.AddError("包版本不能为空");
-            }
-
-            // 未来可以添加更复杂的验证逻辑
-
-            return result;
-        }
-
-        /// <summary>
-        /// 根据配置生成包结构
-        /// </summary>
-        /// <param name="config">包配置</param>
-        /// <param name="targetPath">目标路径</param>
-        /// <returns>操作是否成功</returns>
-        public bool Generate(PackageConfig config, string targetPath)
-        {
-            // 创建文件生成器
-            var fileGenerator = new FileGenerator();
-
-            // 注册标准策略
-            fileGenerator.RegisterStrategy(new JsonFileGenerationStrategy());
-            fileGenerator.RegisterStrategy(new CSharpFileGenerationStrategy());
-
-            // 执行异步生成并等待结果
-            var task = GenerateAsync(config, targetPath, fileGenerator);
-            task.Wait();
-
-            // 返回生成结果
-            return task.Result.IsValid;
-        }
-
-        /// <summary>
-        /// 根据配置异步生成包结构
-        /// </summary>
-        /// <param name="config">包配置</param>
-        /// <param name="targetPath">目标路径</param>
-        /// <param name="fileGenerator">文件生成器</param>
-        /// <returns>生成结果</returns>
-        public async Task<ValidationResult> GenerateAsync(PackageConfig config, string targetPath, FileGenerator fileGenerator = null)
-        {
-            // 创建默认文件生成器（如果未提供）
-            if (fileGenerator == null)
-            {
-                fileGenerator = new FileGenerator();
-                fileGenerator.RegisterStrategy(new JsonFileGenerationStrategy());
-                fileGenerator.RegisterStrategy(new CSharpFileGenerationStrategy());
-            }
-
-            // 验证配置
-            var validationResult = ValidateConfig(config);
-            if (!validationResult.IsValid)
-            {
-                return validationResult;
-            }
-
-            // 使用文件生成器生成目录和文件
-            return await fileGenerator.GenerateAsync(this, config, targetPath);
-        }
-
-        public TemplatePreviewInfo GetPreviewInfo()
-        {
-            return new TemplatePreviewInfo(Name, Description);
-        }
     }
 }

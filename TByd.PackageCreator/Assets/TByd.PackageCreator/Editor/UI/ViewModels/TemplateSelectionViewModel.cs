@@ -81,6 +81,11 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
         /// </summary>
         public void Initialize()
         {
+            // 清空当前数据
+            Templates.Clear();
+            Categories.Value = new string[0];
+            SearchKeyword.Value = "";
+
             // 加载所有模板
             LoadTemplates();
 
@@ -89,6 +94,9 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
 
             // 应用过滤和排序
             FilterTemplates();
+
+            // 强制更新UI
+            EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
         }
 
         /// <summary>

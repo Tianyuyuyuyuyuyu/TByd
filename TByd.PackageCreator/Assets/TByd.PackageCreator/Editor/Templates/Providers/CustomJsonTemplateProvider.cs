@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Templates.Implementations;
 
 namespace TByd.PackageCreator.Editor.Templates.Providers
 {

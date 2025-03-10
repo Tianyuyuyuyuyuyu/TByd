@@ -5,8 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="896a7003-dd9c-4224-8b84-5e2df7a1ae8f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Controls/SearchBarControl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Controls/SearchBarControl.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Core/Services/TemplateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Core/Services/TemplateManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Data/TemplateSerializer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Data/TemplateSerializer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Providers/CustomJsonTemplateProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Providers/CustomJsonTemplateProvider.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/TemplateSelectionPage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/TemplateSelectionPage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Utils/UIStateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Utils/UIStateManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/ViewModels/TemplateSelectionViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/ViewModels/TemplateSelectionViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +28,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/196e72b4660e44569727ecf8428a3225576c30/d9/4408ef98/Path.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5f40cdb07bd44d76a23dad985a4ec283812000/49/14333d5b/BuildTargetGroup.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5f40cdb07bd44d76a23dad985a4ec283812000/58/74553f56/EditorWindow.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dc94633f558f432f9ac5f90f4be38a8017a978/45/bf15c1cf/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
@@ -110,7 +117,7 @@
       <workItem from="1741333163247" duration="546000" />
       <workItem from="1741333725047" duration="5242000" />
       <workItem from="1741339030927" duration="614000" />
-      <workItem from="1741584692723" duration="7158000" />
+      <workItem from="1741584692723" duration="14258000" />
     </task>
     <servers />
   </component>
@@ -126,6 +133,13 @@
   <component name="UnityUnitTestConfiguration" currentTestLauncher="Both" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="Type#TByd.PackageCreator.Editor.Templates.Implementations.JsonPackageTemplate" memberName="Directories" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

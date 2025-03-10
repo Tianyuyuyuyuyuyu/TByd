@@ -53,7 +53,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         private int _selectedToolbarIndex;
 
         // 页面状态
-        private bool _isCreating;
         private bool _showSettings;
         private bool _isInitialPageEntered;
 
@@ -408,17 +407,22 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         /// </summary>
         private void StartCreatingPackage()
         {
-            // 标记为正在创建
-            _isCreating = true;
-
             // 更新状态
             UIStateManager.Instance.UpdateState(state =>
             {
-                state.IsCreationSuccessful = false;
+                state.IsCreating = true;
                 state.CreationProgress = 0f;
-                state.ErrorMessage = null;
             });
 
+            // 执行创建操作
+            CreatePackage();
+        }
+
+        /// <summary>
+        /// 创建包
+        /// </summary>
+        private void CreatePackage()
+        {
             // 前进到结果页面
             _pageNavigator.GoNext();
             _selectedToolbarIndex = _pageNavigator.CurrentPageIndex;
@@ -431,10 +435,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             {
                 state.IsCreationSuccessful = true;
                 state.CreationProgress = 1f;
+                state.IsCreating = false;
             });
-
-            // 标记为创建完成
-            _isCreating = false;
         }
 
         #endregion

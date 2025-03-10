@@ -5,8 +5,12 @@ using System.Linq;
 using System.Reflection;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using TByd.PackageCreator.Editor.Core.Interfaces;
+using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Templates.Data;
+using TByd.PackageCreator.Editor.Templates.Implementations;
 using TByd.PackageCreator.Editor.Templates.Providers;
+using UnityEditor;
+using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.Core.Services
 {
@@ -26,11 +30,11 @@ namespace TByd.PackageCreator.Editor.Core.Services
         public event EventHandler<TemplateChangedEventArgs> OnTemplateChanged;
 
         /// <summary>
-        /// 获取TemplateManager实例
+        /// 获取模板管理器实例
         /// </summary>
         public static TemplateManager Instance
         {
-            get { return _sInstance ??= new TemplateManager(); }
+            get { return _sInstance ?? (_sInstance = new TemplateManager()); }
         }
 
         private TemplateManager()
@@ -49,14 +53,77 @@ namespace TByd.PackageCreator.Editor.Core.Services
                 // 加载内置模板提供者
                 var builtInProvider = new BuiltInTemplateProvider();
                 RegisterProvider(builtInProvider);
+                _mErrorHandler.LogInfo($"已注册内置模板提供者，提供了 {builtInProvider.GetTemplates().Count()} 个模板");
 
-                // 反射查找其他实现了ITemplateProvider的类型并实例化
+                // 加载JSON文件夹模板提供者
+                LoadJsonFolderTemplateProvider();
+
+                // 加载程序集中的模板提供者
                 LoadTemplateProvidersFromAssembly();
+
+                // 刷新缓存
+                RefreshTemplatesCache();
             }
             catch (Exception ex)
             {
-                _mErrorHandler.LogException(ErrorType.OperationFailed, ex, "加载内置模板提供者时出错");
+                _mErrorHandler.LogException(ErrorType.OperationFailed, ex, "加载内部提供者时出错");
             }
+        }
+
+        /// <summary>
+        /// 加载JSON文件夹模板提供者
+        /// </summary>
+        private void LoadJsonFolderTemplateProvider()
+        {
+            try
+            {
+                _mErrorHandler.LogInfo("正在加载JSON模板...");
+
+                // 获取模板文件夹路径
+                string templateFolderPath = Path.Combine(GetPackageRootPath(), "PackageResources", "Templates");
+
+                if (!Directory.Exists(templateFolderPath))
+                {
+                    _mErrorHandler.LogWarning(ErrorType.FileNotFound, $"模板文件夹不存在: {templateFolderPath}");
+                    return;
+                }
+
+                // 移除任何现有的JsonFolderTemplateProvider，避免重复
+                var existingProvider = _mProviders.FirstOrDefault(p => p is JsonFolderTemplateProvider);
+                if (existingProvider != null)
+                {
+                    _mProviders.Remove(existingProvider);
+                    _mErrorHandler.LogInfo("已移除现有的JSON模板提供者");
+                }
+
+                // 创建并注册新的提供者
+                var provider = new JsonFolderTemplateProvider(templateFolderPath);
+                RegisterProvider(provider);
+
+                _mErrorHandler.LogInfo($"已注册JSON模板提供者，提供了 {provider.GetTemplates().Count()} 个模板");
+
+                // 刷新缓存以确保新模板可用
+                RefreshTemplatesCache();
+            }
+            catch (Exception ex)
+            {
+                _mErrorHandler.LogException(ErrorType.OperationFailed, ex, "加载JSON模板提供者时出错");
+            }
+        }
+
+        /// <summary>
+        /// 获取包根目录路径
+        /// </summary>
+        /// <returns>包根目录路径</returns>
+        private string GetPackageRootPath()
+        {
+            // 尝试通过Package Manager获取路径
+            string packagePath = "Assets/TByd.PackageCreator";
+
+            // 如果是通过Package Manager安装的包，可以使用以下方式获取路径
+            // 但这里我们假设包是在Assets目录下
+
+            return packagePath;
         }
 
         /// <summary>
@@ -288,9 +355,33 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         public void ReloadTemplates()
         {
-            RefreshTemplatesCache();
-            OnTemplateChangedMethod(EnumTemplateChangeType.Reloaded, null);
-            _mErrorHandler.LogInfo("已重新加载所有模板");
+            try
+            {
+                // 清空提供者列表，保留内置提供者
+                var builtInProvider = _mProviders.FirstOrDefault(p => p is BuiltInTemplateProvider);
+                _mProviders.Clear();
+
+                if (builtInProvider != null)
+                {
+                    _mProviders.Add(builtInProvider);
+                }
+
+                // 重新加载所有提供者
+                LoadJsonFolderTemplateProvider();
+                LoadTemplateProvidersFromAssembly();
+
+                // 刷新缓存
+                RefreshTemplatesCache();
+
+                // 通知模板已重新加载
+                OnTemplateChangedMethod(EnumTemplateChangeType.Reloaded, null);
+
+                _mErrorHandler.LogInfo("已重新加载所有模板");
+            }
+            catch (Exception ex)
+            {
+                _mErrorHandler.LogException(ErrorType.OperationFailed, ex, "重新加载模板时出错");
+            }
         }
 
         /// <summary>
