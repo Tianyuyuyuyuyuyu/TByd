@@ -81,16 +81,23 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             DrawSeparator();
 
             // 绘制模板列表和详情区域
-            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.BeginHorizontal(GUILayout.ExpandWidth(true));
+
+            // 计算可用宽度
+            float availableWidth = EditorGUIUtility.currentViewWidth;
+
+            // 调整宽度比例，列表占45%，详情占55%
+            float listWidth = availableWidth * 0.45f;
+            float detailsWidth = availableWidth * 0.55f;
 
             // 绘制模板列表
-            DrawTemplateList();
+            DrawTemplateList(listWidth);
 
-            // 绘制详情区域
-            if (_viewModel.ShowDetails.Value)
-            {
-                DrawTemplateDetails();
-            }
+            // 为了让详情区域更靠右，添加一个小的负间距
+            GUILayout.Space(-5);
+
+            // 绘制详情区域 - 常驻显示，不再根据ShowDetails.Value判断
+            DrawTemplateDetails(detailsWidth);
 
             EditorGUILayout.EndHorizontal();
         }
@@ -103,10 +110,13 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             EditorGUILayout.BeginHorizontal();
 
             // 绘制搜索栏
+            EditorGUI.BeginChangeCheck();
             string newSearchText = SearchBarControl.Draw(_viewModel.SearchKeyword.Value, "搜索模板...");
-            if (newSearchText != _viewModel.SearchKeyword.Value)
+            if (EditorGUI.EndChangeCheck() && newSearchText != _viewModel.SearchKeyword.Value)
             {
                 _viewModel.SearchKeyword.Value = newSearchText;
+                // 强制重绘
+                EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
             }
 
             GUILayout.Space(10);
@@ -114,10 +124,13 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             // 绘制分类下拉框
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("分类:", GUILayout.Width(40));
+            EditorGUI.BeginChangeCheck();
             int newCategoryIndex = EditorGUILayout.Popup(_viewModel.SelectedCategoryIndex.Value, _viewModel.Categories.Value, GUILayout.Width(120));
-            if (newCategoryIndex != _viewModel.SelectedCategoryIndex.Value)
+            if (EditorGUI.EndChangeCheck() && newCategoryIndex != _viewModel.SelectedCategoryIndex.Value)
             {
                 _viewModel.SelectedCategoryIndex.Value = newCategoryIndex;
+                // 强制重绘
+                EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
             }
             EditorGUILayout.EndHorizontal();
 
@@ -126,22 +139,20 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             // 绘制排序下拉框
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("排序:", GUILayout.Width(40));
+            EditorGUI.BeginChangeCheck();
             int sortIndex = (int)_viewModel.CurrentSortMode.Value;
             int newSortIndex = EditorGUILayout.Popup(sortIndex, _sortOptions, GUILayout.Width(120));
-            if (newSortIndex != sortIndex)
+            if (EditorGUI.EndChangeCheck() && newSortIndex != sortIndex)
             {
                 _viewModel.SetSortMode((TemplateSelectionViewModel.SortMode)newSortIndex);
+                // 强制重绘
+                EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
             }
             EditorGUILayout.EndHorizontal();
 
             GUILayout.FlexibleSpace();
 
-            // 绘制详情切换按钮
-            bool showDetails = GUILayout.Toggle(_viewModel.ShowDetails.Value, "显示详情", EditorStyles.miniButton, GUILayout.Width(80));
-            if (showDetails != _viewModel.ShowDetails.Value)
-            {
-                _viewModel.ToggleDetails();
-            }
+            // 删除详情切换按钮，详情常驻显示
 
             EditorGUILayout.EndHorizontal();
         }
@@ -149,11 +160,10 @@ namespace TByd.PackageCreator.Editor.UI.Pages
         /// <summary>
         /// 绘制模板列表
         /// </summary>
-        private void DrawTemplateList()
+        private void DrawTemplateList(float width)
         {
-            float listWidth = _viewModel.ShowDetails.Value ? EditorGUIUtility.currentViewWidth * 0.6f : EditorGUIUtility.currentViewWidth - 20;
-
-            EditorGUILayout.BeginVertical(GUILayout.Width(listWidth));
+            // 使用传入的宽度参数
+            EditorGUILayout.BeginVertical(GUILayout.Width(width - 10)); // 减去一些边距
 
             // 绘制模板数量信息
             EditorGUILayout.LabelField($"找到 {_viewModel.Templates.Count} 个模板", EditorStyles.miniLabel);
@@ -199,7 +209,7 @@ namespace TByd.PackageCreator.Editor.UI.Pages
         /// <summary>
         /// 绘制模板详情
         /// </summary>
-        private void DrawTemplateDetails()
+        private void DrawTemplateDetails(float width)
         {
             // 如果没有选中模板，不显示详情
             if (_viewModel.SelectedTemplate.Value == null)
@@ -209,7 +219,9 @@ namespace TByd.PackageCreator.Editor.UI.Pages
 
             IPackageTemplate template = _viewModel.SelectedTemplate.Value;
 
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Width(EditorGUIUtility.currentViewWidth * 0.4f - 20));
+            // 增加宽度，使详情区域右侧边界更贴近窗口右侧边界
+            // 这里增加宽度而不是减少，因为我们希望右侧边界更靠近窗口边缘
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Width(width + 5));
 
             // 绘制详情标题
             EditorGUILayout.LabelField("模板详情", PackageCreatorStyles.HeaderLabel);
@@ -220,64 +232,72 @@ namespace TByd.PackageCreator.Editor.UI.Pages
             // 绘制详情内容
             _detailsScrollPosition = EditorGUILayout.BeginScrollView(_detailsScrollPosition);
 
-            // 绘制基本信息
-            EditorGUILayout.LabelField("名称:", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField(template.Name);
+            // 基本信息区域
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.LabelField("基本信息", EditorStyles.boldLabel);
 
-            EditorGUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("名称:", GUILayout.Width(50));
+            EditorGUILayout.LabelField(template.Name, EditorStyles.wordWrappedLabel);
+            EditorGUILayout.EndHorizontal();
 
-            EditorGUILayout.LabelField("分类:", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField(template.Category);
-
-            EditorGUILayout.Space(5);
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("分类:", GUILayout.Width(50));
+            EditorGUILayout.LabelField(template.Category, EditorStyles.wordWrappedLabel);
+            EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.LabelField("描述:", EditorStyles.boldLabel);
             EditorGUILayout.LabelField(template.Description, EditorStyles.wordWrappedLabel);
 
-            EditorGUILayout.Space(10);
+            EditorGUILayout.EndVertical();
 
-            // 绘制模板选项
+            // 可用选项区域
             if (template.Options != null && template.Options.Count > 0)
             {
-                EditorGUILayout.LabelField("可用选项:", EditorStyles.boldLabel);
+                EditorGUILayout.Space(5);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("可用选项", EditorStyles.boldLabel);
 
                 foreach (var option in template.Options)
                 {
-                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-                    EditorGUILayout.LabelField(option.DisplayName, EditorStyles.boldLabel);
-                    EditorGUILayout.LabelField(option.Description, EditorStyles.wordWrappedLabel);
-
-                    EditorGUILayout.EndVertical();
-
-                    EditorGUILayout.Space(5);
+                    EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField(option.DisplayName + ":", GUILayout.Width(80));
+                    EditorGUILayout.LabelField(option.Description, EditorStyles.wordWrappedMiniLabel);
+                    EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.Space(2);
                 }
+
+                EditorGUILayout.EndVertical();
             }
 
-            EditorGUILayout.Space(10);
-
-            // 绘制模板结构
+            // 目录结构区域
             if (template.Directories != null && template.Directories.Count > 0)
             {
-                EditorGUILayout.LabelField("目录结构:", EditorStyles.boldLabel);
+                EditorGUILayout.Space(5);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("目录结构", EditorStyles.boldLabel);
 
                 foreach (var directory in template.Directories)
                 {
                     EditorGUILayout.LabelField($"• {directory.RelativePath}", EditorStyles.miniLabel);
                 }
+
+                EditorGUILayout.EndVertical();
             }
 
-            EditorGUILayout.Space(10);
-
-            // 绘制模板文件
+            // 包含文件区域
             if (template.Files != null && template.Files.Count > 0)
             {
-                EditorGUILayout.LabelField("包含文件:", EditorStyles.boldLabel);
+                EditorGUILayout.Space(5);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("包含文件", EditorStyles.boldLabel);
 
                 foreach (var file in template.Files)
                 {
                     EditorGUILayout.LabelField($"• {file.RelativePath}", EditorStyles.miniLabel);
                 }
+
+                EditorGUILayout.EndVertical();
             }
 
             EditorGUILayout.EndScrollView();

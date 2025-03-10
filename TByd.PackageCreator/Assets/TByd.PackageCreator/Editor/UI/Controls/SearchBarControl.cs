@@ -120,6 +120,8 @@ namespace TByd.PackageCreator.Editor.UI.Controls
                 {
                     newSearchText = "";
                     GUI.FocusControl(null);
+                    // 立即重绘UI，确保变更立即生效
+                    EditorGUIUtility.ExitGUI();
                 }
             }
 

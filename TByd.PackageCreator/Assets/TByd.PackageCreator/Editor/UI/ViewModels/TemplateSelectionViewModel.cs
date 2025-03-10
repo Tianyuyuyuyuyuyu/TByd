@@ -4,6 +4,7 @@ using System.Linq;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.UI.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.UI.ViewModels
@@ -173,7 +174,7 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
             try
             {
                 // 获取所有模板
-                var allTemplates = _templateManager.GetAllTemplates();
+                var allTemplates = _templateManager.GetAllTemplates().ToList();
 
                 // 应用分类过滤
                 if (SelectedCategoryIndex.Value > 0 && SelectedCategoryIndex.Value < Categories.Value.Length)
@@ -220,6 +221,9 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
                 {
                     SelectedTemplate.Value = null;
                 }
+
+                // 强制更新UI
+                EditorApplication.delayCall += () => EditorApplication.QueuePlayerLoopUpdate();
             }
             catch (Exception ex)
             {

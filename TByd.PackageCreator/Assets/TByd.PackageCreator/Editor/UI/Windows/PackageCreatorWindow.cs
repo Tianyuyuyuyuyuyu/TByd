@@ -47,8 +47,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         // UI状态
         private Vector2 _scrollPosition;
         private bool _isInitialized;
-        private Texture2D _logoTexture;
-        private GUIContent _titleContent;
 
         // 工具栏
         private string[] _toolbarTitles;
@@ -57,6 +55,7 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         // 页面状态
         private bool _isCreating;
         private bool _showSettings;
+        private bool _isInitialPageEntered;
 
         #endregion
 
@@ -173,9 +172,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         /// </summary>
         private void InitializeUI()
         {
-            // 加载资源
-            LoadResources();
-
             // 初始化页面导航器
             _pageNavigator = new PageNavigator();
 
@@ -184,18 +180,12 @@ namespace TByd.PackageCreator.Editor.UI.Windows
 
             // 初始化工具栏
             InitializeToolbar();
-        }
 
-        /// <summary>
-        /// 加载资源
-        /// </summary>
-        private void LoadResources()
-        {
-            // 加载Logo
-            _logoTexture = EditorGUIUtility.FindTexture("d_Package Manager");
-
-            // 创建标题内容
-            _titleContent = new GUIContent(WindowTitle, _logoTexture);
+            // 确保第一个页面的OnEnter方法被调用
+            if (_pageNavigator.PageCount > 0)
+            {
+                _pageNavigator.GetPageAt(0).OnEnter();
+            }
         }
 
         /// <summary>
@@ -247,9 +237,6 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            // 绘制Logo和标题
-            GUILayout.Label(_titleContent, PackageCreatorStyles.HeaderLabel, GUILayout.Height(30));
-
             GUILayout.FlexibleSpace();
 
             // 绘制设置按钮
@@ -271,10 +258,10 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            // 绘制步骤指示器
-            int newSelectedIndex = GUILayout.Toolbar(_pageNavigator.CurrentPageIndex, _toolbarTitles, EditorStyles.toolbarButton);
+            // 绘制工具栏按钮
+            int newSelectedIndex = GUILayout.Toolbar(_selectedToolbarIndex, _toolbarTitles, EditorStyles.toolbarButton);
 
-            // 如果选择了不同的步骤，切换页面
+            // 处理页面切换
             if (newSelectedIndex != _pageNavigator.CurrentPageIndex && newSelectedIndex >= 0 && newSelectedIndex < _pageNavigator.PageCount)
             {
                 // 只允许向前导航到有效的页面或向后导航
@@ -283,6 +270,12 @@ namespace TByd.PackageCreator.Editor.UI.Windows
                     _pageNavigator.GoToPage(newSelectedIndex);
                     _selectedToolbarIndex = newSelectedIndex;
                 }
+            }
+            // 确保即使是第一次打开窗口（newSelectedIndex等于CurrentPageIndex）也能正确初始化当前页面
+            else if (newSelectedIndex == 0 && _pageNavigator.CurrentPageIndex == 0 && !_isInitialPageEntered)
+            {
+                _pageNavigator.GetPageAt(0).OnEnter();
+                _isInitialPageEntered = true;
             }
 
             EditorGUILayout.EndHorizontal();

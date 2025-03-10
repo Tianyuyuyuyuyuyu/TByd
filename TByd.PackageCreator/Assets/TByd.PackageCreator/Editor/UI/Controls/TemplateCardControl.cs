@@ -143,9 +143,25 @@ namespace TByd.PackageCreator.Editor.UI.Controls
             // 选择适当的样式
             var cardStyle = _mIsSelected ? PackageCreatorStyles.SelectedCard : PackageCreatorStyles.Card;
 
+            // 创建更大字体的标题样式
+            var titleStyle = new GUIStyle(EditorStyles.boldLabel);
+            titleStyle.fontSize = 13; // 增大字体大小
+
+            // 创建更大字体的描述样式，确保自动换行
+            var descStyle = new GUIStyle(EditorStyles.wordWrappedMiniLabel);
+            descStyle.fontSize = 12; // 增大字体大小
+            descStyle.wordWrap = true; // 确保文本自动换行
+
+            // 计算描述文本的高度
+            float descHeight = descStyle.CalcHeight(new GUIContent(_mDescription), EditorGUIUtility.currentViewWidth * 0.45f - 60);
+            // 确保最小高度为25
+            descHeight = Mathf.Max(25, descHeight);
+
+            // 根据描述文本高度动态计算卡片高度
+            float cardHeight = 40 + descHeight; // 基础高度 + 描述文本高度
+
             // 预先分配一个矩形区域（不是开始一个组）
-            // 增加高度以适应更大的字体
-            var cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(65));
+            var cardRect = GUILayoutUtility.GetRect(GUIContent.none, cardStyle, GUILayout.ExpandWidth(true), GUILayout.Height(cardHeight));
 
             // 处理点击事件
             var evt = Event.current;
@@ -178,23 +194,15 @@ namespace TByd.PackageCreator.Editor.UI.Controls
                 contentRect.width -= 22; // 为选中标记留出空间
             }
 
-            // 创建更大字体的标题样式
-            var titleStyle = new GUIStyle(EditorStyles.boldLabel);
-            titleStyle.fontSize = 13; // 增大字体大小
-
-            // 创建更大字体的描述样式
-            var descStyle = new GUIStyle(EditorStyles.wordWrappedMiniLabel);
-            descStyle.fontSize = 12; // 增大字体大小
-
             // 标题
             var titleRect = new Rect(contentRect.x, contentRect.y, contentRect.width, 20);
             GUI.Label(titleRect, _mTitle, titleStyle);
 
-            // 描述
-            var descRect = new Rect(contentRect.x, titleRect.y + titleRect.height + 2, contentRect.width, 25);
+            // 描述 - 使用计算出的高度
+            var descRect = new Rect(contentRect.x, titleRect.y + titleRect.height + 2, contentRect.width, descHeight);
             GUI.Label(descRect, _mDescription, descStyle);
 
-            // 额外的空间用于卡片间隔 - 减少间隔高度从5到2
+            // 额外的空间用于卡片间隔
             GUILayoutUtility.GetRect(GUIContent.none, GUIStyle.none, GUILayout.Height(2));
 
             return result;

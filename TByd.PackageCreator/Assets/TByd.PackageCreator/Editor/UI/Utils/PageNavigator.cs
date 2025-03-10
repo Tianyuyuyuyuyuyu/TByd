@@ -99,7 +99,7 @@ namespace TByd.PackageCreator.Editor.UI.Utils
             {
                 CurrentPage?.OnExit();
                 _currentPageIndex = index;
-                CurrentPage.OnEnter();
+                CurrentPage?.OnEnter();
             }
         }
 
