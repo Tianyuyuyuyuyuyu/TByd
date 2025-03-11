@@ -201,8 +201,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 添加依赖页面
             _pageNavigator.AddPage(new DependenciesPage(_configManager));
 
-            // 添加高级选项页面（占位）
-            _pageNavigator.AddPage(new PlaceholderPage("高级选项", "配置包的高级选项"));
+            // 添加高级选项页面
+            _pageNavigator.AddPage(new AdvancedOptionsPage(_configManager));
 
             // 添加摘要页面（占位）
             _pageNavigator.AddPage(new PlaceholderPage("摘要", "查看包配置摘要"));
