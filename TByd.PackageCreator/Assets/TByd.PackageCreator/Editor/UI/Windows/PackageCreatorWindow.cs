@@ -568,25 +568,103 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         /// <param name="config">包配置</param>
         private void SimulatePackageCreation(string packagePath, PackageConfig config)
         {
-            // 模拟创建步骤（共5步）
-            SimulateCreationStep(0.2f, () => SimulateCreationStep(0.4f, () =>
-                SimulateCreationStep(0.6f, () => SimulateCreationStep(0.8f, () =>
+            // 获取选中的模板
+            var template = UIStateManager.Instance.CreationState.SelectedTemplate;
+            if (template == null)
+            {
+                UIStateManager.Instance.UpdateState(state =>
                 {
-                    // 最后一步完成，更新状态为成功
+                    state.IsCreationSuccessful = false;
+                    state.ErrorMessage = "无效的包模板";
+                    state.CreationProgress = 1f;
+                    state.IsCreating = false;
+                });
+                return;
+            }
+
+            try
+            {
+                // 更新创建进度为25%
+                UIStateManager.Instance.UpdateState(state => { state.CreationProgress = 0.25f; });
+                Repaint();
+
+                // 确保目标目录存在
+                string parentDir = Path.GetDirectoryName(packagePath);
+                if (!string.IsNullOrEmpty(parentDir) && !Directory.Exists(parentDir))
+                {
+                    Directory.CreateDirectory(parentDir);
+                }
+
+                // 更新创建进度为50%
+                UIStateManager.Instance.UpdateState(state => { state.CreationProgress = 0.5f; });
+                Repaint();
+
+                // 使用文件生成器创建包
+                var fileGenerator = new FileGenerator();
+                fileGenerator.RegisterStrategy(new JsonFileGenerationStrategy());
+                fileGenerator.RegisterStrategy(new CSharpFileGenerationStrategy());
+
+                // 监听文件生成进度事件
+                fileGenerator.OnDirectoryCreated += (dir, current, total) =>
+                {
+                    float progressStep = 0.4f / total;
                     UIStateManager.Instance.UpdateState(state =>
                     {
-                        state.IsCreationSuccessful = true;
-                        state.PackagePath = packagePath;
-                        state.CreationProgress = 1f;
-                        state.IsCreating = false;
-
-                        // 创建成功的验证结果
-                        var validationResult = new ValidationResult();
-                        validationResult.AddInfo("包创建成功");
-                        state.CreationResult = validationResult;
+                        state.CreationProgress = 0.5f + progressStep * current;
                     });
-                })
-            )));
+                    Repaint();
+                };
+
+                fileGenerator.OnFileCreated += (file, current, total) =>
+                {
+                    float progressStep = 0.4f / total;
+                    UIStateManager.Instance.UpdateState(state =>
+                    {
+                        state.CreationProgress = 0.5f + progressStep * current;
+                    });
+                    Repaint();
+                };
+
+                // 执行实际的包创建
+                bool success = template.Generate(config, packagePath);
+                ValidationResult result = new ValidationResult();
+
+                if (success)
+                {
+                    result.AddInfo("包创建成功");
+                }
+                else
+                {
+                    result.AddError("包创建失败");
+                }
+
+                // 更新最终状态
+                UIStateManager.Instance.UpdateState(state =>
+                {
+                    state.IsCreationSuccessful = success;
+                    state.PackagePath = packagePath;
+                    state.CreationProgress = 1f;
+                    state.IsCreating = false;
+                    state.CreationResult = result;
+                    state.ErrorMessage = success ? "" : "创建包时发生错误，请查看详细信息。";
+                });
+            }
+            catch (System.Exception ex)
+            {
+                // 创建失败，更新状态
+                UIStateManager.Instance.UpdateState(state =>
+                {
+                    state.IsCreationSuccessful = false;
+                    state.ErrorMessage = $"创建包时发生异常: {ex.Message}";
+                    state.CreationProgress = 1f;
+                    state.IsCreating = false;
+
+                    // 创建失败的验证结果
+                    var validationResult = new ValidationResult();
+                    validationResult.AddError(ex.Message);
+                    state.CreationResult = validationResult;
+                });
+            }
         }
 
         /// <summary>

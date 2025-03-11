@@ -23,5 +23,6 @@
         "editor.formatOnType": true
     },
     "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
-    "dotnet.formatting.organizeImportsOnFormat": true
+    "dotnet.formatting.organizeImportsOnFormat": true,
+    "dotnet.preferCSharpExtension": true
 }
