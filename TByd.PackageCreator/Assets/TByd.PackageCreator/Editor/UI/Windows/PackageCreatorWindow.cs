@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;
@@ -121,6 +123,14 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 绘制工具栏
             DrawToolbar();
 
+            // 如果正在创建包，显示进度条
+            var state = UIStateManager.Instance.CreationState;
+            if (state.IsCreating)
+            {
+                DrawCreationProgress();
+                return; // 创建过程中不显示其他UI元素
+            }
+
             // 开始滚动视图
             _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
@@ -144,6 +154,32 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             {
                 Repaint();
             }
+        }
+
+        /// <summary>
+        /// 绘制包创建进度
+        /// </summary>
+        private void DrawCreationProgress()
+        {
+            var state = UIStateManager.Instance.CreationState;
+
+            GUILayout.Space(20);
+
+            EditorGUILayout.BeginVertical();
+            GUILayout.FlexibleSpace();
+
+            ProgressIndicatorControl.DrawFullProgressIndicator(
+                "正在创建包",
+                "请稍候，正在创建UPM包...",
+                state.CreationProgress,
+                false
+            );
+
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndVertical();
+
+            // 重绘窗口以更新进度
+            Repaint();
         }
 
         #endregion
@@ -207,8 +243,10 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 添加摘要页面
             _pageNavigator.AddPage(new SummaryPage(_configManager, _templateManager));
 
-            // 添加结果页面（占位）
-            _pageNavigator.AddPage(new PlaceholderPage("创建结果", "包创建结果"));
+            // 添加结果页面
+            var resultPage = new ResultPage(_configManager);
+            resultPage.OnRestartRequested += () => _pageNavigator.GoToPage(0);
+            _pageNavigator.AddPage(resultPage);
         }
 
         /// <summary>
@@ -447,20 +485,131 @@ namespace TByd.PackageCreator.Editor.UI.Windows
         /// </summary>
         private void CreatePackage()
         {
-            // 前进到结果页面
-            _pageNavigator.GoNext();
+            // 验证配置、模板和设置
+            var config = _configManager.CurrentConfig;
+            var template = UIStateManager.Instance.CreationState.SelectedTemplate;
+
+            // 导航到结果页面（结果页面是最后一个页面，索引为5）
+            _pageNavigator.GoToPage(5);
             _selectedToolbarIndex = _pageNavigator.CurrentPageIndex;
 
-            // 这里将添加实际的包创建逻辑
-            // 目前只是占位，后续会实现具体功能
+            // 检查配置和模板是否有效
+            if (config == null)
+            {
+                UIStateManager.Instance.UpdateState(state =>
+                {
+                    state.IsCreationSuccessful = false;
+                    state.ErrorMessage = "无效的包配置";
+                    state.CreationProgress = 1f;
+                    state.IsCreating = false;
 
-            // 模拟创建完成
+                    // 创建失败的验证结果
+                    var validationResult = new ValidationResult();
+                    validationResult.AddError("无效的包配置");
+                    state.CreationResult = validationResult;
+                });
+                return;
+            }
+
+            if (template == null)
+            {
+                UIStateManager.Instance.UpdateState(state =>
+                {
+                    state.IsCreationSuccessful = false;
+                    state.ErrorMessage = "无效的包模板";
+                    state.CreationProgress = 1f;
+                    state.IsCreating = false;
+
+                    // 创建失败的验证结果
+                    var validationResult = new ValidationResult();
+                    validationResult.AddError("无效的包模板");
+                    state.CreationResult = validationResult;
+                });
+                return;
+            }
+
+            try
+            {
+                // 设置初始状态
+                UIStateManager.Instance.UpdateState(state =>
+                {
+                    state.IsCreating = true;
+                    state.CreationProgress = 0f;
+                });
+
+                // 模拟包路径
+                string packagePath = Path.Combine(Application.dataPath, "..", "Packages", config.Name);
+
+                // 模拟创建包的过程
+                EditorApplication.delayCall += () => SimulatePackageCreation(packagePath, config);
+            }
+            catch (System.Exception ex)
+            {
+                // 更新状态为失败
+                UIStateManager.Instance.UpdateState(state =>
+                {
+                    state.IsCreationSuccessful = false;
+                    state.ErrorMessage = $"创建包时发生错误: {ex.Message}";
+                    state.CreationProgress = 1f;
+                    state.IsCreating = false;
+
+                    // 创建失败的验证结果
+                    var validationResult = new ValidationResult();
+                    validationResult.AddError(ex.Message);
+                    state.CreationResult = validationResult;
+                });
+            }
+        }
+
+        /// <summary>
+        /// 模拟包创建过程
+        /// </summary>
+        /// <param name="packagePath">包路径</param>
+        /// <param name="config">包配置</param>
+        private void SimulatePackageCreation(string packagePath, PackageConfig config)
+        {
+            // 模拟创建步骤（共5步）
+            SimulateCreationStep(0.2f, () => SimulateCreationStep(0.4f, () =>
+                SimulateCreationStep(0.6f, () => SimulateCreationStep(0.8f, () =>
+                {
+                    // 最后一步完成，更新状态为成功
+                    UIStateManager.Instance.UpdateState(state =>
+                    {
+                        state.IsCreationSuccessful = true;
+                        state.PackagePath = packagePath;
+                        state.CreationProgress = 1f;
+                        state.IsCreating = false;
+
+                        // 创建成功的验证结果
+                        var validationResult = new ValidationResult();
+                        validationResult.AddInfo("包创建成功");
+                        state.CreationResult = validationResult;
+                    });
+                })
+            )));
+        }
+
+        /// <summary>
+        /// 模拟单个创建步骤
+        /// </summary>
+        /// <param name="progress">步骤完成后的进度</param>
+        /// <param name="callback">步骤完成后的回调</param>
+        private void SimulateCreationStep(float progress, Action callback)
+        {
+            // 更新进度
             UIStateManager.Instance.UpdateState(state =>
             {
-                state.IsCreationSuccessful = true;
-                state.CreationProgress = 1f;
-                state.IsCreating = false;
+                state.CreationProgress = progress;
             });
+
+            // 重绘窗口以更新进度条
+            Repaint();
+
+            // 模拟步骤耗时（0.5秒）
+            EditorApplication.delayCall += () =>
+            {
+                callback?.Invoke();
+            };
         }
 
         #endregion

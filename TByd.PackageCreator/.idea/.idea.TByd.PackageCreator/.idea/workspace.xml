@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="896a7003-dd9c-4224-8b84-5e2df7a1ae8f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Documentation~/开发计划.md" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Documentation~/开发计划.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Utils/UIStateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Utils/UIStateManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,6 +25,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5f40cdb07bd44d76a23dad985a4ec283812000/49/14333d5b/BuildTargetGroup.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/5f40cdb07bd44d76a23dad985a4ec283812000/58/74553f56/EditorWindow.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/dc94633f558f432f9ac5f90f4be38a8017a978/45/bf15c1cf/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/SummaryPage.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -115,7 +116,7 @@
       <workItem from="1741339030927" duration="614000" />
       <workItem from="1741584692723" duration="14258000" />
       <workItem from="1741676789898" duration="965000" />
-      <workItem from="1741677812593" duration="42000" />
+      <workItem from="1741677812593" duration="2823000" />
     </task>
     <servers />
   </component>
@@ -133,23 +134,6 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/ConfigurationPage.cs</url>
-          <line>54</line>
-          <properties documentPath="H:\TYPersonal\TByd\TByd.PackageCreator\Assets\TByd.PackageCreator\Editor\UI\Pages\ConfigurationPage.cs" containingFunctionPresentation="Method 'OnEnter'">
-            <startOffsets>
-              <option value="1434" />
-            </startOffsets>
-            <endOffsets>
-              <option value="1458" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="Type#TByd.PackageCreator.Editor.Templates.Implementations.JsonPackageTemplate" memberName="Directories" />

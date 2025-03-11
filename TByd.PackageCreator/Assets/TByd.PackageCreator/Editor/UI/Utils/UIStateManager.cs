@@ -65,11 +65,17 @@ namespace TByd.PackageCreator.Editor.UI.Utils
         // 创建结果
         public bool IsCreationSuccessful { get; set; }
 
-        // 是否正在创建
-        public bool IsCreating { get; set; }
-
         // 错误信息
         public string ErrorMessage { get; set; }
+
+        // 包路径
+        public string PackagePath { get; set; }
+
+        // 创建结果详情
+        public ValidationResult CreationResult { get; set; }
+
+        // 是否正在创建
+        public bool IsCreating { get; set; }
 
         // 当前步骤
         public int CurrentStep { get; set; }
