@@ -21,6 +21,8 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         // 标题样式
         private static GUIStyle _sHeaderLabelStyle;
         private static GUIStyle _sTitleLabelStyle;
+        private static GUIStyle _sPageTitleStyle;
+        private static GUIStyle _sPageDescriptionStyle;
 
         // 描述样式
         private static GUIStyle _sDescriptionStyle;
@@ -32,6 +34,8 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         // 卡片样式
         private static GUIStyle _sCardStyle;
         private static GUIStyle _sSelectedCardStyle;
+        private static GUIStyle _sBoxStyle;
+        private static GUIStyle _sErrorBoxStyle;
 
         // 分割线样式
         private static GUIStyle _sSeparatorStyle;
@@ -268,6 +272,92 @@ namespace TByd.PackageCreator.Editor.UI.Styles
                     };
                 }
                 return _sFieldLabelStyle;
+            }
+        }
+
+        /// <summary>
+        /// 页面标题样式
+        /// </summary>
+        public static GUIStyle PageTitleStyle
+        {
+            get
+            {
+                if (_sPageTitleStyle == null)
+                {
+                    _sPageTitleStyle = new GUIStyle(HeaderLabel)
+                    {
+                        fontSize = HeaderFontSize,
+                        margin = new RectOffset(0, 0, 8, 4)
+                    };
+                }
+                return _sPageTitleStyle;
+            }
+        }
+
+        /// <summary>
+        /// 页面描述样式
+        /// </summary>
+        public static GUIStyle PageDescriptionStyle
+        {
+            get
+            {
+                if (_sPageDescriptionStyle == null)
+                {
+                    _sPageDescriptionStyle = new GUIStyle(Description)
+                    {
+                        fontSize = StandardFontSize,
+                        margin = new RectOffset(0, 0, 4, 12)
+                    };
+                }
+                return _sPageDescriptionStyle;
+            }
+        }
+
+        /// <summary>
+        /// 盒子样式，用于内容分组
+        /// </summary>
+        public static GUIStyle BoxStyle
+        {
+            get
+            {
+                if (_sBoxStyle == null)
+                {
+                    _sBoxStyle = new GUIStyle(EditorStyles.helpBox)
+                    {
+                        padding = new RectOffset(10, 10, 10, 10),
+                        margin = new RectOffset(5, 5, 5, 5)
+                    };
+                }
+                return _sBoxStyle;
+            }
+        }
+
+        /// <summary>
+        /// 错误盒子样式，用于显示错误信息
+        /// </summary>
+        public static GUIStyle ErrorBoxStyle
+        {
+            get
+            {
+                if (_sErrorBoxStyle == null)
+                {
+                    _sErrorBoxStyle = new GUIStyle(BoxStyle)
+                    {
+                        padding = new RectOffset(10, 10, 10, 10),
+                        margin = new RectOffset(5, 5, 5, 5)
+                    };
+
+                    // 设置错误背景色
+                    var errorColor = EditorGUIUtility.isProSkin
+                        ? new Color(0.8f, 0.2f, 0.2f, 0.1f) // 深色主题
+                        : new Color(1.0f, 0.7f, 0.7f, 0.5f); // 浅色主题
+
+                    var tex = new Texture2D(1, 1);
+                    tex.SetPixel(0, 0, errorColor);
+                    tex.Apply();
+                    _sErrorBoxStyle.normal.background = tex;
+                }
+                return _sErrorBoxStyle;
             }
         }
 

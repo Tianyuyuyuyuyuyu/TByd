@@ -204,8 +204,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 添加高级选项页面
             _pageNavigator.AddPage(new AdvancedOptionsPage(_configManager));
 
-            // 添加摘要页面（占位）
-            _pageNavigator.AddPage(new PlaceholderPage("摘要", "查看包配置摘要"));
+            // 添加摘要页面
+            _pageNavigator.AddPage(new SummaryPage(_configManager, _templateManager));
 
             // 添加结果页面（占位）
             _pageNavigator.AddPage(new PlaceholderPage("创建结果", "包创建结果"));
