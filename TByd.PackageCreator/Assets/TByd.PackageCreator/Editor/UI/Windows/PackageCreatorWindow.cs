@@ -198,8 +198,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 添加配置页面
             _pageNavigator.AddPage(new ConfigurationPage(_configManager));
 
-            // 添加依赖页面（占位）
-            _pageNavigator.AddPage(new PlaceholderPage("依赖配置", "配置包的依赖项"));
+            // 添加依赖页面
+            _pageNavigator.AddPage(new DependenciesPage(_configManager));
 
             // 添加高级选项页面（占位）
             _pageNavigator.AddPage(new PlaceholderPage("高级选项", "配置包的高级选项"));
@@ -263,11 +263,35 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 处理页面切换
             if (newSelectedIndex != _pageNavigator.CurrentPageIndex && newSelectedIndex >= 0 && newSelectedIndex < _pageNavigator.PageCount)
             {
-                // 只允许向前导航到有效的页面或向后导航
-                if (newSelectedIndex < _pageNavigator.CurrentPageIndex || _pageNavigator.GetPageAt(newSelectedIndex - 1)?.IsValid == true)
+                // 尝试切换到依赖配置页面（页面索引为2）
+                if (newSelectedIndex == 2)
+                {
+                    // 对于依赖配置页面，我们允许直接访问，但基本配置仍然需要有效
+                    var configPage = _pageNavigator.GetPageAt(1);
+                    if (configPage != null && !configPage.IsValid)
+                    {
+                        // 提示用户基本配置无效，但仍然允许访问依赖页面
+                        EditorUtility.DisplayDialog("警告",
+                            "基本配置页面的信息不完整。在创建包之前，您需要完成必要的配置信息。\n\n" +
+                            "您可以继续编辑依赖项，但请在最终创建包之前返回完成基本配置。",
+                            "了解");
+                    }
+
+                    // 无论如何都允许切换到依赖页面
+                    _pageNavigator.GoToPage(newSelectedIndex);
+                    _selectedToolbarIndex = newSelectedIndex;
+                }
+                // 对于其他页面，保持原有逻辑
+                else if (newSelectedIndex < _pageNavigator.CurrentPageIndex || _pageNavigator.GetPageAt(newSelectedIndex - 1)?.IsValid == true)
                 {
                     _pageNavigator.GoToPage(newSelectedIndex);
                     _selectedToolbarIndex = newSelectedIndex;
+                }
+                else if (_pageNavigator.GetPageAt(newSelectedIndex - 1) != null && !_pageNavigator.GetPageAt(newSelectedIndex - 1).IsValid)
+                {
+                    // 当前页面无效时，显示提示信息
+                    string previousPageTitle = _toolbarTitles[newSelectedIndex - 1];
+                    EditorUtility.DisplayDialog("无法导航", $"在进入下一步之前，请先完成{previousPageTitle}页面的必要信息。", "确定");
                 }
             }
             // 确保即使是第一次打开窗口（newSelectedIndex等于CurrentPageIndex）也能正确初始化当前页面
