@@ -5,9 +5,6 @@ using System.Linq;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Templates.Data;
-using TByd.PackageCreator.Editor.Templates.Implementations;
-using UnityEditor;
-using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.Templates.Providers
 {

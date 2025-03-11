@@ -1,5 +1,4 @@
 using UnityEditor;
-using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.UI.Utils
 {

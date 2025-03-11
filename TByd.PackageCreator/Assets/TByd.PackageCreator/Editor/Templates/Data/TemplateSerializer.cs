@@ -1,17 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;
-using TByd.PackageCreator.Editor.Core.Services;
 using TByd.PackageCreator.Editor.Templates.Implementations;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace TByd.PackageCreator.Editor.Templates.Data
 {

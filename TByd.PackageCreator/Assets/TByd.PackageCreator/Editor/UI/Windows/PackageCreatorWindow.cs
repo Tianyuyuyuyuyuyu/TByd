@@ -195,8 +195,8 @@ namespace TByd.PackageCreator.Editor.UI.Windows
             // 添加模板选择页面
             _pageNavigator.AddPage(new TemplateSelectionPage(_templateManager));
 
-            // 添加配置页面（占位）
-            _pageNavigator.AddPage(new PlaceholderPage("基本配置", "配置包的基本信息"));
+            // 添加配置页面
+            _pageNavigator.AddPage(new ConfigurationPage(_configManager));
 
             // 添加依赖页面（占位）
             _pageNavigator.AddPage(new PlaceholderPage("依赖配置", "配置包的依赖项"));

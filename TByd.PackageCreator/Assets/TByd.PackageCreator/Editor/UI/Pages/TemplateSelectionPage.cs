@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Services;
 using TByd.PackageCreator.Editor.UI.Controls;
 using TByd.PackageCreator.Editor.UI.Styles;
-using TByd.PackageCreator.Editor.UI.Utils;
 using TByd.PackageCreator.Editor.UI.ViewModels;
 using TByd.PackageCreator.Editor.UI.Windows;
 using UnityEditor;

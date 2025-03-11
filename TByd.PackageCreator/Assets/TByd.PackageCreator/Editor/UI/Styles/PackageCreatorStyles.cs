@@ -36,6 +36,10 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         // 分割线样式
         private static GUIStyle _sSeparatorStyle;
 
+        // 添加折叠面板和字段标签样式
+        private static GUIStyle _sFoldoutStyle;
+        private static GUIStyle _sFieldLabelStyle;
+
         // 图标尺寸
         private static readonly Vector2 SLargeIconSize = new Vector2(32, 32);
         private static readonly Vector2 SMediumIconSize = new Vector2(24, 24);
@@ -54,12 +58,10 @@ namespace TByd.PackageCreator.Editor.UI.Styles
             {
                 if (_sHeaderLabelStyle == null)
                 {
-                    _sHeaderLabelStyle = new GUIStyle(EditorStyles.largeLabel)
+                    _sHeaderLabelStyle = new GUIStyle(EditorStyles.boldLabel)
                     {
                         fontSize = HeaderFontSize,
-                        fontStyle = FontStyle.Bold,
-                        alignment = TextAnchor.MiddleLeft,
-                        margin = new RectOffset(0, 0, 10, 10)
+                        margin = new RectOffset(0, 0, 6, 6)
                     };
                 }
                 return _sHeaderLabelStyle;
@@ -78,8 +80,7 @@ namespace TByd.PackageCreator.Editor.UI.Styles
                     _sTitleLabelStyle = new GUIStyle(EditorStyles.boldLabel)
                     {
                         fontSize = TitleFontSize,
-                        alignment = TextAnchor.MiddleLeft,
-                        margin = new RectOffset(0, 0, 5, 5)
+                        margin = new RectOffset(0, 0, 4, 4)
                     };
                 }
                 return _sTitleLabelStyle;
@@ -95,11 +96,10 @@ namespace TByd.PackageCreator.Editor.UI.Styles
             {
                 if (_sDescriptionStyle == null)
                 {
-                    _sDescriptionStyle = new GUIStyle(EditorStyles.label)
+                    _sDescriptionStyle = new GUIStyle(EditorStyles.wordWrappedLabel)
                     {
-                        wordWrap = true,
                         fontSize = StandardFontSize,
-                        margin = new RectOffset(5, 5, 5, 10)
+                        margin = new RectOffset(0, 0, 2, 8)
                     };
                 }
                 return _sDescriptionStyle;
@@ -119,10 +119,21 @@ namespace TByd.PackageCreator.Editor.UI.Styles
                     {
                         fontSize = StandardFontSize,
                         fontStyle = FontStyle.Bold,
-                        fixedHeight = 30,
-                        margin = new RectOffset(10, 10, 5, 5),
-                        padding = new RectOffset(15, 15, 5, 5)
+                        fixedHeight = 28,
+                        margin = new RectOffset(0, 0, 6, 6)
                     };
+
+                    // 获取按钮颜色
+                    var buttonColor = EditorGUIUtility.isProSkin
+                        ? new Color(0.243f, 0.373f, 0.588f, 1.0f) // 深色主题
+                        : new Color(0.239f, 0.501f, 0.874f, 1.0f); // 浅色主题
+
+                    // 设置按钮背景
+                    var tex = new Texture2D(1, 1);
+                    tex.SetPixel(0, 0, buttonColor);
+                    tex.Apply();
+                    _sPrimaryButtonStyle.normal.background = tex;
+                    _sPrimaryButtonStyle.normal.textColor = Color.white;
                 }
                 return _sPrimaryButtonStyle;
             }
@@ -135,13 +146,16 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                return _sSecondaryButtonStyle ??= new GUIStyle(GUI.skin.button)
+                if (_sSecondaryButtonStyle == null)
                 {
-                    fontSize = StandardFontSize,
-                    fixedHeight = 25,
-                    margin = new RectOffset(5, 5, 5, 5),
-                    padding = new RectOffset(10, 10, 3, 3)
-                };
+                    _sSecondaryButtonStyle = new GUIStyle(GUI.skin.button)
+                    {
+                        fontSize = StandardFontSize,
+                        fixedHeight = 28,
+                        margin = new RectOffset(0, 0, 6, 6)
+                    };
+                }
+                return _sSecondaryButtonStyle;
             }
         }
 
@@ -152,11 +166,15 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         {
             get
             {
-                return _sCardStyle ??= new GUIStyle(EditorStyles.helpBox)
+                if (_sCardStyle == null)
                 {
-                    margin = new RectOffset(5, 5, 5, 5),
-                    padding = new RectOffset(10, 10, 10, 10)
-                };
+                    _sCardStyle = new GUIStyle(EditorStyles.helpBox)
+                    {
+                        margin = new RectOffset(5, 5, 5, 5),
+                        padding = new RectOffset(10, 10, 10, 10)
+                    };
+                }
+                return _sCardStyle;
             }
         }
 
@@ -202,25 +220,54 @@ namespace TByd.PackageCreator.Editor.UI.Styles
             {
                 if (_sSeparatorStyle == null)
                 {
-                    _sSeparatorStyle = new GUIStyle()
+                    _sSeparatorStyle = new GUIStyle
                     {
-                        margin = new RectOffset(0, 0, 10, 10),
-                        fixedHeight = 1,
-                        stretchWidth = true
+                        normal = { background = EditorGUIUtility.whiteTexture },
+                        margin = new RectOffset(0, 0, 4, 4),
+                        fixedHeight = 1
                     };
-
-                    // 创建1x1像素的纹理作为分割线
-                    var separatorColor = EditorGUIUtility.isProSkin
-                        ? new Color(0.1f, 0.1f, 0.1f, 1.0f)
-                        : new Color(0.6f, 0.6f, 0.6f, 1.0f);
-
-                    var lineTexture = new Texture2D(1, 1);
-                    lineTexture.SetPixel(0, 0, separatorColor);
-                    lineTexture.Apply();
-
-                    _sSeparatorStyle.normal.background = lineTexture;
                 }
                 return _sSeparatorStyle;
+            }
+        }
+
+        /// <summary>
+        /// 折叠面板样式
+        /// </summary>
+        public static GUIStyle FoldoutStyle
+        {
+            get
+            {
+                if (_sFoldoutStyle == null)
+                {
+                    _sFoldoutStyle = new GUIStyle(EditorStyles.foldout)
+                    {
+                        fontStyle = FontStyle.Bold,
+                        fontSize = TitleFontSize,
+                        margin = new RectOffset(0, 0, 8, 4)
+                    };
+                }
+                return _sFoldoutStyle;
+            }
+        }
+
+        /// <summary>
+        /// 字段标签样式
+        /// </summary>
+        public static GUIStyle FieldLabel
+        {
+            get
+            {
+                if (_sFieldLabelStyle == null)
+                {
+                    _sFieldLabelStyle = new GUIStyle(EditorStyles.label)
+                    {
+                        fontSize = StandardFontSize,
+                        alignment = TextAnchor.MiddleLeft,
+                        padding = new RectOffset(0, 5, 0, 0)
+                    };
+                }
+                return _sFieldLabelStyle;
             }
         }
 
@@ -252,7 +299,10 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         /// </summary>
         public static void DrawSeparator()
         {
+            var color = GUI.color;
+            GUI.color = EditorGUIUtility.isProSkin ? new Color(0.35f, 0.35f, 0.35f) : new Color(0.6f, 0.6f, 0.6f);
             GUILayout.Box(GUIContent.none, Separator);
+            GUI.color = color;
         }
 
         /// <summary>
@@ -261,12 +311,13 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         /// <param name="title">分组标题，可为null</param>
         public static void BeginGroup(string title = null)
         {
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            GUILayout.BeginVertical(EditorStyles.helpBox);
 
             if (!string.IsNullOrEmpty(title))
             {
-                EditorGUILayout.LabelField(title, TitleLabel);
-                DrawSeparator();
+                GUILayout.Space(2);
+                GUILayout.Label(title, TitleLabel);
+                GUILayout.Space(2);
             }
         }
 
@@ -275,8 +326,7 @@ namespace TByd.PackageCreator.Editor.UI.Styles
         /// </summary>
         public static void EndGroup()
         {
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.Space(5);
+            GUILayout.EndVertical();
         }
 
         #endregion

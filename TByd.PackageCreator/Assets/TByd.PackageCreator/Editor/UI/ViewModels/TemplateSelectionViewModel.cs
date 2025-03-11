@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using TByd.PackageCreator.Editor.Core.Interfaces;
-using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.UI.Utils;
 using UnityEditor;
 using UnityEngine;

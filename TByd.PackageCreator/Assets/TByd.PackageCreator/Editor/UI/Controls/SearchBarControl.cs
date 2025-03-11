@@ -1,5 +1,3 @@
-using System;
-using TByd.PackageCreator.Editor.UI.Styles;
 using UnityEditor;
 using UnityEngine;
 

@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="896a7003-dd9c-4224-8b84-5e2df7a1ae8f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.TByd.PackageCreator/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Core/Services/TemplateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Core/Services/TemplateManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Data/TemplateSerializer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Data/TemplateSerializer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Providers/CustomJsonTemplateProvider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/Templates/Providers/CustomJsonTemplateProvider.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/TemplateSelectionPage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Pages/TemplateSelectionPage.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Utils/UIStateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Utils/UIStateManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/ViewModels/TemplateSelectionViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/ViewModels/TemplateSelectionViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TByd.PackageCreator/Editor/UI/Windows/PackageCreatorWindow.cs" afterDir="false" />
-    </list>
+    <list default="true" id="896a7003-dd9c-4224-8b84-5e2df7a1ae8f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -50,6 +41,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "XThreadsFramesViewSplitterKey": "0.5005359",
     "git-widget-placeholder": "master",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -89,15 +81,13 @@
       </option>
       <method v="2" />
     </configuration>
-    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost" ignored-value-for-modified-check="15196">
+    <configuration name="Attach to Unity Editor" type="UNITY_DEBUG_RUN_CONFIGURATION" factoryName="Unity Debug" show_console_on_std_err="false" show_console_on_std_out="false" port="50000" address="localhost">
       <option name="allowRunningInParallel" value="false" />
       <option name="listenPortForConnections" value="false" />
-      <option name="pid" value="15196" />
+      <option name="pid" />
       <option name="projectPathOnTarget" />
       <option name="runtimes">
-        <list>
-          <MonoRuntime />
-        </list>
+        <list />
       </option>
       <option name="selectedOptions">
         <list />
