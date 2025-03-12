@@ -516,15 +516,13 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// <returns>默认配置</returns>
         private PackageConfig CreateDefaultConfig()
         {
-            var config = new PackageConfig(
-                "com.mycompany.mypackage",
-                "My Package",
-                "0.1.0",
-                "A new package created by TByd.PackageCreator"
-            );
-
+            var config = new PackageConfig();
+            config.Name = "com.mycompany.mypackage";
+            config.DisplayName = "My Package";
+            config.Version = "0.1.0";
+            config.Description = "A new package created by TByd.PackageCreator";
             config.UnityVersion = "2021.3";
-            config.Author = new PackageAuthor("Your Name", "your.email@example.com");
+            config.Author = new PackageAuthor(""); // 使用空作者名称，强制用户填写
 
             return config;
         }
@@ -546,7 +544,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
 
             // 否则使用默认路径
             var projectPath = Application.dataPath.Replace("/Assets", "");
-            var configDirectory = Path.Combine(projectPath,DefaultConfigDirectory);
+            var configDirectory = Path.Combine(projectPath, DefaultConfigDirectory);
 
             // 确保目录存在
             if (!Directory.Exists(configDirectory))

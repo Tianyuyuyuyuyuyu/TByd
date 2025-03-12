@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.UI.Utils;
+using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.UI.ViewModels
 {
@@ -410,11 +411,21 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
         /// </summary>
         public void Cleanup()
         {
+            // 确保包配置不为空
+            if (_packageConfig == null)
+            {
+                Debug.LogWarning("ConfigurationViewModel.Cleanup: 包配置为空");
+                return;
+            }
+
             // 保存修改到全局状态
             UIStateManager.Instance.UpdateState(state =>
             {
                 state.PackageConfig = _packageConfig;
             });
+
+            // 添加调试日志
+            Debug.Log($"ConfigurationViewModel保存配置: 包名={_packageConfig.Name}, 显示名称={_packageConfig.DisplayName}, 作者={_packageConfig?.Author?.Name}");
         }
     }
 }

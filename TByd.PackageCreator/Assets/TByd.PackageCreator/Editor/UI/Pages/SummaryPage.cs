@@ -61,7 +61,14 @@ namespace TByd.PackageCreator.Editor.UI.Pages
         /// </summary>
         public override void OnEnter()
         {
+            // 强制重新初始化视图模型，确保数据最新
             _viewModel.Initialize();
+
+            // 重置滚动位置
+            _scrollPosition = Vector2.zero;
+
+            // 默认展开基本信息
+            _basicInfoExpanded = true;
         }
 
         /// <summary>

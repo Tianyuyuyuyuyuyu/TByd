@@ -6,6 +6,7 @@ using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Core.Services;
 using TByd.PackageCreator.Editor.UI.Utils;
+using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.UI.ViewModels
 {
@@ -63,10 +64,25 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
         /// </summary>
         public void Initialize()
         {
-            _packageConfig = _configManager.CurrentConfig;
+            // 优先从UIStateManager获取配置数据
+            var state = UIStateManager.Instance.CreationState;
+
+            // 使用UIStateManager中的配置，确保数据一致性
+            _packageConfig = state.PackageConfig;
+
+            // 如果UIStateManager中没有配置，则从ConfigManager获取
+            if (_packageConfig == null)
+            {
+                _packageConfig = _configManager.CurrentConfig;
+                // 同步到UIStateManager
+                UIStateManager.Instance.UpdateState(s => s.PackageConfig = _packageConfig);
+            }
 
             // 从UIStateManager获取选中的模板
-            _selectedTemplate = UIStateManager.Instance.CreationState.SelectedTemplate;
+            _selectedTemplate = state.SelectedTemplate;
+
+            // 添加调试日志
+            Debug.Log($"SummaryViewModel初始化: 包名={_packageConfig?.Name}, 作者={_packageConfig?.Author?.Name}, 模板={_selectedTemplate?.Name}");
 
             ValidateConfiguration();
         }
