@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TByd.PackageCreator.Editor.Core.ErrorHandling;
 using TByd.PackageCreator.Editor.Core.Interfaces;
 using TByd.PackageCreator.Editor.Core.Models;
 using TByd.PackageCreator.Editor.Core.Services;
+using UnityEditor;
 using UnityEngine;
 
 namespace TByd.PackageCreator.Editor.Templates.Implementations
@@ -223,24 +225,24 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         protected virtual string GetPackageJsonTemplate()
         {
             return @"{
-  ""name"": ""#PACKAGE_NAME#"",
-  ""version"": ""#PACKAGE_VERSION#"",
-  ""displayName"": ""#DISPLAY_NAME#"",
-  ""description"": ""#DESCRIPTION#"",
+  ""name"": ""${PACKAGE_NAME}"",
+  ""version"": ""${PACKAGE_VERSION}"",
+  ""displayName"": ""${DISPLAY_NAME}"",
+  ""description"": ""${DESCRIPTION}"",
   ""unity"": ""2021.3"",
-  ""documentationUrl"": ""#DOCUMENTATION_URL#"",
-  ""changelogUrl"": ""#CHANGELOG_URL#"",
-  ""licensesUrl"": ""#LICENSE_URL#"",
+  ""documentationUrl"": ""${DOCUMENTATION_URL}"",
+  ""changelogUrl"": ""${CHANGELOG_URL}"",
+  ""licensesUrl"": ""${LICENSE_URL}"",
   ""keywords"": [
-    #KEYWORDS#
+    ""unity"",
+    ""package""
   ],
   ""author"": {
-    ""name"": ""#AUTHOR_NAME#"",
-    ""email"": ""#AUTHOR_EMAIL#"",
-    ""url"": ""#AUTHOR_URL#""
+    ""name"": ""${AUTHOR_NAME}"",
+    ""email"": ""${AUTHOR_EMAIL}"",
+    ""url"": ""${AUTHOR_URL}""
   },
   ""dependencies"": {
-    #DEPENDENCIES#
   }
 }";
         }
@@ -251,10 +253,10 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         /// <returns>模板内容</returns>
         protected virtual string GetReadmeTemplate()
         {
-            return @"# #DISPLAY_NAME#
+            return @"# ${DISPLAY_NAME}
 
 ## 描述
-#DESCRIPTION#
+${DESCRIPTION}
 
 ## 安装
 可通过Unity包管理器安装此包。
@@ -263,7 +265,7 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
 待补充
 
 ## 许可
-#LICENSE#";
+${LICENSE}";
         }
 
         /// <summary>
@@ -274,12 +276,12 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         {
             return @"# 更新日志
 
-## [#PACKAGE_VERSION#] - #CURRENT_DATE#
+## [${PACKAGE_VERSION}] - ${CURRENT_DATE}
 ### 初始版本
 - 初始功能实现
 
-[未发布]: #REPOSITORY_URL#/compare/v#PACKAGE_VERSION#...HEAD
-[#PACKAGE_VERSION#]: #REPOSITORY_URL#/releases/tag/v#PACKAGE_VERSION#";
+[未发布]: ${REPOSITORY_URL}/compare/v${PACKAGE_VERSION}...HEAD
+[${PACKAGE_VERSION}]: ${REPOSITORY_URL}/releases/tag/v${PACKAGE_VERSION}";
         }
 
         /// <summary>
@@ -290,11 +292,11 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         {
             return @"# 许可证
 
-## #LICENSE_TYPE#
+## ${LICENSE_TYPE}
 
-Copyright (c) #CURRENT_YEAR# #AUTHOR_NAME#
+Copyright (c) ${CURRENT_YEAR} ${AUTHOR_NAME}
 
-#LICENSE_CONTENT#";
+${LICENSE_CONTENT}";
         }
 
         /// <summary>
@@ -345,19 +347,236 @@ Copyright (c) #CURRENT_YEAR# #AUTHOR_NAME#
         /// <returns>操作是否成功</returns>
         public virtual bool Generate(PackageConfig config, string targetPath)
         {
-            // 创建文件生成器
-            var fileGenerator = new FileGenerator();
+            try
+            {
+                Debug.Log($"BasePackageTemplate.Generate: 开始生成包 {config.Name} 到 {targetPath}");
 
-            // 注册标准策略
-            fileGenerator.RegisterStrategy(new JsonFileGenerationStrategy());
-            fileGenerator.RegisterStrategy(new CSharpFileGenerationStrategy());
+                // 创建文件生成器
+                var jsonStrategy = new JsonFileGenerationStrategy();
+                var csharpStrategy = new CSharpFileGenerationStrategy();
+                // 创建不带默认策略的FileGenerator
+                var fileGenerator = new FileGenerator(null, false);
+                fileGenerator.RegisterStrategy(jsonStrategy);
+                fileGenerator.RegisterStrategy(csharpStrategy);
+                // 最后再注册默认策略
+                fileGenerator.RegisterStrategy(new DefaultFileGenerationStrategy(false));
 
-            // 执行异步生成并等待结果
-            var task = GenerateAsync(config, targetPath, fileGenerator);
-            task.Wait();
+                // 验证配置
+                var validationResult = ValidateConfig(config);
+                if (!validationResult.IsValid)
+                {
+                    Debug.LogError($"BasePackageTemplate.Generate: 配置验证失败: {string.Join(", ", validationResult.GetMessages(ValidationMessageLevel.Error).Select(m => m.Message))}");
+                    return false;
+                }
 
-            // 返回生成结果
-            return task.Result.IsValid;
+                // 执行异步生成并等待结果
+                Debug.Log("BasePackageTemplate.Generate: 开始执行GenerateAsync");
+
+                // 不再使用同步等待方式，而是启动异步任务并立即返回
+                var task = GenerateAsync(config, targetPath, fileGenerator);
+
+                // 使用EditorApplication.update来监控任务进度
+                int frameCount = 0;
+
+                // 这里不等待任务完成，而是返回true表示任务已经启动
+                // 任务的实际结果将通过UI状态管理器传递
+                EditorApplication.delayCall += () =>
+                {
+                    MonitorGenerationTask(task, config.Name);
+                };
+
+                return true; // 返回true表示已启动生成任务，而不是表示生成成功
+            }
+            catch (Exception ex)
+            {
+                Debug.LogException(ex);
+                Debug.LogError($"BasePackageTemplate.Generate: 生成过程中发生异常: {ex.Message}");
+
+                // 展开AggregateException以获取更详细的错误信息
+                if (ex is AggregateException aggregateEx)
+                {
+                    foreach (var innerEx in aggregateEx.InnerExceptions)
+                    {
+                        Debug.LogError($"内部异常: {innerEx.GetType().Name} - {innerEx.Message}");
+                        Debug.LogError($"堆栈: {innerEx.StackTrace}");
+                    }
+                }
+
+                Debug.LogError($"堆栈跟踪: {ex.StackTrace}");
+                return false;
+            }
+        }
+
+        // 新增监控任务的方法
+        private void MonitorGenerationTask(Task<ValidationResult> task, string packageName)
+        {
+            if (task.IsCompleted)
+            {
+                try
+                {
+                    // 任务完成，处理结果
+                    var result = task.Result;
+                    if (result.IsValid)
+                    {
+                        Debug.Log($"包 {packageName} 生成成功");
+
+                        // 获取当前目录作为包路径
+                        string packagePath = null;
+                        try
+                        {
+                            // 构建包路径
+                            string projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+                            packagePath = Path.GetFullPath(Path.Combine(projectRoot, packageName));
+                            packagePath = packagePath.Replace("\\", "/");
+                            Debug.Log($"包生成完成，最终路径: {packagePath}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogWarning($"构建包路径时出错：{ex.Message}，但不影响包生成");
+                        }
+
+                        // 确保UI状态更新了包路径和成功状态
+                        UpdateProgressUI(1.0f, $"包 {packageName} 生成成功", true, packagePath);
+                    }
+                    else
+                    {
+                        Debug.LogError($"包 {packageName} 生成失败: {string.Join(", ", result.GetMessages(ValidationMessageLevel.Error).Select(m => m.Message))}");
+
+                        // 更新UI状态为失败
+                        UpdateProgressUI(1.0f, $"包 {packageName} 生成失败", false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogException(ex);
+                    Debug.LogError($"处理生成结果时发生异常: {ex.Message}");
+
+                    // 更新UI状态为失败
+                    UpdateProgressUI(1.0f, "生成过程发生异常", false);
+                }
+            }
+            else
+            {
+                // 更新进度（模拟进度，真实进度很难精确计算）
+                float progress = 0.1f;
+                if (EditorApplication.timeSinceStartup % 3 < 1) progress = 0.3f;
+                else if (EditorApplication.timeSinceStartup % 3 < 2) progress = 0.6f;
+                else progress = 0.8f;
+
+                // 更新UI状态进度
+                UpdateProgressUI(progress, "正在生成包文件...", null);
+
+                // 任务尚未完成，延迟继续检查
+                EditorApplication.delayCall += () =>
+                {
+                    MonitorGenerationTask(task, packageName);
+                };
+            }
+        }
+
+        // 更新UI进度
+        private void UpdateProgressUI(float progress, string message, bool? isSuccess, string packagePath = null)
+        {
+            if (UnityEditor.EditorWindow.HasOpenInstances<UnityEditor.EditorWindow>())
+            {
+                try
+                {
+                    // 获取UI状态管理器并更新进度
+                    var uiStateManagerType = Type.GetType("TByd.PackageCreator.Editor.UI.Utils.UIStateManager, Assembly-CSharp-Editor");
+                    if (uiStateManagerType != null)
+                    {
+                        var instanceProp = uiStateManagerType.GetProperty("Instance", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                        if (instanceProp != null)
+                        {
+                            var uiStateManager = instanceProp.GetValue(null);
+                            var stateProperty = uiStateManagerType.GetProperty("CreationState");
+                            if (stateProperty != null)
+                            {
+                                var state = stateProperty.GetValue(uiStateManager);
+                                var creationProgressProp = state.GetType().GetProperty("CreationProgress");
+                                if (creationProgressProp != null)
+                                {
+                                    creationProgressProp.SetValue(state, progress);
+
+                                    // 如果提供了isSuccess值，也更新成功状态
+                                    if (isSuccess.HasValue)
+                                    {
+                                        var isSuccessfulProp = state.GetType().GetProperty("IsCreationSuccessful");
+                                        if (isSuccessfulProp != null)
+                                        {
+                                            isSuccessfulProp.SetValue(state, isSuccess.Value);
+                                            Debug.Log($"UpdateProgressUI: 设置IsCreationSuccessful = {isSuccess.Value}");
+                                        }
+
+                                        var isCreatingProp = state.GetType().GetProperty("IsCreating");
+                                        if (isCreatingProp != null)
+                                        {
+                                            isCreatingProp.SetValue(state, false); // 生成已完成，不再处于创建状态
+                                            Debug.Log($"UpdateProgressUI: 设置IsCreating = false");
+                                        }
+
+                                        // 如果有路径信息，也更新路径
+                                        if (!string.IsNullOrEmpty(packagePath))
+                                        {
+                                            var packagePathProp = state.GetType().GetProperty("PackagePath");
+                                            if (packagePathProp != null)
+                                            {
+                                                packagePathProp.SetValue(state, packagePath);
+                                                Debug.Log($"UpdateProgressUI: 设置PackagePath = {packagePath}");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Debug.LogWarning("UpdateProgressUI: 未提供有效的packagePath");
+                                        }
+
+                                        // 如果失败了，也设置错误信息
+                                        if (!isSuccess.Value)
+                                        {
+                                            var errorMessageProp = state.GetType().GetProperty("ErrorMessage");
+                                            if (errorMessageProp != null)
+                                            {
+                                                errorMessageProp.SetValue(state, message);
+                                                Debug.Log($"UpdateProgressUI: 设置ErrorMessage = {message}");
+                                            }
+                                        }
+
+                                        // 创建一个结果对象
+                                        var validationResultType = Type.GetType("TByd.PackageCreator.Editor.Core.Models.ValidationResult, Assembly-CSharp-Editor");
+                                        if (validationResultType != null)
+                                        {
+                                            var validationResult = Activator.CreateInstance(validationResultType);
+
+                                            // 如果失败，添加错误消息
+                                            if (!isSuccess.Value && !string.IsNullOrEmpty(message))
+                                            {
+                                                var addErrorMethod = validationResultType.GetMethod("AddError", new[] { typeof(string) });
+                                                if (addErrorMethod != null)
+                                                {
+                                                    addErrorMethod.Invoke(validationResult, new object[] { message });
+                                                }
+                                            }
+
+                                            // 设置结果对象
+                                            var creationResultProp = state.GetType().GetProperty("CreationResult");
+                                            if (creationResultProp != null)
+                                            {
+                                                creationResultProp.SetValue(state, validationResult);
+                                                Debug.Log("UpdateProgressUI: 设置CreationResult");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // 如果反射失败，只记录日志但不中断流程
+                    Debug.LogWarning($"无法更新UI进度: {ex.Message}");
+                }
+            }
         }
 
         /// <summary>
@@ -372,9 +591,14 @@ Copyright (c) #CURRENT_YEAR# #AUTHOR_NAME#
             // 创建默认文件生成器（如果未提供）
             if (fileGenerator == null)
             {
-                fileGenerator = new FileGenerator();
-                fileGenerator.RegisterStrategy(new JsonFileGenerationStrategy());
-                fileGenerator.RegisterStrategy(new CSharpFileGenerationStrategy());
+                var jsonStrategy = new JsonFileGenerationStrategy();
+                var csharpStrategy = new CSharpFileGenerationStrategy();
+                // 创建不带默认策略的FileGenerator
+                fileGenerator = new FileGenerator(null, false);
+                fileGenerator.RegisterStrategy(jsonStrategy);
+                fileGenerator.RegisterStrategy(csharpStrategy);
+                // 最后再注册默认策略
+                fileGenerator.RegisterStrategy(new DefaultFileGenerationStrategy(false));
             }
 
             // 验证配置

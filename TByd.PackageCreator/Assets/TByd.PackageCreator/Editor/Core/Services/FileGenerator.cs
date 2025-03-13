@@ -23,7 +23,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         private readonly List<IFileGenerationStrategy> _mStrategies = new List<IFileGenerationStrategy>();
 
         // 默认文件生成策略
-        private readonly IFileGenerationStrategy _mDefaultStrategy;
+        private IFileGenerationStrategy _mDefaultStrategy;
 
         // 事件：开始生成
         public event Action<string> OnGenerationStarted;
@@ -41,10 +41,51 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// 创建文件生成器实例
         /// </summary>
         /// <param name="defaultStrategy">默认文件生成策略</param>
-        public FileGenerator(IFileGenerationStrategy defaultStrategy = null)
+        /// <param name="createDefaultIfNull">是否在defaultStrategy为null时创建默认策略</param>
+        public FileGenerator(IFileGenerationStrategy defaultStrategy = null, bool createDefaultIfNull = true)
         {
-            _mDefaultStrategy = defaultStrategy ?? new DefaultFileGenerationStrategy();
-            _mStrategies.Add(_mDefaultStrategy);
+            if (defaultStrategy != null)
+            {
+                _mDefaultStrategy = defaultStrategy;
+                _mStrategies.Add(_mDefaultStrategy);
+            }
+            else if (createDefaultIfNull)
+            {
+                try
+                {
+                    // 创建默认策略，但指示不要创建变量处理器，避免循环依赖
+                    _mDefaultStrategy = new DefaultFileGenerationStrategy(false);
+                    _mStrategies.Add(_mDefaultStrategy);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"创建默认策略时发生错误: {ex.Message}");
+                    // 出错时设为null，后续惰性创建
+                    _mDefaultStrategy = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取默认策略（惰性初始化）
+        /// </summary>
+        private IFileGenerationStrategy GetDefaultStrategy()
+        {
+            // 惰性初始化默认策略
+            if (_mDefaultStrategy == null)
+            {
+                try
+                {
+                    _mDefaultStrategy = new DefaultFileGenerationStrategy(false);
+                    _mStrategies.Add(_mDefaultStrategy);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"惰性创建默认策略时发生错误: {ex.Message}");
+                    throw;
+                }
+            }
+            return _mDefaultStrategy;
         }
 
         /// <summary>
@@ -55,10 +96,16 @@ namespace TByd.PackageCreator.Editor.Core.Services
         {
             if (strategy == null) throw new ArgumentNullException(nameof(strategy));
 
-            // 防止重复注册
-            if (_mStrategies.Any(s => s.StrategyName == strategy.StrategyName))
+            // 检查是否是默认策略类型
+            if (strategy is DefaultFileGenerationStrategy && _mDefaultStrategy == null)
             {
-                Debug.LogWarning($"策略 '{strategy.StrategyName}' 已经注册过，将被忽略。");
+                _mDefaultStrategy = strategy;
+            }
+
+            // 防止重复注册
+            if (_mStrategies.Any(s => s.GetType() == strategy.GetType()))
+            {
+                Debug.LogWarning($"策略类型 '{strategy.GetType().Name}' 已经注册过，将被忽略。");
                 return;
             }
 
@@ -67,52 +114,76 @@ namespace TByd.PackageCreator.Editor.Core.Services
         }
 
         /// <summary>
-        /// 生成文件和目录结构
+        /// 根据模板和配置异步生成包
         /// </summary>
-        /// <param name="template">包模板</param>
-        /// <param name="config">包配置</param>
+        /// <param name="template">模板</param>
+        /// <param name="config">配置</param>
         /// <param name="targetPath">目标路径</param>
-        /// <returns>生成结果</returns>
+        /// <returns>验证结果</returns>
         public async Task<ValidationResult> GenerateAsync(IPackageTemplate template, PackageConfig config, string targetPath)
         {
             var result = new ValidationResult();
 
             try
             {
-                // 通知开始生成
-                OnGenerationStarted?.Invoke(template.Name);
+                OnGenerationStarted?.Invoke(targetPath);
+
+                Debug.Log($"开始生成包: {config.Name} => {targetPath}");
 
                 // 验证目标路径
                 if (!ValidateTargetPath(targetPath, result))
                 {
-                    OnGenerationCompleted?.Invoke(false, "目标路径验证失败");
                     return result;
                 }
 
-                // 创建目录结构
-                var directoryResult = await CreateDirectoriesAsync(template.Directories, config, targetPath);
-                result.Merge(directoryResult);
-
-                if (!result.IsValid)
+                // 验证模板有效性（添加更多模板验证）
+                if (template == null)
                 {
-                    OnGenerationCompleted?.Invoke(false, "目录结构创建失败");
+                    result.AddError("无效的模板");
+                    return result;
+                }
+
+                if (template.Directories == null || template.Files == null)
+                {
+                    result.AddError("模板目录或文件列表为空");
+                    return result;
+                }
+
+                // 分批处理目录和文件创建，避免一次性操作太多文件系统对象
+
+                // 创建目录结构
+                await Task.Yield(); // 让Unity有机会处理其他事件
+                var dirResult = await CreateDirectoriesAsync(template.Directories, config, targetPath);
+                if (!dirResult.IsValid)
+                {
+                    result.Merge(dirResult);
                     return result;
                 }
 
                 // 创建文件
+                await Task.Yield(); // 让Unity有机会处理其他事件
                 var fileResult = await CreateFilesAsync(template.Files, config, targetPath);
-                result.Merge(fileResult);
+                if (!fileResult.IsValid)
+                {
+                    result.Merge(fileResult);
+                    return result;
+                }
 
-                // 通知生成完成
-                OnGenerationCompleted?.Invoke(result.IsValid, result.IsValid ? "生成成功" : "生成过程中出现错误");
-
+                OnGenerationCompleted?.Invoke(true, targetPath);
+                return result;
+            }
+            catch (OperationCanceledException)
+            {
+                // 用户取消操作
+                result.AddInfo("用户取消了包创建操作");
+                OnGenerationCompleted?.Invoke(false, targetPath);
                 return result;
             }
             catch (Exception ex)
             {
-                result.AddError($"生成过程中发生异常: {ex.Message}");
                 Debug.LogException(ex);
-                OnGenerationCompleted?.Invoke(false, $"生成过程中发生异常: {ex.Message}");
+                result.AddError($"生成包时发生异常: {ex.Message}");
+                OnGenerationCompleted?.Invoke(false, targetPath);
                 return result;
             }
         }
@@ -151,18 +222,54 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         /// <param name="directories">目录列表</param>
         /// <param name="config">包配置</param>
-        /// <param name="targetPath">目标基础路径</param>
-        /// <returns>创建结果</returns>
-        private async Task<ValidationResult> CreateDirectoriesAsync(IReadOnlyList<TemplateDirectory> directories, PackageConfig config, string targetPath)
+        /// <param name="basePath">基础路径</param>
+        /// <returns>验证结果</returns>
+        private async Task<ValidationResult> CreateDirectoriesAsync(IReadOnlyList<TemplateDirectory> directories, PackageConfig config, string basePath)
         {
             var result = new ValidationResult();
-            var totalDirectories = CountTotalDirectories(directories);
-            var currentDirectory = 0;
 
-            foreach (var directory in directories)
+            if (directories == null || directories.Count == 0)
             {
-                // 更新目录计数
-                currentDirectory = await CreateDirectoryAsync(directory, config, targetPath, result, currentDirectory, totalDirectories);
+                return result;
+            }
+
+            // 计算目录总数
+            int totalDirectories = CountTotalDirectories(directories);
+            int currentDirectoryIndex = 0;
+
+            try
+            {
+                // 创建根目录
+                if (!string.IsNullOrEmpty(basePath) && !Directory.Exists(basePath))
+                {
+                    Directory.CreateDirectory(basePath);
+                    result.AddInfo($"创建根目录: {basePath}");
+                }
+
+                // 创建每个目录
+                foreach (var directory in directories)
+                {
+                    // 每处理5个目录，让Unity有机会响应
+                    if (currentDirectoryIndex % 5 == 0)
+                    {
+                        await Task.Yield();
+                    }
+
+                    // 添加延迟，防止文件系统操作过于频繁
+                    if (currentDirectoryIndex > 0 && currentDirectoryIndex % 10 == 0)
+                    {
+                        await Task.Delay(10); // 10毫秒延迟
+                    }
+
+                    // 实际创建目录
+                    var newIndex = await CreateDirectoryAsync(directory, config, basePath, result, currentDirectoryIndex, totalDirectories);
+                    currentDirectoryIndex = newIndex;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.AddError($"创建目录结构时发生异常: {ex.Message}");
+                Debug.LogException(ex);
             }
 
             return result;
@@ -266,78 +373,91 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// </summary>
         /// <param name="files">文件列表</param>
         /// <param name="config">包配置</param>
-        /// <param name="targetPath">目标路径</param>
-        /// <returns>创建结果</returns>
-        private async Task<ValidationResult> CreateFilesAsync(IReadOnlyList<TemplateFile> files, PackageConfig config, string targetPath)
+        /// <param name="basePath">基础路径</param>
+        /// <returns>验证结果</returns>
+        private async Task<ValidationResult> CreateFilesAsync(IReadOnlyList<TemplateFile> files, PackageConfig config, string basePath)
         {
             var result = new ValidationResult();
-            var totalFiles = files.Count;
-            var currentFile = 0;
 
-            foreach (var file in files)
+            try
             {
-                currentFile++;
-
-                // 替换文件路径中的变量
-                var processedPath = ReplaceVariables(file.RelativePath, config);
-                var fullPath = Path.Combine(targetPath, processedPath);
-
-                // 确保父目录存在
-                var directoryPath = Path.GetDirectoryName(fullPath);
-                if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                if (files == null || files.Count == 0)
                 {
-                    if (!FileUtils.EnsureDirectoryExists(directoryPath))
+                    return result;
+                }
+
+                // 获取可用的文件创建策略
+                if (_mStrategies.Count == 0 && _mDefaultStrategy == null)
+                {
+                    result.AddError("没有可用的文件生成策略");
+                    return result;
+                }
+
+                // 提前替换文件路径中的变量
+                var processedFiles = new List<(TemplateFile file, string targetPath)>();
+                foreach (var file in files)
+                {
+                    var relativePath = file.RelativePath;
+
+                    // 替换路径中的变量
+                    if (relativePath.Contains("${") || relativePath.Contains("["))
                     {
-                        if (file.IsRequired)
+                        relativePath = ReplaceVariables(relativePath, config);
+                        relativePath = relativePath.Replace("[", "").Replace("]", "");
+                    }
+
+                    var targetPath = Path.Combine(basePath, relativePath.Replace('/', Path.DirectorySeparatorChar));
+                    processedFiles.Add((file, targetPath));
+                }
+
+                // 计算总文件数
+                int totalFiles = processedFiles.Count;
+                int currentFileIndex = 0;
+
+                // 分批处理文件创建
+                foreach (var (file, targetPath) in processedFiles)
+                {
+                    // 每处理3个文件，让Unity有机会响应
+                    if (currentFileIndex % 3 == 0)
+                    {
+                        await Task.Yield();
+                    }
+
+                    // 添加延迟，防止文件系统操作过于频繁
+                    if (currentFileIndex > 0 && currentFileIndex % 5 == 0)
+                    {
+                        await Task.Delay(20); // 20毫秒延迟
+                    }
+
+                    try
+                    {
+                        // 查找适合该文件类型的策略
+                        var strategy = FindStrategyForFile(file);
+                        if (strategy == null)
                         {
-                            result.AddError($"无法创建文件的父目录: {processedPath}");
+                            result.AddError($"无法找到处理文件的策略: {file.RelativePath}");
+                            continue;
                         }
-                        else
-                        {
-                            result.AddWarning($"无法创建可选文件的父目录: {processedPath}");
-                        }
-                        continue;
+
+                        // 生成文件
+                        var fileResult = await strategy.GenerateFileAsync(file, config, targetPath);
+                        result.Merge(fileResult);
+
+                        // 更新进度
+                        currentFileIndex++;
+                        OnFileCreated?.Invoke(targetPath, currentFileIndex, totalFiles);
+                    }
+                    catch (Exception ex)
+                    {
+                        result.AddError($"生成文件时发生异常: {file.RelativePath}, 错误: {ex.Message}");
+                        Debug.LogException(ex);
                     }
                 }
-
-                try
-                {
-                    // 查找匹配的文件生成策略
-                    var strategy = FindStrategyForFile(file);
-
-                    // 使用策略生成文件
-                    var fileResult = await strategy.GenerateFileAsync(file, config, fullPath);
-                    result.Merge(fileResult);
-
-                    if (fileResult.IsValid)
-                    {
-                        OnFileCreated?.Invoke(processedPath, currentFile, totalFiles);
-                        result.AddInfo($"创建文件: {processedPath}");
-                    }
-                    else if (file.IsRequired)
-                    {
-                        result.AddError($"创建必需文件失败: {processedPath}");
-                    }
-                    else
-                    {
-                        result.AddWarning($"创建可选文件失败: {processedPath}");
-                    }
-
-                    // 添加短暂延迟，避免可能的文件系统争用
-                    await Task.Delay(20);
-                }
-                catch (Exception ex)
-                {
-                    if (file.IsRequired)
-                    {
-                        result.AddError($"创建文件时发生错误: {processedPath}, 错误: {ex.Message}");
-                    }
-                    else
-                    {
-                        result.AddWarning($"创建可选文件时发生错误: {processedPath}, 错误: {ex.Message}");
-                    }
-                    Debug.LogException(ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                result.AddError($"创建文件时发生异常: {ex.Message}");
+                Debug.LogException(ex);
             }
 
             return result;
@@ -362,7 +482,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
             }
 
             // 如果没有找到匹配的策略，使用默认策略
-            return _mDefaultStrategy;
+            return GetDefaultStrategy();
         }
 
         /// <summary>
@@ -391,43 +511,96 @@ namespace TByd.PackageCreator.Editor.Core.Services
         /// <returns>变量值</returns>
         private string GetVariableValue(string variableName, PackageConfig config)
         {
-            // 基于变量名从配置中获取值
-            switch (variableName.ToLowerInvariant())
+            if (string.IsNullOrEmpty(variableName))
             {
-                case "name":
-                    return config.Name;
-                case "displayname":
-                    return config.DisplayName;
-                case "version":
-                    return config.Version;
-                case "description":
-                    return config.Description;
-                case "unityversion":
-                    return config.UnityVersion;
-                case "author":
-                    return config.Author?.Name ?? string.Empty;
-                case "company":
-                    return config.Company ?? string.Empty;
-                case "year":
-                    return DateTime.Now.Year.ToString();
-                case "date":
-                    return DateTime.Now.ToString("yyyy-MM-dd");
-                case "namespace":
-                    // 如果没有明确的命名空间，则从包名生成一个
-                    return !string.IsNullOrEmpty(config.RootNamespace)
-                        ? config.RootNamespace
-                        : GenerateNamespaceFromPackageName(config.Name);
-                default:
-                    // 查找自定义变量
-                    if (config.CustomVariables != null &&
-                        config.CustomVariables.TryGetValue(variableName, out var value))
+                return string.Empty;
+            }
+
+            // 转换为大写，便于匹配
+            string upperVarName = variableName.ToUpperInvariant();
+
+            switch (upperVarName)
+            {
+                case "PACKAGE_NAME":
+                    return !string.IsNullOrEmpty(config.Name) ? config.Name : "com.mycompany.mypackage";
+
+                case "PACKAGE_VERSION":
+                    return !string.IsNullOrEmpty(config.Version) ? config.Version : "0.1.0";
+
+                case "DISPLAY_NAME":
+                    return !string.IsNullOrEmpty(config.DisplayName) ? config.DisplayName : "My Package";
+
+                case "DESCRIPTION":
+                    return !string.IsNullOrEmpty(config.Description) ? config.Description : "A package for Unity.";
+
+                case "AUTHOR_NAME":
+                    return !string.IsNullOrEmpty(config.Author.Name) ? config.Author.Name : "";
+
+                case "AUTHOR_EMAIL":
+                    return !string.IsNullOrEmpty(config.Author.Email) ? config.Author.Email : "";
+
+                case "AUTHOR_URL":
+                    return !string.IsNullOrEmpty(config.Author.Url) ? config.Author.Url : "";
+
+                case "KEYWORDS":
+                    // 确保在package.json中关键词有效，如果为空就提供一个默认的
+                    if (config.Keywords == null || config.Keywords.Count == 0)
                     {
-                        return value;
+                        return "\"unity\", \"package\"";
                     }
 
-                    // 未找到变量值，返回原始占位符
-                    Debug.LogWarning($"未找到变量值: {variableName}");
-                    return $"${{{variableName}}}";
+                    // 为每个关键词添加引号并用逗号分隔
+                    var formattedKeywords = string.Join(", ", config.Keywords.Select(k => $"\"{k}\""));
+                    return !string.IsNullOrEmpty(formattedKeywords) ? formattedKeywords : "\"unity\", \"package\"";
+
+                case "DEPENDENCIES":
+                    if (config.Dependencies == null || config.Dependencies.Count == 0)
+                    {
+                        return ""; // 没有依赖项时返回空字符串，在JSON中会成为空对象
+                    }
+
+                    var dependencies = new List<string>();
+                    foreach (var dependency in config.Dependencies)
+                    {
+                        dependencies.Add($"\"{dependency.Id}\": \"{dependency.Version}\"");
+                    }
+
+                    return string.Join(",\n    ", dependencies);
+
+                case "DOCUMENTATION_URL":
+                    return !string.IsNullOrEmpty(config.DocumentationUrl) ? config.DocumentationUrl : "";
+
+                case "CHANGELOG_URL":
+                    return !string.IsNullOrEmpty(config.ChangelogUrl) ? config.ChangelogUrl : "";
+
+                case "LICENSE_URL":
+                    return !string.IsNullOrEmpty(config.LicenseUrl) ? config.LicenseUrl : "";
+
+                case "UNITY_VERSION":
+                    return !string.IsNullOrEmpty(config.UnityVersion) ? config.UnityVersion : "2021.3";
+
+                case "CURRENT_YEAR":
+                    return DateTime.Now.Year.ToString();
+
+                case "CURRENT_DATE":
+                    return DateTime.Now.ToString("yyyy-MM-dd");
+
+                case "ROOT_NAMESPACE":
+                    // 从包名生成命名空间
+                    return GenerateNamespaceFromPackageName(config.Name);
+
+                // 处理其他变量...
+
+                default:
+                    // 尝试从自定义变量获取
+                    if (config.CustomVariables != null && config.CustomVariables.ContainsKey(variableName))
+                    {
+                        return config.CustomVariables[variableName];
+                    }
+
+                    // 无法解析变量，返回空字符串
+                    Debug.LogWarning($"未能解析变量 ${{{variableName}}}，将使用空字符串替换");
+                    return string.Empty;
             }
         }
 

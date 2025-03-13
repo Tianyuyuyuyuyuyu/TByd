@@ -517,7 +517,7 @@ namespace TByd.PackageCreator.Editor.Core.Services
         private PackageConfig CreateDefaultConfig()
         {
             var config = new PackageConfig();
-            config.Name = "com.mycompany.mypackage";
+            config.Name = "com.example.mypackage";
             config.DisplayName = "My Package";
             config.Version = "0.1.0";
             config.Description = "A new package created by TByd.PackageCreator";

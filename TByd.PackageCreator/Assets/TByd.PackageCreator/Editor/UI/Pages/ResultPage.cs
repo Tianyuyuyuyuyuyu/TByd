@@ -30,6 +30,9 @@ namespace TByd.PackageCreator.Editor.UI.Pages
         private string _fileFilter = string.Empty;
         private List<string> _filteredFiles = new List<string>();
 
+        // 错误显示
+        private bool _showDetailedErrors = false;
+
         /// <summary>
         /// 页面标题
         /// </summary>
@@ -87,7 +90,73 @@ namespace TByd.PackageCreator.Editor.UI.Pages
                 // 显示错误信息
                 if (!string.IsNullOrEmpty(_viewModel.ErrorMessage))
                 {
-                    EditorGUILayout.HelpBox(_viewModel.ErrorMessage, MessageType.Error);
+                    GUILayout.Space(10);
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+                    // 使用更引人注意的样式显示主要错误信息
+                    GUIStyle errorStyle = new GUIStyle(EditorStyles.boldLabel);
+                    errorStyle.normal.textColor = Color.red;
+                    errorStyle.wordWrap = true;
+
+                    EditorGUILayout.LabelField("错误信息:", errorStyle);
+                    EditorGUILayout.LabelField(_viewModel.ErrorMessage, EditorStyles.wordWrappedLabel);
+
+                    EditorGUILayout.EndVertical();
+
+                    // 添加更多错误信息的详细显示
+                    GUILayout.Space(10);
+                    _showDetailedErrors = EditorGUILayout.Foldout(_showDetailedErrors, "详细错误信息", true);
+
+                    if (_showDetailedErrors)
+                    {
+                        EditorGUILayout.BeginVertical(PackageCreatorStyles.BoxStyle);
+
+                        // 获取验证错误并显示
+                        if (_viewModel.CreationResult != null)
+                        {
+                            var errors = _viewModel.GetValidationMessages(ValidationMessageLevel.Error);
+                            var warnings = _viewModel.GetValidationMessages(ValidationMessageLevel.Warning);
+                            var infos = _viewModel.GetValidationMessages(ValidationMessageLevel.Info);
+
+                            if (errors.Count > 0)
+                            {
+                                EditorGUILayout.LabelField("错误:", EditorStyles.boldLabel);
+                                foreach (var error in errors)
+                                {
+                                    EditorGUILayout.HelpBox(error.Message, MessageType.Error);
+                                }
+                            }
+
+                            if (warnings.Count > 0)
+                            {
+                                EditorGUILayout.LabelField("警告:", EditorStyles.boldLabel);
+                                foreach (var warning in warnings)
+                                {
+                                    EditorGUILayout.HelpBox(warning.Message, MessageType.Warning);
+                                }
+                            }
+
+                            if (infos.Count > 0)
+                            {
+                                EditorGUILayout.LabelField("信息:", EditorStyles.boldLabel);
+                                foreach (var info in infos)
+                                {
+                                    EditorGUILayout.HelpBox(info.Message, MessageType.Info);
+                                }
+                            }
+
+                            if (errors.Count == 0 && warnings.Count == 0 && infos.Count == 0)
+                            {
+                                EditorGUILayout.LabelField("没有捕获到具体错误信息。请检查Unity控制台以获取更多细节。");
+                            }
+                        }
+                        else
+                        {
+                            EditorGUILayout.LabelField("没有验证结果信息。请检查Unity控制台以获取更多细节。");
+                        }
+
+                        EditorGUILayout.EndVertical();
+                    }
                 }
             }
 
@@ -117,6 +186,33 @@ namespace TByd.PackageCreator.Editor.UI.Pages
 
                     GUILayout.Space(5);
                     EditorGUILayout.BeginHorizontal();
+
+                    // 添加调试按钮，仅在开发模式下显示
+#if UNITY_EDITOR && DEVELOPMENT_BUILD
+                    if (GUILayout.Button("调试配置数据", GUILayout.Height(30)))
+                    {
+                        string configInfo = "";
+                        var config = _viewModel.PackageConfig;
+                        if (config != null)
+                        {
+                            configInfo += $"包名: {config.Name}\n";
+                            configInfo += $"显示名称: {config.DisplayName}\n";
+                            configInfo += $"版本: {config.Version}\n";
+                            configInfo += $"描述: {config.Description}\n";
+                            configInfo += $"作者: {config.Author?.Name ?? "未指定"}\n";
+                            configInfo += $"作者邮箱: {config.Author?.Email ?? "未指定"}\n";
+                            configInfo += $"作者网站: {config.Author?.Url ?? "未指定"}\n";
+                        }
+                        else
+                        {
+                            configInfo = "配置数据为空";
+                        }
+
+                        // 在调试日志和弹窗中显示
+                        Debug.Log(configInfo);
+                        EditorUtility.DisplayDialog("配置数据调试", configInfo, "确定");
+                    }
+#endif
 
                     // 打开文件夹按钮
                     if (GUILayout.Button("在文件资源管理器中打开", GUILayout.Width(180)))

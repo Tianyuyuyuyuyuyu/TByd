@@ -74,14 +74,62 @@ namespace TByd.PackageCreator.Editor.UI.ViewModels
         /// </summary>
         public void Initialize()
         {
-            _packageConfig = _configManager.CurrentConfig;
+            // 优先从UIStateManager获取当前配置
+            var state = UIStateManager.Instance.CreationState;
+            var packageConfigFromState = UIStateManager.Instance.CreationState.CurrentConfig;
+
+            if (packageConfigFromState != null)
+            {
+                Debug.Log("ResultViewModel.Initialize: 使用UIStateManager中的配置");
+                _packageConfig = packageConfigFromState;
+            }
+            else
+            {
+                Debug.Log("ResultViewModel.Initialize: UIStateManager中没有配置，使用ConfigManager");
+                _packageConfig = _configManager.CurrentConfig;
+            }
+
+            // 记录获取到的配置信息
+            if (_packageConfig != null)
+            {
+                Debug.Log($"ResultViewModel配置信息: 包名={_packageConfig.Name}, 作者={_packageConfig.Author?.Name ?? "未指定"}, 版本={_packageConfig.Version}");
+            }
+            else
+            {
+                Debug.LogWarning("ResultViewModel.Initialize: 无法获取包配置信息");
+            }
 
             // 从UIStateManager获取创建状态
-            var state = UIStateManager.Instance.CreationState;
             _isCreationSuccessful = state.IsCreationSuccessful;
             _errorMessage = state.ErrorMessage;
             _packagePath = state.PackagePath;
             _creationResult = state.CreationResult;
+
+            Debug.Log($"ResultViewModel状态: 成功={_isCreationSuccessful}, 错误={_errorMessage ?? "无"}, 路径={_packagePath ?? "无"}");
+
+            // 检查是否有详细的验证结果错误，优先显示这些
+            if (_creationResult != null && !_creationResult.IsValid)
+            {
+                var errors = _creationResult.GetMessages(ValidationMessageLevel.Error);
+                if (errors.Count > 0)
+                {
+                    // 如果没有设置错误消息，但有验证结果中的错误，则使用第一个错误作为错误消息
+                    if (string.IsNullOrEmpty(_errorMessage))
+                    {
+                        _errorMessage = errors[0].Message;
+                        Debug.Log($"ResultViewModel从验证结果中获取错误消息: {_errorMessage}");
+                    }
+                }
+            }
+
+            if (_creationResult != null)
+            {
+                Debug.Log($"ValidationResult: 有效={_creationResult.IsValid}, 错误数={_creationResult.GetMessages(ValidationMessageLevel.Error).Count}");
+            }
+            else
+            {
+                Debug.LogWarning("ResultViewModel.Initialize: 没有创建结果数据");
+            }
 
             // 如果创建成功，获取创建的文件列表
             if (_isCreationSuccessful && !string.IsNullOrEmpty(_packagePath) && Directory.Exists(_packagePath))

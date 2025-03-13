@@ -61,10 +61,10 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         protected virtual string GetRuntimeAsmdefTemplate()
         {
             return @"{
-    ""name"": ""#PACKAGE_NAME#.Runtime"",
-    ""rootNamespace"": ""#ROOT_NAMESPACE#"",
+    ""name"": ""${PACKAGE_NAME}.Runtime"",
+    ""rootNamespace"": ""${ROOT_NAMESPACE}"",
     ""references"": [
-        #RUNTIME_REFERENCES#
+        ${RUNTIME_REFERENCES}
     ],
     ""includePlatforms"": [],
     ""excludePlatforms"": [],
@@ -85,10 +85,10 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         protected virtual string GetEditorAsmdefTemplate()
         {
             return @"{
-    ""name"": ""#PACKAGE_NAME#.Editor"",
-    ""rootNamespace"": ""#ROOT_NAMESPACE#"",
+    ""name"": ""${PACKAGE_NAME}.Editor"",
+    ""rootNamespace"": ""${ROOT_NAMESPACE}"",
     ""references"": [
-        ""#PACKAGE_NAME#.Runtime""#EDITOR_REFERENCES#
+        ""${PACKAGE_NAME}.Runtime""${EDITOR_REFERENCES}
     ],
     ""includePlatforms"": [
         ""Editor""
@@ -111,11 +111,11 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         protected virtual string GetEditorTestsAsmdefTemplate()
         {
             return @"{
-    ""name"": ""#PACKAGE_NAME#.Editor.Tests"",
-    ""rootNamespace"": ""#ROOT_NAMESPACE#"",
+    ""name"": ""${PACKAGE_NAME}.Editor.Tests"",
+    ""rootNamespace"": ""${ROOT_NAMESPACE}"",
     ""references"": [
-        ""#PACKAGE_NAME#.Runtime"",
-        ""#PACKAGE_NAME#.Editor"",
+        ""${PACKAGE_NAME}.Runtime"",
+        ""${PACKAGE_NAME}.Editor"",
         ""UnityEngine.TestRunner"",
         ""UnityEditor.TestRunner""
     ],
@@ -144,10 +144,10 @@ namespace TByd.PackageCreator.Editor.Templates.Implementations
         protected virtual string GetRuntimeTestsAsmdefTemplate()
         {
             return @"{
-    ""name"": ""#PACKAGE_NAME#.Runtime.Tests"",
-    ""rootNamespace"": ""#ROOT_NAMESPACE#"",
+    ""name"": ""${PACKAGE_NAME}.Runtime.Tests"",
+    ""rootNamespace"": ""${ROOT_NAMESPACE}"",
     ""references"": [
-        ""#PACKAGE_NAME#.Runtime"",
+        ""${PACKAGE_NAME}.Runtime"",
         ""UnityEngine.TestRunner"",
         ""UnityEditor.TestRunner""
     ],

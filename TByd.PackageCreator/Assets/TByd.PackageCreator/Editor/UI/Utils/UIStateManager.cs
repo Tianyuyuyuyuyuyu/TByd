@@ -59,6 +59,9 @@ namespace TByd.PackageCreator.Editor.UI.Utils
         // 包配置
         public PackageConfig PackageConfig { get; set; } = new PackageConfig();
 
+        // 当前使用的包配置（这个是真正用于创建的配置）
+        public PackageConfig CurrentConfig { get; set; }
+
         // 验证结果
         public ValidationResult ValidationResult { get; set; }
 

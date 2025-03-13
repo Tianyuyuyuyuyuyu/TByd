@@ -30,7 +30,7 @@ namespace TByd.PackageCreator.Editor.Utils.FileSystem
         public static string GetBackupDirectory()
         {
             var tempPath = Path.GetTempPath();
-            var backupPath = Path.Combine(tempPath,BackupDirectoryName);
+            var backupPath = Path.Combine(tempPath, BackupDirectoryName);
 
             // 确保目录存在
             if (!Directory.Exists(backupPath))
@@ -480,13 +480,22 @@ namespace TByd.PackageCreator.Editor.Utils.FileSystem
                 // 默认安全根目录列表
                 if (safeRoots == null || safeRoots.Count == 0)
                 {
+                    // Unity项目根目录
+                    string projectRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..")).ToLowerInvariant();
+                    // Packages目录
+                    string packagesDir = Path.GetFullPath(Path.Combine(projectRoot, "Packages")).ToLowerInvariant();
+
                     safeRoots = new List<string>
                     {
+                        projectRoot, // 项目根目录
                         Application.dataPath.ToLowerInvariant(), // Assets目录
+                        packagesDir,  // Packages目录
                         Application.persistentDataPath.ToLowerInvariant(), // 持久化数据目录
                         Application.temporaryCachePath.ToLowerInvariant(), // 临时缓存目录
                         Path.GetTempPath().ToLowerInvariant() // 系统临时目录
                     };
+
+                    Debug.Log($"安全目录列表: {string.Join(", ", safeRoots)}");
                 }
 
                 // 检查路径是否在任一安全根目录下
