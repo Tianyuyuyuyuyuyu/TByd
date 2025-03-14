@@ -70,3 +70,13 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# npm配置文件 - 包含敏感认证信息
+.npmrc
+.npmrc.user
+npm-debug.log
+npm-debug.log.*
+
+# npm包文件
+node_modules/
+package-lock.json

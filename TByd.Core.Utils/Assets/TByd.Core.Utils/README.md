@@ -7,8 +7,6 @@
 ![许可证](https://img.shields.io/badge/许可证-MIT-green)
 ![测试覆盖率](https://img.shields.io/badge/测试覆盖率-95%25-success)
 
-<img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/logos/tbyd-core-utils-logo.jpg" alt="TByd Core Utils Logo" width="450"/>
-
 *为Unity开发者打造的高性能、易用工具集*
 
 </div>
@@ -33,7 +31,7 @@ TByd Core Utils 是一个专为Unity开发者设计的实用工具库，提供�
 <tr>
 <td width="33%">
 <h3 align="center">🧮 MathUtils</h3>
-<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/math-icon.jpg" width="80"/></p>
+<p align="center"></p>
 
 ```csharp
 // 值范围重映射
@@ -56,7 +54,7 @@ bool isInside = MathUtils.IsPointInPolygon(
 </td>
 <td width="33%">
 <h3 align="center">📝 StringUtils</h3>
-<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/string-icon.jpg" width="80"/></p>
+<p align="center"></p>
 
 ```csharp
 // 生成随机字符串
@@ -75,7 +73,7 @@ string preview = StringUtils.Truncate(
 </td>
 <td width="33%">
 <h3 align="center">🎮 TransformExtensions</h3>
-<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/transform-icon.jpg" width="80"/></p>
+<p align="center"></p>
 
 ```csharp
 // 链式修改变换
@@ -99,10 +97,6 @@ Transform deepChild = transform
 ## 🚀 快速开始
 
 ### 安装
-
-<div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/tutorials/scoped-registry-setup.png" alt="Scoped Registry安装步骤" width="600"/>
-</div>
 
 通过 Scoped Registry 安装：
 

@@ -1,7 +1,6 @@
 # 🧰 TByd.Core.Utils 基础工具示例
 
 <div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/banners/samples-banner.jpg" alt="Basic Utils Example" width="650"/>
   <br>
   <em>📊 通过实际案例学习工具的使用方法 📊</em>
 </div>
@@ -36,10 +35,6 @@ BasicUtils/
 
 ### 🧮 MathUtils 演示
 
-<div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/math-utils-demo.jpg" alt="MathUtils Demo" width="500"/>
-</div>
-
 <table>
 <tr>
 <th width="40%">功能</th>
@@ -59,17 +54,73 @@ BasicUtils/
 <td>
 
 ```csharp
-// 初始化速度向量
-private Vector3 _velocity = Vector3.zero;
+using TByd.Core.Utils.Runtime;
+using UnityEngine;
 
-void Update() 
+/// <summary>
+/// 演示MathUtils类的核心功能
+/// </summary>
+public class MathUtilsExample : MonoBehaviour
 {
-    // 平滑过渡到目标位置
-    transform.position = MathUtils.SmoothDamp(
-        transform.position, 
-        targetPosition,
-        ref _velocity,
-        smoothTime);
+    [Header("插值演示")]
+    public Transform targetObject;
+    public float smoothTime = 0.3f;
+    
+    [Header("重映射演示")]
+    public float inputMin = 0f;
+    public float inputMax = 100f;
+    public float outputMin = 0f;
+    public float outputMax = 1f;
+    
+    private Vector3 _velocity = Vector3.zero;
+    
+    void Update()
+    {
+        // 演示1: 平滑阻尼插值
+        if (targetObject != null)
+        {
+            transform.position = MathUtils.SmoothDamp(
+                transform.position, 
+                targetObject.position, 
+                ref _velocity, 
+                smoothTime);
+        }
+        
+        // 演示2: 值范围重映射
+        float inputValue = Mathf.Sin(Time.time) * 50f + 50f; // 产生0-100之间的值
+        float mappedValue = MathUtils.Remap(
+            inputValue, 
+            inputMin, inputMax, 
+            outputMin, outputMax);
+            
+        // 使用映射后的值来改变对象缩放
+        transform.localScale = Vector3.one * mappedValue;
+        
+        // 演示3: 方向向量转旋转
+        Vector3 direction = (targetObject != null) 
+            ? (targetObject.position - transform.position).normalized 
+            : Vector3.forward;
+            
+        transform.rotation = MathUtils.DirectionToRotation(direction);
+        
+        // 演示4: 点在多边形内检测
+        Vector3[] polygonPoints = new Vector3[]
+        {
+            new Vector3(-5, 0, -5),
+            new Vector3(5, 0, -5),
+            new Vector3(5, 0, 5),
+            new Vector3(-5, 0, 5)
+        };
+        
+        bool isInside = MathUtils.IsPointInPolygon(
+            new Vector2(transform.position.x, transform.position.z),
+            System.Array.ConvertAll(polygonPoints, p => new Vector2(p.x, p.z)));
+            
+        // 根据是否在多边形内改变颜色
+        GetComponent<Renderer>().material.color = isInside 
+            ? Color.green 
+            : Color.red;
+    }
 }
 ```
 
@@ -168,9 +219,6 @@ if (isInside) {
 
 ### 📝 StringUtils 演示
 
-<div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/string-utils-demo.jpg" alt="StringUtils Demo" width="500"/>
-</div>
 
 <table>
 <tr>
@@ -324,9 +372,6 @@ int age = int.Parse(parts[2]);
 
 ### 🎮 TransformExtensions 演示
 
-<div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/transform-extensions-demo.jpg" alt="TransformExtensions Demo" width="500"/>
-</div>
 
 <table>
 <tr>
