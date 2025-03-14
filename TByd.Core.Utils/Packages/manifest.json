@@ -44,9 +44,8 @@
   "scopedRegistries": [
     {
       "name": "npmjs",
-      "url": "https://upm.tianyuyuyu.com/",
+      "url": "https://upm.tianyuyuyu.com",
       "scopes": [
-        "com.r1ch",
         "com.tbyd"
       ]
     },

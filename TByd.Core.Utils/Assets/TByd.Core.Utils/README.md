@@ -100,40 +100,22 @@ Transform deepChild = transform
 
 ### 安装
 
-<table>
-<tr>
-<th>安装方式</th>
-<th>步骤</th>
-</tr>
-<tr>
-<td>
+<div align="center">
+  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/tutorials/scoped-registry-setup.png" alt="Scoped Registry安装步骤" width="600"/>
+</div>
 
-#### 📦 通过UPM安装
+通过 Scoped Registry 安装：
 
-</td>
-<td>
-
-1. 打开 **Window > Package Manager**
-2. 点击 **+** 按钮并选择 **Add package from git URL...**
-3. 输入: `https://github.com/tbyd/tbyd.core.utils.git#0.1.0-preview`
-4. 点击 **Add**
-
-</td>
-</tr>
-<tr>
-<td>
-
-#### 💾 手动安装
-
-</td>
-<td>
-
-1. 下载 [最新发布版本](https://github.com/tbyd/tbyd.core.utils/releases)
-2. 解压并复制到项目的 `Assets` 目录
-
-</td>
-</tr>
-</table>
+1. 打开 **Edit > Project Settings > Package Manager**
+2. 在 **Scoped Registries** 部分点击 **+** 按钮
+3. 填写信息:
+   - **Name**: `npmjs`
+   - **URL**: `https://upm.tianyuyuyu.com`
+   - **Scope(s)**: `com.tbyd`
+4. 点击 **Apply** 保存设置
+5. 打开 **Window > Package Manager**
+6. 在左上角下拉菜单选择 **My Registries**
+7. 找到并安装 **TByd.Core.Utils**
 
 ### 基本用法
 

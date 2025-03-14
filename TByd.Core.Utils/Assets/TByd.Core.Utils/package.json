@@ -3,10 +3,12 @@
   "version": "0.1.0-preview",
   "displayName": "TByd Core Utils",
   "description": "提供一系列常用的工具函数和扩展方法，用于简化Unity游戏开发中的常见操作，提高开发效率。",
+  "license": "MIT",
   "unity": "2021.3",
-  "documentationUrl": "https://github.com/tbyd/tbyd.core.utils/Documentation~/使用入门.md",
-  "changelogUrl": "https://github.com/tbyd/tbyd.core.utils/CHANGELOG.md",
-  "licensesUrl": "https://github.com/tbyd/tbyd.core.utils/LICENSE.md",
+  "unityRelease": "8f1",
+  "documentationUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Core.Utils/Assets/TByd.Core.Utils/Documentation~/使用入门.md",
+  "changelogUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Core.Utils/Assets/TByd.Core.Utils/CHANGELOG.md",
+  "licensesUrl": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Core.Utils/Assets/TByd.Core.Utils/LICENSE.md",
   "keywords": [
     "utils",
     "tools",
@@ -16,10 +18,25 @@
   ],
   "author": {
     "name": "TByd",
-    "email": "tbyd@example.com",
-    "url": "https://github.com/tbyd"
+    "email": "tianyulovecars@gmail.com",
+    "url": "https://github.com/Tianyuyuyuyuyuyu"
   },
+  "contributors": [
+    {
+      "name": "BeiDa",
+      "email": "zhaoqing343@gmail.com"
+    }
+  ],
   "category": "Libraries",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Core.Utils/Assets/TByd.Core.Utils",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
   "dependencies": {},
   "samples": [
     {
