@@ -9,11 +9,8 @@ namespace TByd.Core.Utils.Tests.Runtime
         [Test]
         public void IsNullOrWhiteSpace_NullString_ReturnsTrue()
         {
-            // Arrange
-            string input = null;
-            
             // Act
-            bool result = StringUtils.IsNullOrWhiteSpace(input);
+            var result = StringUtils.IsNullOrWhiteSpace(null);
             
             // Assert
             Assert.That(result, Is.True);
@@ -23,10 +20,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void IsNullOrWhiteSpace_EmptyString_ReturnsTrue()
         {
             // Arrange
-            string input = string.Empty;
+            var input = string.Empty;
             
             // Act
-            bool result = StringUtils.IsNullOrWhiteSpace(input);
+            var result = StringUtils.IsNullOrWhiteSpace(input);
             
             // Assert
             Assert.That(result, Is.True);
@@ -36,10 +33,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void IsNullOrWhiteSpace_WhitespaceString_ReturnsTrue()
         {
             // Arrange
-            string input = "   ";
+            var input = "   ";
             
             // Act
-            bool result = StringUtils.IsNullOrWhiteSpace(input);
+            var result = StringUtils.IsNullOrWhiteSpace(input);
             
             // Assert
             Assert.That(result, Is.True);
@@ -49,10 +46,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void IsNullOrWhiteSpace_NonEmptyString_ReturnsFalse()
         {
             // Arrange
-            string input = "Hello";
+            var input = "Hello";
             
             // Act
-            bool result = StringUtils.IsNullOrWhiteSpace(input);
+            var result = StringUtils.IsNullOrWhiteSpace(input);
             
             // Assert
             Assert.That(result, Is.False);
@@ -69,7 +66,7 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void GenerateRandom_ZeroLength_ReturnsEmptyString()
         {
             // Act
-            string result = StringUtils.GenerateRandom(0);
+            var result = StringUtils.GenerateRandom(0);
             
             // Assert
             Assert.That(result, Is.Empty);
@@ -79,10 +76,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void GenerateRandom_PositiveLength_ReturnsStringWithCorrectLength()
         {
             // Arrange
-            int length = 10;
+            var length = 10;
             
             // Act
-            string result = StringUtils.GenerateRandom(length);
+            var result = StringUtils.GenerateRandom(length);
             
             // Assert
             Assert.That(result.Length, Is.EqualTo(length));
@@ -92,11 +89,11 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void GenerateRandom_CalledTwice_ReturnsDifferentStrings()
         {
             // Arrange
-            int length = 10;
+            var length = 10;
             
             // Act
-            string result1 = StringUtils.GenerateRandom(length);
-            string result2 = StringUtils.GenerateRandom(length);
+            var result1 = StringUtils.GenerateRandom(length);
+            var result2 = StringUtils.GenerateRandom(length);
             
             // Assert
             Assert.That(result1, Is.Not.EqualTo(result2));
@@ -113,10 +110,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void ToSlug_EmptyString_ReturnsEmptyString()
         {
             // Arrange
-            string value = string.Empty;
+            var value = string.Empty;
             
             // Act
-            string result = StringUtils.ToSlug(value);
+            var result = StringUtils.ToSlug(value);
             
             // Assert
             Assert.That(result, Is.Empty);
@@ -126,10 +123,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void ToSlug_StringWithSpaces_ReturnsSlugWithHyphens()
         {
             // Arrange
-            string value = "Hello World";
+            var value = "Hello World";
             
             // Act
-            string result = StringUtils.ToSlug(value);
+            var result = StringUtils.ToSlug(value);
             
             // Assert
             Assert.That(result, Is.EqualTo("hello-world"));
@@ -139,10 +136,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void ToSlug_StringWithSpecialChars_ReturnsSlugWithoutSpecialChars()
         {
             // Arrange
-            string value = "Hello, World! This is a Test.";
+            var value = "Hello, World! This is a Test.";
             
             // Act
-            string result = StringUtils.ToSlug(value);
+            var result = StringUtils.ToSlug(value);
             
             // Assert
             Assert.That(result, Is.EqualTo("hello-world-this-is-a-test"));
@@ -166,11 +163,11 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Truncate_StringShorterThanMaxLength_ReturnsOriginalString()
         {
             // Arrange
-            string input = "Hello";
-            int maxLength = 10;
+            var input = "Hello";
+            var maxLength = 10;
             
             // Act
-            string result = StringUtils.Truncate(input, maxLength);
+            var result = StringUtils.Truncate(input, maxLength);
             
             // Assert
             Assert.That(result, Is.EqualTo(input));
@@ -180,11 +177,11 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Truncate_StringLongerThanMaxLength_ReturnsTruncatedString()
         {
             // Arrange
-            string input = "Hello World";
-            int maxLength = 5;
+            var input = "Hello World";
+            var maxLength = 5;
             
             // Act
-            string result = StringUtils.Truncate(input, maxLength);
+            var result = StringUtils.Truncate(input, maxLength);
             
             // Assert
             Assert.That(result, Is.EqualTo("He..."));
@@ -194,12 +191,12 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Truncate_CustomSuffix_ReturnsTruncatedStringWithCustomSuffix()
         {
             // Arrange
-            string input = "Hello World";
-            int maxLength = 5;
-            string suffix = "***";
+            var input = "Hello World";
+            var maxLength = 5;
+            var suffix = "***";
             
             // Act
-            string result = StringUtils.Truncate(input, maxLength, suffix);
+            var result = StringUtils.Truncate(input, maxLength, suffix);
             
             // Assert
             Assert.That(result, Is.EqualTo("He***"));
@@ -216,7 +213,7 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Split_EmptyString_ReturnsEmptyEnumeration()
         {
             // Arrange
-            string value = string.Empty;
+            var value = string.Empty;
             
             // Act
             var enumerator = StringUtils.Split(value, ',');
@@ -229,7 +226,7 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Split_StringWithSeparator_ReturnsCorrectParts()
         {
             // Arrange
-            string value = "a,b,c";
+            var value = "a,b,c";
             
             // Act & Assert
             var enumerator = StringUtils.Split(value, ',');
@@ -250,7 +247,7 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Split_StringWithoutSeparator_ReturnsSinglePart()
         {
             // Arrange
-            string value = "abc";
+            var value = "abc";
             
             // Act & Assert
             var enumerator = StringUtils.Split(value, ',');

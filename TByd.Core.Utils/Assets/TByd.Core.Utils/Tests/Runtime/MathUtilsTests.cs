@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 using UnityEngine;
 using TByd.Core.Utils.Runtime;
@@ -13,13 +12,13 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void SmoothDamp_Float_ApproachesTargetValue()
         {
             // Arrange
-            float current = 0f;
-            float target = 10f;
-            float velocity = 0f;
-            float smoothTime = 0.1f;
+            var current = 0f;
+            var target = 10f;
+            var velocity = 0f;
+            var smoothTime = 0.1f;
             
             // Act - 模拟多次更新
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 current = MathUtils.SmoothDamp(current, target, ref velocity, smoothTime, Mathf.Infinity, 0.01f);
             }
@@ -32,13 +31,13 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void SmoothDamp_Vector2_ApproachesTargetValue()
         {
             // Arrange
-            Vector2 current = Vector2.zero;
-            Vector2 target = new Vector2(10f, 5f);
-            Vector2 velocity = Vector2.zero;
-            float smoothTime = 0.1f;
+            var current = Vector2.zero;
+            var target = new Vector2(10f, 5f);
+            var velocity = Vector2.zero;
+            var smoothTime = 0.1f;
             
             // Act - 模拟多次更新
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 current = MathUtils.SmoothDamp(current, target, ref velocity, smoothTime, Mathf.Infinity, 0.01f);
             }
@@ -51,13 +50,13 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void SmoothDamp_Vector3_ApproachesTargetValue()
         {
             // Arrange
-            Vector3 current = Vector3.zero;
-            Vector3 target = new Vector3(10f, 5f, 3f);
-            Vector3 velocity = Vector3.zero;
-            float smoothTime = 0.1f;
+            var current = Vector3.zero;
+            var target = new Vector3(10f, 5f, 3f);
+            var velocity = Vector3.zero;
+            var smoothTime = 0.1f;
             
             // Act - 模拟多次更新
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 current = MathUtils.SmoothDamp(current, target, ref velocity, smoothTime, Mathf.Infinity, 0.01f);
             }
@@ -70,14 +69,14 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void SmoothDamp_WithMaxSpeed_RespectsMaxSpeed()
         {
             // Arrange
-            float current = 0f;
-            float target = 10f;
-            float velocity = 0f;
-            float smoothTime = 0.1f;
-            float maxSpeed = 0.5f; // 限制最大速度
+            var current = 0f;
+            var target = 10f;
+            var velocity = 0f;
+            var smoothTime = 0.1f;
+            var maxSpeed = 0.5f; // 限制最大速度
             
             // Act - 单次更新
-            float newValue = MathUtils.SmoothDamp(current, target, ref velocity, smoothTime, maxSpeed, 1f);
+            var newValue = MathUtils.SmoothDamp(current, target, ref velocity, smoothTime, maxSpeed, 1f);
             
             // Assert - 单次更新的变化不应超过maxSpeed
             Assert.That(Mathf.Abs(newValue - current), Is.LessThanOrEqualTo(maxSpeed));
@@ -87,14 +86,14 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Remap_MapsValueCorrectly()
         {
             // Arrange
-            float value = 5f;
-            float fromMin = 0f;
-            float fromMax = 10f;
-            float toMin = 0f;
-            float toMax = 100f;
+            var value = 5f;
+            var fromMin = 0f;
+            var fromMax = 10f;
+            var toMin = 0f;
+            var toMax = 100f;
             
             // Act
-            float result = MathUtils.Remap(value, fromMin, fromMax, toMin, toMax);
+            var result = MathUtils.Remap(value, fromMin, fromMax, toMin, toMax);
             
             // Assert
             Assert.That(result, Is.EqualTo(50f).Within(Epsilon));
@@ -104,14 +103,14 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Remap_HandlesInvertedRanges()
         {
             // Arrange
-            float value = 5f;
-            float fromMin = 10f;
-            float fromMax = 0f; // 反转的输入范围
-            float toMin = 100f;
-            float toMax = 0f; // 反转的输出范围
+            var value = 5f;
+            var fromMin = 10f;
+            var fromMax = 0f; // 反转的输入范围
+            var toMin = 100f;
+            var toMax = 0f; // 反转的输出范围
             
             // Act
-            float result = MathUtils.Remap(value, fromMin, fromMax, toMin, toMax);
+            var result = MathUtils.Remap(value, fromMin, fromMax, toMin, toMax);
             
             // Assert
             Assert.That(result, Is.EqualTo(50f).Within(Epsilon));
@@ -121,17 +120,17 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void Remap_HandlesZeroRangeInput()
         {
             // Arrange
-            float value = 5f;
-            float fromMin = 5f;
-            float fromMax = 5f; // 零范围输入
-            float toMin = 0f;
-            float toMax = 10f;
+            var value = 5f;
+            var fromMin = 5f;
+            var fromMax = 5f; // 零范围输入
+            var toMin = 0f;
+            var toMax = 10f;
             
             // Act
-            float result = MathUtils.Remap(value, fromMin, fromMax, toMin, toMax);
+            var result = MathUtils.Remap(value, fromMin, fromMax, toMin, toMax);
             
             // Assert - 当输入范围为零时，应返回输出范围的中点
-            float expectedMidpoint = (toMin + toMax) / 2f; // 明确计算中点值为5.0f
+            var expectedMidpoint = (toMin + toMax) / 2f; // 明确计算中点值为5.0f
             Assert.That(result, Is.EqualTo(expectedMidpoint).Within(Epsilon));
         }
         
@@ -139,10 +138,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void DirectionToRotation_ForwardDirection_ReturnsIdentity()
         {
             // Arrange
-            Vector3 direction = Vector3.forward;
+            var direction = Vector3.forward;
             
             // Act
-            Quaternion rotation = MathUtils.DirectionToRotation(direction);
+            var rotation = MathUtils.DirectionToRotation(direction);
             
             // Assert
             Assert.That(rotation, Is.EqualTo(Quaternion.identity).Using<Quaternion>((q1, q2) => 
@@ -153,14 +152,14 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void DirectionToRotation_UpDirection_ReturnsCorrectRotation()
         {
             // Arrange
-            Vector3 direction = Vector3.up;
+            var direction = Vector3.up;
             
             // Act
-            Quaternion rotation = MathUtils.DirectionToRotation(direction);
+            var rotation = MathUtils.DirectionToRotation(direction);
             
             // Assert - 向上的方向应该是绕X轴旋转90度
-            Quaternion expected = Quaternion.Euler(90f, 0f, 0f);
-            float angle = Quaternion.Angle(rotation, expected);
+            var expected = Quaternion.Euler(90f, 0f, 0f);
+            var angle = Quaternion.Angle(rotation, expected);
             Assert.That(angle, Is.LessThan(Epsilon));
         }
         
@@ -168,10 +167,10 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void DirectionToRotation_ZeroVector_ReturnsIdentity()
         {
             // Arrange
-            Vector3 direction = Vector3.zero;
+            var direction = Vector3.zero;
             
             // Act
-            Quaternion rotation = MathUtils.DirectionToRotation(direction);
+            var rotation = MathUtils.DirectionToRotation(direction);
             
             // Assert - 零向量应该返回单位四元数
             Assert.That(rotation, Is.EqualTo(Quaternion.identity).Using<Quaternion>((q1, q2) => 
@@ -182,7 +181,7 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void IsPointInPolygon_PointInside_ReturnsTrue()
         {
             // Arrange
-            Vector2[] polygon = new Vector2[]
+            var polygon = new[]
             {
                 new Vector2(0, 0),
                 new Vector2(10, 0),
@@ -190,10 +189,10 @@ namespace TByd.Core.Utils.Tests.Runtime
                 new Vector2(0, 10)
             };
             
-            Vector2 point = new Vector2(5, 5);
+            var point = new Vector2(5, 5);
             
             // Act
-            bool result = MathUtils.IsPointInPolygon(point, polygon);
+            var result = MathUtils.IsPointInPolygon(point, polygon);
             
             // Assert
             Assert.That(result, Is.True);
@@ -203,7 +202,7 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void IsPointInPolygon_PointOutside_ReturnsFalse()
         {
             // Arrange
-            Vector2[] polygon = new Vector2[]
+            var polygon = new[]
             {
                 new Vector2(0, 0),
                 new Vector2(10, 0),
@@ -211,10 +210,10 @@ namespace TByd.Core.Utils.Tests.Runtime
                 new Vector2(0, 10)
             };
             
-            Vector2 point = new Vector2(15, 15);
+            var point = new Vector2(15, 15);
             
             // Act
-            bool result = MathUtils.IsPointInPolygon(point, polygon);
+            var result = MathUtils.IsPointInPolygon(point, polygon);
             
             // Assert
             Assert.That(result, Is.False);
@@ -224,7 +223,7 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void IsPointInPolygon_PointOnEdge_ReturnsTrue()
         {
             // Arrange
-            Vector2[] polygon = new Vector2[]
+            var polygon = new[]
             {
                 new Vector2(0, 0),
                 new Vector2(10, 0),
@@ -232,10 +231,10 @@ namespace TByd.Core.Utils.Tests.Runtime
                 new Vector2(0, 10)
             };
             
-            Vector2 point = new Vector2(5, 0); // 在多边形的边上
+            var point = new Vector2(5, 0); // 在多边形的边上
             
             // Act
-            bool result = MathUtils.IsPointInPolygon(point, polygon);
+            var result = MathUtils.IsPointInPolygon(point, polygon);
             
             // Assert
             Assert.That(result, Is.True);
@@ -245,19 +244,18 @@ namespace TByd.Core.Utils.Tests.Runtime
         public void IsPointInPolygon_NullPolygon_ThrowsArgumentNullException()
         {
             // Arrange
-            Vector2[] polygon = null;
-            Vector2 point = new Vector2(5, 5);
+            var point = new Vector2(5, 5);
             
             // Act & Assert
-            Assert.That(() => MathUtils.IsPointInPolygon(point, polygon), Throws.ArgumentNullException);
+            Assert.That(() => MathUtils.IsPointInPolygon(point, null), Throws.ArgumentNullException);
         }
         
         [Test]
         public void IsPointInPolygon_TooFewVertices_ThrowsArgumentException()
         {
             // Arrange
-            Vector2[] polygon = new Vector2[] { new Vector2(0, 0), new Vector2(10, 0) }; // 只有两个顶点
-            Vector2 point = new Vector2(5, 5);
+            var polygon = new[] { new Vector2(0, 0), new Vector2(10, 0) }; // 只有两个顶点
+            var point = new Vector2(5, 5);
             
             // Act & Assert
             Assert.That(() => MathUtils.IsPointInPolygon(point, polygon), Throws.ArgumentException);

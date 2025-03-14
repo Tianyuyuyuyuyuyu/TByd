@@ -58,7 +58,7 @@ namespace TByd.Core.Utils.Runtime.Extensions
         /// </remarks>
         public static Transform SetLocalX(this Transform transform, float x)
         {
-            Vector3 position = transform.localPosition;
+            var position = transform.localPosition;
             position.x = x;
             transform.localPosition = position;
             return transform;
@@ -75,7 +75,7 @@ namespace TByd.Core.Utils.Runtime.Extensions
         /// </remarks>
         public static Transform SetLocalY(this Transform transform, float y)
         {
-            Vector3 position = transform.localPosition;
+            var position = transform.localPosition;
             position.y = y;
             transform.localPosition = position;
             return transform;
@@ -92,7 +92,7 @@ namespace TByd.Core.Utils.Runtime.Extensions
         /// </remarks>
         public static Transform SetLocalZ(this Transform transform, float z)
         {
-            Vector3 position = transform.localPosition;
+            var position = transform.localPosition;
             position.z = z;
             transform.localPosition = position;
             return transform;
@@ -112,7 +112,7 @@ namespace TByd.Core.Utils.Runtime.Extensions
         /// </remarks>
         public static Transform SetX(this Transform transform, float x)
         {
-            Vector3 position = transform.position;
+            var position = transform.position;
             position.x = x;
             transform.position = position;
             return transform;
@@ -129,7 +129,7 @@ namespace TByd.Core.Utils.Runtime.Extensions
         /// </remarks>
         public static Transform SetY(this Transform transform, float y)
         {
-            Vector3 position = transform.position;
+            var position = transform.position;
             position.y = y;
             transform.position = position;
             return transform;
@@ -146,7 +146,7 @@ namespace TByd.Core.Utils.Runtime.Extensions
         /// </remarks>
         public static Transform SetZ(this Transform transform, float z)
         {
-            Vector3 position = transform.position;
+            var position = transform.position;
             position.z = z;
             transform.position = position;
             return transform;
@@ -185,11 +185,11 @@ namespace TByd.Core.Utils.Runtime.Extensions
             if (transform == null)
                 return new List<Transform>();
                 
-            List<Transform> children = new List<Transform>(transform.childCount);
+            var children = new List<Transform>(transform.childCount);
             
-            for (int i = 0; i < transform.childCount; i++)
+            for (var i = 0; i < transform.childCount; i++)
             {
-                Transform child = transform.GetChild(i);
+                var child = transform.GetChild(i);
                 
                 // 确保子对象及其gameObject非空
                 if (child != null && child.gameObject != null)
@@ -233,7 +233,7 @@ namespace TByd.Core.Utils.Runtime.Extensions
         public static Transform DestroyAllChildren(this Transform transform, bool immediate = false)
         {
             // 从后向前遍历，避免索引变化问题
-            for (int i = transform.childCount - 1; i >= 0; i--)
+            for (var i = transform.childCount - 1; i >= 0; i--)
             {
                 if (immediate)
                 {
@@ -278,11 +278,11 @@ namespace TByd.Core.Utils.Runtime.Extensions
         /// </remarks>
         public static Transform FindOrCreateChild(this Transform transform, string name)
         {
-            Transform child = transform.Find(name);
+            var child = transform.Find(name);
             
             if (child == null)
             {
-                GameObject childObject = new GameObject(name);
+                var childObject = new GameObject(name);
                 child = childObject.transform;
                 child.SetParent(transform, false);
             }
@@ -323,12 +323,12 @@ namespace TByd.Core.Utils.Runtime.Extensions
         public static Transform FindRecursive(this Transform transform, string name)
         {
             // 首先在直接子物体中查找
-            Transform child = transform.Find(name);
+            var child = transform.Find(name);
             if (child != null)
                 return child;
             
             // 递归查找所有子物体
-            for (int i = 0; i < transform.childCount; i++)
+            for (var i = 0; i < transform.childCount; i++)
             {
                 child = transform.GetChild(i).FindRecursive(name);
                 if (child != null)

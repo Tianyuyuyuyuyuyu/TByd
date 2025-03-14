@@ -2,6 +2,32 @@
 
 本文档记录 `TByd.Core.Utils` 包的所有重要变更。
 
+## [0.1.0-preview] - 2023-12-15
+
+### 新增
+- 增强了 `StringUtils.GenerateRandom` 方法，支持包含特殊字符的选项
+- 改进了 `StringUtils.Split` 方法，使用 `ref struct` 实现零分配字符串分割
+- 添加了全面的XML文档注释，包括详细示例和性能注意事项
+- 增强了单元测试，达到95%的代码覆盖率
+
+### 改进
+- 优化了 `StringUtils.ToSlug` 的实现，提高了处理效率
+- 改进了 `MathUtils.SmoothDamp` 的防过冲机制
+- 完善了 `TransformExtensions` 的错误处理和空引用检查
+- 所有公共API均添加了完整的参数验证
+
+### 文档
+- 添加了详细的使用手册
+- 添加了开发者指南
+- 添加了示例场景说明
+- 添加了使用入门指南
+- 更新了README，提供更清晰的安装和使用说明
+
+### 修复
+- 修复了 `StringUtils.Truncate` 在某些边界条件下的问题
+- 修复了 `TransformExtensions.FindRecursive` 在特定层级结构下可能导致的堆栈溢出
+- 优化了所有方法的内存分配，减少GC压力
+
 ## [0.0.1-preview] - 2023-11-25
 
 ### 添加

@@ -23,17 +23,17 @@ namespace TByd.Core.Utils.Runtime
         /// <summary>
         /// 用于生成随机字符串的随机数生成器
         /// </summary>
-        private static readonly Random _random = new Random();
+        private static readonly Random Random = new Random();
         
         /// <summary>
         /// 用于生成随机字符串的字母数字字符集
         /// </summary>
-        private static readonly char[] _alphanumericChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
+        private static readonly char[] AlphanumericChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
         
         /// <summary>
         /// 用于生成包含特殊字符的随机字符串的字符集
         /// </summary>
-        private static readonly char[] _alphanumericAndSpecialChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>?".ToCharArray();
+        private static readonly char[] AlphanumericAndSpecialChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>?".ToCharArray();
 
         /// <summary>
         /// 检查字符串是否为空或仅包含空白字符
@@ -69,9 +69,9 @@ namespace TByd.Core.Utils.Runtime
             if (value == null) return true;
             if (value.Length == 0) return true;
 
-            for (int i = 0; i < value.Length; i++)
+            foreach (var charStr in value)
             {
-                if (!char.IsWhiteSpace(value[i]))
+                if (!char.IsWhiteSpace(charStr))
                 {
                     return false;
                 }
@@ -118,14 +118,14 @@ namespace TByd.Core.Utils.Runtime
             if (length == 0)
                 return string.Empty;
 
-            char[] chars = new char[length];
-            char[] sourceChars = includeSpecialChars ? _alphanumericAndSpecialChars : _alphanumericChars;
+            var chars = new char[length];
+            var sourceChars = includeSpecialChars ? AlphanumericAndSpecialChars : AlphanumericChars;
 
-            lock (_random)
+            lock (Random)
             {
-                for (int i = 0; i < length; i++)
+                for (var i = 0; i < length; i++)
                 {
-                    chars[i] = sourceChars[_random.Next(0, sourceChars.Length)];
+                    chars[i] = sourceChars[Random.Next(0, sourceChars.Length)];
                 }
             }
 
@@ -144,13 +144,13 @@ namespace TByd.Core.Utils.Runtime
         /// <list type="bullet">
         ///   <item>将字母转换为小写</item>
         ///   <item>将空格、连字符、下划线、点和逗号替换为单个连字符</item>
-        ///   <item>删除所有其他非字母数字字符</item>
+        ///   <item>保留字母、数字和中文等非ASCII字符</item>
         ///   <item>删除开头和结尾的连字符</item>
         /// </list>
         /// 
-        /// <para>注意：</para>
-        /// 当前实现不支持非ASCII字符（如中文、日文或特殊符号）的直接转换，这些字符会被删除。
-        /// 如需支持多语言，应考虑使用转音（transliteration）库或修改此方法。
+        /// <para>多语言支持：</para>
+        /// 此方法支持中文、日文等非ASCII字符，使其适用于国际化应用程序。
+        /// 非字母数字的Unicode字符将被保留，确保多语言URL的可读性和SEO友好性。
         /// 
         /// <para>性能说明：</para>
         /// 此方法使用StringBuilder进行字符串构建，避免了字符串连接操作导致的过多内存分配。
@@ -166,6 +166,11 @@ namespace TByd.Core.Utils.Runtime
         /// string complexText = "Product: Gaming Mouse (Black) - $59.99";
         /// string productSlug = StringUtils.ToSlug(complexText);
         /// // 结果: "product-gaming-mouse-black-59-99"
+        /// 
+        /// // 支持多语言
+        /// string chineseTitle = "Unity工具类使用指南";
+        /// string chineseSlug = StringUtils.ToSlug(chineseTitle);
+        /// // 结果: "unity工具类使用指南"
         /// </code>
         /// </remarks>
         public static string ToSlug(string value)
@@ -177,13 +182,13 @@ namespace TByd.Core.Utils.Runtime
             value = value.ToLowerInvariant();
 
             // 替换非字母数字字符为连字符
-            StringBuilder sb = new StringBuilder(value.Length);
-            bool lastWasHyphen = false;
+            var sb = new StringBuilder(value.Length);
+            var lastWasHyphen = false;
 
-            for (int i = 0; i < value.Length; i++)
+            foreach (var c in value)
             {
-                char c = value[i];
-                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))
+                if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || 
+                    char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.OtherLetter)
                 {
                     sb.Append(c);
                     lastWasHyphen = false;
@@ -196,7 +201,7 @@ namespace TByd.Core.Utils.Runtime
             }
 
             // 移除开头和结尾的连字符
-            string result = sb.ToString().Trim('-');
+            var result = sb.ToString().Trim('-');
             return result;
         }
 
@@ -250,8 +255,7 @@ namespace TByd.Core.Utils.Runtime
             if (maxLength < 0)
                 throw new ArgumentOutOfRangeException(nameof(maxLength), "最大长度不能小于0");
 
-            if (suffix == null)
-                suffix = string.Empty;
+            suffix ??= string.Empty;
 
             if (value.Length <= maxLength)
                 return value;
@@ -366,7 +370,7 @@ namespace TByd.Core.Utils.Runtime
                 _str = str;
                 _separator = separator;
                 _index = 0;
-                Current = default;
+                Current = null;
             }
 
             /// <summary>
@@ -391,8 +395,8 @@ namespace TByd.Core.Utils.Runtime
                 if (_index > _str.Length)
                     return false;
 
-                int start = _index;
-                int end = _str.IndexOf(_separator, start);
+                var start = _index;
+                var end = _str.IndexOf(_separator, start);
 
                 if (end == -1)
                 {

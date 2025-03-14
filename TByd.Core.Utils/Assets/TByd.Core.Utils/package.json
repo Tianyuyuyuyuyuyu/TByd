@@ -4,6 +4,9 @@
   "displayName": "TByd Core Utils",
   "description": "提供一系列常用的工具函数和扩展方法，用于简化Unity游戏开发中的常见操作，提高开发效率。",
   "unity": "2021.3",
+  "documentationUrl": "https://github.com/tbyd/tbyd.core.utils/Documentation~/使用入门.md",
+  "changelogUrl": "https://github.com/tbyd/tbyd.core.utils/CHANGELOG.md",
+  "licensesUrl": "https://github.com/tbyd/tbyd.core.utils/LICENSE.md",
   "keywords": [
     "utils",
     "tools",
@@ -21,7 +24,7 @@
   "samples": [
     {
       "displayName": "基础工具示例",
-      "description": "展示如何使用字符串工具和数学工具",
+      "description": "展示如何使用字符串工具、数学工具和Transform扩展",
       "path": "Samples~/BasicUtils"
     }
   ]
