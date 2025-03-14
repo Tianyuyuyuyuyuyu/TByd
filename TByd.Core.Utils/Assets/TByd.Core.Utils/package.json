@@ -1,0 +1,28 @@
+{
+  "name": "com.tbyd.core.utils",
+  "version": "0.1.0-preview",
+  "displayName": "TByd Core Utils",
+  "description": "提供一系列常用的工具函数和扩展方法，用于简化Unity游戏开发中的常见操作，提高开发效率。",
+  "unity": "2021.3",
+  "keywords": [
+    "utils",
+    "tools",
+    "extensions",
+    "helpers",
+    "core"
+  ],
+  "author": {
+    "name": "TByd",
+    "email": "tbyd@example.com",
+    "url": "https://github.com/tbyd"
+  },
+  "category": "Libraries",
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "基础工具示例",
+      "description": "展示如何使用字符串工具和数学工具",
+      "path": "Samples~/BasicUtils"
+    }
+  ]
+} 
