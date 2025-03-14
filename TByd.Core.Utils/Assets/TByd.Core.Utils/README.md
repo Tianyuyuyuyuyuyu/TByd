@@ -56,7 +56,7 @@ bool isInside = MathUtils.IsPointInPolygon(
 </td>
 <td width="33%">
 <h3 align="center">📝 StringUtils</h3>
-<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/string-icon.png" width="80"/></p>
+<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/string-icon.jpg" width="80"/></p>
 
 ```csharp
 // 生成随机字符串
@@ -75,7 +75,7 @@ string preview = StringUtils.Truncate(
 </td>
 <td width="33%">
 <h3 align="center">🎮 TransformExtensions</h3>
-<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/transform-icon.png" width="80"/></p>
+<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/transform-icon.jpg" width="80"/></p>
 
 ```csharp
 // 链式修改变换

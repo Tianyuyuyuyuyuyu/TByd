@@ -1,7 +1,7 @@
 # 🧰 TByd.Core.Utils 基础工具示例
 
 <div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/banners/samples-banner.png" alt="Basic Utils Example" width="650"/>
+  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/banners/samples-banner.jpg" alt="Basic Utils Example" width="650"/>
   <br>
   <em>📊 通过实际案例学习工具的使用方法 📊</em>
 </div>
@@ -37,7 +37,7 @@ BasicUtils/
 ### 🧮 MathUtils 演示
 
 <div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/math-utils-demo.png" alt="MathUtils Demo" width="500"/>
+  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/math-utils-demo.jpg" alt="MathUtils Demo" width="500"/>
 </div>
 
 <table>
@@ -169,7 +169,7 @@ if (isInside) {
 ### 📝 StringUtils 演示
 
 <div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/string-utils-demo.png" alt="StringUtils Demo" width="500"/>
+  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/string-utils-demo.jpg" alt="StringUtils Demo" width="500"/>
 </div>
 
 <table>
@@ -325,7 +325,7 @@ int age = int.Parse(parts[2]);
 ### 🎮 TransformExtensions 演示
 
 <div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/transform-extensions-demo.png" alt="TransformExtensions Demo" width="500"/>
+  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/screenshots/transform-extensions-demo.jpg" alt="TransformExtensions Demo" width="500"/>
 </div>
 
 <table>
@@ -531,6 +531,6 @@ else
 ---
 
 <div align="center">
-  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/questions-icon.png" width="30" />
+  <img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/questions-icon.jpg" width="30" />
   <p><b>有问题？</b> 联系我们获取帮助: <a href="mailto:support@tbyd.com">support@tbyd.com</a></p>
 </div> 
