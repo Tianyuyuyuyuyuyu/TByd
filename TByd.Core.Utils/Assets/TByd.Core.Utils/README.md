@@ -1,104 +1,113 @@
 # TByd Core Utils
 
-提供一系列常用的工具函数和扩展方法，用于简化Unity游戏开发中的常见操作，提高开发效率。该包被设计为高性能、低GC压力，适用于任何Unity项目。
+## 简介
+
+`TByd.Core.Utils` 是一个Unity工具库，提供了一系列常用的工具类和扩展方法，旨在简化Unity开发过程中的常见任务。该库设计为轻量级、高性能且易于使用，可用于各种类型的Unity项目。
 
 ## 功能特性
 
-- **字符串操作工具**：提供高效的字符串处理方法，减少GC分配
-- **数学和几何工具**：扩展Unity数学库，提供更丰富的数学运算功能
-- **类型转换和反射助手**：简化反射操作，提供类型安全的转换方法
-- **时间和日期工具**：处理游戏内和现实世界的时间计算和格式化
-- **随机数生成器**：增强的随机功能，支持各种分布和权重随机
-- **文件和路径工具**：简化文件操作和路径处理
-- **扩展方法集合**：为Unity常用类型提供实用扩展方法
-- **属性验证工具**：参数验证和错误检查工具
+本库包含以下核心工具类：
 
-## 安装方法
+### MathUtils
+- 平滑阻尼插值（支持float、Vector2、Vector3）
+- 值重映射
+- 方向向量转旋转四元数
+- 点-多边形碰撞检测
 
-### 通过Unity Package Manager
+### StringUtils
+- 空字符串检测
+- 随机字符串生成
+- 字符串截断
+- URL友好的Slug生成
+- 高效字符串分割
 
-1. 打开Unity编辑器，选择 Window > Package Manager
-2. 点击 "+" 按钮，选择 "Add package from git URL..."
-3. 输入 `https://github.com/tbyd/TByd.Core.Utils.git`
-4. 点击 "Add" 按钮
+### TransformExtensions
+- Transform本地/世界坐标操作
+- 子物体查找与创建
+- 子物体批量操作
+- 递归子物体查找
 
-### 通过修改manifest.json
+## 安装说明
 
-1. 打开项目目录下的 `Packages/manifest.json` 文件
-2. 在 `dependencies` 部分添加以下内容：
-   ```json
-   "com.tbyd.core.utils": "https://github.com/tbyd/TByd.Core.Utils.git"
-   ```
+### 通过UPM安装（推荐）
+
+1. 打开Unity的Package Manager (Window > Package Manager)
+2. 点击左上角的"+"按钮，选择"Add package from git URL..."
+3. 输入以下URL：`https://github.com/tbyd/tbyd.core.utils.git#0.0.1-preview`
+4. 点击"Add"按钮
+
+### 手动安装
+
+1. 下载此仓库的最新版本
+2. 将`Assets/TByd.Core.Utils`文件夹拷贝到你的Unity项目的Assets文件夹中
 
 ## 基本用法
 
-### 字符串工具
+### MathUtils示例
 
 ```csharp
-using TByd.Core.Utils;
+using TByd.Core.Utils.Runtime;
+using UnityEngine;
 
-// 检查字符串是否为空或仅包含空白字符
-bool isEmpty = StringUtils.IsNullOrWhiteSpace(myString);
+// 平滑阻尼插值（相机跟随）
+private Vector3 _velocity = Vector3.zero;
+void Update()
+{
+    transform.position = MathUtils.SmoothDamp(
+        transform.position, 
+        target.position, 
+        ref _velocity, 
+        smoothTime);
+}
+
+// 值重映射（输入处理）
+float mappedValue = MathUtils.Remap(joystickInput, -1f, 1f, 0f, 100f);
+```
+
+### StringUtils示例
+
+```csharp
+using TByd.Core.Utils.Runtime;
 
 // 生成随机字符串
 string randomId = StringUtils.GenerateRandom(8);
 
-// 截断字符串
-string truncated = StringUtils.Truncate(longText, 100, "...");
+// 创建URL友好的字符串
+string urlSlug = StringUtils.ToSlug("Hello World! 示例");  // "hello-world-示例"
 
-// 高性能分割字符串
-foreach (var part in StringUtils.Split(csvData, ','))
-{
-    // 使用part...
-}
+// 字符串截断
+string truncated = StringUtils.Truncate("这是一段很长的文本", 10);  // "这是一段..."
 ```
 
-### 数学工具
+### TransformExtensions示例
 
 ```csharp
-using TByd.Core.Utils;
+using TByd.Core.Utils.Runtime.Extensions;
+using UnityEngine;
 
-// 平滑阻尼插值
-transform.position = MathUtils.SmoothDamp(
-    transform.position, 
-    targetPosition, 
-    ref velocity, 
-    0.3f
-);
-
-// 值重映射
-float normalized = MathUtils.Remap(value, 0f, 100f, 0f, 1f);
-```
-
-### 扩展方法
-
-```csharp
-using TByd.Core.Utils.Extensions;
-
-// Transform扩展
+// 重置局部变换
 transform.ResetLocal();
-transform.SetLocalX(5f);
 
-// GameObject扩展
-GameObject child = gameObject.FindOrCreateChild("UI");
-child.SetLayerRecursively(LayerMask.NameToLayer("UI"));
+// 设置单个坐标分量
+transform.SetLocalY(5f);
 
-// 集合扩展
-List<int> numbers = new List<int> { 1, 2, 3, 4, 5 };
-numbers.Shuffle();
+// 查找或创建子物体
+Transform child = transform.FindOrCreateChild("UI_Panel");
+
+// 获取所有激活的子物体
+var activeChildren = transform.GetAllChildren(includeInactive: false);
 ```
 
-## 技术规格
+## 依赖项
 
-- **.NET版本**：.NET Standard 2.1
-- **Unity最低版本**：Unity 2021.3.8f1
-- **代码覆盖率**：95%+
-- **内存分配**：关键方法零GC分配
+- Unity 2021.3.8f1 或更高版本
+
+## 版本信息
+
+当前版本: 0.0.1-preview
+
+请查看 [CHANGELOG.md](CHANGELOG.md) 获取完整的版本历史。
 
 ## 许可证
 
-本项目采用 MIT 许可证 - 详情请参阅 [LICENSE](LICENSE.md) 文件
-
-## 贡献
-
-欢迎通过 Pull Request 贡献代码。请确保遵循项目的代码风格和贡献指南。 
+本项目使用 MIT 许可证。详情请参阅 [LICENSE.md](LICENSE.md) 文件。 
