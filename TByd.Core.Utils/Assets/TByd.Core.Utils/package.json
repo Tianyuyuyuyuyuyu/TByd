@@ -1,6 +1,6 @@
 {
   "name": "com.tbyd.core.utils",
-  "version": "0.1.0-preview",
+  "version": "0.1.1-preview",
   "displayName": "TByd Core Utils",
   "description": "提供一系列常用的工具函数和扩展方法，用于简化Unity游戏开发中的常见操作，提高开发效率。",
   "license": "MIT",
