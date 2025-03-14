@@ -33,7 +33,7 @@ TByd Core Utils 是一个专为Unity开发者设计的实用工具库，提供�
 <tr>
 <td width="33%">
 <h3 align="center">🧮 MathUtils</h3>
-<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/tbyd-resources/icons/math-icon.jpg" width="80"/></p>
+<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/blob/master/tbyd-resources/icons/math-icon.jpg" width="80"/></p>
 
 ```csharp
 // 值范围重映射
