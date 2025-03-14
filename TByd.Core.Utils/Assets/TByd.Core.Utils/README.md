@@ -7,7 +7,7 @@
 ![许可证](https://img.shields.io/badge/许可证-MIT-green)
 ![测试覆盖率](https://img.shields.io/badge/测试覆盖率-95%25-success)
 
-<img src="https://github.com/Tianyuyuyuyuyuyu/TByd/tbyd-resources/logos/tbyd-core-utils-logo.png" alt="TByd Core Utils Logo" width="450"/>
+<img src="https://github.com/Tianyuyuyuyuyuyu/TByd/tbyd-resources/logos/tbyd-core-utils-logo.jpg" alt="TByd Core Utils Logo" width="450"/>
 
 *为Unity开发者打造的高性能、易用工具集*
 
@@ -33,7 +33,7 @@ TByd Core Utils 是一个专为Unity开发者设计的实用工具库，提供�
 <tr>
 <td width="33%">
 <h3 align="center">🧮 MathUtils</h3>
-<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/tbyd-resources/icons/math-icon.png" width="80"/></p>
+<p align="center"><img src="https://github.com/Tianyuyuyuyuyuyu/TByd/tbyd-resources/icons/math-icon.jpg" width="80"/></p>
 
 ```csharp
 // 值范围重映射
