@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![版本](https://img.shields.io/badge/版本-0.1.0--preview-blue)
+![版本](https://img.shields.io/badge/版本-0.1.1--preview-blue)
 ![Unity版本](https://img.shields.io/badge/Unity-2021.3.8f1+-brightgreen)
 ![许可证](https://img.shields.io/badge/许可证-MIT-green)
 ![测试覆盖率](https://img.shields.io/badge/测试覆盖率-95%25-success)
@@ -192,7 +192,7 @@ TByd Core Utils 专注于高性能实现，显著提升开发效率的同时保�
 
 ## 🔄 版本信息
 
-当前版本: **0.1.0-preview**
+当前版本: **0.1.1-preview**
 
 查看 [CHANGELOG.md](CHANGELOG.md) 获取详细更新记录。
 
