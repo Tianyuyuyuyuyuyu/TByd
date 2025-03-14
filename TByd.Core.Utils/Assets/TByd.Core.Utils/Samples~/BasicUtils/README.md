@@ -248,10 +248,10 @@ Debug.Log($"临时密码: {tempPassword}");
 
 ```csharp
 // 将标题转换为URL slug
-string articleTitle = "Unity 3D 游戏开发教程 2023!";
+string articleTitle = "Unity 3D 游戏开发教程 2025!";
 string urlSlug = StringUtils.ToSlug(articleTitle);
 
-// 结果: "unity-3d-游戏开发教程-2023"
+// 结果: "unity-3d-游戏开发教程-2025"
 // 注意:保留了中文字符
 
 string url = $"https://example.com/articles/{urlSlug}";

@@ -2,7 +2,7 @@
 
 本文档记录 `TByd.Core.Utils` 包的所有重要变更。
 
-## [0.1.0-preview] - 2023-12-15
+## [0.1.0-preview] - 2025-03-14
 
 ### 新增
 - 增强了 `StringUtils.GenerateRandom` 方法，支持包含特殊字符的选项
@@ -28,7 +28,7 @@
 - 修复了 `TransformExtensions.FindRecursive` 在特定层级结构下可能导致的堆栈溢出
 - 优化了所有方法的内存分配，减少GC压力
 
-## [0.0.1-preview] - 2023-11-25
+## [0.0.1-preview] - 2025-03-13
 
 ### 添加
 

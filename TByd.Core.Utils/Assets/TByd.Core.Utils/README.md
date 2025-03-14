@@ -65,8 +65,8 @@ string sessionId = StringUtils.GenerateRandom(
     
 // 转换为URL友好格式
 string slug = StringUtils.ToSlug(
-    "Hello World 2023!");
-// 输出: "hello-world-2023"
+    "Hello World 2025!");
+// 输出: "hello-world-2025"
 
 // 智能截断长文本
 string preview = StringUtils.Truncate(
@@ -222,5 +222,5 @@ TByd Core Utils 专注于高性能实现，显著提升开发效率的同时保�
 <div align="center">
   <sub>由TByd团队用 ❤️ 制作</sub>
   <br>
-  <sub>Copyright © 2023 TByd团队</sub>
+  <sub>Copyright © 2025 TByd团队</sub>
 </div> 
