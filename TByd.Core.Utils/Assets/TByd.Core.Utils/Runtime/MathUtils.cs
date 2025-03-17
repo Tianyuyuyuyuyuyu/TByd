@@ -42,22 +42,22 @@ namespace TByd.Core.Utils.Runtime
                 deltaTime = Time.deltaTime;
             
             smoothTime = Mathf.Max(0.0001f, smoothTime);
-            float omega = 2f / smoothTime;
+            var omega = 2f / smoothTime;
 
-            float x = omega * deltaTime;
-            float exp = 1f / (1f + x + 0.48f * x * x + 0.235f * x * x * x);
+            var x = omega * deltaTime;
+            var exp = 1f / (1f + x + 0.48f * x * x + 0.235f * x * x * x);
             
-            float change = current - target;
-            float originalTo = target;
+            var change = current - target;
+            var originalTo = target;
             
             // 限制最大速度
-            float maxChange = maxSpeed * smoothTime;
+            var maxChange = maxSpeed * smoothTime;
             change = Mathf.Clamp(change, -maxChange, maxChange);
             target = current - change;
             
-            float temp = (velocity + omega * change) * deltaTime;
+            var temp = (velocity + omega * change) * deltaTime;
             velocity = (velocity - omega * temp) * exp;
-            float output = target + (change + temp) * exp;
+            var output = target + (change + temp) * exp;
             
             // 防止过冲
             if (originalTo - current > 0f == output > originalTo)
@@ -88,10 +88,10 @@ namespace TByd.Core.Utils.Runtime
             if (deltaTime < 0f)
                 deltaTime = Time.deltaTime;
 
-            float vx = velocity.x;
-            float vy = velocity.y;
+            var vx = velocity.x;
+            var vy = velocity.y;
 
-            Vector2 result = new Vector2(
+            var result = new Vector2(
                 SmoothDamp(current.x, target.x, ref vx, smoothTime, maxSpeed, deltaTime),
                 SmoothDamp(current.y, target.y, ref vy, smoothTime, maxSpeed, deltaTime)
             );
@@ -132,11 +132,11 @@ namespace TByd.Core.Utils.Runtime
             if (deltaTime < 0f)
                 deltaTime = Time.deltaTime;
 
-            float vx = velocity.x;
-            float vy = velocity.y;
-            float vz = velocity.z;
+            var vx = velocity.x;
+            var vy = velocity.y;
+            var vz = velocity.z;
 
-            Vector3 result = new Vector3(
+            var result = new Vector3(
                 SmoothDamp(current.x, target.x, ref vx, smoothTime, maxSpeed, deltaTime),
                 SmoothDamp(current.y, target.y, ref vy, smoothTime, maxSpeed, deltaTime),
                 SmoothDamp(current.z, target.z, ref vz, smoothTime, maxSpeed, deltaTime)
@@ -177,7 +177,7 @@ namespace TByd.Core.Utils.Runtime
                 return (toMin + toMax) / 2.0f;
             }
 
-            float normalizedValue = (value - fromMin) / (fromMax - fromMin);
+            var normalizedValue = (value - fromMin) / (fromMax - fromMin);
             return Mathf.Lerp(toMin, toMax, normalizedValue);
         }
 
@@ -219,13 +219,13 @@ namespace TByd.Core.Utils.Runtime
                 up = Vector3.up;
                 
             // 为了处理向上或向下的方向特殊情况，我们检查该方向是否与世界上方向接近平行
-            float upDot = Vector3.Dot(direction, Vector3.up);
+            var upDot = Vector3.Dot(direction, Vector3.up);
             
             // 如果方向几乎垂直向上或向下，我们需要特殊处理
             if (Mathf.Abs(upDot) > 0.9999f)
             {
                 // 根据方向计算角度：向上为90度，向下为-90度
-                float angle = upDot > 0 ? 90f : -90f;
+                var angle = upDot > 0 ? 90f : -90f;
                 
                 // 使用轴角表示法创建四元数：绕X轴旋转
                 return Quaternion.AngleAxis(angle, Vector3.right);
@@ -236,13 +236,13 @@ namespace TByd.Core.Utils.Runtime
             if (Mathf.Abs(Vector3.Dot(direction, up)) > 0.9f)
             {
                 // 选择一个尽可能垂直于direction的参考向量
-                Vector3 reference = Math.Abs(Vector3.Dot(direction, Vector3.forward)) < 0.9f
+                var reference = Math.Abs(Vector3.Dot(direction, Vector3.forward)) < 0.9f
                     ? Vector3.forward
                     : Vector3.right;
                     
                 // 构建正交基
-                Vector3 right = Vector3.Cross(reference, direction).normalized;
-                Vector3 newUp = Vector3.Cross(direction, right);
+                var right = Vector3.Cross(reference, direction).normalized;
+                var newUp = Vector3.Cross(direction, right);
                 
                 // 基于正交基构建旋转矩阵
                 return Quaternion.LookRotation(direction, newUp);
@@ -291,10 +291,10 @@ namespace TByd.Core.Utils.Runtime
             if (polygon.Length < 3)
                 throw new ArgumentException("多边形必须至少有3个顶点", nameof(polygon));
 
-            bool result = false;
-            int j = polygon.Length - 1;
+            var result = false;
+            var j = polygon.Length - 1;
 
-            for (int i = 0; i < polygon.Length; i++)
+            for (var i = 0; i < polygon.Length; i++)
             {
                 if (((polygon[i].y > point.y) != (polygon[j].y > point.y)) &&
                     (point.x < (polygon[j].x - polygon[i].x) * (point.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x))
