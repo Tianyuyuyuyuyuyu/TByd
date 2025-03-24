@@ -1,0 +1,53 @@
+{
+  "name": "com.tbyd.tools.versioncontrol",
+  "displayName": "TByd.Tools.VersionControl",
+  "version": "0.0.3",
+  "unity": "2021.3",
+  "unityRelease": "8f1",
+  "description": "Unity Git工具",
+  "license": "MIT",
+  "keywords": [
+    "TByd",
+    "Git",
+    "Tools",
+    "Package"
+  ],
+  "author": {
+    "name": "TByd",
+    "email": "tianyulovecars@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "BeiDa",
+      "email": "zhaoqing343@gmail.com"
+    }
+  ],
+  "category": "Tools",
+  "homepage": "https://github.com/Tianyuyuyuyuyuyu/TByd",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/tree/master/TByd.Tools.VersionControl"
+  },
+  "bugs": {
+    "url": "https://github.com/Tianyuyuyuyuyuyu/TByd/issues"
+  },
+  "relatedPackages": {},
+  "dependencies": {},
+  "samples": [
+    {
+      "displayName": "基础用法",
+      "description": "展示包的基本功能和用法",
+      "path": "Samples~/BasicUsage"
+    },
+    {
+      "displayName": "高级功能",
+      "description": "展示包的高级功能和扩展用法",
+      "path": "Samples~/AdvancedFeatures"
+    },
+    {
+      "displayName": "示例场景",
+      "description": "包含完整功能演示的示例场景",
+      "path": "Samples~/ExampleScene"
+    }
+  ]
+}
