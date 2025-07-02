@@ -1,0 +1,22 @@
+{
+    "name": "TByd.Template.Runtime",
+    "rootNamespace": "TByd.Template",
+    "references": [
+        "UniTask"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "2.0.0",
+            "define": "TBYD_UNITASK_SUPPORT"
+        }
+    ],
+    "noEngineReferences": false
+}
