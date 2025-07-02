@@ -1,6 +1,6 @@
 {
-    "name": "TByd.Template.Editor",
-    "rootNamespace": "TByd.Template.Editor",
+    "name": "TByd.Tools.Extension.Editor",
+    "rootNamespace": "TByd.Tools.Extension.Editor",
     "references": [
         "TByd.Template.Runtime"
     ],

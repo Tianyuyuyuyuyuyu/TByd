@@ -1,6 +1,6 @@
 {
-    "name": "TByd.Template.Runtime",
-    "rootNamespace": "TByd.Template",
+    "name": "TByd.Tools.Extension.Runtime",
+    "rootNamespace": "TByd.Tools.Extension",
     "references": [
         "UniTask"
     ],
